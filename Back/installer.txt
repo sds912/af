@@ -1,0 +1,8 @@
+composer create-project symfony/skeleton my_project ^4.4.0
+composer require symfony/maker-bundle --dev
+composer req api
+composer require orm-fixtures --dev
+composer require lexik/jwt-authentication-bundle
+composer require migrations
+composer require symfony/web-server-bundle --dev
+composer req cors

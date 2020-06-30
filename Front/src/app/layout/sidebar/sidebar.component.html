@@ -1,0 +1,58 @@
+<div>
+    <!-- Left Sidebar -->
+    <aside id="leftsidebar" class="sidebar" (mouseenter)="mouseHover($event)" (mouseleave)="mouseOut($event)">
+        <!-- Menu -->
+        <div class="menu">
+            <ul id="sidebarnav" class="list"
+                [ngStyle]="{'position' : 'relative', 'max-height' : listMaxHeight+'px', 'max-width' : listMaxWidth+'px'}"
+                [perfectScrollbar]>
+                <li class="sidebar-user-panel">
+                    <div class="user-panel" *ngIf="securityServ.user && securityServ.user.image">
+                        <div class=" image">
+                            <img *ngIf="!imagePP" [src]="sharedService.baseUrl +'/images/'+securityServ.user.image" class="img-pp img-circle user-img-circle pointer" alt="Image de profil" (click)="pp.click()" title="Changer sa photo de profil"/>
+                            <img *ngIf="imagePP" [src]="imagePP" class="img-pp img-circle user-img-circle pointer" alt="Image de profil" (click)="pp.click()" title="Changer sa photo de profil"/>
+                            <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
+                        </div>
+                    </div>
+                    <div class="profile-usertitle"  *ngIf="securityServ.user && securityServ.user.nom">
+                        <div class="sidebar-userpic-name"> {{securityServ.user?.nom}} </div>
+                        <div class="profile-usertitle-job ">{{securityServ.user?.poste}} </div>
+                    </div>
+                </li>
+                <!-- First level menu -->
+                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems"
+                    [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'">
+                    <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
+                        [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
+                        <i [ngClass]="[sidebarItem.icon]"></i>
+                        <span class="hide-menu">{{sidebarItem.title}}
+                        </span>
+                    </a>
+                    <!-- Second level menu -->
+                    <ul class="ml-menu" *ngIf="sidebarItem.submenu.length > 0">
+                        <li *ngFor="let sidebarSubItem of sidebarItem.submenu"
+                            [class.activeSub]="showSubMenu === sidebarSubItem.title"
+                            [routerLinkActive]="sidebarSubItem.submenu.length > 0 ? '' : 'active'">
+                            <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
+                                (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
+                                {{sidebarSubItem.title}}
+                            </a>
+                            <!-- Third level menu -->
+                            <ul class="collapse" *ngIf="sidebarSubItem.submenu.length > 0"
+                                [ngClass]="{'in' : showSubMenu === sidebarSubItem.title }">
+                                <li *ngFor="let sidebarSubsubItem of sidebarSubItem.submenu"
+                                    [ngClass]="[sidebarSubsubItem.class]">
+                                    <a [routerLink]="[sidebarSubsubItem.path]">
+                                        {{sidebarSubsubItem.title}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- #Menu -->
+    </aside>
+    <!-- #END# Left Sidebar -->
+</div>

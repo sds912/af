@@ -1,0 +1,160 @@
+<section class="content" *ngIf="show">
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="ngxTableHeader">
+                                    <ul class="header-buttons-left ml-0">
+                                        <li class="dropdown">
+                                            <h2>
+                                                <strong>Utilisateurs</strong></h2>
+                                        </li>
+                                        <li class="dropdown m-l-20">
+                                            <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                                            <input placeholder="Recherche" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20">
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" data-toggle="modal"
+                                                    data-target="#editModal" (click)='addRow()'>
+                                                    <mat-icon class="col-white">add</mat-icon>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
+                                    <!-- user image -->
+                                    <ngx-datatable-column name="Logo" sortable="false" prop="image" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0">
+                                                <img width="40" src="{{ imgLink + value }}" />
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                  
+                                    <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.element"></ngx-datatable-column> 
+                                    <!-- action buttons -->
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span>
+                                                <button class="btn tblActnBtn h-auto" data-toggle="modal"
+                                                    data-target="#editModal" (click)='editRow(row, rowIndex)'>
+                                                    <i class="material-icons">mode_edit</i>
+                                                </button>
+                                                <button class="btn tblActnBtn h-auto" (click)='deleteRow(row)'>
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                </ngx-datatable>
+
+                                <!-- Modal Window -->
+                                <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onEditSave(editForm)">
+                                            <div class="modal-header">
+                                                <div class="editRowModal">
+                                                    <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
+                                                        <img [src]='imgLink+selectedRowData?.image' alt="avatar" *ngIf="!image" title="Changer le logo de l'entité" class="pointer">
+                                                        <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="pointer">
+                                                        <div class="modal-about">
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.denomination">Nouvelle entité</div>
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.denomination">{{selectedRowData?.denomination}}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" #closeEditModal
+                                                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <i class="material-icons">clear</i>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div>
+                                                    <div class="input-field col s12 d-none">
+                                                        <input formControlName="id" class="form-control" type="hidden">
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Dénomination</mat-label>
+                                                                <input matInput formControlName="denomination" required>
+                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-error
+                                                                    *ngIf="editForm.get('denomination').hasError('required')">
+                                                                    La dénomination est requise
+                                                                </mat-error>
+                                                            </mat-form-field>
+                                                        </div>
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>République</mat-label>
+                                                                <input matInput formControlName="republique">
+                                                                <mat-icon matSuffix>face</mat-icon>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Ville</mat-label>
+                                                                <input matInput formControlName="ville" required>
+                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                            </mat-form-field>
+                                                        </div>
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Ninea</mat-label>
+                                                                <input matInput formControlName="ninea" required>
+                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Adresse</mat-label>
+                                                                <input matInput formControlName="adresse" required>
+                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <div class="button-demo">
+                                                            <button type="submit"
+                                                                class="btn btn-outline-success btn-border-radius">Save</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-warning btn-border-radius"
+                                                                data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Modal Window -->
+                                
+                                <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
