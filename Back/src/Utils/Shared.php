@@ -27,7 +27,7 @@ class Shared{
     const NOTEREVUE="noteRevue";
     const GROUPE="groupe";
     const IMAGEDEFAULT="exemple.jpg";
-    const BASEUSERNAME="@Ges-immo.com";//modifier sur le front aussi
+    const BASEUSERNAME="@Ges-immo.com";//modifier sur le front aussi creation user
     const HERE="HERE";
     const OUT="OUT";
     const ONESHOOT="ONESHOOT";

@@ -23,12 +23,13 @@ export class SidebarComponent implements OnInit {
 
   imagePP=""
   fileToUploadPp:File=null;
+  myRole=''
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
     public elementRef: ElementRef,
-    private sharedService:SharedService,
-    private securityServ:SecurityService
+    public sharedService:SharedService,//ici laisser à public à cause du html
+    public securityServ:SecurityService
 
   ) {}
   @HostListener('window:resize', ['$event'])
@@ -47,6 +48,17 @@ export class SidebarComponent implements OnInit {
     this.sidebarItems = ROUTES.filter(sidebarItem => sidebarItem);
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
+    this.myRole=localStorage.getItem("roles")
+  }
+  isGranted(roles){
+    if(roles[0]=="all") return true
+    let bool=false
+    roles.forEach(element => {
+      if(this.myRole && this.myRole.search(roles)>=0){
+        bool=true
+      }
+    });
+    return bool
   }
   handleFileInputPP(file:FileList){
     this.fileToUploadPp=file.item(0);

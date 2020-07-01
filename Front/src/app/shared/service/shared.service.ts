@@ -151,11 +151,11 @@ export class SharedService {
         );
       })
   }
-  patchElement(data:any,url:string){//return une promise
+  putElement(data:any,url:string){//return une promise
     return new Promise<any>(
       (resolve,reject)=>{
       this.httpClient
-        .patch<any>(this.urlBack+url,data).subscribe(
+        .put<any>(this.urlBack+url,data).subscribe(
           rep=>{
             if(rep && rep[0] && rep[0].property_path){
               const err=this.errerForm(rep);

@@ -8,6 +8,9 @@ parameters:
     document_directory: '%kernel.project_dir%/public/documents'
 
 services:
+    app.user_checker :
+        class : App\Utils\UserChecker # pour les Users bloqués
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

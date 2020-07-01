@@ -16,7 +16,7 @@ export class SigninComponent implements OnInit {
   returnUrl: string;
   hide = true;
   showPwd=false
-
+  textError=""
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
@@ -66,7 +66,13 @@ export class SigninComponent implements OnInit {
     this.securityServ.login(this.loginForm.value)
     .then(
       ()=>this.router.navigate(['/dashboard/main']),
-      message=>console.log(message)
+      message=>{
+        console.log(message)
+        if(message.error && message.error.code && message.error.code==401)
+          this.textError="Login ou mot de passe incorrecte !"
+        else if(message.error && message.error.code && message.error.code==403)
+          this.textError="Login ou mot de passe incorrecte !"
+      }
     )
   }
 }

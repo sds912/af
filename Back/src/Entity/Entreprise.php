@@ -7,6 +7,7 @@ use App\Repository\EntrepriseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource()
@@ -18,11 +19,13 @@ class Entreprise
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"user_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user_read"})
      */
     private $denomination;
 
@@ -60,6 +63,11 @@ class Entreprise
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
      */
     private $users;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sigleUsuel;
 
     public function __construct()
     {
@@ -197,6 +205,18 @@ class Entreprise
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
         }
+
+        return $this;
+    }
+
+    public function getSigleUsuel(): ?string
+    {
+        return $this->sigleUsuel;
+    }
+
+    public function setSigleUsuel(?string $sigleUsuel): self
+    {
+        $this->sigleUsuel = $sigleUsuel;
 
         return $this;
     }

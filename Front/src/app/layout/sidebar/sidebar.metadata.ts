@@ -4,5 +4,6 @@ export interface RouteInfo {
   title: string;
   icon: string;
   class: string;
+  roles?:string[];
   submenu: RouteInfo[];
 }

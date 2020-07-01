@@ -15,6 +15,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *   normalizationContext={
  *      "groups"={"user_read"}
+ *  },
+ *  itemOperations={
+ *      "GET",
+ *      "PUT",
+ *      "DELETE",
+ *      "PATCH",
+ *      "LOCK"={
+ *          "method"="get",
+ *          "path"="/users/lock/{id}",
+ *           "controller"="App\Controller\LockUserController",
+ *           "swagger_context"={
+ *              "summary"="Bloquer ou debloquer un utilisateur",
+ *              "description"="Les utilisateurs bloqués ne pourront plus se connecter à la plateforme"
+ *           }
+ *      }
  *  }
  * )
  */
@@ -75,6 +90,12 @@ class User implements UserInterface
      * @Groups({"user_read"})
      */
     private $image;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $status;
 
     public function __construct()
     {
@@ -226,6 +247,18 @@ class User implements UserInterface
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

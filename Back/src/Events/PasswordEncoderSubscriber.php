@@ -10,6 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Security;
+use App\Utils\Shared;
 //pour gener les evenements du coeur de symfony (kernel)
 class PasswordEncoderSubscriber implements EventSubscriberInterface{
     /** @var UserPasswordEncoderInterface */
@@ -25,15 +26,18 @@ class PasswordEncoderSubscriber implements EventSubscriberInterface{
     {
         return [
             //On utilise la fonction encodePassword avant d ecrire dans la base de donnée d ou PRE_WRITE
-            KernelEvents::VIEW=>['encodePassword',EventPriorities::PRE_WRITE]// si ca doit etre fait avant la validation utiliser: EventPriorities::PRE_VALIDATE voir video 77 lior api plat
+            KernelEvents::VIEW=>['encodePassword',EventPriorities::PRE_VALIDATE]// si ca doit etre fait avant la validation utiliser: EventPriorities::PRE_VALIDATE voir video 77 lior api plat
         ];
     }
     public function encodePassword(ViewEvent $event){//on peut changer le user par une autre classe et mettre l algo du traitement à faire juste avant que l on ecrive dans la base de donnée
         $user=$event->getControllerResult();//on option le resultat du controller de api plateform
         $method=$event->getRequest()->getMethod();
         if($user instanceof User && $method=="POST"){
-            $hash=$this->encoder->encodePassword($user,$user->getPassword());
+            $hash=$this->encoder->encodePassword($user,Shared::DEFAULTPWD);
             $user->setPassword($hash);
+            if(!$user->getStatus()){
+                $user->setStatus(Shared::ACTIF);
+            }
         }
     }
 }

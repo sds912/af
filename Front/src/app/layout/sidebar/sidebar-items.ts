@@ -6,6 +6,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Home',
     icon: 'fas fa-tachometer-alt',
     class: 'menu-toggle',
+    roles:['all'],//ne pas oublier les guards en fonction des roles
     submenu: [
       {
         path: '/dashboard/main',
@@ -32,16 +33,18 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: '/admin/entreprise',
-    title: 'Entreprises',
+    title: 'Entités',
     icon: 'fas fa-building',
     class: '',
+    roles:['ROLE_Admin'],
     submenu: []
   },
   {
     path: '/admin/user',
-    title: 'Utilosateurs',
+    title: 'Utilisateurs',
     icon: 'fas fa-users',
     class: '',
+    roles:['ROLE_Admin'],
     submenu: []
   },
   // {
@@ -49,6 +52,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'Advance Table',
   //   icon: 'far fa-list-alt',
   //   class: '',
+  //   roles:['*'],
   //   submenu: []
   // },
   // {
@@ -56,6 +60,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'Events',
   //   icon: 'far fa-calendar',
   //   class: '',
+  //   roles:['*'],
   //   submenu: []
   // },
   // {
@@ -63,6 +68,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'Email',
   //   icon: 'fas fa-mail-bulk',
   //   class: 'menu-toggle',
+  //   roles:['*'],
   //   submenu: [
   //     {
   //       path: '/email/inbox',
@@ -92,6 +98,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'Apps',
   //   icon: 'fab fa-google-play',
   //   class: 'menu-toggle',
+  //   roles:['*'],
   //   submenu: [
   //     {
   //       path: '/apps/chat',
@@ -135,6 +142,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'Widgets',
   //   icon: 'fab fa-pagelines',
   //   class: 'menu-toggle',
+  //   roles:['*'],
   //   submenu: [
   //     {
   //       path: '/widget/chart-widget',
@@ -157,6 +165,7 @@ export const ROUTES: RouteInfo[] = [
   //   title: 'User Interface (UI)',
   //   icon: 'fas fa-drafting-compass',
   //   class: 'menu-toggle',
+  //   roles:['*'],
   //   submenu: [
   //     {
   //       path: '/ui/alerts',

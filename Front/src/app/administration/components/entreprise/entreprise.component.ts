@@ -33,12 +33,14 @@ export class EntrepriseComponent implements OnInit {
   image:string;
   fileToUploadPp:File=null;
   defaultImag="exemple.jpg"
+  details=false
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar,private adminServ:AdminService,private sharedService:SharedService) {
     this.editForm = this.fb.group({
       id: [0],
       image: [''],
-      denomination: ['', [Validators.required, Validators.pattern('[a-zA-Z]+')]],
+      denomination: ['', [Validators.required]],
       republique: [''],
+      sigleUsuel: [''],
       ville: [''],
       ninea: [''],
       adresse: ['']
@@ -53,7 +55,9 @@ export class EntrepriseComponent implements OnInit {
     this.adminServ.getEntreprise().then(
       rep=>{
         console.log(rep)
-        this.data = rep;
+        let e=rep
+        if(e && e.length>0)e=rep.reverse()
+        this.data = e;
         this.filteredData = rep;
         this.show=true
       },
@@ -68,43 +72,41 @@ export class EntrepriseComponent implements OnInit {
     }
     reader.readAsDataURL(this.fileToUploadPp);
   }
-
-  editRow(row, rowIndex=0) {
-    this.editForm.setValue({
-      id: row.id,
-      denomination: row.denomination,
-      republique: row.republique,
-      ville: row.ville,
-      ninea:row.ninea,
-      adresse:row.adresse,
-      image: row.image
+  editRow(row,lock=false) {
+    this.editForm = this.fb.group({
+      id: [{value: row.id, disabled: lock}],
+      image: [{value: row.image, disabled: lock}],
+      denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
+      republique: [{value: row.republique, disabled: lock}],
+      sigleUsuel: [{value: row.sigleUsuel, disabled: lock}],
+      ville: [{value: row.ville, disabled: lock}],
+      ninea: [{value: row.ninea, disabled: lock}],
+      adresse: [{value: row.adresse, disabled: lock}]
     });
     this.selectedRowData = row;
   }
+  longText(text,limit){
+    return this.sharedService.longText(text,limit)
+  }
+  update(row){
+    this.details=false
+    this.editRow(row)
+  }
+  showDetails(row){
+    this.details=true
+    this.editRow(row, true)
+  }
   addRow() {
-    let entreprise:Entreprise={id:0,denomination:'',republique:'',ville:'',ninea:'',adresse:'',image:this.defaultImag}
+    this.details=false
+    let entreprise:Entreprise={id:0,denomination:'',sigleUsuel:'',republique:'',ville:'',ninea:'',adresse:'',image:this.defaultImag}
     this.editRow(entreprise)
-  }
-  deleteRow(row) {
-    this.data = this.arrayRemove(this.data, row.id);
-    this.showNotification(
-      'bg-red',
-      'Delete Record Successfully',
-      'bottom',
-      'right'
-    );
-  }
-  arrayRemove(array, id) {
-    return array.filter(function(element) {
-      return element.id != id;
-    });
   }
   onEditSave(form: FormGroup) {
     let data=form.value
     data.image=this.fileToUploadPp
     this.adminServ.addEntreprise(data).then(
       rep=>{
-        this.showNotification('bg-success','Edit Record Successfully','bottom','center')
+        this.showNotification('bg-success','Enregistré','bottom','center')
         this.closeEditModal.nativeElement.click();
         this.getEntreprise()
       },message=>{
@@ -139,10 +141,6 @@ export class EntrepriseComponent implements OnInit {
     });
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
-  }
-  getId(min, max) {
-    // min and max included
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
   openSnackBar(message: string) {
     this._snackBar.open(message, '', {

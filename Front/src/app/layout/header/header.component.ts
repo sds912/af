@@ -28,8 +28,8 @@ export class HeaderComponent implements OnInit {
     private renderer: Renderer2,
     public elementRef: ElementRef,
     private dataService: RightSidebarService,
-    private sharedService:SharedService,
-    private securityServ:SecurityService
+    public sharedService:SharedService,//ici laisser à public à cause du html
+    public securityServ:SecurityService
   ) {
   }
 

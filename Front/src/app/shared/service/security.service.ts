@@ -24,7 +24,6 @@ export class SecurityService {
         .post<any>(this.urlBack+"/login",data)
         .subscribe(
           (rep)=>{
-            console.log(rep)
             this.traitementLogin(rep.token);
             resolve();
           },
@@ -39,10 +38,11 @@ export class SecurityService {
     this.token=token;
     localStorage.setItem('token', token);
     const tokenDeco=this.jwtHelper.decodeToken(token);
-    console.log(tokenDeco)
     localStorage.setItem('username', tokenDeco.username);
     localStorage.setItem('roles', tokenDeco.roles);
-    this.getUser(tokenDeco.id)
+    localStorage.setItem('idUser', tokenDeco.id);
+    this.user={id:tokenDeco.id}
+    this.getUser()
     this.setRole();
   }
   setRole(){
@@ -83,8 +83,8 @@ export class SecurityService {
     formData.append('image',image)
     return this.sharedService.postElement(formData,"/update/pp")
   }
-  getUser(id){
-    this.sharedService.getElement("/users/"+id).then(rep=>{
+  getUser(){
+    return this.sharedService.getElement("/users/"+this.user.id).then(rep=>{
       this.user=rep
       console.log(rep)
     })

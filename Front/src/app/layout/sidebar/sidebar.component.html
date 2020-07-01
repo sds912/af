@@ -20,8 +20,7 @@
                     </div>
                 </li>
                 <!-- First level menu -->
-                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems"
-                    [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'">
+                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem.roles)">
                     <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
                         [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
                         <i [ngClass]="[sidebarItem.icon]"></i>

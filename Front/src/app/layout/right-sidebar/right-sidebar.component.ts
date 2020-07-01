@@ -14,7 +14,7 @@ import { RightSidebarService } from '../../services/rightsidebar.service';
   styleUrls: ['./right-sidebar.component.sass']
 })
 export class RightSidebarComponent implements OnInit {
-  selectedBgColor: string = 'black';
+  selectedBgColor: string = 'orange';
   maxHeight: string;
   maxWidth: string;
   showpanel: boolean = false;

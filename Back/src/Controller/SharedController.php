@@ -45,7 +45,8 @@ class SharedController extends AbstractController
                    ->setNinea($data['ninea'])
                    ->setVille($data['ville'])
                    ->setAdresse($data['adresse'])
-                   ->setRepublique($data['republique']);
+                   ->setRepublique($data['republique'])
+                   ->setSigleUsuel($data['sigleUsuel']);
         $requestFile=$request->files->all();
         $image=$entreprise->getImage();
         if(!$image){

@@ -18,7 +18,7 @@
                                         </li>
                                     </ul>
                                     <ul class="header-buttons m-r-20">
-                                        <li>
+                                        <li *ngIf="entreprises && entreprises.length>0">
                                             <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" data-toggle="modal"
                                                     data-target="#editModal" (click)='addRow()'>
@@ -30,7 +30,7 @@
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
-                                    <ngx-datatable-column name="Logo" sortable="false" prop="image" [width]="130">
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
                                                 <img width="40" src="{{ imgLink + value }}" />
@@ -38,18 +38,55 @@
                                         </ng-template>
                                     </ngx-datatable-column>
                                   
-                                    <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.element"></ngx-datatable-column> 
+                                    <ngx-datatable-column name="Prénom et nom" sortable="false" prop="nom" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Département" sortable="false" prop="departement" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    
+                                    <ngx-datatable-column name="Rôle" sortable="false" prop="roles" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="getRole(value)">
+                                                {{longText(getRole(value),20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Entité" sortable="false" prop="entreprises" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0">
+                                                <span *ngIf="value && value.length==1">{{longText(value[0].denomination,20)}}</span>
+                                                <select *ngIf="value && value.length>1" class="form-control no-border pl-0" style="border: none !important;">
+                                                   <option *ngFor="let e of value">{{e.denomination}}</option> 
+                                                </select>
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    
                                     <!-- action buttons -->
-                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130">
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130" class="text-center">
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
+                                                <button class="btn tblActnBtn h-auto" data-toggle="modal" data-target="#editModal" (click)='showDetails(row)'>
+                                                    <i class="material-icons">remove_red_eye</i>
+                                                </button>
                                                 <button class="btn tblActnBtn h-auto" data-toggle="modal"
-                                                    data-target="#editModal" (click)='editRow(row, rowIndex)'>
+                                                    data-target="#editModal" (click)='updateUser(row)'>
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
-                                                <button class="btn tblActnBtn h-auto" (click)='deleteRow(row)'>
-                                                    <i class="material-icons">delete</i>
+                                                <button class="btn tblActnBtn h-auto" [ngClass]="{'text-success': row.status=='actif','text-danger': row.status=='bloque'}" (click)='lockRow(row)'>
+                                                    <i class="material-icons" *ngIf="row.status=='actif'">lock_open</i>
+                                                    <i class="material-icons" *ngIf="row.status=='bloque'">lock_outline</i>
                                                 </button>
                                             </span>
                                         </ng-template>
@@ -63,12 +100,12 @@
                                         <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onEditSave(editForm)">
                                             <div class="modal-header">
                                                 <div class="editRowModal">
-                                                    <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
-                                                        <img [src]='imgLink+selectedRowData?.image' alt="avatar" *ngIf="!image" title="Changer le logo de l'entité" class="pointer">
-                                                        <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="pointer">
+                                                    <div class="modal-header clearfix">
+                                                        <img *ngIf="selectedRowData?.image" [src]='imgLink+selectedRowData?.image' alt="avatar">
+                                                        <img *ngIf="!selectedRowData?.image" [src]='newUserImg' alt="avatar">
                                                         <div class="modal-about">
-                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.denomination">Nouvelle entité</div>
-                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.denomination">{{selectedRowData?.denomination}}</div>
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.nom">Nouvel utilisateur</div>
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.nom">{{selectedRowData?.nom}}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -82,43 +119,60 @@
                                                 <div>
                                                     <div class="input-field col s12 d-none">
                                                         <input formControlName="id" class="form-control" type="hidden">
+                                                        <input formControlName="status" class="form-control" type="hidden">
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row pr-3">
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Dénomination</mat-label>
-                                                                <input matInput formControlName="denomination" required>
+                                                                <mat-label>Prénom et nom</mat-label>
+                                                                <input matInput formControlName="nom" required (change)="nomChange($event.target.value)">
                                                                 <mat-icon matSuffix>face</mat-icon>
                                                                 <mat-error
-                                                                    *ngIf="editForm.get('denomination').hasError('required')">
-                                                                    La dénomination est requise
+                                                                    *ngIf="editForm.get('nom').hasError('required')">
+                                                                    Le nom complet est requise
                                                                 </mat-error>
                                                             </mat-form-field>
                                                         </div>
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>République</mat-label>
-                                                                <input matInput formControlName="republique">
+                                                                <mat-label>Poste</mat-label>
+                                                                <input matInput formControlName="poste">
                                                                 <mat-icon matSuffix>face</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Ville</mat-label>
-                                                                <input matInput formControlName="ville" required>
-                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                                <mat-label>Login</mat-label>
+                                                                <input matInput formControlName="username" required>
+                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-error *ngIf="editForm.get('nom').hasError('required')">
+                                                                    Le login est requis
+                                                                </mat-error>
                                                             </mat-form-field>
                                                         </div>
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width" appearance="outline">
+                                                                <mat-label>Département</mat-label>
+                                                                <input matInput [value]="firstDep" disabled="true"  [hidden]="!details">
+                                                                <mat-select  name="depart" [value]="firstDep" (selectionChange)="depChange($event.value)" [hidden]="details">
+                                                                    <mat-option *ngFor="let d of dep" [value]="d">{{d}}</mat-option>
+                                                                </mat-select>                                                               
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" [hidden]="!autreDep">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Ninea</mat-label>
-                                                                <input matInput formControlName="ninea" required>
+                                                                <mat-label>Autre département</mat-label>
+                                                                 <input matInput formControlName="departement" required>
                                                                 <mat-icon matSuffix>phone</mat-icon>
                                                             </mat-form-field>
                                                         </div>
@@ -127,19 +181,30 @@
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Adresse</mat-label>
-                                                                <input matInput formControlName="adresse" required>
-                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                                <mat-label>Rôle</mat-label>
+                                                                <input matInput formControlName="departement" *ngIf="details">
+                                                                <mat-select formControlName="role"  *ngIf="!details">
+                                                                    <mat-option *ngFor="let r of roles" [value]="r">{{r}}</mat-option>
+                                                                </mat-select>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
+                                                    <div class="row" *ngFor="let control of tabEse.controls; index as i" [hidden]="entreprises && entreprises.length<2">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                                                            <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
+                                                                <mat-label>Entité</mat-label>
+                                                                <mat-select [formControl]="control">
+                                                                    <mat-option value="" *ngIf="i>0"></mat-option>
+                                                                    <mat-option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                             <mat-icon matSuffix [hidden]="i!=(tabEse.controls.length-1) || !control.value" (click)="addEntreprise()" class="pointer">add_circle_outline</mat-icon>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer" [hidden]="details">
                                                         <div class="button-demo">
-                                                            <button type="submit"
-                                                                class="btn btn-outline-success btn-border-radius">Save</button>
-                                                            <button type="button"
-                                                                class="btn btn-outline-warning btn-border-radius"
-                                                                data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-outline-success btn-border-radius">Enregistrer</button>
+                                                            <button type="button" class="btn btn-outline-danger btn-border-radius" data-dismiss="modal">Annuler</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -148,8 +213,6 @@
                                     </div>
                                 </div>
                                 <!-- Modal Window -->
-                                
-                                <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
                             </div>
                         </div>
                     </div>
