@@ -20,7 +20,7 @@
                                     <ul class="header-buttons m-r-20">
                                         <li>
                                             <div class="icon-button-demo">
-                                                <button mat-mini-fab color="primary" data-toggle="modal"
+                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='addRow()'>
                                                     <mat-icon class="col-white">add</mat-icon>
                                                 </button>
@@ -75,11 +75,11 @@
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
-                                                <button class="btn tblActnBtn h-auto" data-toggle="modal"
+                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <button class="btn tblActnBtn h-auto" data-toggle="modal"
+                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='update(row)'>
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
@@ -96,8 +96,8 @@
                                             <div class="modal-header">
                                                 <div class="editRowModal">
                                                     <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
-                                                        <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="pointer" (click)="pp.click()">
-                                                        <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="pointer">
+                                                        <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar">
+                                                        <img *ngIf="image" [src]="image" alt="Logo">
                                                         <div class="modal-about">
                                                             <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.denomination">Nouvelle entité</div>
                                                             <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.denomination">{{selectedRowData?.denomination}}</div>
@@ -116,12 +116,19 @@
                                                         <input formControlName="id" class="form-control" type="hidden">
                                                     </div>
                                                     <div class="row">
+                                                        <div class="col-xl-4 col-lg-4"></div>
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4" *ngIf="selectedRowData?.image||image">
+                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer"(click)="pp.click()">
+                                                            <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Sigle usuel</mat-label>
                                                                 <input matInput formControlName="sigleUsuel" required>
-                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-icon matSuffix>text_format</mat-icon>
                                                                 <mat-error
                                                                     *ngIf="editForm.get('sigleUsuel').hasError('required')">
                                                                     La dénomination est requise
@@ -133,7 +140,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Dénomination</mat-label>
                                                                 <input matInput formControlName="denomination" required>
-                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-icon matSuffix>font_download</mat-icon>
                                                                 <mat-error
                                                                     *ngIf="editForm.get('denomination').hasError('required')">
                                                                     La dénomination est requise
@@ -148,7 +155,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>République</mat-label>
                                                                 <input matInput formControlName="republique">
-                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-icon matSuffix>flag</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
@@ -156,7 +163,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Ville</mat-label>
                                                                 <input matInput formControlName="ville" required>
-                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                                <mat-icon matSuffix>location_city</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                         
@@ -167,7 +174,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Ninea</mat-label>
                                                                 <input matInput formControlName="ninea" required>
-                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                                <mat-icon matSuffix>apps</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
@@ -175,7 +182,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Adresse</mat-label>
                                                                 <input matInput formControlName="adresse" required>
-                                                                <mat-icon matSuffix>phone</mat-icon>
+                                                                <mat-icon matSuffix>room</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>

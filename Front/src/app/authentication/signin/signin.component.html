@@ -23,7 +23,9 @@
               <input matInput type="text" formControlName="password" *ngIf="showPwd">
               <mat-icon matSuffix  *ngIf="showPwd" (click)="showPwd=!showPwd" class="pointer">visibility_off</mat-icon>
             </mat-form-field>
+            <p class="text-danger" *ngIf="textError" style="text-align: center;">{{textError}}</p>
           </div>
+          
         </div>
         <div class="flex-sb-m w-full p-t-15 p-b-20">
           <div class="form-check">

@@ -6,6 +6,7 @@ import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
@@ -14,7 +15,6 @@ import { Entreprise } from '../../model/entreprise';
 export class UserComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
-  @ViewChild('closeAddModal', { static: false }) closeAddModal;
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
   rows = [];
   colNmbre=5
@@ -147,6 +147,7 @@ export class UserComponent implements OnInit {
     return this.sharedService.longText(text,limit)
   }
   addRow() {
+    this.firstDep=""
     this.details=false
     this.autreDep=false
     this.update=false
@@ -250,6 +251,28 @@ export class UserComponent implements OnInit {
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: colorName
+    });
+  }
+  backupPwd(user){
+    Swal.fire({
+      title: 'Confirmation',
+      text: "Voulez-vous confirmer la réinitialisation du mot de passe de l'utilisateur "+user.nom+' ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then(result => {
+      if (result.value) {
+        this.adminServ.backupPWD(user.id).then(
+          rep=>{
+            this.showNotification('bg-success',"Mot de passe réinitialisé",'bottom','center')
+            this.getUsers()
+          },
+          message=>this.showNotification('bg-red',message,'bottom','right')
+        )
+      }
     });
   }
 }

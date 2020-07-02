@@ -9,6 +9,8 @@ use App\Entity\Entreprise;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
 * @Route("/api")
 */
@@ -99,4 +101,39 @@ class SharedController extends AbstractController
          ];
          return $this->json($afficher);
      }
+     /**
+    * @Route("/password", methods={"POST"})
+    */
+    public function updatePWD(Request $request,UserPasswordEncoderInterface $encodePassword){//voir comment le deplacer avec api plateform
+        $userCo=$this->getUser();
+        $data=Shared::getData($request);
+        $mdp=$data["ancien"];
+        if(!$encodePassword->isPasswordValid($userCo, $mdp)){
+            throw new HttpException(403,"Le mot de passe est invalide");
+        }
+        if($data["password"]!=$data["confPassword"]){
+            throw new HttpException(403,"Les mots de passe ne correspondent pas");
+        }
+        $userCo->setPassword($encodePassword->encodePassword($userCo, $data["password"]));
+        $this->manager->flush();
+        $afficher = [
+            Shared::STATUS => 201,
+            Shared::MESSAGE => "Mot de passe modifié avec succès"
+        ];
+        return $this->json($afficher);
+    }
+    /**
+    * @Route("/info", methods={"POST"})
+    */
+    public function updateInfo(Request $request,EntityManagerInterface $manager){
+        $me=$this->getUser();
+        $data=Shared::getData($request);
+        $me->setNom($data['nom'])->setPoste($data['poste']);
+        $manager->flush();
+        $afficher = [
+            Shared::STATUS => 200,
+            Shared::MESSAGE => 'Informations modifiées'
+        ];
+        return $this->json($afficher);
+    }
 }

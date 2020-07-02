@@ -41,5 +41,8 @@ export class AdminService {
   lockUser(id){
     return this.sharedService.getElement("/users/lock/"+id)
   }
+  backupPWD(id){
+    return this.sharedService.getElement("/users/back-up-pwd/"+id)
+  }
 
 }

@@ -9,14 +9,16 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 export class SecurityService {
   constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) { }
   sharedService=this.injector.get(SharedService)
-  public urlBack=this.sharedService.urlBack
-  public user:any;
-  public token:string;
-  public isAuth=false;
-  public SupAdmin=false
-  public admin=false
-  public fonction
-  public jwtHelper = new JwtHelperService;
+  urlBack=this.sharedService.urlBack
+  user:any;
+  token:string;
+  isAuth=false;
+  SupAdmin=false
+  admin=false
+  superviseur=false
+  fonction
+  showLoadingIndicatior=true
+  jwtHelper = new JwtHelperService;
   login(data:any){
     return new Promise(
       (resolve, reject)=>{
@@ -54,12 +56,16 @@ export class SecurityService {
     else if(roles.search("ROLE_Admin")>=0){
         this.admin=true;
         this.fonction="Admin";
+    }else if(roles.search("ROLE_Superviseur")>=0){
+        this.superviseur=true;
+        this.fonction="Superviseur";
     }
   }
   logOut(){
     this.isAuth=false;
     this.SupAdmin=false;
     this.admin=false;
+    this.superviseur=false;
     localStorage.clear();
     this.router.navigate(['/login']);
   }
@@ -71,6 +77,9 @@ export class SecurityService {
   }
   changePwd(data){
     return this.sharedService.postElement(data,"/password")
+  }
+  changeInfo(data){
+    return this.sharedService.postElement(data,"/info")
   }
   activKey(data){
     return this.sharedService.postElement(data,"/activeKey")

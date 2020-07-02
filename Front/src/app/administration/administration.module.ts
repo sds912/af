@@ -25,6 +25,8 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserComponent } from './components/user/user.component';
 
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 @NgModule({
   declarations: [
     EntrepriseComponent,
@@ -53,7 +55,9 @@ import { UserComponent } from './components/user/user.component';
     MatSortModule,
     MatToolbarModule,
     MaterialFileInputModule,
-    MatMenuModule
+    MatMenuModule,
+
+    MatProgressBarModule
   ]
 })
 export class AdministrationModule { }

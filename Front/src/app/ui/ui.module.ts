@@ -39,6 +39,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressButtonsModule } from 'mat-progress-buttons';
+
 import { ChipsComponent } from './chips/chips.component';
 import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';

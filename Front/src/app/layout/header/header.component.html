@@ -7,7 +7,7 @@
             <a href="#" onClick="return false;" class="bars" (click)="mobileMenuSidebarOpen($event,'overlay-open')"></a>
             <a class="navbar-brand" routerLink="dashboard/main">
                 <img src="assets/images/logo.png" alt="" />
-                <span class="logo-name">ASMA</span>
+                <span class="logo-name" style="font-size: 13px;">Gestion des inventaires</span>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -59,6 +59,8 @@
                     </ul>
                 </li>
                 <!-- #END# Notifications-->
+
+
                 <li class="dropdown user_profile" >
                     <a href="#" onClick="return false;" data-toggle="dropdown" role="button" class="pt-0">
                         <img *ngIf="securityServ.user && securityServ.user.image" [src]="sharedService.baseUrl +'/images/'+securityServ.user.image" class="rounded-circle" width="32" height="32" alt="User">
@@ -68,8 +70,13 @@
                         <li class="body">
                             <ul class="user_dw_menu">
                                 <li>
-                                    <a href="#" onClick="return false;">
-                                        <mat-icon aria-hidden="false" class="mr-2">person</mat-icon>Profile
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#infoModal" data-backdrop="static" data-keyboard="false" (click)="updateInfos()">
+                                        <mat-icon aria-hidden="false" class="mr-2">person</mat-icon>Infos personnelles
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#passwordModal" data-backdrop="static" data-keyboard="false" (click)="updatePwd()">
+                                        <mat-icon aria-hidden="false" class="mr-2">vpn_key</mat-icon>Mot de passe
                                     </a>
                                 </li>
                                 <li>
@@ -91,6 +98,9 @@
                         </li>
                     </ul>
                 </li>
+
+                 
+
                 <!-- #END# Tasks -->
                 <li class="pull-right">
                     <button mat-icon-button (click)="toggleRightSidebar()" class="nav-notification-icons">
@@ -101,3 +111,139 @@
         </div>
     </div>
 </nav>
+<!-- Modal Window Password-->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onSavePwd(editForm)">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Modifier mot de passe</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closePasswordModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Ancien mot de passe</mat-label>
+                                <input matInput type="password" formControlName="ancien" *ngIf="!showPwd" required >
+                                <input matInput type="text" formControlName="ancien" *ngIf="showPwd" required >
+                                <mat-icon matSuffix  *ngIf="!showPwd" (click)="showPwd=!showPwd" class="pointer">visibility</mat-icon>
+                                <mat-icon matSuffix  *ngIf="showPwd" (click)="showPwd=!showPwd" class="pointer">visibility_off</mat-icon>
+                                <mat-error *ngIf="editForm.get('ancien').hasError('required')">
+                                    L' ancien mot de passse est requise
+                                </mat-error>
+                                
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Nouveau mot de passe</mat-label>
+                                <input matInput type="password" formControlName="password" *ngIf="!showPwd2" required>
+                                <input matInput type="text" formControlName="password" *ngIf="showPwd2" required >
+                                <mat-icon matSuffix  *ngIf="!showPwd2" (click)="showPwd2=!showPwd2" class="pointer">visibility</mat-icon>
+                                <mat-icon matSuffix  *ngIf="showPwd2" (click)="showPwd2=!showPwd2" class="pointer">visibility_off</mat-icon>
+                                <mat-error *ngIf="editForm.get('password').hasError('required')">
+                                    Le nouveau mot de passse est requise
+                                </mat-error>
+                                <mat-error *ngIf="editForm.get('password').hasError('minlength')">Minimum 6 caractères</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Confirmer le mot de passe</mat-label>
+                                <input matInput type="password" formControlName="confPassword" *ngIf="!showPwd3" required >
+                                <input matInput type="text" formControlName="confPassword" *ngIf="showPwd3" required >
+                                <mat-icon matSuffix  *ngIf="!showPwd3" (click)="showPwd3=!showPwd3" class="pointer">visibility</mat-icon>
+                                <mat-icon matSuffix  *ngIf="showPwd3" (click)="showPwd3=!showPwd3" class="pointer" class="pointer">visibility_off</mat-icon>
+                                <mat-error *ngIf="editForm.get('confPassword').hasError('required')">La confirmation du mot de passse est requise</mat-error>
+                                <mat-error *ngIf="editForm.get('password').hasError('minlength')">Minimum 6 caractères</mat-error>
+                                <mat-error *ngIf="errorConfPwd">
+                                    Les mots de passe ne concordent pas
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="modal-footer pr-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="editForm.invalid">Enregistrer</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Window Password-->
+
+<!-- Modal Window Info-->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" *ngIf="updateInfo">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content"  [formGroup]="InfoForm" (ngSubmit)="onSaveInfo(InfoForm)">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Modifier mes informations</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closeInfoModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Prénom et nom</mat-label>
+                                <input matInput formControlName="nom" required >
+                                <mat-icon matSuffix >face</mat-icon>
+                                <mat-error *ngIf="InfoForm.get('nom').hasError('required')">
+                                    Ce champ est requise
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Poste</mat-label>
+                                <input matInput formControlName="poste" required >
+                                <mat-icon matSuffix >card_travel</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer pr-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="InfoForm.invalid">Enregistrer</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Window Info-->

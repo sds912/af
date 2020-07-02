@@ -20,7 +20,7 @@
                                     <ul class="header-buttons m-r-20">
                                         <li *ngIf="entreprises && entreprises.length>0">
                                             <div class="icon-button-demo">
-                                                <button mat-mini-fab color="primary" data-toggle="modal"
+                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='addRow()'>
                                                     <mat-icon class="col-white">add</mat-icon>
                                                 </button>
@@ -30,7 +30,7 @@
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
-                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="10">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
                                                 <img width="40" src="{{ imgLink + value }}" />
@@ -54,17 +54,17 @@
                                         </ng-template>
                                     </ngx-datatable-column>
                                     
-                                    <ngx-datatable-column name="Rôle" sortable="false" prop="roles" [width]="130">
+                                    <ngx-datatable-column name="Rôle" sortable="false" prop="roles" [width]="80">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="getRole(value)">
-                                                {{longText(getRole(value),20)}}
+                                                {{longText(getRole(value),15)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
                                     <ngx-datatable-column name="Entité" sortable="false" prop="entreprises" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
-                                                <span *ngIf="value && value.length==1">{{longText(value[0].denomination,20)}}</span>
+                                                <span *ngIf="value && value.length==1" [title]="value[0].denomination">{{longText(value[0].denomination,20)}}</span>
                                                 <select *ngIf="value && value.length>1" class="form-control no-border pl-0" style="border: none !important;">
                                                    <option *ngFor="let e of value">{{e.denomination}}</option> 
                                                 </select>
@@ -77,14 +77,18 @@
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
-                                                <button class="btn tblActnBtn h-auto" data-toggle="modal" data-target="#editModal" (click)='showDetails(row)'>
+                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <button class="btn tblActnBtn h-auto" data-toggle="modal"
-                                                    data-target="#editModal" (click)='updateUser(row)'>
+                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
-                                                <button class="btn tblActnBtn h-auto" [ngClass]="{'text-success': row.status=='actif','text-danger': row.status=='bloque'}" (click)='lockRow(row)'>
+                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" title="Réinitialiser le mot de passe de l'utilisateur" (click)='backupPwd(row)'>
+                                                    <i class="material-icons">refresh</i>
+                                                </button>
+                                                <button class="btn tblActnBtn pointer h-auto" [ngClass]="{'text-success': row.status=='actif','text-danger': row.status=='bloque'}" title="Bloquer/Débloquer un utilisateur" (click)='lockRow(row)'>
                                                     <i class="material-icons" *ngIf="row.status=='actif'">lock_open</i>
                                                     <i class="material-icons" *ngIf="row.status=='bloque'">lock_outline</i>
                                                 </button>
@@ -139,7 +143,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Poste</mat-label>
                                                                 <input matInput formControlName="poste">
-                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-icon matSuffix>card_travel</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
@@ -149,7 +153,7 @@
                                                                 appearance="outline">
                                                                 <mat-label>Login</mat-label>
                                                                 <input matInput formControlName="username" required>
-                                                                <mat-icon matSuffix>face</mat-icon>
+                                                                <mat-icon matSuffix>assignment_ind</mat-icon>
                                                                 <mat-error *ngIf="editForm.get('nom').hasError('required')">
                                                                     Le login est requis
                                                                 </mat-error>
@@ -160,8 +164,8 @@
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width" appearance="outline">
                                                                 <mat-label>Département</mat-label>
-                                                                <input matInput [value]="firstDep" disabled="true"  [hidden]="!details">
-                                                                <mat-select  name="depart" [value]="firstDep" (selectionChange)="depChange($event.value)" [hidden]="details">
+                                                                <input matInput [value]="firstDep" disabled="true"  *ngIf="details">
+                                                                <mat-select  name="depart" [value]="firstDep" (selectionChange)="depChange($event.value)" *ngIf="!details">
                                                                     <mat-option *ngFor="let d of dep" [value]="d">{{d}}</mat-option>
                                                                 </mat-select>                                                               
                                                             </mat-form-field>

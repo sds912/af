@@ -2,6 +2,8 @@ import { NgModule, Optional, SkipSelf  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthGuard } from './guard/auth.guard';
+import { SupervAdminGuard } from './guard/superv-admin.guard';
+import { AdminGuard } from './guard/admin.guard';
 import { TokenInterceptor } from './interceptor/token.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -13,7 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule
   ],
   providers: [
-    AuthGuard,
+    AuthGuard,SupervAdminGuard,AdminGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

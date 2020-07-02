@@ -32,7 +32,7 @@ export class EntrepriseComponent implements OnInit {
   imgLink=""
   image:string;
   fileToUploadPp:File=null;
-  defaultImag="exemple.jpg"
+  defaultImag="exemple2.png"
   details=false
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar,private adminServ:AdminService,private sharedService:SharedService) {
     this.editForm = this.fb.group({

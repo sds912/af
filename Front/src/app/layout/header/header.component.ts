@@ -5,12 +5,14 @@ import {
   ElementRef,
   OnInit,
   Renderer2,
-  HostListener
+  HostListener, ViewChild, TemplateRef 
 } from '@angular/core';
 import { RightSidebarService } from '../../services/rightsidebar.service';
 import { WINDOW } from '../../services/window.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { FormGroup, FormBuilder, FormControl, Validators} from '@angular/forms';
 
 const document: any = window.document;
 
@@ -20,8 +22,19 @@ const document: any = window.document;
   styleUrls: ['./header.component.sass']
 })
 export class HeaderComponent implements OnInit {
+  @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
+  @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
+  @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
   isNavbarShow: boolean;
   imagePP=""
+  editForm: FormGroup;
+  InfoForm: FormGroup;
+  showPwd=false
+  showPwd2=false
+  showPwd3=false
+  errorConfPwd=false
+  errorPwd=false
+  updateInfo=false
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -29,7 +42,9 @@ export class HeaderComponent implements OnInit {
     public elementRef: ElementRef,
     private dataService: RightSidebarService,
     public sharedService:SharedService,//ici laisser à public à cause du html
-    public securityServ:SecurityService
+    public securityServ:SecurityService,
+    private fb: FormBuilder,
+    private _snackBar: MatSnackBar
   ) {
   }
 
@@ -94,6 +109,82 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
     this.setStartupStyles();
+    this.initForm()
+  }
+  initForm(){
+    this.editForm = this.fb.group({
+      ancien: ['', [Validators.required]],
+      password: ['', [Validators.required,Validators.minLength(6)]],
+      confPassword: ['', [Validators.required,Validators.minLength(6)]]
+    });
+  }
+  
+  
+  private customValidator(control,form) {//ne marche pas revoir
+    return {isEqual: control.value === this.editForm.controls['password'].value};
+  }
+  updateInfos(){
+    this.updateInfo=true
+    this.initForm2()
+  }
+  initForm2(){
+    let user=this.securityServ.user
+    this.InfoForm = this.fb.group({
+      nom: [user.nom, [Validators.required]],
+      poste: [user.poste, [Validators.required]]
+    });
+  }
+  
+  updatePwd(){
+    this.errorConfPwd=false
+    this.errorPwd=false
+    this.initForm()
+  }
+  onSavePwd(form: FormGroup){
+    let data=form.value
+    this.errorConfPwd=false
+    this.errorPwd=false
+    
+    if(data.password==data.confPassword){
+      this.securityServ.changePwd(data).then(
+        rep=>{
+        this.showNotification('bg-success','Mot de passe modifié','bottom','center')
+        this.closePasswordModal.nativeElement.click();
+      },message=>{
+        console.log(message)
+        this.errorPwd=true
+        this.showNotification('bg-red',message,'bottom','right')
+      }
+      )
+    }
+    else{console.log(data)
+      this.errorConfPwd=true
+      this.showNotification('bg-red',"Les mots de passe ne concordent pas",'bottom','right')
+    }
+    
+  }
+  onSaveInfo(form: FormGroup){
+    let data=form.value
+    this.securityServ.changeInfo(data).then(
+      rep=>{
+      this.showNotification('bg-success',rep.message,'bottom','center')
+      this.securityServ.user.nom=data.nom
+      this.securityServ.user.poste=data.poste
+      this.closeInfoModal.nativeElement.click();
+    },message=>{
+      console.log(message)
+      this.showNotification('bg-red',message,'bottom','right')
+    }
+    ) 
+  }
+
+  showNotification(colorName, text, placementFrom, placementAlign) {
+    this._snackBar.open(text, '', {
+      duration: 2000,
+      verticalPosition: placementFrom,
+      horizontalPosition: placementAlign,
+      panelClass: colorName
+    });
   }
 
   setStartupStyles() {

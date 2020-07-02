@@ -25,7 +25,7 @@ class AppFixtures extends Fixture
             $m=$membres[$i];
             $user=$user=new User();
             $user->setUsername($m[0])->setRoles($m[1])
-                 ->setPassword($this->encoder->encodePassword($user, "azerty"))
+                 ->setPassword($this->encoder->encodePassword($user, Shared::DEFAULTPWD))
                  ->setImage(Shared::IMAGEDEFAULT)
                  ->setStatus(Shared::ACTIF);
             $manager->persist($user);

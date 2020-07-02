@@ -8,6 +8,7 @@ use App\Entity\Entreprise;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MyEntreprise implements QueryCollectionExtensionInterface,QueryItemExtensionInterface{//pour un get d une collection et le get d'un seul élément video 80 lior
     
@@ -33,5 +34,11 @@ class MyEntreprise implements QueryCollectionExtensionInterface,QueryItemExtensi
     }
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])
     {//de l interface QueryItemExtensionInterface
+        if($resourceClass===Entreprise::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
+            // $e=$queryBuilder->getOneOrNullResult(); //revoir car cette methode ne marche pas
+            // if( $e && !$this->userCo->inEntreprise($e)){
+            //     throw new HttpException(403,"Vous n'êtes pas dans cette entité !");
+            // }
+        }
     }
 }

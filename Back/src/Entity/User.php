@@ -29,6 +29,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *              "summary"="Bloquer ou debloquer un utilisateur",
  *              "description"="Les utilisateurs bloqués ne pourront plus se connecter à la plateforme"
  *           }
+ *      },
+ *      "BACKUPPWD"={
+ *          "method"="get",
+ *          "path"="/users/back-up-pwd/{id}",
+ *           "controller"="App\Controller\BackUpPwdController",
+ *           "swagger_context"={
+ *              "summary"="Réinitialiser le mot de passe d'un utilisateur",
+ *              "description"=""
+ *           }
  *      }
  *  }
  * )
@@ -261,5 +270,21 @@ class User implements UserInterface
         $this->status = $status;
 
         return $this;
+    }
+    public function inHolding(User $user){
+        foreach($this->entreprises as $entreprise){
+            if($user->inEntreprise($entreprise)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public function inEntreprise(Entreprise $entreprise)
+    {
+        if ($this->entreprises->contains($entreprise)) {
+            return true;
+        }
+
+        return false;
     }
 }

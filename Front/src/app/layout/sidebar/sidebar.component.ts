@@ -54,7 +54,20 @@ export class SidebarComponent implements OnInit {
     if(roles[0]=="all") return true
     let bool=false
     roles.forEach(element => {
-      if(this.myRole && this.myRole.search(roles)>=0){
+      if(this.myRole && this.myRole.search(element)>=0){
+        bool=true
+      }
+    });
+    return bool
+  }
+  isGrantedSubM(submenu,i){
+    let roles=[]
+     if(submenu && submenu[i] && submenu[i].roles && submenu[i].roles.length>0)roles=submenu[i].roles
+
+    if(roles && (roles[0]=="all"||roles.length==0)) return true
+    let bool=false
+    roles.forEach(element => {
+      if(this.myRole && this.myRole.search(element)>=0){
         bool=true
       }
     });
@@ -71,7 +84,9 @@ export class SidebarComponent implements OnInit {
   }
   changerPP(){
     this.securityServ.updatePP(this.fileToUploadPp).then(
-      rep=>{},
+      rep=>{
+        this.securityServ.getUser()
+      },
       error=>this.imagePP=this.sharedService.baseUrl +"/images/"+this.securityServ.user?.image
     )
   }

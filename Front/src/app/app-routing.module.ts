@@ -68,11 +68,13 @@ const routes: Routes = [
     path: 'maps',canActivate:[AuthGuard],
     loadChildren: () => import('./maps/maps.module').then(m => m.MapsModule)
   },
-
-
   {
     path: 'admin',canActivate:[AuthGuard],
     loadChildren: () => import('./administration/administration.module').then(m => m.AdministrationModule)
+  },
+  {
+    path: '',canActivate:[AuthGuard],
+    loadChildren: () => import('./inventaire/inventaire.module').then(m => m.InventaireModule)
   },
   {
     path: '',

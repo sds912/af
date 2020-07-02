@@ -20,7 +20,8 @@
                     </div>
                 </li>
                 <!-- First level menu -->
-                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem.roles)">
+                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" 
+                    [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem.roles)">
                     <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
                         [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
                         <i [ngClass]="[sidebarItem.icon]"></i>
@@ -29,9 +30,10 @@
                     </a>
                     <!-- Second level menu -->
                     <ul class="ml-menu" *ngIf="sidebarItem.submenu.length > 0">
-                        <li *ngFor="let sidebarSubItem of sidebarItem.submenu"
+                        <li *ngFor="let sidebarSubItem of sidebarItem.submenu;let i=index"
                             [class.activeSub]="showSubMenu === sidebarSubItem.title"
-                            [routerLinkActive]="sidebarSubItem.submenu.length > 0 ? '' : 'active'">
+                            [routerLinkActive]="sidebarSubItem.submenu.length > 0 ? '' : 'active'" 
+                            [hidden]="!isGrantedSubM(sidebarItem.submenu,i)">
                             <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
                                 (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
                                 {{sidebarSubItem.title}}
