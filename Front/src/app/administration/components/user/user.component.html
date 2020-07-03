@@ -129,7 +129,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Prénom et nom</mat-label>
-                                                                <input matInput formControlName="nom" required (change)="nomChange($event.target.value)">
+                                                                <input matInput formControlName="nom" (change)="nomChange($event.target.value)">
                                                                 <mat-icon matSuffix>face</mat-icon>
                                                                 <mat-error
                                                                     *ngIf="editForm.get('nom').hasError('required')">
@@ -151,7 +151,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Login</mat-label>
-                                                                <input matInput formControlName="username" required>
+                                                                <input matInput formControlName="username">
                                                                 <mat-icon matSuffix>assignment_ind</mat-icon>
                                                                 <mat-error *ngIf="editForm.get('nom').hasError('required')">
                                                                     Le login est requis
@@ -175,7 +175,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Autre département</mat-label>
-                                                                 <input matInput formControlName="departement" required>
+                                                                 <input matInput formControlName="departement">
                                                                 <mat-icon matSuffix>phone</mat-icon>
                                                             </mat-form-field>
                                                         </div>

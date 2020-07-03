@@ -56,7 +56,7 @@ export const ROUTES: RouteInfo[] = [
     submenu: [
       {
         path: '/dashboard/main',
-        title: 'Instruction',
+        title: 'Instructions',
         icon: '',
         class: 'ml-menu',
         roles:['all'],

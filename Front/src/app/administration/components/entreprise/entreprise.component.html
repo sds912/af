@@ -127,20 +127,8 @@
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Sigle usuel</mat-label>
-                                                                <input matInput formControlName="sigleUsuel" required>
-                                                                <mat-icon matSuffix>text_format</mat-icon>
-                                                                <mat-error
-                                                                    *ngIf="editForm.get('sigleUsuel').hasError('required')">
-                                                                    La dénomination est requise
-                                                                </mat-error>
-                                                            </mat-form-field>
-                                                        </div>
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-                                                            <mat-form-field class="example-full-width"
-                                                                appearance="outline">
                                                                 <mat-label>Dénomination</mat-label>
-                                                                <input matInput formControlName="denomination" required>
+                                                                <input matInput formControlName="denomination">
                                                                 <mat-icon matSuffix>font_download</mat-icon>
                                                                 <mat-error
                                                                     *ngIf="editForm.get('denomination').hasError('required')">
@@ -148,7 +136,18 @@
                                                                 </mat-error>
                                                             </mat-form-field>
                                                         </div>
-                                                        
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Sigle usuel</mat-label>
+                                                                <input matInput formControlName="sigleUsuel" >
+                                                                <mat-icon matSuffix>text_format</mat-icon>
+                                                                <mat-error
+                                                                    *ngIf="editForm.get('sigleUsuel').hasError('required')">
+                                                                    La dénomination est requise
+                                                                </mat-error>
+                                                            </mat-form-field>
+                                                        </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
@@ -163,7 +162,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Ville</mat-label>
-                                                                <input matInput formControlName="ville" required>
+                                                                <input matInput formControlName="ville">
                                                                 <mat-icon matSuffix>location_city</mat-icon>
                                                             </mat-form-field>
                                                         </div>
@@ -174,7 +173,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Ninea</mat-label>
-                                                                <input matInput formControlName="ninea" required>
+                                                                <input matInput formControlName="ninea">
                                                                 <mat-icon matSuffix>apps</mat-icon>
                                                             </mat-form-field>
                                                         </div>
@@ -182,7 +181,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Adresse</mat-label>
-                                                                <input matInput formControlName="adresse" required>
+                                                                <input matInput formControlName="adresse">
                                                                 <mat-icon matSuffix>room</mat-icon>
                                                             </mat-form-field>
                                                         </div>

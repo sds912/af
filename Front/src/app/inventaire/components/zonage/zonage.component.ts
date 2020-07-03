@@ -29,8 +29,9 @@ export class ZonageComponent implements OnInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
-  fruits: string[] = ['Sous zone 1','Sous zone 2','Sous zone 3','Sous zone 4','Sous zone 5','Sous zone 6','Sous zone 7','Sous zone 8'];
-  tab=['Exemple 1','Exemple 2','Exemple 3','Exemple 4','Exemple 5']
+  fruits: string[] = ['Bureau 1','Bureau 2','Bureau 3','Bureau 4','Bureau 5','Bureau 6','Bureau 8','Bureau 9','Bureau X','Bureau Y','Bureau Z'];
+  tab=['Dakar','Exemple 2','Exemple 3','Exemple 4','Exemple 5']
+  tab2=['Zone industrielle','Zone des Niayes','Zone X','Zone Y','Zone Z']
   anelOpenState = false;
   step = 0;
 
