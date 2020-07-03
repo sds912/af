@@ -75,7 +75,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#passwordModal" data-backdrop="static" data-keyboard="false" (click)="updatePwd()">
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#passwordModal" data-backdrop="static" data-keyboard="false" (click)="updatePwd()" #openPasswordModal>
                                         <mat-icon aria-hidden="false" class="mr-2">vpn_key</mat-icon>Mot de passe
                                     </a>
                                 </li>
@@ -113,7 +113,7 @@
 </nav>
 <!-- Modal Window Password-->
 <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog mt-5" role="document">
         <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onSavePwd(editForm)">
             <div class="modal-header">
                 <div class="editRowModal">
@@ -140,10 +140,8 @@
                                 <input matInput type="text" formControlName="ancien" *ngIf="showPwd" required >
                                 <mat-icon matSuffix  *ngIf="!showPwd" (click)="showPwd=!showPwd" class="pointer">visibility</mat-icon>
                                 <mat-icon matSuffix  *ngIf="showPwd" (click)="showPwd=!showPwd" class="pointer">visibility_off</mat-icon>
-                                <mat-error *ngIf="editForm.get('ancien').hasError('required')">
-                                    L' ancien mot de passse est requise
-                                </mat-error>
-                                
+                                <mat-error *ngIf="editForm.get('ancien').hasError('required')">L' ancien mot de passse est requise</mat-error>
+                                <mat-error *ngIf="editForm.get('ancien').hasError('ancienMdp')">Le mot de passe est invalide</mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -156,9 +154,7 @@
                                 <input matInput type="text" formControlName="password" *ngIf="showPwd2" required >
                                 <mat-icon matSuffix  *ngIf="!showPwd2" (click)="showPwd2=!showPwd2" class="pointer">visibility</mat-icon>
                                 <mat-icon matSuffix  *ngIf="showPwd2" (click)="showPwd2=!showPwd2" class="pointer">visibility_off</mat-icon>
-                                <mat-error *ngIf="editForm.get('password').hasError('required')">
-                                    Le nouveau mot de passse est requise
-                                </mat-error>
+                                <mat-error *ngIf="editForm.get('password').hasError('required')">Le nouveau mot de passse est requise</mat-error>
                                 <mat-error *ngIf="editForm.get('password').hasError('minlength')">Minimum 6 caractères</mat-error>
                             </mat-form-field>
                         </div>
@@ -173,10 +169,9 @@
                                 <mat-icon matSuffix  *ngIf="!showPwd3" (click)="showPwd3=!showPwd3" class="pointer">visibility</mat-icon>
                                 <mat-icon matSuffix  *ngIf="showPwd3" (click)="showPwd3=!showPwd3" class="pointer" class="pointer">visibility_off</mat-icon>
                                 <mat-error *ngIf="editForm.get('confPassword').hasError('required')">La confirmation du mot de passse est requise</mat-error>
-                                <mat-error *ngIf="editForm.get('password').hasError('minlength')">Minimum 6 caractères</mat-error>
-                                <mat-error *ngIf="errorConfPwd">
-                                    Les mots de passe ne concordent pas
-                                </mat-error>
+                                <mat-error *ngIf="editForm.get('confPassword').hasError('minlength')">Minimum 6 caractères</mat-error>
+                                <mat-error *ngIf="errorConfPwd">Les mots de passe ne concordent pas</mat-error>
+                                <mat-error *ngIf="editForm.get('confPassword').hasError('mustMatch')">Les mots de passe ne concordent pas</mat-error>
                             </mat-form-field>
                         </div>
                     </div>

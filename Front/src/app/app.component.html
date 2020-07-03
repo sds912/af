@@ -1,4 +1,4 @@
-<div *ngIf="securityService.showLoadingIndicatior" class="page-loader-wrapper">
+<div *ngIf="securityService.loading||showLoadingIndicatior" class="page-loader-wrapper" style="opacity: 0.5 !important;">
     <app-page-loader></app-page-loader>
 </div>
 <app-header *ngIf="!_router.url.includes('/login')"></app-header>

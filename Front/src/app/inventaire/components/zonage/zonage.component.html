@@ -1,13 +1,9 @@
 <section class="content">
     <div class="container-fluid">
-        
-
-
-
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
-                    <div class="header">
+                    <div class="header" style="border-bottom: 1px solid #00000021;">
                         <h2>Zonages</h2>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
@@ -25,42 +21,44 @@
                     </div>
                     <div class="body">
                         <mat-accordion>
-                            <mat-expansion-panel class="mt-4">
+                            <p class="mb-3 bolder">Pays / Régions</p>
+                            <mat-expansion-panel class="mt-4" *ngFor="let r of tab">
                                 <mat-expansion-panel-header style="background-color: #d8d5d5;">
                                     <mat-panel-title>
-                                        Sénégal
+                                        {{r}}
                                     </mat-panel-title>
                                     <mat-panel-description></mat-panel-description>
                                 </mat-expansion-panel-header>
-                                    
-                                    <mat-expansion-panel class="mt-4">
+                                    <p class="mt-4 mb-3 bolder">Zones / Sites</p>
+                                    <mat-expansion-panel class="mb-4" *ngFor="let z of tab">
                                         <mat-expansion-panel-header style="background-color: #eab9b9;">
                                             <mat-panel-title>
-                                                Dakar
+                                                {{z}}
                                             </mat-panel-title>
                                             <mat-panel-description></mat-panel-description>
+                                            
                                         </mat-expansion-panel-header>
-
+                                        
                                         <div class="row">
-                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                                    <div class="card">
-                                                        <div class="body">
-                                                            <mat-form-field class="example-chip-list example-full-width">
-                                                                <mat-chip-list #chipList aria-label="Fruit selection">
-                                                                    <mat-chip *ngFor="let fruit of fruits" [selectable]="selectable" [removable]="removable"
-                                                                        (removed)="remove(fruit)">
-                                                                        {{fruit}}
-                                                                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                                                                    </mat-chip>
-                                                                    <input placeholder="Sous zone" #fruitInput [formControl]="fruitCtrl"
-                                                                        [matChipInputFor]="chipList"
-                                                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                                                        (matChipInputTokenEnd)="add($event)">
-                                                                </mat-chip-list>
-                                                            </mat-form-field>
-                                                        </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="card">
+                                                    <div class="body">
+                                                        <mat-form-field class="example-chip-list example-full-width">
+                                                            <mat-chip-list #chipList aria-label="Fruit selection">
+                                                                <mat-chip *ngFor="let fruit of fruits" [selectable]="selectable" [removable]="removable"
+                                                                    (removed)="remove(fruit)">
+                                                                    {{fruit}}
+                                                                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                                                </mat-chip>
+                                                                <input placeholder="Sous zone" #fruitInput [formControl]="fruitCtrl"
+                                                                    [matChipInputFor]="chipList"
+                                                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                                    (matChipInputTokenEnd)="add($event)">
+                                                            </mat-chip-list>
+                                                        </mat-form-field>
                                                     </div>
                                                 </div>
+                                            </div>
                                         </div>
                                         
                                     </mat-expansion-panel>

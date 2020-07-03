@@ -29,13 +29,10 @@ export class ZonageComponent implements OnInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
-  fruits: string[] = ['Lemon'];
-  
-
+  fruits: string[] = ['Sous zone 1','Sous zone 2','Sous zone 3','Sous zone 4','Sous zone 5','Sous zone 6','Sous zone 7','Sous zone 8'];
+  tab=['Exemple 1','Exemple 2','Exemple 3','Exemple 4','Exemple 5']
   anelOpenState = false;
   step = 0;
-
-  
 
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   //@ViewChild('auto', { static: true }) matAutocomplete: MatAutocomplete;

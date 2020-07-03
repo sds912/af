@@ -77,15 +77,14 @@
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
-                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
+                                                <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
-                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" title="Réinitialiser le mot de passe de l'utilisateur" (click)='backupPwd(row)'>
+                                                <button class="btn tblActnBtn pointer h-auto text-primary" title="Réinitialiser le mot de passe de l'utilisateur" (click)='backupPwd(row)'>
                                                     <i class="material-icons">refresh</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto" [ngClass]="{'text-success': row.status=='actif','text-danger': row.status=='bloque'}" title="Bloquer/Débloquer un utilisateur" (click)='lockRow(row)'>

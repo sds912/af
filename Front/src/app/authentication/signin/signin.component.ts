@@ -63,10 +63,14 @@ export class SigninComponent implements OnInit {
     }
   }
   login(){
+    this.securityServ.showLoadingIndicatior.next(true)
     this.textError=""
     this.securityServ.login(this.loginForm.value)
     .then(
-      ()=>this.router.navigate(['/dashboard/main']),
+      ()=>{
+        this.router.navigate(['/dashboard/main'])
+        this.securityServ.showLoadingIndicatior.next(false)
+      },
       message=>{
         console.log(message)
         if(message.error && message.error.code && message.error.code==401)//celui la code
@@ -74,6 +78,7 @@ export class SigninComponent implements OnInit {
         else if(message.error && message.error.status && message.error.status==403){//celui la status revoir le back
           this.textError="Ce compte est bloqué, veuillez contacter l'administrateur !"
         }
+        this.securityServ.showLoadingIndicatior.next(false)
       }
     )
   }

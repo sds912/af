@@ -38,7 +38,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Sigle usuel" sortable="false" prop="sigleUsuel" [width]="130">
+                                    <ngx-datatable-column name="Sigle usuel" sortable="false" prop="sigleUsuel" [width]="80">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
                                                 {{longText(value,20)}}
@@ -75,11 +75,11 @@
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
-                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <button class="btn tblActnBtn pointer h-auto" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='update(row)'>
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
@@ -118,8 +118,9 @@
                                                     <div class="row">
                                                         <div class="col-xl-4 col-lg-4"></div>
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4" *ngIf="selectedRowData?.image||image">
-                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer"(click)="pp.click()">
-                                                            <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer">
+                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" (click)="pp.click()" [hidden]="details">
+                                                            <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" [hidden]="details">
+                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" class="img-pp img-circle user-img-circle" [hidden]="!details">
                                                         </div>
                                                     </div>
                                                     <div class="row">

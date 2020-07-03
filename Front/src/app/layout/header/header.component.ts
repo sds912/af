@@ -24,6 +24,7 @@ const document: any = window.document;
 export class HeaderComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
+  @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
   isNavbarShow: boolean;
   imagePP=""
@@ -45,7 +46,8 @@ export class HeaderComponent implements OnInit {
     public securityServ:SecurityService,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar
-  ) {
+    ){
+      
   }
 
   notifications: Object[] = [
@@ -110,18 +112,37 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.setStartupStyles();
     this.initForm()
+    setTimeout(()=>{
+        if(!this.securityServ.securePwd)this.openPasswordModal.nativeElement.click()
+    },1000);
   }
   initForm(){
     this.editForm = this.fb.group({
       ancien: ['', [Validators.required]],
       password: ['', [Validators.required,Validators.minLength(6)]],
       confPassword: ['', [Validators.required,Validators.minLength(6)]]
+    },
+    {
+      validator: this.mustMatch('password', 'confPassword')
     });
   }
-  
-  
-  private customValidator(control,form) {//ne marche pas revoir
-    return {isEqual: control.value === this.editForm.controls['password'].value};
+  mustMatch(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+        const control = formGroup.controls[controlName];
+        const matchingControl = formGroup.controls[matchingControlName];
+
+        if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+            // return if another validator has already found an error on the matchingControl
+            return;
+        }
+
+        // set error on matchingControl if validation fails
+        if (control.value !== matchingControl.value) {
+            setTimeout(()=>matchingControl.setErrors({ mustMatch: true }),1)//pour eviter l erreur: Expression has changed after it was checked
+        } else {
+            matchingControl.setErrors(null);
+        }
+    }
   }
   updateInfos(){
     this.updateInfo=true
@@ -144,37 +165,36 @@ export class HeaderComponent implements OnInit {
     let data=form.value
     this.errorConfPwd=false
     this.errorPwd=false
-    
-    if(data.password==data.confPassword){
-      this.securityServ.changePwd(data).then(
-        rep=>{
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.securityServ.changePwd(data).then(
+      rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Mot de passe modifié','bottom','center')
         this.closePasswordModal.nativeElement.click();
       },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
         this.errorPwd=true
+        form.controls["ancien"].setErrors({ ancienMdp: true })
         this.showNotification('bg-red',message,'bottom','right')
       }
-      )
-    }
-    else{console.log(data)
-      this.errorConfPwd=true
-      this.showNotification('bg-red',"Les mots de passe ne concordent pas",'bottom','right')
-    }
-    
+    )    
   }
   onSaveInfo(form: FormGroup){
     let data=form.value
+    this.securityServ.showLoadingIndicatior.next(true)
     this.securityServ.changeInfo(data).then(
       rep=>{
-      this.showNotification('bg-success',rep.message,'bottom','center')
-      this.securityServ.user.nom=data.nom
-      this.securityServ.user.poste=data.poste
-      this.closeInfoModal.nativeElement.click();
-    },message=>{
-      console.log(message)
-      this.showNotification('bg-red',message,'bottom','right')
-    }
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-success',rep.message,'bottom','center')
+        this.securityServ.user.nom=data.nom
+        this.securityServ.user.poste=data.poste
+        this.closeInfoModal.nativeElement.click();
+      },message=>{
+        console.log(message)
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'bottom','right')
+      }
     ) 
   }
 

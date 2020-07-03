@@ -11,6 +11,10 @@ use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
+
+
 /**
 * @Route("/api")
 */
@@ -101,6 +105,26 @@ class SharedController extends AbstractController
          ];
          return $this->json($afficher);
      }
+
+    /**
+    * @Route("/info", methods={"GET"})
+    */
+    public function userConnecte(SerializerInterface $serializer,UserPasswordEncoderInterface $encodePassword){
+        //,MercureCookieGenerator $cookieGenerator
+        $user = $this->userCo;
+        //$mercureToken=$cookieGenerator->generate($user);
+        $updatePwd=0;
+        if($encodePassword->isPasswordValid($user, Shared::DEFAULTPWD)){
+            $updatePwd=1;
+        }
+        $data = $serializer->serialize([$user,'$mercureToken',$updatePwd], 'json', ['groups' => ['user_read']]);
+        return new Response($data,200);
+    }
+
+
+
+
+
      /**
     * @Route("/password", methods={"POST"})
     */

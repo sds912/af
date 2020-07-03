@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
+import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
 @Component({
   selector: 'app-entreprise',
@@ -34,7 +35,11 @@ export class EntrepriseComponent implements OnInit {
   fileToUploadPp:File=null;
   defaultImag="exemple2.png"
   details=false
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar,private adminServ:AdminService,private sharedService:SharedService) {
+  constructor(private fb: FormBuilder, 
+              private _snackBar: MatSnackBar,
+              private adminServ:AdminService,
+              private sharedService:SharedService,
+              private securityServ:SecurityService) {
     this.editForm = this.fb.group({
       id: [0],
       image: [''],
@@ -49,19 +54,24 @@ export class EntrepriseComponent implements OnInit {
     this.newUserImg = this.imgLink+this.defaultImag;
   }
   ngOnInit() {
+    this.securityServ.showLoadingIndicatior.next(true)
     this.getEntreprise()
   }
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
         console.log(rep)
+        this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0)e=rep.reverse()
         this.data = e;
         this.filteredData = rep;
         this.show=true
       },
-      error=>console.log(error)
+      error=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
     )
   }
   handleFileInputPP(file:FileList){
@@ -102,14 +112,17 @@ export class EntrepriseComponent implements OnInit {
     this.editRow(entreprise)
   }
   onEditSave(form: FormGroup) {
+    this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
     data.image=this.fileToUploadPp
     this.adminServ.addEntreprise(data).then(
       rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','bottom','center')
         this.closeEditModal.nativeElement.click();
         this.getEntreprise()
       },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
         this.showNotification('bg-red',message,'bottom','right')
       }

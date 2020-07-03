@@ -38,6 +38,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *              "summary"="Réinitialiser le mot de passe d'un utilisateur",
  *              "description"=""
  *           }
+ *      },
+ *      "UPDPWD"={
+ *          "method"="put",
+ *          "path"="/users/password/{id}",
+ *           "swagger_context"={
+ *              "summary"="Modifier son mot de passe",
+ *              "description"=""
+ *           }
  *      }
  *  }
  * )

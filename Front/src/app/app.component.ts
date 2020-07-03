@@ -22,7 +22,7 @@ export class AppComponent {
   constructor(public _router: Router, location: PlatformLocation,public securityService: SecurityService,public router:Router) {
     this._router.events.subscribe((routerEvent: Event) => {
       if (routerEvent instanceof NavigationStart) {
-        this.securityService.showLoadingIndicatior = true;
+        this.showLoadingIndicatior = true;
         location.onPopState(() => {
           window.location.reload();
         });
@@ -31,7 +31,7 @@ export class AppComponent {
         );
       }
       if (routerEvent instanceof NavigationEnd) {
-        this.securityService.showLoadingIndicatior = false;
+        this.showLoadingIndicatior = false;
       }
       window.scrollTo(0, 0);
     });

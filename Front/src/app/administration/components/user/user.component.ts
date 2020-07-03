@@ -63,6 +63,7 @@ export class UserComponent implements OnInit {
     this.newUserImg = this.imgLink+this.defaultImag;
   }
   ngOnInit() {//si on recup les entreprise des users ne pas oublier de recup le getUser()
+    this.securityServ.showLoadingIndicatior.next(true)
     this.myId=localStorage.getItem('idUser')
     this.getUsers()
     this.securityServ.getUser()
@@ -79,8 +80,12 @@ export class UserComponent implements OnInit {
         this.data = users;
         this.filteredData = users;
         this.show=true
+        this.securityServ.showLoadingIndicatior.next(false)
       },
-      error=>console.log(error)
+      error=>{
+        console.log(error)
+        this.securityServ.showLoadingIndicatior.next(false)
+      }
     )
   }
   addEntreprise(valeur='') {
@@ -133,14 +138,19 @@ export class UserComponent implements OnInit {
     this.selectedRowData = row;
   }
   lockRow(user){
+    this.securityServ.showLoadingIndicatior.next(true)
     let mot="débloqué"
     if(user.status=="actif")mot="bloqué"
     this.adminServ.lockUser(user.id).then(
       rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Utilisateur '+mot,'bottom','center')
         this.getUsers()
       },
-      message=>this.showNotification('bg-red',message,'bottom','right')
+      message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'bottom','right')
+      }
     )
   }
   longText(text,limit){
@@ -172,6 +182,7 @@ export class UserComponent implements OnInit {
     this.editRow(row,true)
   }
   onEditSave(form: FormGroup) {
+    this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
     let e=[]
     this.tabEse.value.forEach(id =>{
@@ -183,11 +194,13 @@ export class UserComponent implements OnInit {
     console.log(data)
     this.adminServ.addUser(data).then(
       rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','bottom','center')
         this.closeEditModal.nativeElement.click();
         this.getUsers()
       },message=>{
         console.log(message)
+        this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-red',message,'bottom','right')
       }
     )
@@ -265,12 +278,17 @@ export class UserComponent implements OnInit {
       cancelButtonText: 'Non'
     }).then(result => {
       if (result.value) {
+        this.securityServ.showLoadingIndicatior.next(true)
         this.adminServ.backupPWD(user.id).then(
           rep=>{
+            this.securityServ.showLoadingIndicatior.next(false)
             this.showNotification('bg-success',"Mot de passe réinitialisé",'bottom','center')
             this.getUsers()
           },
-          message=>this.showNotification('bg-red',message,'bottom','right')
+          message=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.showNotification('bg-red',message,'bottom','right')
+          }
         )
       }
     });

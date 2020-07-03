@@ -22,7 +22,7 @@ class EntrepriseSubscriber implements EventSubscriberInterface{
             KernelEvents::VIEW=>['addUser',EventPriorities::PRE_WRITE]
         ];
     }
-    public function addUser(ViewEvent $event){
+    public function addUser(ViewEvent $event){//fait dans SharedController
         // $entreprise=$event->getControllerResult();
         // $method=$event->getRequest()->getMethod();
         // if($entreprise instanceof Entreprise && $method=="POST"){

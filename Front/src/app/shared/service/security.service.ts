@@ -3,11 +3,18 @@ import { SharedService } from './shared.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class SecurityService {
-  constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) { }
+  loading=false
+  showLoadingIndicatior: Subject<boolean> = new Subject<boolean>();
+  constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) {
+    this.showLoadingIndicatior.subscribe((value) => {
+      setTimeout(()=>this.loading = value,1)//pour eviter l erreur: Expression has changed after it was checked
+    })
+   }
   sharedService=this.injector.get(SharedService)
   urlBack=this.sharedService.urlBack
   user:any;
@@ -16,8 +23,9 @@ export class SecurityService {
   SupAdmin=false
   admin=false
   superviseur=false
-  fonction
-  showLoadingIndicatior=true
+  fonction=""
+  securePwd=true
+  
   jwtHelper = new JwtHelperService;
   login(data:any){
     return new Promise(
@@ -93,8 +101,12 @@ export class SecurityService {
     return this.sharedService.postElement(formData,"/update/pp")
   }
   getUser(){
-    return this.sharedService.getElement("/users/"+this.user.id).then(rep=>{
-      this.user=rep
+    this.securePwd=true
+    return this.sharedService.getElement("/info").then(rep=>{
+      this.user=rep[0]
+      if(rep[2]==1){
+        this.securePwd=false
+      }
       console.log(rep)
     })
   }
