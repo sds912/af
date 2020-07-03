@@ -84,10 +84,11 @@ export class SecurityService {
     }
   }
   changePwd(data){
-    return this.sharedService.postElement(data,"/password")
+    //return this.sharedService.postElement(data,"/password")
+    return this.sharedService.putElement(data,"/users/password/"+this.user.id)
   }
   changeInfo(data){
-    return this.sharedService.postElement(data,"/info")
+    return this.sharedService.putElement(data,"/users/info/"+this.user.id)
   }
   activKey(data){
     return this.sharedService.postElement(data,"/activeKey")

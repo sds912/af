@@ -155,14 +155,18 @@ export class HeaderComponent implements OnInit {
       poste: [user.poste, [Validators.required]]
     });
   }
-  
   updatePwd(){
     this.errorConfPwd=false
     this.errorPwd=false
     this.initForm()
   }
   onSavePwd(form: FormGroup){
-    let data=form.value
+    let d=form.value
+    let data={
+      ancien:d.ancien,
+      newPassword:d.password,//car si on met nouveau api plat form le modifie directement
+      confPassword:d.confPassword
+    }
     this.errorConfPwd=false
     this.errorPwd=false
     this.securityServ.showLoadingIndicatior.next(true)
@@ -186,7 +190,7 @@ export class HeaderComponent implements OnInit {
     this.securityServ.changeInfo(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success',rep.message,'bottom','center')
+        this.showNotification('bg-success',"Enregistrer",'bottom','center')
         this.securityServ.user.nom=data.nom
         this.securityServ.user.poste=data.poste
         this.closeInfoModal.nativeElement.click();

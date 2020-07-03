@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 
 /**
@@ -28,11 +29,13 @@ class SharedController extends AbstractController
 
     /** @var EntityManagerInterface */
     private $repoEse;
-    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse)
+
+    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
         $this->repoEse=$repoEse;
+        $this->droit=$checker;
     }
     /**
     * @Route("/entreprises", methods={"POST"})
@@ -45,6 +48,7 @@ class SharedController extends AbstractController
         if($id){
             $entreprise=$this->repoEse->find($id);//l injection de dependances ne marchait pas
             $tatus=200;
+            $this->inEntreprise($entreprise);
         }
         $entreprise->addUser($this->userCo);
         $entreprise->setDenomination($data['denomination'])
@@ -120,44 +124,14 @@ class SharedController extends AbstractController
         $data = $serializer->serialize([$user,'$mercureToken',$updatePwd], 'json', ['groups' => ['user_read']]);
         return new Response($data,200);
     }
-
-
-
-
-
-     /**
-    * @Route("/password", methods={"POST"})
-    */
-    public function updatePWD(Request $request,UserPasswordEncoderInterface $encodePassword){//voir comment le deplacer avec api plateform
-        $userCo=$this->getUser();
-        $data=Shared::getData($request);
-        $mdp=$data["ancien"];
-        if(!$encodePassword->isPasswordValid($userCo, $mdp)){
-            throw new HttpException(403,"Le mot de passe est invalide");
+    public function sameEntité($user){
+        if(!$this->userCo->inHolding($user) && !$this->droit->isGranted('ROLE_SuperAdmin')){
+            throw new HttpException(403,"Vous n'êtes pas dans la même entité que cet utilisateur !");
         }
-        if($data["password"]!=$data["confPassword"]){
-            throw new HttpException(403,"Les mots de passe ne correspondent pas");
-        }
-        $userCo->setPassword($encodePassword->encodePassword($userCo, $data["password"]));
-        $this->manager->flush();
-        $afficher = [
-            Shared::STATUS => 201,
-            Shared::MESSAGE => "Mot de passe modifié avec succès"
-        ];
-        return $this->json($afficher);
     }
-    /**
-    * @Route("/info", methods={"POST"})
-    */
-    public function updateInfo(Request $request,EntityManagerInterface $manager){
-        $me=$this->getUser();
-        $data=Shared::getData($request);
-        $me->setNom($data['nom'])->setPoste($data['poste']);
-        $manager->flush();
-        $afficher = [
-            Shared::STATUS => 200,
-            Shared::MESSAGE => 'Informations modifiées'
-        ];
-        return $this->json($afficher);
+    public function inEntreprise($e){
+        if(!$this->userCo->inEntreprise($e) && !$this->droit->isGranted('ROLE_SuperAdmin')){
+            throw new HttpException(403,"Vous n'êtes pas dans cette entité !");
+        }
     }
 }

@@ -46,6 +46,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *              "summary"="Modifier son mot de passe",
  *              "description"=""
  *           }
+ *      },
+ *      "INFO"={
+ *          "method"="put",
+ *          "path"="/users/info/{id}",
+ *           "swagger_context"={
+ *              "summary"="Modifier ses informations personnelles",
+ *              "description"=""
+ *           }
  *      }
  *  }
  * )

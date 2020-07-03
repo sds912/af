@@ -11,40 +11,45 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Security;
 use App\Utils\Shared;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Doctrine\ORM\EntityManagerInterface;
+
 //pour gener les evenements du coeur de symfony (kernel)
 class UpdatePwdSubscriber implements EventSubscriberInterface{
 
     private $userCo;
-    public function __construct(Security $security)
+    private $encoder;
+    public function __construct(UserPasswordEncoderInterface $encoder,Security $security,EntityManagerInterface $manager)
     {
+        $this->encoder=$encoder;
         $this->userCo=$security->getUser();
+        $this->manager=$manager;
     }
     public static function getSubscribedEvents()
     {
         return [
-            //On utilise la fonction encodePassword avant d ecrire dans la base de donnée d ou PRE_WRITE
-            KernelEvents::VIEW=>['updatePassword',EventPriorities::PRE_VALIDATE]// si ca doit etre fait avant la validation utiliser: EventPriorities::PRE_VALIDATE voir video 77 lior api plat
+            KernelEvents::VIEW=>['updatePassword',EventPriorities::PRE_VALIDATE]
         ];
     }
-    public function updatePassword(ViewEvent $event){//on peut changer le user par une autre classe et mettre l algo du traitement à faire juste avant que l on ecrive dans la base de donnée
-        
-        //à terminer
-        $user=$event->getControllerResult();//on option le resultat du controller de api plateform
+    public function updatePassword(ViewEvent $event){
+        $user=$event->getControllerResult();
         $request=$event->getRequest();
         $method=$request->getMethod();
         $route=$request->attributes->get('_route');
         $data=json_decode($request->getContent(),true);
-        //dd($data); à terminer
-        if($user instanceof User && $method=="POST" && $route=="api_users_UPDPWD_item"){
+        if($user instanceof User && $method=="PUT" && $route=="api_users_UPDPWD_item"){
+            $this->isMe($user);
             $data=json_decode($request->getContent(),true);
             $mdp=$data["ancien"];
-            if(!$encodePassword->isPasswordValid($userCo, $mdp)){
+            if(!$this->encoder->isPasswordValid($this->userCo, $mdp)){
                 throw new HttpException(403,"Le mot de passe est invalide");
             }
-            if($data["password"]!=$data["confPassword"]){
+            if($data["newPassword"]!=$data["confPassword"]){
                 throw new HttpException(403,"Les mots de passe ne correspondent pas");
             }
-            $userCo->setPassword($encodePassword->encodePassword($userCo, $data["password"]));
+            $hash=$this->encoder->encodePassword($user, $data["newPassword"]);
+            $user->setPassword($hash);
+            $this->manager->flush();
         }
     }
     public function isMe(User $user){
