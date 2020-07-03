@@ -34,7 +34,8 @@ export class SecurityService {
         .post<any>(this.urlBack+"/login",data)
         .subscribe(
           (rep)=>{
-            this.traitementLogin(rep.token);
+            console.log(rep)
+            this.traitementLogin(rep.token,rep.refresh_token);
             resolve();
           },
           (error)=>{
@@ -43,10 +44,11 @@ export class SecurityService {
         );
       })
   }
-  traitementLogin(token:any){
+  traitementLogin(token:any,refresh){
     this.isAuth=true;
     this.token=token;
     localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refresh);
     const tokenDeco=this.jwtHelper.decodeToken(token);
     localStorage.setItem('username', tokenDeco.username);
     localStorage.setItem('roles', tokenDeco.roles);
@@ -80,7 +82,9 @@ export class SecurityService {
   load(){
     if(localStorage.getItem('token')){
       let token=localStorage.getItem('token');
-      this.traitementLogin(token);
+      let refresh=localStorage.getItem('refreshToken')
+      this.traitementLogin(token,refresh);
+      //this.refreshToken()
     }
   }
   changePwd(data){
@@ -108,6 +112,15 @@ export class SecurityService {
       if(rep[2]==1){
         this.securePwd=false
       }
+      console.log(rep)
+    })
+  }
+  refreshToken(){
+    let rt=""
+    if(localStorage.getItem('refreshToken'))rt=localStorage.getItem('refreshToken')
+    const data={refresh_token:rt}
+    this.sharedService.postElement(data,"/token/refresh").then(rep=>{
+      rep
       console.log(rep)
     })
   }
