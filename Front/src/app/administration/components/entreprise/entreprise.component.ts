@@ -107,6 +107,7 @@ export class EntrepriseComponent implements OnInit {
     this.editRow(row, true)
   }
   addRow() {
+    this.image=""
     this.details=false
     let entreprise:Entreprise={id:0,denomination:'',sigleUsuel:'',republique:'',ville:'',ninea:'',adresse:'',image:this.defaultImag}
     this.editRow(entreprise)

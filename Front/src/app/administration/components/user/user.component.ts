@@ -171,15 +171,23 @@ export class UserComponent implements OnInit {
   showDetails(row){
     console.log(row)
     this.autreDep=false
-    var n = this.dep.includes(row.departement);
+    this.tabEse=new FormArray([]);
+    row.entreprises.forEach(e =>  this.addEntreprise(e.id));
+
+    var n = this.dep.includes(row.departement);//si son departement est dans la liste
     if(n)
       this.firstDep=row.departement
     else {
-      this.firstDep=this.dep[this.dep.length-1]
+      this.firstDep=this.dep[this.dep.length-1]//autre dep
       this.autreDep=true
     }
     this.details=true
     this.editRow(row,true)
+  }
+  getDenomination(id){
+    let denomination=""
+    if (this.entreprises && this.entreprises.length>0 && id)denomination=this.entreprises.find(e=>e.id==id).denomination
+    return denomination
   }
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)

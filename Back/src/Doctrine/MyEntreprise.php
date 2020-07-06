@@ -35,10 +35,10 @@ class MyEntreprise implements QueryCollectionExtensionInterface,QueryItemExtensi
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])
     {//de l interface QueryItemExtensionInterface
         if($resourceClass===Entreprise::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
-            // $e=$queryBuilder->getOneOrNullResult(); //revoir car cette methode ne marche pas
-            // if( $e && !$this->userCo->inEntreprise($e)){
-            //     throw new HttpException(403,"Vous n'êtes pas dans cette entité !");
-            // }
+            // $rootAlias=$queryBuilder->getRootAliases()[0];/
+            // $queryBuilder->join("$rootAlias.users",'user')
+            // ->andWhere('user = :user')
+            // ->setParameter('user', $this->userCo);//comme dans un query buider
         }
     }
 }

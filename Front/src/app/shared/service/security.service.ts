@@ -52,7 +52,7 @@ export class SecurityService {
     const tokenDeco=this.jwtHelper.decodeToken(token);
     localStorage.setItem('username', tokenDeco.username);
     localStorage.setItem('roles', tokenDeco.roles);
-    localStorage.setItem('idUser', tokenDeco.id);
+    
     this.user={id:tokenDeco.id}
     this.getUser()
     this.setRole();
@@ -109,18 +109,22 @@ export class SecurityService {
     this.securePwd=true
     return this.sharedService.getElement("/info").then(rep=>{
       this.user=rep[0]
+      localStorage.setItem('idUser',this.user.id);
       if(rep[2]==1){
         this.securePwd=false
       }
-      console.log(rep)
+      //console.log(rep)
     })
   }
   refreshToken(){
     let rt=""
     if(localStorage.getItem('refreshToken'))rt=localStorage.getItem('refreshToken')
     const data={refresh_token:rt}
+    console.log(data)
     this.sharedService.postElement(data,"/token/refresh").then(rep=>{
-      rep
+      this.token=rep.token;
+      localStorage.setItem('token', rep.token);
+      localStorage.setItem('refreshToken', rep.refresh);
       console.log(rep)
     })
   }

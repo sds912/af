@@ -171,6 +171,24 @@ export class SharedService {
         );
     })
   }
+  deleteElement(url:string){
+    return new Promise<any>(
+      (resolve,reject)=>{
+      this.httpClient
+        .delete<any>(this.urlBack+url).subscribe(
+          rep=>{
+            resolve(rep);
+          },
+          error=>{
+            console.log(error);
+            console.log(error.error);
+            if(error.error.status==404)
+              this.router.navigate(["/404"])
+            reject(error.error.message);
+          }
+        );
+      })
+  }
   errerForm(rep:any){
     var err='';
     for(var i=0;i<rep.length;i++){

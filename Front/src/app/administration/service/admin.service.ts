@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Entreprise } from '../model/entreprise';
 import { SharedService } from 'src/app/shared/service/shared.service';
-import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })

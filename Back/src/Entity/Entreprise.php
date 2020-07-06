@@ -10,7 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *    normalizationContext={
+ *      "groups"={"entreprise_read"}
+ *  }
+ * )
  * @ORM\Entity(repositoryClass=EntrepriseRepository::class)
  */
 class Entreprise
@@ -19,53 +23,61 @@ class Entreprise
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read"})
+     * @Groups({"user_read","entreprise_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read"})
+     * @Groups({"user_read","entreprise_read"})
      */
     private $denomination;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $ninea;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $adresse;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $republique;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $ville;
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="entreprise")
+     * @Groups({"entreprise_read"})
      */
     private $localites;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
+     * @Groups({"entreprise_read"})
      */
     private $users;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"entreprise_read"})
      */
     private $sigleUsuel;
 

@@ -71,7 +71,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: '/zonage',
-        title: 'Zonage',
+        title: 'Localités',
         icon: '',
         class: 'ml-menu',
         submenu: []

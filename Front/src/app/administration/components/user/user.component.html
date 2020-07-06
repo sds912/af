@@ -195,13 +195,14 @@
                                                     <div class="row" *ngFor="let control of tabEse.controls; index as i" [hidden]="entreprises && entreprises.length<2">
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                                                             <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
-                                                                <mat-label>Entité</mat-label>
-                                                                <mat-select [formControl]="control">
+                                                                <mat-label>Entité {{i+1}}</mat-label>
+                                                                <input matInput [value]="getDenomination(control.value)" *ngIf="details" disabled>
+                                                                <mat-select [formControl]="control" *ngIf="!details">
                                                                     <mat-option value="" *ngIf="i>0"></mat-option>
                                                                     <mat-option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</mat-option>
                                                                 </mat-select>
                                                             </mat-form-field>
-                                                             <mat-icon matSuffix [hidden]="i!=(tabEse.controls.length-1) || !control.value" (click)="addEntreprise()" class="pointer">add_circle_outline</mat-icon>
+                                                             <mat-icon matSuffix [hidden]="i!=(tabEse.controls.length-1) || !control.value||details" (click)="addEntreprise()" class="pointer">add_circle_outline</mat-icon>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer" [hidden]="details">
