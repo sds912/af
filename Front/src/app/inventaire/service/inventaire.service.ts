@@ -34,4 +34,10 @@ export class InventaireService {
   deleteSousZone(id){
     return this.sharedService.deleteElement("/sous_zones/"+id)
   }
+  deleteLoc(id){
+    return this.sharedService.deleteElement("/localites/"+id)
+  }
+  deleteZone(id){
+    return this.sharedService.deleteElement("/zones/"+id)
+  }
 }

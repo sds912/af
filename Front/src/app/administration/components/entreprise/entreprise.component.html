@@ -17,7 +17,7 @@
                                             <input placeholder="Recherche" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
                                         </li>
                                     </ul>
-                                    <ul class="header-buttons m-r-20">
+                                    <ul class="header-buttons m-r-20" *ngIf="securityServ.admin">
                                         <li>
                                             <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"

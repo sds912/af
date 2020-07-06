@@ -28,10 +28,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressButtonsModule } from 'mat-progress-buttons';
+import { EquipeComponent } from './components/equipe/equipe.component';
 
 
 @NgModule({
-  declarations: [ZonageComponent],
+  declarations: [ZonageComponent, EquipeComponent],
   imports: [
     CommonModule,
     InventaireRoutingModule,

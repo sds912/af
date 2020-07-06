@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild, OnInit  } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Observable } from 'rxjs';
@@ -34,10 +33,8 @@ export class ZonageComponent implements OnInit {
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
   fruits: string[] = ['Bureau 1','Bureau 2','Bureau 3','Bureau 4','Bureau 5','Bureau 6','Bureau 8','Bureau 9','Bureau X','Bureau Y','Bureau Z'];
-  tab=['Dakar','Exemple 2','Exemple 3','Exemple 4','Exemple 5']
-  tab2=['Zone industrielle','Zone des Niayes','Zone X','Zone Y','Zone Z']
   anelOpenState = false;
-  step = 0;
+  step = 2;
   entreprises=[]
   idCurrentEse=0
   idCurrentLocal=0
@@ -51,7 +48,6 @@ export class ZonageComponent implements OnInit {
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeZoneModal', { static: false }) closeZoneModal;
   @ViewChild('closeSousZoneModal', { static: false }) closeSousZoneModal;
-  //@ViewChild('auto', { static: true }) matAutocomplete: MatAutocomplete;
 
   constructor(private adminServ:AdminService,
               private inventaireServ:InventaireService,
@@ -93,7 +89,6 @@ export class ZonageComponent implements OnInit {
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
-        console.log(rep)
         //this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0){
@@ -109,10 +104,21 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
+  getOneEntreprise(){
+    this.adminServ.getOneEntreprise(this.idCurrentEse).then(
+      rep=>{
+        console.log(rep)
+        this.localites=rep.localites
+      },
+      error=>{
+        //this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
+  }
   pickLocalite(localite){
     this.idCurrentLocal=localite.id
     this.currentLocal=localite
-    console.log(localite)
   }
   getSousZone(zone){
     let tab=[]
@@ -128,11 +134,10 @@ export class ZonageComponent implements OnInit {
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addLocalite(data).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         this.closeLocaliteModal.nativeElement.click();
-        this.localites=this.localites.filter(l=>l.id!=data.id)//si add data.id=0
-        this.localites.push(rep)
+        if(data.id==0)this.localites.push(rep)//add
+        else this.getOneEntreprise()//update
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -140,16 +145,67 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
+  deleteLoc(localite){
+     Swal.fire({
+      title: 'Confirmation',
+      text: "Voulez-vous confirmer la suppression de cette localité ?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then(result => {
+      if (result.value) {
+        this.securityServ.showLoadingIndicatior.next(true)
+        this.inventaireServ.deleteLoc(localite.id).then(
+          rep=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.getOneEntreprise()
+          },
+          error=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            console.log(error)
+          }
+        )
+      }
+    });
+  }
+  deleteZone(zone){
+     Swal.fire({
+      title: 'Confirmation',
+      text: "Voulez-vous confirmer la suppression de cette zone ?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then(result => {
+      if (result.value) {
+        this.securityServ.showLoadingIndicatior.next(true)
+        this.inventaireServ.deleteZone(zone.id).then(
+          rep=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.getOneEntreprise()
+          },
+          error=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            console.log(error)
+          }
+        )
+      }
+    });
+  }
   addZone(form: FormGroup){
     let data=form.value
     data.localite="/api/localites/"+ this.currentLocal.id
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addZone(data).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         this.closeZoneModal.nativeElement.click();
-        this.getEntreprise()
+        this.getOneEntreprise()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -165,14 +221,12 @@ export class ZonageComponent implements OnInit {
   updateSZ(form: FormGroup){
     let data=form.value
     data.zone="/api/zones/"+this.idCurrentZ
-    console.log(data)
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addSousZone(data).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         this.closeSousZoneModal.nativeElement.click();
-        this.getEntreprise()
+        this.getOneEntreprise()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -194,13 +248,13 @@ export class ZonageComponent implements OnInit {
      }
   }
   addSousZone(value,zone){
-    let data={ nom:value, zone:"/api/zones/"+zone.id }
+    this.idCurrentZ=zone.id
+    let data={ nom:value, zone:"/api/zones/"+this.idCurrentZ }
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addSousZone(data).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
-        this.getEntreprise()
+        this.getOneEntreprise()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -237,6 +291,7 @@ export class ZonageComponent implements OnInit {
 
   remove(zone,sousZoneName: string): void {
     const sousZone=zone.sousZones.find(sz=>sz.nom==sousZoneName)
+    this.idCurrentZ=zone.id
     Swal.fire({
       title: 'Confirmation',
       text: "Voulez-vous confirmer la suppression de cette sous zone ?",
@@ -251,9 +306,8 @@ export class ZonageComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(true)
         this.inventaireServ.deleteSousZone(sousZone.id).then(
           rep=>{
-            console.log(rep)
             this.securityServ.showLoadingIndicatior.next(false)
-            this.getEntreprise()
+            this.getOneEntreprise()
           },
           error=>{
             this.securityServ.showLoadingIndicatior.next(false)
@@ -262,7 +316,6 @@ export class ZonageComponent implements OnInit {
         )
       }
     });
-    
   }
   showNotification(colorName, text, placementFrom, placementAlign) {
     this._snackBar.open(text, '', {

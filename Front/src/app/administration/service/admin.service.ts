@@ -11,6 +11,9 @@ export class AdminService {
   getEntreprise(){
     return this.sharedService.getElement("/entreprises")
   }
+  getOneEntreprise(id){
+    return this.sharedService.getElement("/entreprises/"+id)
+  }
   addEntreprise(data){
     const formData:FormData=new FormData();
     formData.append('denomination',data.denomination)

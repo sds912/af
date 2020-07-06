@@ -77,5 +77,13 @@ export const ROUTES: RouteInfo[] = [
         submenu: []
       }
     ]
-  }
+  },
+  {
+    path: '/equipes',
+    title: 'Equipes',
+    icon: 'fas fa-users',
+    class: '',
+    roles:['ROLE_Superviseur'],
+    submenu: []
+  },
 ];

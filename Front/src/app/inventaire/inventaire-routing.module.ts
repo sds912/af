@@ -4,8 +4,10 @@ import { AdminGuard } from 'src/app/core/guard/admin.guard';
 import { SupervAdminGuard } from 'src/app/core/guard/superv-admin.guard';
 import { SuperviseurGuard } from 'src/app/core/guard/superviseur.guard';
 import { ZonageComponent } from './components/zonage/zonage.component';
+import { EquipeComponent } from './components/equipe/equipe.component';
 const routes: Routes = [
-  {path: 'zonage',canActivate:[SuperviseurGuard],component: ZonageComponent}
+  {path: 'zonage',canActivate:[SuperviseurGuard],component: ZonageComponent},
+  {path: 'equipes',canActivate:[SuperviseurGuard],component: EquipeComponent},
 ];
 
 @NgModule({
