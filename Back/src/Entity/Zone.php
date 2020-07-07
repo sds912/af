@@ -19,7 +19,7 @@ class Zone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","user_read"})
      */
     private $id;
 
@@ -45,9 +45,26 @@ class Zone
      */
     private $sousZones;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="zones")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->sousZones = new ArrayCollection();
+        $this->users = new ArrayCollection();
+    }
+    /**
+     * @Groups({"user_read"})
+     */
+    public function getIdEntreprise(): ?int{
+        $localite=$this->localite;
+        $id=null;
+        if($localite){
+            $id=$localite->getEntreprise()->getId();
+        }
+        return $id;
     }
 
     public function getId(): ?int
@@ -117,6 +134,34 @@ class Zone
             if ($sousZones->getZone() === $this) {
                 $sousZones->setZone(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeZone($this);
         }
 
         return $this;

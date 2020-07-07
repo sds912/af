@@ -19,13 +19,13 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","user_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","user_read"})
      */
     private $nom;
 
@@ -45,9 +45,26 @@ class Localite
      */
     private $zones;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="localites")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
+        $this->users = new ArrayCollection();
+    }
+    /**
+    * @Groups({"user_read"})
+    */
+    public function getIdEntreprise(): ?int{
+        $entreprise=$this->entreprise;
+        $id=null;
+        if($entreprise){
+            $id=$entreprise->getId();
+        }
+        return $id;
     }
 
     public function getId(): ?int
@@ -117,6 +134,34 @@ class Localite
             if ($zone->getLocalite() === $this) {
                 $zone->setLocalite(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeLocalite($this);
         }
 
         return $this;
