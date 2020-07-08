@@ -6,16 +6,38 @@
                     <div class="body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="ngxTableHeader">
+                                <div class="ngxTableHeader pl-0">
                                     <ul class="header-buttons-left ml-0">
-                                        <li class="dropdown">
-                                            <h2>
-                                                <strong>Équipes</strong></h2>
-                                        </li>
                                         <li class="dropdown m-l-20">
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
-                                            <input placeholder="Recherche" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
+                                            <input placeholder="Recherche" type="text" class="browser-default search-field search-team" (keyup)='filterDatatable($event)' aria-label="Search box">
                                         </li>
+                                        <li class="dropdown m-l-20" [hidden]="entreprises && entreprises.length==1">
+                                            <select [(ngModel)]="idCurrentEse" class="form-control select-trie pl-0 pr-0" (change)="entiteChange($event.target.value)" title="Entité">
+                                                <option value="0">Toutes les entités</option>
+                                                <option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</option>
+                                            </select>
+                                        </li>
+                                        <li class="dropdown m-l-20" [hidden]="idCurrentEse==0 && entreprises && entreprises.length!=1">
+                                            <select [(ngModel)]="idCurrentLoc" class="form-control select-trie pl-0 pr-0" (change)="localiteChange($event.target.value)" title="Localité">
+                                                <option value="0">Toutes les localités</option>
+                                                <option *ngFor="let l of currentLocs" [value]="l.id">{{l.nom}}</option>
+                                                <option value="-1" *ngIf="currentLocs && currentLocs.length==0">Aucune localité trouvée</option>
+                                            </select>
+                                        </li>
+                                        <li class="dropdown m-l-20" [hidden]="currentZs && currentZs.length==0">
+                                            <select [(ngModel)]="idCurrentZ" class="form-control select-trie pl-0 pr-0" (change)="zoneChange($event.target.value)" title="Zones/Sites">
+                                                <option value="0">Toutes les zones</option>
+                                                <option *ngFor="let z of currentZs" [value]="z.id">{{z.nom}}</option>
+                                            </select>
+                                        </li>
+                                        <li class="dropdown m-l-20" [hidden]="currentSZs && currentSZs.length==0">
+                                            <select [(ngModel)]="idCurrentSZ" class="form-control select-trie pl-0 pr-0" (change)="sousZoneChange($event.target.value)" title="Sous-zones">
+                                                <option value="0">Toutes les sous-zones</option>
+                                                <option *ngFor="let sz of currentSZs" [value]="sz.id">{{sz.nom}}</option>
+                                            </select>
+                                        </li>
+
                                     </ul>
                                     <ul class="header-buttons m-r-20">
                                         <li *ngIf="entreprises && entreprises.length>0">

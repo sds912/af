@@ -6,15 +6,11 @@
                     <div class="body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="ngxTableHeader">
+                                <div class="ngxTableHeader pl-0">
                                     <ul class="header-buttons-left ml-0">
-                                        <li class="dropdown">
-                                            <h2>
-                                                <strong>Entité</strong></h2>
-                                        </li>
                                         <li class="dropdown m-l-20">
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
-                                            <input placeholder="Recherche" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
+                                            <input placeholder="Rechercher une entité" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
                                         </li>
                                     </ul>
                                     <ul class="header-buttons m-r-20" *ngIf="securityServ.admin">

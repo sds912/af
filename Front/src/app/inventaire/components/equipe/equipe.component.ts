@@ -57,6 +57,16 @@ export class EquipeComponent implements OnInit {
   tabSousZPick=[]
   addLoc=true
   addZone=true
+  idCurrentEse=0//ne jamais utiliser pour une requête car elle peut etre egal à 0 si on selectionne toutes les entreprises c est juste pour les filtres des select
+  idCurrentLoc=0
+  currentLocs:any=[]//les localites de l entité selectionné dans le select
+  idCurrentZ=0
+  currentZs:any=[]//les zones
+  idCurrentSZ=0
+  currentSZs:any=[]//les sous-zones
+
+  usersTampon=[]
+
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar,private adminServ:AdminService,private sharedService:SharedService,public securityServ:SecurityService) {
     this.editForm = this.fb.group({
       id: [0],
@@ -78,20 +88,95 @@ export class EquipeComponent implements OnInit {
     this.getEntreprises()
     this.securityServ.getUser()
   }
+  entiteChange(id){
+    if(this.entreprises && this.entreprises.length>1){//si une seule entité le 1er select sera celui des localités donc on ne doit pas reinitialiser ces valeurs
+      this.currentLocs=[]
+    }
+    this.idCurrentLoc=0
+    this.idCurrentZ=0
+    this.currentZs=[]
+    this.idCurrentSZ=0
+    this.currentSZs=[]
+    if(id==0){
+      this.setTableData(this.usersTampon)
+      return
+    }
+    const currentEse=this.entreprises.find(e=>e.id==id)
+    const localites= currentEse.localites
+    const users=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==id))
+    this.setTableData(users)
+    if(localites && localites.length>0){
+      this.currentLocs=localites
+    }
+  }
+  localiteChange(id){
+    this.idCurrentZ=0
+    this.currentZs=[]
+    this.idCurrentSZ=0
+    this.currentSZs=[]
+    if(id==0){
+      if(this.idCurrentEse!=0 && this.entreprises.length>1){
+        const u=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==this.idCurrentEse))
+        this.setTableData(u)
+      }
+      else if(this.entreprises.length==1)
+        this.setTableData(this.usersTampon)//si une seule entité le 1er select sera celui des localités
+
+      return//si id=0 ne pas executer le reste du code
+    }
+
+    const users=this.usersTampon.filter(u=>u.localites.find(e=>e.id==id))
+    this.setTableData(users)
+    const activLoc=this.currentLocs.find(l=>l.id==id)//la localité sélectionnée
+    if(activLoc && activLoc.zones && activLoc.zones.length>0){
+      this.currentZs=activLoc.zones
+    }
+  }
+  zoneChange(id){
+    this.idCurrentSZ=0
+    this.currentSZs=[]
+    if(id==0){
+      if(this.idCurrentLoc!=0){
+        const u=this.usersTampon.filter(u=>u.localites.find(e=>e.id==this.idCurrentLoc))
+        this.setTableData(u)
+      }
+      return
+    }
+    
+    const users=this.usersTampon.filter(u=>u.zones.find(e=>e.id==id))
+    this.setTableData(users)
+    const activeZone=this.currentZs.find(z=>z.id==id)//la zone selectionner
+    if( activeZone && activeZone.sousZones && activeZone.sousZones.length>0){
+      this.currentSZs=activeZone.sousZones
+    }
+  }
+  sousZoneChange(id){
+    if(id==0) {
+      if(this.idCurrentZ!=0){
+        const u=this.usersTampon.filter(u=>u.zones.find(e=>e.id==this.idCurrentZ))
+        this.setTableData(u)
+      }
+      return
+    }
+    const users=this.usersTampon.filter(u=>u.sousZones.find(e=>e.id==id))
+    this.setTableData(users)
+  }
   getUsers(){
     this.adminServ.getUsers().then(
       rep=>{
-        
         let users=[]
         if(rep && rep.length>0){
           users=rep.reverse();
           users=users.filter(u=>u.id!=this.myId && u.roles &&(u.roles[0]=="ROLE_CE" || u.roles[0]=="ROLE_MI"))
         }
-        console.log(users)
-        this.data = users;
-        this.filteredData = users;
+        this.setTableData(users);
+        this.usersTampon=users
+       
         this.show=true
         this.securityServ.showLoadingIndicatior.next(false)
+
+        this.idCurrentEse=0//les users de toutes les entreprises pour le chargement lorsqu'on fait une requête
+        this.entiteChange(0)
       },
       error=>{
         console.log(error)
@@ -99,10 +184,18 @@ export class EquipeComponent implements OnInit {
       }
     )
   }
+  setTableData(data){
+    this.data = data;
+    this.filteredData = data;
+  }
   getEntreprises(){
     this.adminServ.getEntreprise().then(
       rep=>{
         this.entreprises=rep
+        if(rep && rep.length==1){
+          this.idCurrentEse=rep[0].id//ne jamais utiliser pour une requête car elle peut etre egal à 0 si on selectionne toutes les entreprises c est juste pour les filtres des select
+          this.currentLocs=rep[0].localites
+        }
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)

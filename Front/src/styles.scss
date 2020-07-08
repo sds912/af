@@ -12,3 +12,12 @@
     font-weight: bolder !important;
 }
 .mat-input-element:disabled{ color : #000000c2 !important; }
+.select-trie{
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: inherit;
+}
+.search-team:focus{
+    width: 220px !important;
+}
