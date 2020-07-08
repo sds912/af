@@ -12,7 +12,7 @@ import { WINDOW } from '../../services/window.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { FormGroup, FormBuilder, FormControl, Validators} from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angular/forms';
 
 const document: any = window.document;
 
@@ -26,6 +26,7 @@ export class HeaderComponent implements OnInit {
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
+  @ViewChild('formDirective') private formDirective: NgForm;
   isNavbarShow: boolean;
   imagePP=""
   editForm: FormGroup;
@@ -125,6 +126,7 @@ export class HeaderComponent implements OnInit {
     {
       validator: this.mustMatch('password', 'confPassword')
     });
+    if(this.formDirective)this.formDirective.resetForm()
   }
   mustMatch(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {

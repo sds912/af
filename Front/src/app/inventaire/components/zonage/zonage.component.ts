@@ -9,7 +9,7 @@ import { InventaireService } from '../../service/inventaire.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 export interface ChipColor {
@@ -48,33 +48,39 @@ export class ZonageComponent implements OnInit {
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeZoneModal', { static: false }) closeZoneModal;
   @ViewChild('closeSousZoneModal', { static: false }) closeSousZoneModal;
-
+  @ViewChild('formDirective1') private formDirective1: NgForm;
+  @ViewChild('formDirective2') private formDirective2: NgForm;
+  @ViewChild('formDirective3') private formDirective3: NgForm;
   constructor(private adminServ:AdminService,
               private inventaireServ:InventaireService,
               private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private sharedService:SharedService,
               private securityServ:SecurityService) {
-  }//revoir le delete sous zone quand on ajout des user à ces sz
+  }//revoir le delete sous-zone quand on ajout des user à ces sz
   ngOnInit() {
+    this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
     this.initForm2()
     this.initForm3()
     this.getEntreprise()
   }
   initForm(localite={id:0,nom:''}){
+    if(this.formDirective1)this.formDirective1.resetForm()
     this.localiteForm = this.fb.group({
       id:[localite.id],
       nom: [localite.nom, [Validators.required]]
     });
   }
   initForm2(zone={id:0,nom:''}){
+    if(this.formDirective2)this.formDirective2.resetForm()
     this.zoneForm = this.fb.group({
       id:[zone.id],
       nom: [zone.nom, [Validators.required]]
     });
   }
   initForm3(sousZone={id:0,nom:''}){
+    if(this.formDirective3)this.formDirective3.resetForm()
     this.souZoneForm = this.fb.group({
       id:[sousZone.id],
       nom: [sousZone.nom, [Validators.required]]
@@ -89,7 +95,6 @@ export class ZonageComponent implements OnInit {
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
-        //this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0){
           e=rep.reverse()
@@ -97,12 +102,16 @@ export class ZonageComponent implements OnInit {
           this.localites=rep[0].localites
         }
         this.entreprises=e
+         this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
-        //this.securityServ.showLoadingIndicatior.next(false)
+        this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
       }
     )
+  }
+  entiteChange(id){
+    this.getOneEntreprise()
   }
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
@@ -124,6 +133,7 @@ export class ZonageComponent implements OnInit {
     let tab=[]
     if(zone && zone.sousZones){
       let sousZones=zone.sousZones
+      this.sharedService.trier(sousZones,'id')
       sousZones.forEach(sousZone =>tab.push(sousZone.nom));
     }
     return tab
@@ -176,6 +186,7 @@ export class ZonageComponent implements OnInit {
       title: 'Confirmation',
       text: "Voulez-vous confirmer la suppression de cette zone ?",
       icon: 'warning',
+      width:500,
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
@@ -275,7 +286,7 @@ export class ZonageComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    // Add our sous zone
+    // Add our sous-zone
     if ((value || '').trim()) {
       const v=value.trim()
       if(v) this.addSousZone(value,zone)
@@ -291,31 +302,36 @@ export class ZonageComponent implements OnInit {
 
   remove(zone,sousZoneName: string): void {
     const sousZone=zone.sousZones.find(sz=>sz.nom==sousZoneName)
+    const removable=sousZone.removable
     this.idCurrentZ=zone.id
-    Swal.fire({
-      title: 'Confirmation',
-      text: "Voulez-vous confirmer la suppression de cette sous zone ?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non'
-    }).then(result => {
-      if (result.value) {
-        this.securityServ.showLoadingIndicatior.next(true)
-        this.inventaireServ.deleteSousZone(sousZone.id).then(
-          rep=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            this.getOneEntreprise()
-          },
-          error=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            console.log(error)
-          }
-        )
-      }
-    });
+    if(removable)
+      Swal.fire({
+        title: 'Confirmation',
+        text: "Voulez-vous confirmer la suppression de cette sous-zone ?",
+        icon: 'warning',
+        width:500,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non'
+      }).then(result => {
+        if (result.value) {
+          this.securityServ.showLoadingIndicatior.next(true)
+          this.inventaireServ.deleteSousZone(sousZone.id).then(
+            rep=>{
+              this.securityServ.showLoadingIndicatior.next(false)
+              this.getOneEntreprise()
+            },
+            error=>{
+              this.securityServ.showLoadingIndicatior.next(false)
+              console.log(error)
+            }
+          )
+        }
+      });
+    else
+      Swal.fire({title: '',text: "Impossible de supprimer cette sous-zone, des utilisateurs y sont affectés !",icon: 'info'})
   }
   showNotification(colorName, text, placementFrom, placementAlign) {
     this._snackBar.open(text, '', {
@@ -327,6 +343,11 @@ export class ZonageComponent implements OnInit {
   }
   setStep(index: number) {
     this.step = index;
+  }
+  noteRemovable(type:string){
+    let text="Impossible de supprimer une localité contenant des zones"
+    if(type=='zone')text="Impossible de supprimer une zone contenant des sous-zones"
+    Swal.fire({title: '',text: text,icon: 'info'})
   }
 
   nextStep() {

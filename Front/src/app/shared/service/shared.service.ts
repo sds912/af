@@ -128,7 +128,12 @@ export class SharedService {
           error=>{
             console.log(error);
             console.log(error.error);
-            reject(error.error.message);
+            if(error && error.error && error.error.violations){
+              const err=this.errerForm(error.error.violations);
+              reject(err)
+            }
+            else
+              reject(error.error.message);
           }
         );
     })
@@ -166,7 +171,12 @@ export class SharedService {
           error=>{
             console.log(error);
             console.log(error.error);
-            reject(error.error.message);
+            if(error && error.error && error.error.violations){
+              const err=this.errerForm(error.error.violations);
+              reject(err)
+            }
+            else
+              reject(error.error.message);
           }
         );
     })
@@ -193,7 +203,7 @@ export class SharedService {
     var err='';
     for(var i=0;i<rep.length;i++){
       var vrg='';
-      if(i>0) vrg=',<br> ';
+      if(i>0) vrg=', ';
       err+=vrg+rep[i].message;
     }
     return err;

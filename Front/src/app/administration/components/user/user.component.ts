@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { FormGroup, FormBuilder, FormControl, Validators,FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators,FormArray,NgForm } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
@@ -16,6 +16,7 @@ export class UserComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
+  @ViewChild('formDirective') private formDirective: NgForm;
   rows = [];
   colNmbre=5
   selectedRowData: selectRowInterface;
@@ -75,7 +76,7 @@ export class UserComponent implements OnInit {
         let users=[]
         if(rep && rep.length>0){
           users=rep.reverse();
-          users=users.filter(u=>u.id!=this.myId)
+          users=users.filter(u=>u.id!=this.myId && u.roles[0]!="ROLE_CE" && u.roles[0]!="ROLE_MI")
         }
         this.data = users;
         this.filteredData = users;
@@ -124,6 +125,7 @@ export class UserComponent implements OnInit {
     this.editRow(user)
   }
   editRow(row,lock=false) {
+    if(this.formDirective)this.formDirective.resetForm()
     this.entreprises=this.securityServ.user.entreprises//pour des problemes d async de securityServ.getUser()
     this.editForm = this.fb.group({
       id: [{value: row.id, disabled: lock}],
@@ -138,20 +140,37 @@ export class UserComponent implements OnInit {
     this.selectedRowData = row;
   }
   lockRow(user){
-    this.securityServ.showLoadingIndicatior.next(true)
     let mot="débloqué"
-    if(user.status=="actif")mot="bloqué"
-    this.adminServ.lockUser(user.id).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success','Utilisateur '+mot,'bottom','center')
-        this.getUsers()
-      },
-      message=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-red',message,'bottom','right')
+    let mot2="déblocage"
+    if(user.status=="actif"){
+      mot="bloqué"
+      mot2="blocage" 
+    }
+    Swal.fire({
+      title: 'Confirmation',
+      text: "Voulez-vous confirmer le "+mot2+" de l'utilisateur "+user.nom+' ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then(result => {
+      if (result.value) {
+        this.securityServ.showLoadingIndicatior.next(true)
+        this.adminServ.lockUser(user.id).then(
+          rep=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.showNotification('bg-success','Utilisateur '+mot,'bottom','center')
+            this.getUsers()
+          },
+          message=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.showNotification('bg-red',message,'bottom','right')
+          }
+        )
       }
-    )
+    });
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)

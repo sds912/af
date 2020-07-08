@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators,NgForm } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
@@ -16,6 +16,7 @@ export class EntrepriseComponent implements OnInit {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('closeAddModal', { static: false }) closeAddModal;
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
+  @ViewChild('formDirective') private formDirective: NgForm;
   rows = [];
   selectedRowData: selectRowInterface;
   newUserImg = '';
@@ -83,6 +84,7 @@ export class EntrepriseComponent implements OnInit {
     reader.readAsDataURL(this.fileToUploadPp);
   }
   editRow(row,lock=false) {
+    if(this.formDirective)this.formDirective.resetForm()
     this.editForm = this.fb.group({
       id: [{value: row.id, disabled: lock}],
       image: [{value: row.image, disabled: lock}],

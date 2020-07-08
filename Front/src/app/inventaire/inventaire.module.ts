@@ -29,7 +29,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressButtonsModule } from 'mat-progress-buttons';
 import { EquipeComponent } from './components/equipe/equipe.component';
-
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSortModule } from '@angular/material/sort';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MaterialFileInputModule } from 'ngx-material-file-input';
+import { MatMenuModule } from '@angular/material/menu';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   declarations: [ZonageComponent, EquipeComponent],
@@ -62,7 +71,26 @@ import { EquipeComponent } from './components/equipe/equipe.component';
     MatSliderModule,
     MatTabsModule,
     MatProgressButtonsModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+
+    CommonModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgxDatatableModule,
+    MatSnackBarModule,
+
+    MatTableModule,
+    MatPaginatorModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSortModule,
+    MatToolbarModule,
+    MaterialFileInputModule,
+    MatMenuModule,
+    NgxDatatableModule,
   ]
 })
 export class InventaireModule { }
+

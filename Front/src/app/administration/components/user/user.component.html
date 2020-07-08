@@ -100,7 +100,7 @@
                                 <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
-                                        <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onEditSave(editForm)">
+                                        <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onEditSave(editForm)" #formDirective="ngForm">
                                             <div class="modal-header">
                                                 <div class="editRowModal">
                                                     <div class="modal-header clearfix">
@@ -185,7 +185,7 @@
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Rôle</mat-label>
-                                                                <input matInput formControlName="departement" *ngIf="details">
+                                                                <input matInput formControlName="role" *ngIf="details">
                                                                 <mat-select formControlName="role"  *ngIf="!details">
                                                                     <mat-option *ngFor="let r of roles" [value]="r">{{r}}</mat-option>
                                                                 </mat-select>
@@ -207,7 +207,7 @@
                                                     </div>
                                                     <div class="modal-footer" [hidden]="details">
                                                         <div class="button-demo">
-                                                            <button type="submit" class="btn btn-outline-success btn-border-radius">Enregistrer</button>
+                                                            <button type="submit" class="btn btn-outline-success btn-border-radius"  [disabled]="editForm.invalid">Enregistrer</button>
                                                             <button type="button" class="btn btn-outline-danger btn-border-radius" data-dismiss="modal">Annuler</button>
                                                         </div>
                                                     </div>

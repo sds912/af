@@ -80,7 +80,7 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: '/equipes',
-    title: 'Equipes',
+    title: 'Équipes',
     icon: 'fas fa-users',
     class: '',
     roles:['ROLE_Superviseur'],

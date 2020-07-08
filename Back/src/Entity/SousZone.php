@@ -51,6 +51,17 @@ class SousZone
         return $id;
     }
 
+    /**
+    * @Groups({"entreprise_read"})
+    */
+    public function getRemovable(){
+        $removable=1;
+        if($this->users && count($this->users)>0){
+            $removable=0;
+        }
+        return $removable;
+    }
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
