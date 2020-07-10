@@ -6,7 +6,7 @@ import { AdminGuard } from 'src/app/core/guard/admin.guard';
 import { SupervAdminGuard } from 'src/app/core/guard/superv-admin.guard';
 const routes: Routes = [
   {path: 'entreprise',canActivate:[SupervAdminGuard],component: EntrepriseComponent},
-  {path: 'user',canActivate:[AdminGuard],component: UserComponent}
+  //{path: 'user',canActivate:[AdminGuard],component: UserComponent}
 ]; 
 
 @NgModule({

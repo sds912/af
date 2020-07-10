@@ -143,6 +143,12 @@ class User implements UserInterface
      */
     private $sousZones;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $menu = [];
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -402,6 +408,18 @@ class User implements UserInterface
         if ($this->sousZones->contains($sousZone)) {
             $this->sousZones->removeElement($sousZone);
         }
+
+        return $this;
+    }
+
+    public function getMenu(): ?array
+    {
+        return $this->menu;
+    }
+
+    public function setMenu(?array $menu): self
+    {
+        $this->menu = $menu;
 
         return $this;
     }

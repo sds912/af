@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router,private securityService:SecurityService){ }
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {//il va return soit un  Observable qui sera de type boolean soit ...un observable est un objet qui emmet des infos dans le temps
     if(!this.securityService.isAuth){
-        this.router.navigateByUrl("/login");
+        this.router.navigateByUrl("");
         return false;
     }
     return true;

@@ -50,27 +50,67 @@ export class SidebarComponent implements OnInit {
     this.bodyTag = this.document.body;
     this.myRole=localStorage.getItem("roles")
   }
-  isGranted(roles){
+  isGranted(menu){
+    let roles=menu.roles
     if(roles[0]=="all") return true
     let bool=false
     roles.forEach(element => {
-      if(this.myRole && this.myRole.search(element)>=0){
+      if(this.myRole && this.myRole.search(element)>=0 && (!this.securityServ.guest||this.guestAccessM(menu.id))){
         bool=true
       }
     });
     return bool
   }
-  isGrantedSubM(submenu,i){
+  guestAccessM(id){
+    let bool=false
+    if(this.securityServ.guest && this.securityServ.user && this.securityServ.user.menu){
+      bool=this.menuIsPick(id,this.securityServ.user.menu)
+    }
+    return bool
+  }
+  getIndexMenu(id,tab){
+    let a=-1
+    if(tab){//sinon erreur
+      for(let i=0;i<tab.length;i++){
+        if(tab[i] && tab[i][0] && tab[i][0]==id){
+          a=i
+          break
+        };
+      }
+    }
+    return a
+  }
+  menuIsPick(id,tab){
+    return this.getIndexMenu(id,tab)> -1
+  }
+  isGrantedSubM(menu,i){
+    let submenu=menu.submenu
     let roles=[]
-     if(submenu && submenu[i] && submenu[i].roles && submenu[i].roles.length>0)roles=submenu[i].roles
+    if(submenu && submenu[i] && submenu[i].roles && submenu[i].roles.length>0)roles=submenu[i].roles
 
     if(roles && (roles[0]=="all"||roles.length==0)) return true
     let bool=false
     roles.forEach(element => {
-      if(this.myRole && this.myRole.search(element)>=0){
+      if(this.myRole && this.myRole.search(element)>=0 && (!this.securityServ.guest||this.guestAccessSubM(menu.id,submenu[i].id))){
         bool=true
       }
     });
+    return bool
+  }
+  guestAccessSubM(idMenu,idSub){
+    let bool=false
+    if(this.securityServ.guest && this.securityServ.user && this.securityServ.user.menu){
+      bool=this.subMenuIsPick(idMenu,idSub,this.securityServ.user.menu)
+    }
+    return bool
+  }
+  subMenuIsPick(idMenu,idSub,tab){
+    let indexMenu=this.getIndexMenu(idMenu,tab)
+    let bool=false
+    if(indexMenu>-1 && idSub){
+      let tabSub=tab[indexMenu][1]
+      bool=tabSub.indexOf(idSub)>-1
+    }
     return bool
   }
   handleFileInputPP(file:FileList){

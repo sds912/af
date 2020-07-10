@@ -33,10 +33,12 @@ export class UserComponent implements OnInit {
     'Autre (à préciser)'
   ]
   roles=[//si modifier modifier la fonction getRole
+    "Chef d'équipe",
+    "Membre inventaire",
     'Superviseur',
     'Guest',
     'Président du comité',
-    'Membre adjoint du comité'
+    'Membre du comité'
   ]
   show=false
   imgLink=""
@@ -69,6 +71,16 @@ export class UserComponent implements OnInit {
     this.getUsers()
     this.securityServ.getUser()
   }
+  changeTotal(){
+    setTimeout(()=>{
+      let val=$('.page-count').html()
+      if(val){
+        val="Total "+val.replace("total","")
+        $('.page-count').empty()
+        $('.page-count').append(val)
+      }
+    },1000)
+  }
   getUsers(){
     this.adminServ.getUsers().then(
       rep=>{
@@ -76,12 +88,13 @@ export class UserComponent implements OnInit {
         let users=[]
         if(rep && rep.length>0){
           users=rep.reverse();
-          users=users.filter(u=>u.id!=this.myId && u.roles[0]!="ROLE_CE" && u.roles[0]!="ROLE_MI")
+          users=users.filter(u=>u.id!=this.myId)
         }
         this.data = users;
         this.filteredData = users;
         this.show=true
         this.securityServ.showLoadingIndicatior.next(false)
+        this.changeTotal()
       },
       error=>{
         console.log(error)
@@ -246,6 +259,12 @@ export class UserComponent implements OnInit {
     }else if(role && (role=='Membre adjoint du comité'||role[0]=="ROLE_AC")){
       r1='Membre adjoint du comité'
       r2="ROLE_AC"
+    }else if(role && (role=="Chef d'équipe"||role[0]=="ROLE_CE")){
+      r1="Chef d'équipe"
+      r2="ROLE_CE"
+    }else if(role && (role=="Membre inventaire"||role[0]=="ROLE_MI")){
+      r1="Membre inventaire"
+      r2="ROLE_MI"
     }
     if(show)return r1
     return r2

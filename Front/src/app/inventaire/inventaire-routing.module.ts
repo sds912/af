@@ -7,7 +7,7 @@ import { ZonageComponent } from './components/zonage/zonage.component';
 import { EquipeComponent } from './components/equipe/equipe.component';
 const routes: Routes = [
   {path: 'zonage',canActivate:[SuperviseurGuard],component: ZonageComponent},
-  {path: 'equipes',canActivate:[SuperviseurGuard],component: EquipeComponent},
+  {path: 'users',canActivate:[SupervAdminGuard],component: EquipeComponent},
 ];
 
 @NgModule({

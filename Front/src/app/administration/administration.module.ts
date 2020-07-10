@@ -26,7 +26,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserComponent } from './components/user/user.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
+import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true,
+  wheelPropagation: false
+};
 @NgModule({
   declarations: [
     EntrepriseComponent,
@@ -39,6 +43,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     ReactiveFormsModule,
     NgxDatatableModule,
     MatSnackBarModule,
+    PerfectScrollbarModule,
 
     MatTableModule,
     MatPaginatorModule,

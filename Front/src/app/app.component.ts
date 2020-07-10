@@ -32,6 +32,7 @@ export class AppComponent {
       }
       if (routerEvent instanceof NavigationEnd) {
         this.showLoadingIndicatior = false;
+        this.securityService.guestAccess(routerEvent.url)
       }
       window.scrollTo(0, 0);
     });

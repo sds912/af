@@ -68,7 +68,7 @@ export class SigninComponent implements OnInit {
     this.securityServ.login(this.loginForm.value)
     .then(
       ()=>{
-        this.router.navigate(['/dashboard/main'])
+        this.router.navigate([this.securityServ.urlAfterConnexion])
         this.securityServ.showLoadingIndicatior.next(false)
       },
       message=>{

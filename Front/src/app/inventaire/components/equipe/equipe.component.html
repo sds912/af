@@ -10,7 +10,7 @@
                                     <ul class="header-buttons-left ml-0">
                                         <li class="dropdown m-l-20">
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
-                                            <input placeholder="Recherche" type="text" class="browser-default search-field search-team" (keyup)='filterDatatable($event)' aria-label="Search box">
+                                            <input placeholder="Recherche" type="text" class="browser-default search-field search-team" (keyup)='filterDatatable($event.target.value)' aria-label="Search box" [(ngModel)]="searchValue">
                                         </li>
                                         <li class="dropdown m-l-20" [hidden]="entreprises && entreprises.length==1">
                                             <select [(ngModel)]="idCurrentEse" class="form-control select-trie pl-0 pr-0" (change)="entiteChange($event.target.value)" title="Entité">
@@ -95,7 +95,22 @@
                                     </ngx-datatable-column>
                                     
                                     <!-- action buttons -->
-                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130" class="text-center">
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="80" class="text-center" *ngIf="!securityServ.admin">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span>
+                                                <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
+                                                    <i class="material-icons">remove_red_eye</i>
+                                                </button>
+                                                <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
+                                                    <i class="material-icons">mode_edit</i>
+                                                </button>
+                                            </span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130" class="text-center" *ngIf="securityServ.admin">
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
@@ -129,7 +144,8 @@
                                                         <img *ngIf="selectedRowData?.image" [src]='imgLink+selectedRowData?.image' alt="avatar">
                                                         <img *ngIf="!selectedRowData?.image" [src]='newUserImg' alt="avatar">
                                                         <div class="modal-about">
-                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.nom">Nouvel utilisateur</div>
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.nom && !editForm.get('nom').value">Nouvel utilisateur</div>
+                                                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.nom && editForm.get('nom').value">{{editForm.get('nom').value}}</div>
                                                             <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.nom">{{selectedRowData?.nom}}</div>
                                                         </div>
                                                     </div>
@@ -140,7 +156,7 @@
                                                     <i class="material-icons">clear</i>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body" [perfectScrollbar]>
                                                 <div>
                                                     <div class="input-field col s12 d-none">
                                                         <input formControlName="id" class="form-control" type="hidden">
@@ -198,7 +214,6 @@
                                                                 appearance="outline">
                                                                 <mat-label>Autre département</mat-label>
                                                                  <input matInput formControlName="departement">
-                                                                <mat-icon matSuffix>phone</mat-icon>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
@@ -208,18 +223,61 @@
                                                                 appearance="outline">
                                                                 <mat-label>Rôle</mat-label>
                                                                 <input matInput formControlName="role" *ngIf="details">
-                                                                <mat-select formControlName="role"  *ngIf="!details">
-                                                                    <mat-option *ngFor="let r of roles" [value]="r">{{r}}</mat-option>
+                                                                <mat-select formControlName="role"  *ngIf="!details" (selectionChange)="roleChange($event.value)" (selectionChange)="initByRole()">
+                                                                    <mat-option *ngFor="let r of roles" [value]="r" [hidden]="securityServ.superviseur && r=='Superviseur'">{{r}}</mat-option>
                                                                 </mat-select>
                                                             </mat-form-field>
                                                         </div>
                                                     </div>
+                                                    <div class="row" *ngIf="isGuest">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                            <mat-expansion-panel class="example-full-width mb-4 pl-0 pr-0 ">
+                                                                <mat-expansion-panel-header style="background-color: #d8d5d538;">
+                                                                        <mat-panel-title class="pl-0 col-10">Menu</mat-panel-title>
+                                                                        <mat-panel-description>
+                                                                        
+                                                                        </mat-panel-description>
+                                                                </mat-expansion-panel-header>
+                                                                
+                                                                <!--Liste des menus-->
+                                                                <mat-expansion-panel class="example-full-width mb-4 pl-0 pr-0" *ngFor="let menu of sidebarItems;let i=index" [ngClass]="{'mt-4': i==0}" hideToggle>
+                                                                    <mat-expansion-panel-header style="background-color: #eab9b9;" class="pr-1" #panelH (click)="panelH._toggle()">
+                                                                            <mat-panel-title class="pl-0 col-11 pt-4 mr-0" (click)="panelH._toggle()">{{menu.title}}</mat-panel-title>
+                                                                            <mat-panel-description>
+                                                                                <section class="example-section row">
+                                                                                    <mat-checkbox class="example-margin" (change)="checkMenuChange(menu.id)" [checked]="menuIsPick(menu.id)"> </mat-checkbox>
+                                                                                </section>
+                                                                            </mat-panel-description>
+                                                                    </mat-expansion-panel-header>
+
+                                                                    <!--Liste des sous-menus-->
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-0">
+                                                                            <div class="card">
+                                                                                <div class="body pl-0 pr-0">
+                                                                                    <section class="example-section row all-height" *ngIf="menu.submenu.length>0">
+                                                                                        <mat-checkbox class="example-margin" *ngFor="let sub of menu.submenu" (change)="checksubMenuChange(menu.id,sub.id)" [checked]="subMenuIsPick(menu.id,sub.id)">{{sub.title}}</mat-checkbox>
+                                                                                    </section>
+                                                                                    <span *ngIf="menu.submenu.length==0">Il n'y a pas de sous-menu</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!--Liste des sous-menus-->
+
+                                                                </mat-expansion-panel>
+                                                                <!--Liste des menus-->
+
+                                                            </mat-expansion-panel>
+                                                        </div>
+                                                    </div>
+
                                                     <div class="row mb-2" *ngFor="let control of tabEse.controls; index as i">
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0" [hidden]="entreprises && entreprises.length<2">
                                                             <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
                                                                 <mat-label>Entité {{i+1}}</mat-label>
                                                                 <input matInput [value]="getDenomination(control.value)" *ngIf="details" disabled>
-                                                                <mat-select [formControl]="control" *ngIf="!details">
+                                                                <mat-select [formControl]="control" *ngIf="!details" (selectionChange)="entiteAddEquipeChange($event.value,i)">
                                                                     <mat-option value="" *ngIf="i>0"></mat-option>
                                                                     <mat-option *ngFor="let e of entreprises" [value]="e.id" [hidden]="inTabEse(e.id)">{{e.denomination}}</mat-option>
                                                                 </mat-select>
@@ -227,55 +285,58 @@
                                                              <mat-icon matSuffix [hidden]="i!=(tabEse.controls.length-1) || !control.value||details" (click)="addEntreprise()" class="pointer" title="Ajouter une entité">add_circle_outline</mat-icon>
                                                         </div>
                                                         <!-- Localités -->
-                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2" *ngIf="control.value && getEntreprise(control.value).localites && getEntreprise(control.value).localites.length>0">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2" *ngIf="isMembreEquipe && control.value && getEntreprise(control.value).localites && getEntreprise(control.value).localites.length>0 && !securityServ.admin">
                                                             <mat-accordion>
                                                                 <p class="mb-3"> 
                                                                     <span class="bolder">Localités</span> 
                                                                     <span *ngIf="entreprises && entreprises.length>1"> ( {{getDenomination(control.value)}} ) </span>:
                                                                 </p>
-                                                                <mat-expansion-panel  class="example-full-width mr-2 mb-4" *ngFor="let localite of userLocalites[i]" hideToggle>
-                                                                    <mat-expansion-panel-header style="background-color: #d8d5d538;">
-                                                                            <mat-panel-title class="pl-0 col-10">
-                                                                                {{localite.nom}}
-                                                                            </mat-panel-title>
-                                                                            <mat-panel-description> 
-                                                                                <mat-icon class="icone-loc" (click)="deleteLoc(localite,i)"  *ngIf="!details">delete</mat-icon>
-                                                                            </mat-panel-description>
-                                                                    </mat-expansion-panel-header>
-                                                                    <p class="mt-4 mb-3 bolder">Zones / Sites</p>
-                                                                    <mat-expansion-panel class="mb-4" *ngFor="let zone of rev(localite.zones)" hideToggle [hidden]="!zoneIsPick(zone.id)">
-                                                                        <mat-expansion-panel-header style="background-color: #eab9b9;">
-                                                                                <mat-panel-title class="pl-0 col-10">
-                                                                                    {{zone.nom}}
+                                                                <div class="row" style="padding-left: 1.2rem !important;">
+                                                                    <mat-expansion-panel  class="example-full-width mb-4 col-11 pl-0 pr-0" *ngFor="let localite of userLocalites[i]" hideToggle>
+                                                                        <mat-expansion-panel-header style="background-color: #d8d5d538;"  #panelHL (click)="panelHL._toggle()">
+                                                                                <mat-panel-title class="pl-0 col-10 pt-4 pb-4" (click)="panelHL._toggle()">
+                                                                                    {{localite.nom}}
                                                                                 </mat-panel-title>
-                                                                                <mat-panel-description>
-                                                                                    <mat-icon class="icone-loc  m-r--5" (click)="deleteZone(zone)" *ngIf="!details">delete</mat-icon>
+                                                                                <mat-panel-description> 
+                                                                                    <mat-icon class="icone-loc pt-4 pb-4" (click)="deleteLoc(localite,i)"  *ngIf="!details">delete</mat-icon>
                                                                                 </mat-panel-description>
                                                                         </mat-expansion-panel-header>
 
-                                                                        <!--Sous-zones-->
-                                                                        <div class="row">
-                                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-0 pt-3">
-                                                                                    <div class="card">
-                                                                                        <div class="body">
-                                                                                            <section class="example-section row" *ngIf="zone.sousZones.length>0">
-                                                                                                <mat-checkbox class="example-margin" *ngFor="let sousZone of trierSZ(zone.sousZones)" (change)="checkASZ(sousZone.id)" [checked]="sousZIsPick(sousZone.id)">{{sousZone.nom}}</mat-checkbox><!-- [checked]="sousZIsPick(sousZone.id)" -->
-                                                                                            </section>
-                                                                                            <span *ngIf="zone.sousZones.length==0">Il n'y a pas de sous-zone dans cette zone</span>
+                                                                        <p class="mt-4 mb-3 bolder">Zones / Sites</p>
+                                                                        <div class="row" style="padding-left: 1.2rem !important;">
+                                                                            <mat-expansion-panel class="mb-4 col-11 pl-0 pr-0" *ngFor="let zone of rev(localite.zones)" hideToggle [hidden]="!zoneIsPick(zone.id)">
+                                                                                <mat-expansion-panel-header style="background-color: #eab9b9;" #panelHZ (click)="panelHZ._toggle()">
+                                                                                        <mat-panel-title class="pl-0 col-10 pt-4 pb-4" (click)="panelHZ._toggle()">
+                                                                                            {{zone.nom}}
+                                                                                        </mat-panel-title>
+                                                                                        <mat-panel-description>
+                                                                                            <mat-icon class="icone-loc  m-r--5 pt-4 pb-4" (click)="deleteZone(zone)" *ngIf="!details">delete</mat-icon>
+                                                                                        </mat-panel-description>
+                                                                                </mat-expansion-panel-header>
+
+                                                                                <!--Sous-zones-->
+                                                                                <div class="row">
+                                                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-0">
+                                                                                        <div class="card">
+                                                                                            <div class="body pl-0 pr-0">
+                                                                                                <section class="example-section all-height row" *ngIf="zone.sousZones.length>0">
+                                                                                                    <mat-checkbox class="example-margin" *ngFor="let sousZone of trierSZ(zone.sousZones)" (change)="checkASZ(sousZone.id)" [checked]="sousZIsPick(sousZone.id)" [title]="sousZone.nom">{{sousZone.nom}}</mat-checkbox><!-- [checked]="sousZIsPick(sousZone.id)" -->
+                                                                                                </section>
+                                                                                                <span *ngIf="zone.sousZones.length==0">Il n'y a pas de sous-zone dans cette zone</span>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                        </div>
-                                                                        <!--Sous-zones-->
+                                                                                <!--Sous-zones-->
 
-                                                                    </mat-expansion-panel>
-                                                                        <p class="mt-4" *ngIf="addZone">
+                                                                            </mat-expansion-panel>
+                                                                            <p class="mt-3 col-1 pl-2" *ngIf="addZone">
                                                                                 <i class="material-icons pointer" title="Ajouter zone/site" data-keyboard="false" *ngIf="rev(localite.zones).length>0 && addZone && !details"  (click)="addZone=false">add_circle</i>
                                                                                 <span *ngIf="rev(localite.zones).length==0">Il n'y a pas de zone dans cette localité</span>
-                                                                        </p>
-
+                                                                            </p>
+                                                                        </div>
                                                                         <!--Select pour ajouter des zones-->
-                                                                        <mat-form-field class="example-full-width all-width" appearance="outline"  *ngIf="!addZone">
+                                                                        <mat-form-field class="example-full-width" appearance="outline"  *ngIf="!addZone">
                                                                                 <mat-label>Zones</mat-label>
                                                                                 <mat-select (selectionChange)="pickNewZone($event.value)">
                                                                                     <mat-option *ngFor="let z of localite.zones" [value]="z.id" [hidden]="zoneIsPick(z.id)">{{z.nom}}</mat-option>
@@ -284,17 +345,19 @@
                                                                         <!--Select pour ajouter des zones-->
 
                                                                     </mat-expansion-panel>
-                                                                    <mat-icon matSuffix class="pointer" *ngIf="addLoc && userLocalites[i].length>0 && !details" (click)="addLoc=false" title="Ajouter une localité">add_circle_outline</mat-icon>
-                                                                    
-                                                                    <!--Select pour ajouter des localités-->
-                                                                    <mat-form-field class="example-full-width" appearance="outline"  *ngIf="!addLoc||userLocalites[i].length==0">
-                                                                            <mat-label>Localités</mat-label>
-                                                                            
-                                                                            <mat-select (selectionChange)="pickNewLoc($event.value,i,control.value)" #newLoc>
-                                                                                <mat-option *ngFor="let l of getEntreprise(control.value).localites" [value]="l.id" [hidden]="locIsPick(l.id,i)">{{l.nom}}</mat-option>
-                                                                            </mat-select>                                                               
-                                                                    </mat-form-field>
-                                                                    <!--Select pour ajouter des localités-->
+                                                                    <mat-icon matSuffix class="pointer col-1 pl-2 pt-3" *ngIf="addLoc && userLocalites[i].length>0 && !details" (click)="addLoc=false" title="Ajouter une localité">add_circle_outline</mat-icon>
+                                                                </div>
+
+                                                                <!--Select pour ajouter des localités-->
+                                                                <mat-form-field class="example-full-width" appearance="outline"  *ngIf="!addLoc||userLocalites[i].length==0">
+                                                                        <mat-label>Localités</mat-label>
+                                                                        
+                                                                        <mat-select (selectionChange)="pickNewLoc($event.value,i,control.value)" #newLoc>
+                                                                            <mat-option *ngFor="let l of getEntreprise(control.value).localites" [value]="l.id" [hidden]="locIsPick(l.id,i)">{{l.nom}}</mat-option>
+                                                                        </mat-select>                                                               
+                                                                </mat-form-field>
+                                                                <!--Select pour ajouter des localités-->
+
                                                             </mat-accordion>
                                                         </div>
                                                         <!-- Localités -->

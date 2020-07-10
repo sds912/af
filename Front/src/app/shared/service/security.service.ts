@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subject } from 'rxjs';
+import { ROUTES } from '../../layout/sidebar/sidebar-items';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,10 +25,12 @@ export class SecurityService {
   SupAdmin=false
   admin=false
   superviseur=false
+  guest=false
   fonction=""
   securePwd=true
-  
+  sidebarItems: any[];
   jwtHelper = new JwtHelperService;
+  urlAfterConnexion="/dashboard/main"
   login(data:any){
     return new Promise(
       (resolve, reject)=>{
@@ -69,6 +73,9 @@ export class SecurityService {
     }else if(roles.search("ROLE_Superviseur")>=0){
         this.superviseur=true;
         this.fonction="Superviseur";
+    }else if(roles.search("ROLE_Guest")>=0){
+        this.guest=true;
+        this.fonction="Invité";
     }
   }
   logOut(){
@@ -76,6 +83,7 @@ export class SecurityService {
     this.SupAdmin=false;
     this.admin=false;
     this.superviseur=false;
+    this.guest=false;
     localStorage.clear();
     this.router.navigate(['/login']);
   }
@@ -127,5 +135,39 @@ export class SecurityService {
       localStorage.setItem('refreshToken', rep.refresh);
       console.log(rep)
     })
+  }
+  guestAccess(url){
+    let idUrl = this.idByUrl(ROUTES,url);
+    let access= this.getIdGuestRoute().indexOf(idUrl)>-1
+    if(this.guest && !access && url!=this.urlAfterConnexion){
+      this.logOut();
+    }
+  }
+  getIdGuestRoute(){
+    let ids=[]
+    if(this.guest && this.user && this.user.menu){
+      let menus=this.user.menu
+      
+      for(let i=0;i<menus.length;i++){
+        ids.push(menus[i][0])//idMenu
+        menus[i][1].forEach(idSub => ids.push(idSub));
+      }
+    }
+    return ids
+  }
+  idByUrl(menus,url){
+    let id=""
+    for(let i=0;i<menus.length;i++){
+      if(menus[i].path==url){
+        id=menus[i].id
+        break
+      }
+      menus[i].submenu.forEach(submenu => {
+        if(submenu.path && submenu.path==url){
+          id=submenu.id
+        }
+      });
+    }
+    return id
   }
 }

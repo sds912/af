@@ -16,12 +16,12 @@
                     </div>
                     <div class="profile-usertitle"  *ngIf="securityServ.user && securityServ.user.nom">
                         <div class="sidebar-userpic-name"> {{securityServ.user?.nom}} </div>
-                        <div class="profile-usertitle-job ">{{securityServ.user?.poste}} </div>
+                        <div class="profile-usertitle-job" [title]="securityServ.user?.poste">{{securityServ.fonction}}</div>
                     </div>
                 </li>
                 <!-- First level menu -->
                 <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" 
-                    [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem.roles)">
+                    [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem)">
                     <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
                         [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
                         <i [ngClass]="[sidebarItem.icon]"></i>
@@ -33,7 +33,7 @@
                         <li *ngFor="let sidebarSubItem of sidebarItem.submenu;let i=index"
                             [class.activeSub]="showSubMenu === sidebarSubItem.title"
                             [routerLinkActive]="sidebarSubItem.submenu.length > 0 ? '' : 'active'" 
-                            [hidden]="!isGrantedSubM(sidebarItem.submenu,i)">
+                            [hidden]="!isGrantedSubM(sidebarItem,i)">
                             <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
                                 (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
                                 {{sidebarSubItem.title}}

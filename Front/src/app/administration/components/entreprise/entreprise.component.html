@@ -50,7 +50,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="République" sortable="false" prop="republique" [width]="130">
+                                    <ngx-datatable-column name="Pays" sortable="false" prop="republique" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
                                                 {{longText(value,20)}}
@@ -106,7 +106,7 @@
                                                     <i class="material-icons">clear</i>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body"  [perfectScrollbar]>
                                                 <div>
                                                     <div class="input-field col s12 d-none">
                                                         <input formControlName="id" class="form-control" type="hidden">
@@ -149,7 +149,7 @@
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>République</mat-label>
+                                                                <mat-label>Pays</mat-label>
                                                                 <input matInput formControlName="republique">
                                                                 <mat-icon matSuffix>flag</mat-icon>
                                                             </mat-form-field>

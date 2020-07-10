@@ -30,15 +30,15 @@
                         </div>
                     </div>
                     <div class="body">
-                        <mat-accordion class="example-headers-align">
+                        <mat-accordion>
                             <mat-expansion-panel class="mb-4" *ngFor="let localite of rev(localites)" [expanded]="idCurrentLocal === localite.id"  hideToggle>
-                                <mat-expansion-panel-header style="background-color: #d8d5d5;" (click)="pickLocalite(localite)">
-                                    <mat-panel-title>
+                                <mat-expansion-panel-header style="background-color: #d8d5d5;" (click)="pickLocalite(localite)"  #panelHL (click)="panelHL._toggle()">
+                                    <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHL._toggle()">
                                         {{localite.nom}}
                                     </mat-panel-title>
                                     <mat-panel-description> 
                                         <i></i>
-                                        <div>
+                                        <div class="pt-4 pb-4">
                                             <mat-icon data-toggle="modal" class="mr-2 icone-loc" data-target="#localiteModal" data-backdrop="static" data-keyboard="false"  (click)="updateLoc(localite)">edit</mat-icon>
                                             <mat-icon *ngIf="localite.zones.length==0" class="icone-loc" (click)="deleteLoc(localite)">delete</mat-icon>
                                             <mat-icon *ngIf="localite.zones.length>0" class="icone-loc" title="Impossible de supprimer une localité contenant des zones" (click)="noteRemovable('localité')">delete</mat-icon>
@@ -47,12 +47,12 @@
                                 </mat-expansion-panel-header>
                                     <p class="mt-4 mb-3 bolder">Zones / Sites</p>
                                     <mat-expansion-panel class="mb-4" *ngFor="let zone of rev(localite.zones)"  [expanded]="idCurrentZ === zone.id" hideToggle>
-                                        <mat-expansion-panel-header style="background-color: #eab9b9;">
-                                            <mat-panel-title>
+                                        <mat-expansion-panel-header style="background-color: #eab9b9;"  #panelHZ (click)="panelHZ._toggle()">
+                                            <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHZ._toggle()">
                                                 {{zone.nom}}
                                             </mat-panel-title>
                                             <mat-panel-description><i></i> 
-                                                <div>
+                                                <div  class="pt-4 pb-4">
                                                     <mat-icon class="icone-loc" data-toggle="modal" data-target="#zoneModal" #ezone data-backdrop="static" data-keyboard="false" (click)="updateZone(zone)">edit</mat-icon>
                                                     <mat-icon *ngIf="getSousZone(zone).length==0" class="icone-loc" (click)="deleteZone(zone)">delete</mat-icon>
                                                     <mat-icon *ngIf="getSousZone(zone).length>0" class="icone-loc" title="Impossible de supprimer une zone contenant des sous-zones" (click)="noteRemovable('zone')">delete</mat-icon>

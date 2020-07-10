@@ -175,14 +175,14 @@ export class HeaderComponent implements OnInit {
     this.securityServ.changePwd(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success','Mot de passe modifié','bottom','center')
+        this.showNotification('bg-success','Mot de passe modifié','top','center')
         this.closePasswordModal.nativeElement.click();
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
         this.errorPwd=true
         form.controls["ancien"].setErrors({ ancienMdp: true })
-        this.showNotification('bg-red',message,'bottom','right')
+        this.showNotification('bg-red',message,'top','right')
       }
     )    
   }
@@ -192,14 +192,14 @@ export class HeaderComponent implements OnInit {
     this.securityServ.changeInfo(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success',"Enregistrer",'bottom','center')
+        this.showNotification('bg-success',"Enregistrer",'top','center')
         this.securityServ.user.nom=data.nom
         this.securityServ.user.poste=data.poste
         this.closeInfoModal.nativeElement.click();
       },message=>{
         console.log(message)
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-red',message,'bottom','right')
+        this.showNotification('bg-red',message,'top','right')
       }
     ) 
   }
@@ -209,7 +209,7 @@ export class HeaderComponent implements OnInit {
       duration: 2000,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
-      panelClass: colorName
+      panelClass: [colorName,'color-white']
     });
   }
 

@@ -54,9 +54,20 @@ export class EntrepriseComponent implements OnInit {
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
+  
   ngOnInit() {
     this.securityServ.showLoadingIndicatior.next(true)
     this.getEntreprise()
+  }
+  changeTotal(){
+    setTimeout(()=>{
+      let val=$('.page-count').html()
+      if(val){
+        val="Total "+val.replace("total","")
+        $('.page-count').empty()
+        $('.page-count').append(val)
+      }
+    },1000)
   }
   getEntreprise(){
     this.adminServ.getEntreprise().then(
@@ -68,6 +79,7 @@ export class EntrepriseComponent implements OnInit {
         this.data = e;
         this.filteredData = rep;
         this.show=true
+        this.changeTotal()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -121,13 +133,13 @@ export class EntrepriseComponent implements OnInit {
     this.adminServ.addEntreprise(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success','Enregistré','bottom','center')
+        this.showNotification('bg-success','Enregistré','top','center')
         this.closeEditModal.nativeElement.click();
         this.getEntreprise()
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
-        this.showNotification('bg-red',message,'bottom','right')
+        this.showNotification('bg-red',message,'top','right')
       }
     )
   }
@@ -171,7 +183,7 @@ export class EntrepriseComponent implements OnInit {
       duration: 2000,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
-      panelClass: colorName
+      panelClass: [colorName,'color-white']
     });
   }
 }

@@ -10,7 +10,7 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 export class SuperviseurGuard implements CanActivate {
   constructor(private router: Router,private securityService:SecurityService){ }
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {//il va return soit un  Observable qui sera de type boolean soit ...un observable est un objet qui emmet des infos dans le temps
-    if(!this.securityService.superviseur){
+    if(!this.securityService.superviseur && !this.securityService.guest){
         this.router.navigateByUrl("/");
         return false;
     }
