@@ -30,8 +30,15 @@
                         </div>
                     </div>
                     <div class="body">
+                        <div class="map-localite mb-5" [ngStyle]="{background: 'url(./assets/images/image-gallery/font-maps.jpg)'}">
+                            <div class="pointer-localite pointer" *ngFor="let localite of rev(localites)" [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
+                                <span (click)="idCurrentLocal=localite.id" class="pl-1">{{longText(localite.nom,11)}}</span>
+                                <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id"  (click)="idCurrentLocal=localite.id">
+                                <img src="assets/images/image-gallery/pointer2.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal==localite.id">
+                            </div>
+                        </div>
                         <mat-accordion>
-                            <mat-expansion-panel class="mb-4" *ngFor="let localite of rev(localites)" [expanded]="idCurrentLocal === localite.id"  hideToggle>
+                            <mat-expansion-panel class="mb-4" *ngFor="let localite of rev(localites)" [expanded]="idCurrentLocal === localite.id"  hideToggle [hidden]="idCurrentLocal != localite.id">
                                 <mat-expansion-panel-header style="background-color: #d8d5d5;" (click)="pickLocalite(localite)"  #panelHL (click)="panelHL._toggle()">
                                     <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHL._toggle()">
                                         {{localite.nom}}

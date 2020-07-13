@@ -167,9 +167,9 @@ export class EquipeComponent implements OnInit {
     setTimeout(()=>{
       let val=$('.page-count').html()
       if(val){
-        val="Total "+val.replace("total","")
+        val="Total "+val.replace("total","")//mettre une regex
         $('.page-count').empty()
-        $('.page-count').append(val)
+        //$('.page-count').append(val)
       }
     },1000)
   }
@@ -282,7 +282,7 @@ export class EquipeComponent implements OnInit {
         this.idCurrentEse=0//les users de toutes les entreprises pour le chargement lorsqu'on fait une requête
         this.entiteChange(0)
         this.changeTotal()
-        if(this.searchValue!="")this.filterDatatable(this.searchValue)
+        if(this.searchValue!="")this.filterDatatable(this.searchValue)//exemple si on cherche un user et on le bloque ne pas bougé
       },
       error=>{
         console.log(error)

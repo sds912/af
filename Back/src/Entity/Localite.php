@@ -50,6 +50,12 @@ class Localite
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"entreprise_read"})
+     */
+    private $position = [];
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
@@ -163,6 +169,18 @@ class Localite
             $this->users->removeElement($user);
             $user->removeLocalite($this);
         }
+
+        return $this;
+    }
+
+    public function getPosition(): ?array
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?array $position): self
+    {
+        $this->position = $position;
 
         return $this;
     }

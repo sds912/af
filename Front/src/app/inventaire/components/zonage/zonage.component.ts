@@ -65,11 +65,12 @@ export class ZonageComponent implements OnInit {
     this.initForm3()
     this.getEntreprise()
   }
-  initForm(localite={id:0,nom:''}){
+  initForm(localite={id:0,nom:'',position:[]}){
     if(this.formDirective1)this.formDirective1.resetForm()
     this.localiteForm = this.fb.group({
       id:[localite.id],
-      nom: [localite.nom, [Validators.required]]
+      nom: [localite.nom, [Validators.required]],
+      position:[localite.position]
     });
   }
   initForm2(zone={id:0,nom:''}){
@@ -139,21 +140,27 @@ export class ZonageComponent implements OnInit {
     return tab
   }
   addLocalite(form: FormGroup){
-    let data=form.value
-    data.entreprise="/api/entreprises/"+this.idCurrentEse
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addLocalite(data).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.closeLocaliteModal.nativeElement.click();
-        if(data.id==0)this.localites.push(rep)//add
-        else this.getOneEntreprise()//update
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
+    if(this.localites.length<=45){
+      let data=form.value
+      data.entreprise="/api/entreprises/"+this.idCurrentEse
+      if(data.position && data.position.length==0)data.position=this.getPosition()
+      this.securityServ.showLoadingIndicatior.next(true)
+      this.inventaireServ.addLocalite(data).then(
+        rep=>{
+          this.securityServ.showLoadingIndicatior.next(false)
+          this.closeLocaliteModal.nativeElement.click();
+          if(data.id==0)this.localites.push(rep)//add
+          else this.getOneEntreprise()//update
+        },
+        error=>{
+          this.securityServ.showLoadingIndicatior.next(false)
+          console.log(error)
+        }
+      )
+    }else{
+      Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
+    }
+    
   }
   deleteLoc(localite){
      Swal.fire({
@@ -349,12 +356,31 @@ export class ZonageComponent implements OnInit {
     if(type=='zone')text="Impossible de supprimer une zone contenant des sous-zones"
     Swal.fire({title: '',text: text,icon: 'info'})
   }
-
-  nextStep() {
-    this.step++;
+  longText(text,limit){
+    return this.sharedService.longText(text,limit)
   }
-
-  prevStep() {
-    this.step--;
+  getPosition(){
+    let arrond=false
+    let l=2; 
+    let t=2;
+    do{
+      arrond=false
+      l=(Math.floor(Math.random() * 94) + 2); 
+      t=(Math.floor(Math.random() * 83) + 2);
+      this.localites.forEach(localite => {
+        const left=this.getValPourcentage(localite.position[0])
+        const top=this.getValPourcentage(localite.position[1])
+        if(left==l && top==t||l>=(left-6) && l<=(left+6) && t>=(top-16) && t<=(top+16)){
+          console.log("arrond",[left,top],[l,t])
+          arrond=true
+        }
+      });
+      
+    }while (arrond);
+    return [l+'%',t+'%']
+  }
+  getValPourcentage(val){
+    const valeur=parseInt(val.replace('%',''))
+    return valeur
   }
 }
