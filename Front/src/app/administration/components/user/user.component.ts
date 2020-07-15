@@ -7,6 +7,7 @@ import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
 import Swal from 'sweetalert2';
+import * as $ from 'jquery';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',

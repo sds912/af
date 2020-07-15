@@ -23,13 +23,13 @@ class Entreprise
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","inv_read"})
      */
     private $denomination;
 
@@ -81,10 +81,16 @@ class Entreprise
      */
     private $sigleUsuel;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Inventaire::class, mappedBy="entreprise")
+     */
+    private $inventaires;
+
     public function __construct()
     {
         $this->localites = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->inventaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,6 +235,37 @@ class Entreprise
     public function setSigleUsuel(?string $sigleUsuel): self
     {
         $this->sigleUsuel = $sigleUsuel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Inventaire[]
+     */
+    public function getInventaires(): Collection
+    {
+        return $this->inventaires;
+    }
+
+    public function addInventaire(Inventaire $inventaire): self
+    {
+        if (!$this->inventaires->contains($inventaire)) {
+            $this->inventaires[] = $inventaire;
+            $inventaire->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventaire(Inventaire $inventaire): self
+    {
+        if ($this->inventaires->contains($inventaire)) {
+            $this->inventaires->removeElement($inventaire);
+            // set the owning side to null (unless already changed)
+            if ($inventaire->getEntreprise() === $this) {
+                $inventaire->setEntreprise(null);
+            }
+        }
 
         return $this;
     }

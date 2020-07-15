@@ -40,4 +40,7 @@ export class InventaireService {
   deleteZone(id){
     return this.sharedService.deleteElement("/zones/"+id)
   }
+  getInventaire(){
+    return this.sharedService.getElement("/inventaires")
+  }
 }

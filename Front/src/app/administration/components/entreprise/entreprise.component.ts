@@ -6,6 +6,7 @@ import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
+import * as $ from 'jquery';
 @Component({
   selector: 'app-entreprise',
   templateUrl: './entreprise.component.html',

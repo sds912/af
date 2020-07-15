@@ -20,6 +20,7 @@
     "@angular/forms": "^9.1.7",
     "@angular/localize": "^9.1.7",
     "@angular/material": "^9.2.3",
+    "@angular/material-moment-adapter": "^10.0.1",
     "@angular/platform-browser": "^9.1.7",
     "@angular/platform-browser-dynamic": "^9.1.7",
     "@angular/router": "^9.1.7",
@@ -94,11 +95,13 @@
     "karma-jasmine": "~3.1.1",
     "karma-jasmine-html-reporter": "^1.5.4",
     "ngx-echarts": "^4.2.2",
-    "npm": "^6.14.5",
+    "npm": "^6.14.6",
     "protractor": "^7.0.0",
     "run-sequence": "^2.2.1",
+    "sass-loader": "^7.1.0",
     "ts-node": "~8.10.1",
     "tslint": "~6.1.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0"
   }
 }

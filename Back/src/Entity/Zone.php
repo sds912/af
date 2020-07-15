@@ -19,7 +19,7 @@ class Zone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read"})
+     * @Groups({"entreprise_read","user_read","inv_read"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Zone
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $nom;
 
@@ -50,10 +50,16 @@ class Zone
      */
     private $users;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Inventaire::class, mappedBy="zones")
+     */
+    private $inventaires;
+
     public function __construct()
     {
         $this->sousZones = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->inventaires = new ArrayCollection();
     }
     /**
      * @Groups({"user_read"})
@@ -162,6 +168,34 @@ class Zone
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             $user->removeZone($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Inventaire[]
+     */
+    public function getInventaires(): Collection
+    {
+        return $this->inventaires;
+    }
+
+    public function addInventaire(Inventaire $inventaire): self
+    {
+        if (!$this->inventaires->contains($inventaire)) {
+            $this->inventaires[] = $inventaire;
+            $inventaire->addZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventaire(Inventaire $inventaire): self
+    {
+        if ($this->inventaires->contains($inventaire)) {
+            $this->inventaires->removeElement($inventaire);
+            $inventaire->removeZone($this);
         }
 
         return $this;

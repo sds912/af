@@ -45,12 +45,23 @@ import {
 import { AdministrationModule } from './administration/administration.module';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
-
+import { MAT_DATE_LOCALE,MAT_DATE_FORMATS } from '@angular/material/core';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
-
+export const MY_FORMAT = {
+parse: {
+dateInput: 'DD/MM/YYYY',
+},
+display: {
+dateInput: 'DD/MM/YYYY',
+monthYearLabel: 'MMM YYYY',
+dateA11yLabel: 'DD/MM/YYYY',
+monthYearA11yLabel: 'MMMM YYYY',
+},
+};
 @NgModule({
   declarations: [
     AppComponent,
@@ -103,7 +114,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     DynamicScriptLoaderService,
     RightSidebarService,
     AdvanceTableService,
-    WINDOW_PROVIDERS
+    WINDOW_PROVIDERS,
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMAT },
+    //{ provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } }
   ],
   entryComponents: [
     SimpleDialogComponent,
@@ -113,3 +127,4 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+

@@ -40,12 +40,13 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatMenuModule } from '@angular/material/menu';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { InventaireComponent } from './components/inventaire/inventaire.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 @NgModule({
-  declarations: [ZonageComponent, EquipeComponent],
+  declarations: [ZonageComponent, EquipeComponent, InventaireComponent],
   imports: [
     CommonModule,
     InventaireRoutingModule,

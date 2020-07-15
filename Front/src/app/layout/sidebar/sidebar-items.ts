@@ -66,8 +66,8 @@ export const ROUTES: RouteInfo[] = [
     submenu: [
       {
         id:'INV1',//Ne pas modifier meme s il ne respecte pas l ordre 1,2,3... car les guest se basse sur les id pour avoir accès aux pages 
-        path: '/dashboard/main',
-        title: 'Instructions',
+        path: '/inventaires',
+        title: 'Inventaires',
         icon: '',
         class: 'ml-menu',
         roles:['ROLE_Superviseur','ROLE_Guest'],

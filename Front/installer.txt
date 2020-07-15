@@ -1,2 +1,6 @@
 npm install @auth0/angular-jwt
 npm install event-source-polyfill
+npm i @angular/material-moment-adapter
+npm rebuild node-sass
+npm uninstall --save-dev sass-loader
+npm install --save-dev sass-loader@7.1.0 

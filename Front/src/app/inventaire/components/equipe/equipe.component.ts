@@ -526,9 +526,9 @@ export class EquipeComponent implements OnInit {
     }else if(role && (role=='Président du comité'||role[0]=="ROLE_PC")){
       r1='Président du comité'
       r2="ROLE_PC"
-    }else if(role && (role=='Membre adjoint du comité'||role[0]=="ROLE_AC")){
-      r1='Membre adjoint du comité'
-      r2="ROLE_AC"
+    }else if(role && (role=='Membre du comité'||role[0]=="ROLE_MC")){
+      r1='Membre du comité'
+      r2="ROLE_MC"
     }else if(role && (role=="Chef d'équipe"||role[0]=="ROLE_CE")){
       r1="Chef d'équipe"
       r2="ROLE_CE"

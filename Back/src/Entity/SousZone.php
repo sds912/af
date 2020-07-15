@@ -19,13 +19,13 @@ class SousZone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read"})
+     * @Groups({"entreprise_read","user_read","inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $nom;
 
@@ -38,6 +38,11 @@ class SousZone
      * @ORM\ManyToMany(targetEntity=User::class, mappedBy="sousZones")
      */
     private $users;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Inventaire::class, mappedBy="sousZones")
+     */
+    private $inventaires;
 
     /**
     * @Groups({"user_read"})
@@ -65,6 +70,7 @@ class SousZone
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->inventaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -119,6 +125,34 @@ class SousZone
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             $user->removeSousZone($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Inventaire[]
+     */
+    public function getInventaires(): Collection
+    {
+        return $this->inventaires;
+    }
+
+    public function addInventaire(Inventaire $inventaire): self
+    {
+        if (!$this->inventaires->contains($inventaire)) {
+            $this->inventaires[] = $inventaire;
+            $inventaire->addSousZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventaire(Inventaire $inventaire): self
+    {
+        if ($this->inventaires->contains($inventaire)) {
+            $this->inventaires->removeElement($inventaire);
+            $inventaire->removeSousZone($this);
         }
 
         return $this;
