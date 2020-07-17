@@ -1,0 +1,36 @@
+# POST http://localhost:8000/login HTTP/1.1
+# content-type: application/json
+
+# {
+#     "username": "layendoyesn@gmail.com",
+#     "password": "azerty"
+# }
+
+# GET http://localhost:8000/api/show/prospect/26 HTTP/1.1
+# content-type: application/json
+# Authorization: 
+
+POST http://localhost:8000/api/add/opportunite HTTP/1.1
+content-type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1Nzk2OTk5NTAsInVzZXJuYW1lIjoibGF5ZW5kb3llc25AZ21haWwuY29tIiwicm9sZXMiOlsiUk9MRV9TdXBlckFkbWluIiwiUk9MRV9VU0VSIl0sImV4cCI6MTU3OTc4NjM1MH0.sE7wL8CLcvzeaU2UZNvCFNd8EZfIOwIHdxZG99dW-Fg42-Zp1AwZQTx35fGG7p9nMaNmgQLAoi72C7ZaHuWCu3Uk4xiYy0raTRuI2EUPXKOtKayZYqfXGa0p1dw4BuBU3C2KUtJyRDciuYr19kWqGHmhS7-1IbM33E_FvRIoDuwkOFCJG72bR_6rDpK_5BWZ4ZFH-Oq5PFnKWb5gJqQ1O-m61G6W6Mphn7K9q25NPrdWHUcMB5VTeiMJw4kYmliPcjQp8YBsFrOVVoQF1N0iHgPRyuba_EJcznpz4IroNj7fgmcVW8CNFsDxzNloCR-aa5fXjbc8FdvKKeHNOlVG4J7HD1oL7xEq_ikjPAXP7qVqXLGqB2f2U1SfST_nqihoEdoGF_TQkUR5MeS_aXzaU4BH75iSr7V_4bYY6-twdFoGeiZZ6VR8T0pY5bLdwrHEW55-3baojYqZloiUKHin01j65zv6OF0emAmIeumNxuAJ1398pNgxYDi3QzF4VcWTPais_LDj122UO08d0B-hLu2BAdqI3RBx9enciEBDMjXKnjHziyATfTRrnvWY0DMjPEWJVzd8x_oxzmX6TMkj9OIgGn0S4BeynBOhS57mA2jHbUl5GuW519BUsl_AMWANF6fTCj-ZMaBiwRyHbi-eAOGbKRlmae86Zu_sJ0SaxyM
+
+{
+    "libelle": "le libelle",
+    "scop": "le scop",
+    "description":"une descrip",
+    "service":27,
+    "responsable":2,
+    "entreprise":4,
+    "contactPrincipal":2,
+    "nombreContact":2,
+    "contact1":3,
+    "contact2":4,
+    "nombreCollab":3,
+    "collaborateur1":20,
+    "collaborateur2":23,
+    "collaborateur3":24,
+    "localisation":"in",
+    "apporteur":"2",
+    "fonctionApporteur":"",
+    "telApporteur":""
+}

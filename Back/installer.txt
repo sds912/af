@@ -7,3 +7,4 @@ composer require migrations
 composer require symfony/web-server-bundle --dev
 composer req cors
 composer require gesdinet/jwt-refresh-token-bundle # Modifier le route.yaml et le security.yaml puis les migrations et ajouter gesdinet_jwt_refresh_token.yaml dans config/package
+composer require form

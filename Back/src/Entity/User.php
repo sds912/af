@@ -67,7 +67,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read"})
+     * @Groups({"user_read","inv_read","entreprise_read"})
      */
     private $id;
 
@@ -79,7 +79,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user_read"})
+     * @Groups({"user_read","entreprise_read"})
      */
     private $roles = [];
 
@@ -97,7 +97,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read"})
+     * @Groups({"user_read","inv_read","entreprise_read"})
      */
     private $nom;
 
@@ -115,13 +115,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read"})
+     * @Groups({"user_read","inv_read","entreprise_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read"})
+     * @Groups({"user_read","entreprise_read"})
      */
     private $status;
 

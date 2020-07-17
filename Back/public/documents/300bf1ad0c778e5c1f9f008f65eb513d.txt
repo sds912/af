@@ -1,0 +1,955 @@
+-- phpMyAdmin SQL Dump
+-- version 4.6.6deb5
+-- https://www.phpmyadmin.net/
+--
+-- Client :  localhost:3306
+-- Généré le :  Mer 15 Juillet 2020 à 12:10
+-- Version du serveur :  5.7.30-0ubuntu0.18.04.1
+-- Version de PHP :  7.2.24-0ubuntu0.18.04.6
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données :  `GesImmo`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `doctrine_migration_versions`
+--
+
+CREATE TABLE `doctrine_migration_versions` (
+  `version` varchar(191) COLLATE utf8_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Contenu de la table `doctrine_migration_versions`
+--
+
+INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
+('DoctrineMigrations\\Version20200625161147', '2020-06-29 11:06:20', 710),
+('DoctrineMigrations\\Version20200629160928', '2020-06-29 16:09:40', 10538),
+('DoctrineMigrations\\Version20200630152151', '2020-06-30 15:22:04', 2990),
+('DoctrineMigrations\\Version20200701084015', '2020-07-01 08:40:27', 2136),
+('DoctrineMigrations\\Version20200701195745', '2020-07-01 19:57:57', 2036),
+('DoctrineMigrations\\Version20200703163254', '2020-07-03 16:33:11', 1537),
+('DoctrineMigrations\\Version20200706090138', '2020-07-06 09:01:50', 3109),
+('DoctrineMigrations\\Version20200706114003', '2020-07-06 11:40:22', 2210),
+('DoctrineMigrations\\Version20200707141654', '2020-07-07 14:17:26', 8894),
+('DoctrineMigrations\\Version20200709141503', '2020-07-09 14:15:16', 2499),
+('DoctrineMigrations\\Version20200713112136', '2020-07-13 11:21:54', 2662),
+('DoctrineMigrations\\Version20200714083622', '2020-07-14 08:36:50', 5348),
+('DoctrineMigrations\\Version20200714085035', '2020-07-14 08:50:39', 8556),
+('DoctrineMigrations\\Version20200714093235', '2020-07-14 09:32:41', 2701);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `entreprise`
+--
+
+CREATE TABLE `entreprise` (
+  `id` int(11) NOT NULL,
+  `denomination` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ninea` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `adresse` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `republique` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ville` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sigle_usuel` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `entreprise`
+--
+
+INSERT INTO `entreprise` (`id`, `denomination`, `ninea`, `adresse`, `image`, `republique`, `ville`, `sigle_usuel`) VALUES
+(1, 'Sonatel Sénégal', '789652 4555222 1145', 'Mermoz', '3342773171417454195cb9e40b4fcf88.png', 'Sénégal', 'Dakar', 'SNTS'),
+(2, 'Tigo Sénégal', '888 5555 4444 666', 'Almadies', '4af3752224ac99e3144fc56ac1cf9144.png', 'Sénégal', 'Dakar', 'TGS'),
+(3, 'Sonatel 2', '789652 4555222  99666', 'Mermoz 2', 'exemple.jpg', 'Sénégal', 'Dakar', NULL),
+(4, 'Expresso', '77555 2255544 555', 'Dakar hhhhhhhhh', 'ddc75cffff9ab1a24ac987f39033f662.png', 'Sénégal', 'Dakar', 'EXPS'),
+(5, 'Orange Digital Center', '1 45514 2541452', 'Mermoz', '34e746ed8b2c653f9f1e241abd0f92d3.jpeg', 'Sénégal', 'Dakar', 'ODC'),
+(6, 'ASMA', '75522 55555', 'SC', '70e8ba6fc39db62b6d4ee5ee330477a4.png', 'Sénégal', 'Dakar', 'AS'),
+(7, 'A C Transport', '17524 5412 5555', 'Immeuble xyz', '6c98d8e95637f24d2baca42d83486e6f.jpeg', 'Sénégal', 'Dakar', 'ACT');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `entreprise_user`
+--
+
+CREATE TABLE `entreprise_user` (
+  `entreprise_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `entreprise_user`
+--
+
+INSERT INTO `entreprise_user` (`entreprise_id`, `user_id`) VALUES
+(1, 2),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 9),
+(1, 18),
+(1, 19),
+(1, 22),
+(1, 25),
+(1, 27),
+(1, 31),
+(1, 32),
+(1, 34),
+(2, 2),
+(2, 4),
+(2, 5),
+(2, 6),
+(2, 8),
+(2, 9),
+(2, 14),
+(2, 18),
+(2, 19),
+(2, 31),
+(3, 3),
+(4, 2),
+(4, 11),
+(4, 12),
+(4, 13),
+(4, 16),
+(4, 17),
+(4, 20),
+(4, 21),
+(4, 29),
+(4, 30),
+(5, 2),
+(5, 15),
+(6, 2),
+(7, 2),
+(7, 28);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inventaire`
+--
+
+CREATE TABLE `inventaire` (
+  `id` int(11) NOT NULL,
+  `presi_comite_id` int(11) DEFAULT NULL,
+  `debut` date DEFAULT NULL,
+  `fin` date DEFAULT NULL,
+  `instruction` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `decision_creation_com` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lieu_reunion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date_reunion` datetime DEFAULT NULL,
+  `presents_reunion` json DEFAULT NULL,
+  `pv_reunion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `entreprise_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `inventaire`
+--
+
+INSERT INTO `inventaire` (`id`, `presi_comite_id`, `debut`, `fin`, `instruction`, `decision_creation_com`, `lieu_reunion`, `date_reunion`, `presents_reunion`, `pv_reunion`, `entreprise_id`) VALUES
+(1, 34, '2020-07-01', '2020-07-14', ' ', NULL, 'Dakar', '2020-07-01 15:05:00', '[\"Amadou Ndiaye\", \"Astou Faye\"]', ' ', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inventaire_localite`
+--
+
+CREATE TABLE `inventaire_localite` (
+  `inventaire_id` int(11) NOT NULL,
+  `localite_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inventaire_sous_zone`
+--
+
+CREATE TABLE `inventaire_sous_zone` (
+  `inventaire_id` int(11) NOT NULL,
+  `sous_zone_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inventaire_user`
+--
+
+CREATE TABLE `inventaire_user` (
+  `inventaire_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `inventaire_user`
+--
+
+INSERT INTO `inventaire_user` (`inventaire_id`, `user_id`) VALUES
+(1, 31),
+(1, 32);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `inventaire_zone`
+--
+
+CREATE TABLE `inventaire_zone` (
+  `inventaire_id` int(11) NOT NULL,
+  `zone_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `localite`
+--
+
+CREATE TABLE `localite` (
+  `id` int(11) NOT NULL,
+  `entreprise_id` int(11) DEFAULT NULL,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `adresse` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `position` json DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `localite`
+--
+
+INSERT INTO `localite` (`id`, `entreprise_id`, `nom`, `adresse`, `position`) VALUES
+(1, 2, 'Dakar', NULL, '[\"69%\", \"25%\"]'),
+(2, 2, 'Thies', NULL, '[\"55%\", \"75%\"]'),
+(3, 2, 'Matam', NULL, '[\"25%\", \"10%\"]'),
+(5, 2, 'Saint-Louis', NULL, '[\"10%\", \"67%\"]'),
+(6, 1, 'Kaolack', NULL, '[\"93%\", \"13%\"]'),
+(7, 4, 'Mali', NULL, '[\"55%\", \"75%\"]'),
+(8, 4, 'Localité X', NULL, '[\"82%\", \"36%\"]'),
+(9, 4, 'Localité Y', NULL, '[\"15%\", \"45%\"]'),
+(13, 4, 'Dakar', NULL, '[\"93%\", \"13%\"]'),
+(14, 1, 'Dakar', NULL, '[\"82%\", \"36%\"]'),
+(15, 4, 'Localité Z', NULL, '[\"5%\", \"35%\"]'),
+(16, 1, 'Localité X', NULL, '[\"5%\", \"5%\"]');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `refresh_tokens`
+--
+
+CREATE TABLE `refresh_tokens` (
+  `id` int(11) NOT NULL,
+  `refresh_token` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `valid` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `refresh_tokens`
+--
+
+INSERT INTO `refresh_tokens` (`id`, `refresh_token`, `username`, `valid`) VALUES
+(1, '0ccc4e1e9a6a259b0b05335c77e6ea43e34b6cd174bad93901c0960b519d5594d560b9a82012437c4a60bac169cbab1595d8488ac3ee48f47ec83d15f30e84e1', 'admin', '2020-08-02 16:40:09'),
+(2, '892d7674b90677123ed178c693628399c88338cc421a9c2d4cd752ba2f1cbb39725e121b037a681c70c18e279723a940a4ba8d262ba48a3c5196c5baea273c66', 'admin', '2020-08-02 16:42:54'),
+(3, 'f8e6ed580adde7d89c90b4524204e2286523f4284d737a435b26e78797011c2e28daf1826518b42b315c9578fca8fe3f65460d83303d26b73a22578e3907010f', 'OmarDiouf@gestion-immo.com', '2020-08-02 18:27:28'),
+(4, 'c1e879e6add2ec4efe66093c854b6d9bdf626960bcfde000430cde359d2fca8e1fd7f7e6e75fc820996fbf58eae185a4b91fef454b1aca6a78bb334c1a2ae1ee', 'admin', '2020-08-02 19:33:15'),
+(5, '83fa7f0a22467bacf41ba0577e4c2da3a29ca6d576b82aa2e368e71d6b71ad1fa1c4933823ea9c540578d620169a44acfd26531965014898f689c23aca20402c', 'admin', '2020-08-05 08:54:11'),
+(6, '338fc99afc9ecb6dc933ce29fedd7cb3cc7b23a403f2bfc46231608a61e077931cdb8346eabc3c64a29de4988f14de3f1c5fe460ac25cf63a225ba9eddc392fb', 'OmarDiouf@gestion-immo.com', '2020-08-05 08:54:53'),
+(7, '2055cba67f3e866be69a98af506522555faefc90ad4cbf195b28665d2ea405afc60de92134ad2f4fc9c475a44ede5095a26bef23722a23f7ef60aaac9e1b0b5d', 'OmarDiouf@gestion-immo.com', '2020-08-05 09:16:51'),
+(8, '50123820b993830d9f2d5c3cedf62aa8d867d8125d61cff5e3420ab4e0bc01d03658faefbe4906a4bcad02b1852d483800fda9eedad41946e92906e6891c7a4a', 'admin', '2020-08-05 10:17:44'),
+(9, 'd2e0316fa28b870a4a50b0946af2857aec1009c74ee93236ca73ccd4d37a2b5a29bc8139c3fa6146ff505a1b6267f229a91bc9a6c647e9474f2764bf67166ce7', 'OmarDiouf@gestion-immo.com', '2020-08-05 10:20:40'),
+(10, '691bd0bdbcd241f45b17e01506d5701706c8cf04e86e7183a11e04b48cbd684aadd93995ff7dfbb6a33ee8f3014d17a4fc092e6c67624bb27da36ffd2415ab74', 'OmarDiouf@gestion-immo.com', '2020-08-05 20:04:34'),
+(11, '5c4213f2c939949afd16f0b9a59046af9ed37afd61b7688002714ee12cc9ea19e56e73d6f4ea0dcf8a9fc369477acfb66bc4fdc697af2361975dc57270e57d4b', 'admin', '2020-08-06 08:24:36'),
+(12, '13fb3ffb451309020bcec279a267136104689f754dc97e254dfe3acd3c7f3df62005754c598a6dc5c615664e1e07be57816afb53ddc87d5ebe3d8fbcb5d2c125', 'OmarDiouf@gestion-immo.com', '2020-08-06 08:30:58'),
+(13, '24b6b5ecde3a81f681fc3d55d0075deed21466b6906495027f44113ab760c48b4e331467a616402869767efcd894bf659a987ca5b7146f98afc20b0b70fc58c0', 'admin', '2020-08-06 08:34:17'),
+(14, '3d47db582ec909c1e79d3c44f0ccd8af8211ed330d80ef8773bed3d1c7f4af2d486e67ffd04fbd70e16091f6c9e5856083fb60095218f1e7e4fb9558edd57832', 'OmarDiouf@gestion-immo.com', '2020-08-06 08:35:13'),
+(15, '18ed850fc21787ccf0eab6ffa62db905038a09482056cb41b89f2afc55ba167211c2e9a73f11e9746c0e61ca13ae9573033b2c76d8b473625cf9e9115391d36d', 'OmarDiouf@gestion-immo.com', '2020-08-06 10:14:42'),
+(16, '3297a0f3efa2cc1b6ba7606ba1752015b492d1cdd56191dc37706a769f9ee738b60255bd8c58e0d67f482f1836b6d3efe5e57872445bebaf209f576aa6b69e55', 'admin', '2020-08-06 11:50:28'),
+(17, '2cb5c7e585f217af77c3b57a867c80ff8534f7c2ba9bb07d976cde0b7b94cac4640d708007e897b105fab790ca1b6bc958879df9b61568c0eaa526009a29239a', 'OmarDiouf@gestion-immo.com', '2020-08-06 11:51:24'),
+(18, '1bad7f1e2d064cca7f76d5779eb5f004eba180f0e868b94e5c875c40ed25f3c6a67990451dc0005072458a3d6e4d15aaad4d28cfdc447406a064f8dc9d2578f4', 'admin', '2020-08-07 08:43:16'),
+(19, 'd1bcd36f2af71d1f63aad16511389bf9d4c15a9f95d843c2731ca8cf21a58cce27e297a03e933b402a42e1994e7d9de0f355cced56c4892afab221fdee8a3da4', 'IbrahimaNdaw@gestion-immo.com', '2020-08-07 08:48:53'),
+(20, '946063fa43de1c9d2b8e746855f087fc604e4c589af1920df39d96078af1bdab3bf3e8777bc5dac59b65380cb458c1c19407b5d1816ae8475af83effad29ef84', 'admin', '2020-08-07 09:05:42'),
+(21, '04f0ec0ab52e7d23881e90b55704fd1fd83880e3533392c09426d47de2f0c138dc6f355e7fc866e8610db71044779c543427a5cbc029aee495e9ebc1148f6fa4', 'OmarDiouf@gestion-immo.com', '2020-08-07 09:07:49'),
+(22, '2e77d106377848a08ee523d46f1162c21c86be6b018f386272009e9be9a11ebe7eb98c599b7b84ff21e70188787566d885739877101d22a8b584ed2213f7c921', 'admin', '2020-08-07 09:22:14'),
+(23, 'b24c6d8fe9459ecb51fa2919526ca3cf0d93aa50495d02955cc5641d03968f91fbf226bcbf5965173dd4010e3b4bff0ee7f8df2c9f2086a3205570b7e138691e', 'ModouGueye@gestion-immo.com', '2020-08-07 09:43:39'),
+(24, '3381de409287f0b77511269448c05d450546aba8eadbfb11466c9c56759ccb106d91a28ba66c512e5bb276b3268e2de7f9db892141092ce8ee6ee85fee71272c', 'IbrahimaNdaw@gestion-immo.com', '2020-08-07 09:45:56'),
+(25, '5a89ecd62bc3a63b61d6583840f78a71fb9a351a6efb24ec236685fbb96f5f0dbc0934bc8a076d7fbf8bfdca72476eb6dd19dc1566008123ff0223cef39e8575', 'OmarDiouf@gestion-immo.com', '2020-08-07 10:02:52'),
+(26, 'c338f92e71ed0ed96e887867d4c2e24309540d384af11e1dfc662926def16089dc2c32e850bd5fc7904b5392f41960f178d95206a9d9161e8176437386f2b02e', 'admin', '2020-08-07 10:59:51'),
+(27, '22fcb0d0321ad88e2734f45cbef44d923f0cf55c064511b24015e3f64c1d77d3b96810858a3c8bcd1ddade2f4faab4ffbc122a3c63b4fdff779924c12814ea05', 'admin', '2020-08-07 11:01:08'),
+(28, '31289dfd0c7c9ea20b834f5b406fa3631c70cf2afb2b361132f47ddae7d24f8bde3753b44d1a7c2a0ec3eb7cfcb68390a6e825cd8300c3a27dcf628902d3d50f', 'OmarDiouf@gestion-immo.com', '2020-08-07 11:01:30'),
+(29, 'ed729fe46e98dc099467b8dc0f3635292c4f4b9d430542ac73aee0692af9f3bbc700ec39a52589b42b8a21c3f74aa2c7eb58ff647a215a7ee9e85dbf5317dabc', 'admin', '2020-08-07 11:02:34'),
+(30, '6a2fdc5556f7c23721759a6e6691cc367f5f0ea556a2596e5b460b8c7f0eafa1b61f0c5ef85513867a7db679e089ac5c107247583149682622fd38422dec9883', 'admin', '2020-08-07 11:04:48'),
+(31, 'f94cbac5092e1102396f2be81100786974ed529ffae6a70559df98ac9c2e7a37303427ebf6f86d2479a40ca493292c8d1ff8952628d1a166106f99bfd6b86614', 'OmarDiouf@gestion-immo.com', '2020-08-07 11:05:10'),
+(32, 'fec20923c99f63fbb3b4025c976110509e84a39081324e8081349f9cbd65061da66cc398a846831bedf3e8e68960bee4df28eed7293373d8c2b107b97315598c', 'IbrahimaNdaw@gestion-immo.com', '2020-08-07 13:41:10'),
+(33, '3b252fc086a18cac4d18780fe9b4199184acb3c498a0aae8f1d53849a0c0b049988bdf7cbe753d5d66223d50d5921c97b6a6e55c8ec904c234f34fca07c3dfad', 'OmarDiouf@gestion-immo.com', '2020-08-07 13:45:01'),
+(34, '9ed878ea497c752a46f8c02e18c995142e9b160b1af08de6c57b1b42c60ab6ea5e4087fde2707e1dc14d1d5b0a277a3b5b39bf6e5e9c8c39060177b612ba86a2', 'IbrahimaNdaw@gestion-immo.com', '2020-08-07 14:25:55'),
+(35, '807d0f30e62fe080714d49ec1ec2c5c51c9ec52b40b24ee4eba1f706f3093ede80d3b21ad4d9c03e21411755c23387582b2a429fe86d623379b47ddf3ef6a6bd', 'OmarDiouf@gestion-immo.com', '2020-08-07 14:35:52'),
+(36, '43a6feccf5166f620f2004fad5ab108b5773012f31a6c3cfe64eb73eb31e7f3f95adead74f99597639da1ade3a6aa570a962a8ac60c62a43d4e1098e4c0bb13c', 'admin', '2020-08-07 14:36:32'),
+(37, '88ce207765ea28e75df2498f3d6a70d5435addb9165acdf7fd853829db4f4678dcdd629d0ad9f5b40811c6c134ecb77b5948400a483b4b3af9ae0ab24f87fc13', 'OmarDiouf@gestion-immo.com', '2020-08-07 14:41:58'),
+(38, '82ed8abbe36e2d94726d8ba2f53031c73c908f2e868628ac6d034e8bc254c2e6c97df557c30f15aefd8cbbc70b6d21f39366c4717c9163a70b2d38219d7808d3', 'admin', '2020-08-07 15:30:30'),
+(39, '70c1e31a8f806c87848d791635d040be9b681eaa09deb8f086bd427cb8d4a6fe487b1403ea979c24d55622fac9e2652680f1da2ec96fad13f3c159dea5747be9', 'AstouSall@gestion-immo.com', '2020-08-07 15:53:39'),
+(40, '9d215699727805f77994f969240a86226f50f756dd7949cf69c9a290bac9572f79761bcc2e872710d92987b034118efdcf88c90c6abc477e9819538fa6e81e35', 'IbrahimaNdaw@gestion-immo.com', '2020-08-07 15:55:02'),
+(41, '4906c136f85da6affb0daa5766207da05e8ba84a1de9d53e3a058d8f72a4f35f3debdcf7085721a581662de18dfb0840ae2520e40397350dc7fdaa17a841e274', 'OmarDiouf@gestion-immo.com', '2020-08-07 16:07:42'),
+(42, '988f324449210cd0f12ab7c08eb471236d045dfee276fba1246569088fe03c5bd92c06c397a56fcb843faf1db4541ad4087ddeece69b9b0968d9d1ab8857916a', 'admin', '2020-08-07 16:16:14'),
+(43, '5c3b3133301c6039a64d3932d32fbb75ffd6cc584018629bff74675cf98336cb93790d881d3458518f54a344da4830391f185ac0a63b7fcca959f9c3e27fc20a', 'OmarDiouf@gestion-immo.com', '2020-08-07 16:17:29'),
+(44, '9e9c4ae0b6ec82e2af1bebf5d81b04731995cc7f542ab1e7b3a92608cc3d73bcd4a9dbaec2cf2bb7d163c068d7d535a5975644dc76338f27bdef6426acf30db5', 'admin', '2020-08-07 16:17:53'),
+(45, '871cbc238fb512129e85a1ccf4bbbd9a6c70d6061fdd086c8fc14377db8982c3feee7ad2800bb3bec507befdff9a5d1783c1dc29d8d1e3f7d46294ceef415fa9', 'admin', '2020-08-07 16:18:15'),
+(46, '743863569eb8f61cca3b07c0fcb9c610d6dfe8eba9ff452706f834d1c671bde6a3e6a2d298d2168a2ef99e4f98dc4c98c31fa46368dc5b506a38aae45e5b7b03', 'OmarDiouf@gestion-immo.com', '2020-08-07 16:18:33'),
+(47, 'af7b438d0be9612217a3b6c602659625bc11ab58c674404e5d998233beeb96516d907f5acb2ebaadd71eadbd59b743a43e06b3cf4be5d35027439f6432ef0c68', 'admin', '2020-08-07 16:23:35'),
+(48, 'a0a6be50ba9a9d9eb1f7ed1735d7e7e6739f2929e7df7c19ddacde3d47824c278028bdfb1ec682ce8dc75be48348eeb699b6da30f05b12963ba459ef0c75a683', 'AssaneNdoye@gestion-immo.com', '2020-08-07 16:23:58'),
+(49, '0c037e0d5d714ea9e3f74b05df0a98d80e050c806b905bc828a900ce7773e5621e5241f1effbe1d60a839b84d35a1773f242a28cbaa78cfb21de806ae56911ac', 'admin', '2020-08-08 08:19:37'),
+(50, '9fed4ddc0399b9de0f279672072958d0d119d3a0b7253d87c27e0f2f7259e9f5200f6ebdfd024428d4aeaac37c2d6c37a4da096719a1e1d86ecd953b0ba348b4', 'OmarDiouf@gestion-immo.com', '2020-08-08 08:51:27'),
+(51, '58abb2dd908369be497515cd6befb6fa63b5609fab926f80af5e08e5a6de4f7115aeec10fa72b85edae9c31f1353be003f78bf9f0740ecb99c6c8498bb99c7cd', 'admin', '2020-08-08 09:21:37'),
+(52, '9c0ef07ae1f974ab49b81a5b253b3574c93e6289060c643c77bd27e355c00d8209e9143fae6a4f84ec60e6fa8a35b4826921c015ee8456842d30032c0613b9ab', 'OmarDiouf@gestion-immo.com', '2020-08-08 09:41:05'),
+(53, '463a1acfe24852276e5f740beb19c954d7ee06570eb6121b28070ede65d0dcb881b964d5377b6e28b84e7e5f2256c077a7358e7f8a6a615c42ef18109545f01f', 'admin', '2020-08-08 10:11:26'),
+(54, 'b893bbba8015745a3a5b5a227a7ca1661ae9f3ba5ad2779deb6f5daa18bf24fcfd73f77ab80ecda43ed23e536db9301e6caca6394d08293c42f4ac7cacfed973', 'OmarDiouf@gestion-immo.com', '2020-08-08 10:12:02'),
+(55, '4ad60aef5de52254cb7beaa2c794a00826d08d56783676e468bd5e31e3fda98f5ad5907f91c8ba69703cc390f7f1c9ab92ed28dfaa0f5a86a76888c5eec24bd0', 'admin', '2020-08-08 10:12:29'),
+(56, '786d024c6ae197499ec00f9467aa74985669898d1c336238d6f1030d6daea07e0339b85b44a4bf4f3ece30d885781cbd40caf2f7456352a0f2626167f1e4dd5c', 'OmarDiouf@gestion-immo.com', '2020-08-08 10:19:56'),
+(57, 'a22b8f322352c14631124a7addcdd398d544f8c943dd406fb8e66e18ef38874c76de471405fc99204e7beeebf4998adf4d716a73b1e082ac564a83901e56d303', 'admin', '2020-08-08 16:21:19'),
+(58, 'b0c657ffc1e3ac42c2d3b526bcb052d09109d1349f605ae8152695c1c23712d8903346b24267520f2850309ad9038cda1c5a37bcc5d11ec32518df9c6ec05c03', 'OmarDiouf@gestion-immo.com', '2020-08-08 16:22:41'),
+(59, 'd302264e1b9c012a39735bcf748c8f8a3353bdc142aba50b2eae5a000394bef11b4f7523aacacc06c4b129dfe75e5e2d063c6a1f77a65afde25bafa2a91f6315', 'admin', '2020-08-08 16:42:27'),
+(60, '98cf6b40d479644b8fa116f1db10aee27046044e9afe2000ad88222e330ecbf698bf28b7cad330289f2b9666138ce888657b5089624e5d7840263bde27afbd38', 'OmarDiouf@gestion-immo.com', '2020-08-08 16:48:04'),
+(61, 'f4ecde1e504ebeef7280b206f237733f40bffce3fb7440a18aabf7429d48fa8342c13e3f895c228feed713da3765e06df329d253f7bf1cfe767ed90dcb980496', 'sss@gestion-immo.com', '2020-08-09 08:49:26'),
+(62, 'fde4029267e301d3e3696a9f11bea3bbd375de956c7d75287737fa5aaf6b854e1e8a39e2a75106eadacd765776367dd93837fd0067a86160715dbebbd4d32e46', 'admin', '2020-08-09 09:32:23'),
+(63, '292603e6d8bc7b61615a2260728562a75aba06125ee8630cf715cabc412c755e8203c1a6fd48c7298cc527b8251e96fab4b9409ed5ab6ec26850b113f9c60280', 'admin', '2020-08-09 09:32:53'),
+(64, '82490b7dc52e214b4f9966b452974e6f4e3e1310eb00bb23e5d6ad56572148f305316c411b873b4b3aabc669f2f0839671e64e103eab1851a9621e920850d5e1', 'aminaw@gestion-immo.com', '2020-08-09 09:33:27'),
+(65, '244e5765b89a610033bfaed2fb1a8950eb4bac7d62b152a94c780527ad885c2df812c23d76af28c5099edc2e7e2fe2dd1aa6334731b767dc3d93161ffd1488da', 'admin', '2020-08-09 09:33:35'),
+(66, '09e7b01837537c9017f8ce511e2b97dd14c8125eeee68360331c8c163af3d23c56b0508b7be96371221a3d1de7ef3aba764ee4884cff33fb882d1222e2343c16', 'admin', '2020-08-09 09:50:06'),
+(67, '336c43b4e30ecefeeff157ab06aaf068128dbc1f9ed12345b8ed728620166ee30e0d84dc76fbcf6197813d31e323cc7a1ae31eed7fc5d9c21a986e5915b5eddb', 'aminaw@gestion-immo.com', '2020-08-09 09:57:31'),
+(68, 'b7298f8fc5706bd29ae62a885710f5a580027d4aa0aed0024ee5064ca4a248025d7ef67dc8998260ee6f66d007d4cfc7d27cb51d0bd06efa7fbc24353720c2de', 'admin', '2020-08-09 10:00:29'),
+(69, '1ef9235f28a720ebec5cacbc3f1a9c307be73d683e1a21b07a49eacaf6d1bdb429936ed20d6e95c36d853a24d307b0bd5bff693eb294c62b343100510e162768', 'aminaw@gestion-immo.com', '2020-08-09 10:00:43'),
+(70, '47fc1857023c6d578d586c3b12495b06816eda124b8167fef7882cd9e033c1b0f50103d1a198cca770b37a9ac063493d8ea4c26798a53c28fb588ed96ab37041', 'admin', '2020-08-09 10:11:29'),
+(71, '3820640b1965971d3e300da1a8ffd81ecfbc747933d8e6157118f959f8e02cbfab17c6c09fc74966d96c6b94ccd1dba40a8d83076f533bd99e32a0d4ff6404e3', 'aminaw@gestion-immo.com', '2020-08-09 10:38:32'),
+(72, 'd28fcea3efac8237b826809ae8a25c5dbead31265f1bdccd2614106008af48b53ff95b4d1ae832f8082ad16246de1684a1f59439e08d0313b624e60904b2f08f', 'admin', '2020-08-09 11:06:03'),
+(73, '3ec1a0adab162584c5abe79647d956a7b8dc32bcf19249363d962eb21356f2605494458530e7455a82802c3d8b9cabbae4e8f72460a8a5fa804e40964c2a80a5', 'admin', '2020-08-09 11:06:06'),
+(74, 'f93996bb844aa217cb063372e42c451a14eda8bc5f475a959b3630e65981a5de2453e13cb2411ed3f8e0a65b9fd476ab5d3466a18101d8204f8e756a6b2ff53d', 'admin', '2020-08-09 11:06:48'),
+(75, 'f29c4efd9c85085a99d3e65d2537417c20d94339cf80585e13f40479abcd8f82db0f9141015a7e9ef2fe6aaf858f02f96e52fad798c2bf0beb4d664a0869a0a8', 'aminaw@gestion-immo.com', '2020-08-09 11:07:09'),
+(76, '651fc89650963c702dce10a62ee0d6404fc716180378c3b6930abb8ab9d067fdea584ad9c905793eca3ccf2e67f6fac71d5050a75ba82db91b5e118016a48e13', 'admin', '2020-08-09 11:07:21'),
+(77, '9199c36d6dd1c65cb5619cc6131efff2a2ad7e3d6415390947048d863fca2ccdb0c167490914bbeec99c8b79b7e4081557dc4bed48a4123d9405a56248ddc24c', 'aminaw@gestion-immo.com', '2020-08-09 11:07:36'),
+(78, '1480ee4002e51d45e5112da1d6cfc8d826e5c61f63a80bdf007bc7064530de0aec1652d0c04e82d2e99fc09118f7751dbc031ef1e38c275c9a8e2e7d8dffdaf7', 'aminaw@gestion-immo.com', '2020-08-09 11:08:13'),
+(79, '4ce7523ee6295884ade3e8b6a0d6f5b83c6eceb713b6e82039c69a0c449a5f8f7f9d11d06a52e18273df9df59a733de804210c2a2b1fea7ad75f1b5817c54d64', 'aminaw@gestion-immo.com', '2020-08-09 11:08:47'),
+(80, '74f7696010d754ee2b305b027122c61006ca1a7fc5ec3c4162b00a169d925458dc60ab5865fac78bb28ecac561e1f615d02c9da6584cca8baf3a50f79fc55265', 'aminaw@gestion-immo.com', '2020-08-09 11:09:20'),
+(81, 'f622863e82467d9e0f5facf0c40544094063643e4f4f4f012df6b34dc33840eaa5f094b0b427a1b83751db49d92d29cd0eec0a023aad75bd1822b100ae8bd527', 'aminaw@gestion-immo.com', '2020-08-09 11:14:19'),
+(82, '3ce23e192bd2123a27f188324df7acdcaf7109af4f3628b0d2d16df39b9aa67d873d071c5cfb12409ab0150dbaea6c2ed078c4b2a5fbdcaefdf0ee4840621e5b', 'aminaw@gestion-immo.com', '2020-08-09 11:14:55'),
+(83, '09364f2a0585d9b50b89e67b12c6088406111b2b7b2c4705be3c3e0f696253f8ae459b638c77bbdd600c5a928e986c43c0b9013dec955283f27bf4164ade2cb1', 'admin', '2020-08-09 11:16:02'),
+(84, 'd8ea56f78ac1824ef5575856822281385fe69ba95cb517513fac07db081552a470800a782195ddde54ecd4a91b82058ca6f0a75c962be62d2ef165e4ef095c6d', 'MamadouNdiaye@gestion-immo.com', '2020-08-09 11:23:12'),
+(85, '9b5a81e531e4e2c413cb7966c716f5953aa058dbb1e3f20c0b851b3385036f0ad214637e9703bc0e95165222216bce846572cb963623003a56dcac3c5d6227e5', 'IbrahimaNdaw@gestion-immo.com', '2020-08-09 11:24:46'),
+(86, '7ec1dda71dd02b4a19722ac706c78cfc136c2653b66dc729d67805c31b30c14d3ccc0cbf956b0bdafa4eace9d488465a8a0ae6ba7ee63b910c42f73978890c6e', 'OmarDiouf@gestion-immo.com', '2020-08-09 11:36:50'),
+(87, 'a4d864812e28e9c265aa734f0f1316d776dd3c2b6abdd037860d4e17ea5ee176d498b5aab596681720cba8012952e2bd2d984325c88bddebe4db8e71edc2d44c', 'admin', '2020-08-09 11:51:59'),
+(88, 'ae5162bde820a79ecdb80bbee73f03a799232dcaee33dc58803e7f67a3e0a3aefdffe44d6a0305498a5c8ba59851f81e664e0784c90320482af4d52e445c5e2a', 'OmarDiouf@gestion-immo.com', '2020-08-09 11:52:49'),
+(89, '3c9defaaf824c27eeb070f004a32ea53180125f1800117765b4705e3ae2da597037a65d39f1cad861ed2840e2b91122c55a930cf1632a507d0704e8b7e0f56ca', 'admin', '2020-08-09 11:53:42'),
+(90, '78b53a5b59520a6098c3ed5e7636d4c2441f6cf26e8aee1e52186dc03062bf8b92412a09c90320be0557cf24a09117a0d6b5eedaee16a7f0d6a1599c12799207', 'admin', '2020-08-09 11:59:53'),
+(91, '19e13edaf2d44926010f91a30a3b836649e0366a275982d6d414278fdc11d00af3cf7c7afa63c0928fa4d06f154f745aceb4a5ef55f67b994b6d3aa4fd8abcac', 'OmarDiouf@gestion-immo.com', '2020-08-09 12:00:23'),
+(92, '8f2621d5a53d2223cc4e32c8a81fd39a712555b155bcfc1d087b6b5b3b7d592f8b62503764070a092dbc15e4953134064f632f37c431c046cb14e67306e5d5ad', 'admin', '2020-08-09 12:00:30'),
+(93, '1d6f878685cc3618b7dc9b5f9da97f4656f46493e1e4936679e3c78e134c79a6a908ed43ac73a842dbcd0f33e513b2ffa3fbd20010d6817ddafe25988dc4ee0e', 'SokhnaGueye@gestion-immo.com', '2020-08-09 12:04:29'),
+(94, 'a1aea2be568f2d74d0ef77e9f46938f36794f9d9fdb54dc9606f1ef9824640835af37d790aa7a8452d3343d5ff16017a79af7f44ef53d4f71a131ef238cb8e80', 'admin', '2020-08-09 12:14:13'),
+(95, '3615d111b6fdb6a59f4c414f1ef25d1e033fa9a7b50d1733a7e3b7a6c28fba3dd9cac65adbca08451100db4256f65d8974017548795c9521198aff8c4e28abf9', 'admin', '2020-08-09 12:37:24'),
+(96, '0368c139289b3161d1581c81d5540a3fbd3be6c28b972aa81a26c0acb60afda9a5457ce9fe6a4c661ff105b107f000d2578f5a18df75d93557d2be7a42e80af3', 'admin', '2020-08-09 15:20:50'),
+(97, 'b9ca77a83d090d954abf31ce0d7f2a6428f36a07c6c847b9d12b3303cabd306fcd4e1de6ee6d648a0c153a31bb3788bf9b8d3edc48b3a491da21a13e80b54cd5', 'AmadouDiagne@gestion-immo.com', '2020-08-09 15:23:09'),
+(98, '0fa3ecde668dc7e660e7f6c6aff57115bb765f38fdc55199398b7dc651fa356e7126eb44f3ca04f2853d08b5f8ebe0dcecc2130c7d29d6a57e00e3b02b04774f', 'admin', '2020-08-12 10:07:43'),
+(99, '8aaefc339c42e32f340a06739547ff30864bf493c986e60a9690fc279b033b1a383626f8f8b8e61e1cb15d2489022578e0de46198049a205760e64984abed8d6', 'OmarDiouf@gestion-immo.com', '2020-08-12 10:08:00'),
+(100, '65d47a189be4e6bd492f504e3bbf8dd39ec03398980596b59a82c1e2bfedc15c19d2f1cdb67d13361a08a62ae78c2ead3d2c54df1bdce2628d3a833abfd5bfd4', 'OmarDiouf@gestion-immo.com', '2020-08-12 13:10:57'),
+(101, 'f72c712e26aa40111f6e346e49ee0e7640e6fb330aacfc51ba48e4a5cca010a41b65466de479e14ca9b0795e3dc270b781112748d7be066e1a458c023e8eb658', 'OmarDiouf@gestion-immo.com', '2020-08-12 13:11:37'),
+(102, '04113a7ed88ad1797bdd54605429f110cf1ba275ec64f630f0922943912f722ca9fccc8329c5d9482ec02670d9ad9ea2cfb8bc3a3ac05bbfba4120d717ef81fb', 'OmarDiouf@gestion-immo.com', '2020-08-13 08:37:28'),
+(103, '92023ed3df038f2a14f92aedfaca75a9c5b09e988299d7909bd2210b0c7748fe250450af5e1a09d59a7301bca79e85b7a1d10001c555b24c08da590749794474', 'OmarDiouf@gestion-immo.com', '2020-08-13 12:36:07');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `sous_zone`
+--
+
+CREATE TABLE `sous_zone` (
+  `id` int(11) NOT NULL,
+  `zone_id` int(11) DEFAULT NULL,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `sous_zone`
+--
+
+INSERT INTO `sous_zone` (`id`, `zone_id`, `nom`) VALUES
+(4, 2, 'Bureau Y'),
+(6, 8, 'Entrepôt A'),
+(7, 4, 'Bureau 1'),
+(11, 8, 'Entrepôt B'),
+(20, 11, 'Magasin 1'),
+(21, 11, 'Magasin 2'),
+(22, 11, 'Magasin 3'),
+(23, 11, 'Magasin 4'),
+(24, 11, 'Magasin 5'),
+(25, 9, 'Entrepôt 1'),
+(26, 9, 'Entrepôt 2'),
+(27, 9, 'Entrepôt 3'),
+(28, 9, 'Entrepôt 4'),
+(29, 8, 'Entrepôt C'),
+(30, 1, 'Entrepôt 1'),
+(31, 1, 'Entrepôt 2'),
+(32, 1, 'Entrepôt 3'),
+(33, 1, 'Entrepôt 4'),
+(34, 1, 'Entrepôt 5'),
+(35, 1, 'Entrepôt 6'),
+(36, 1, 'Entrepôt 7'),
+(37, 2, 'Bureau Z'),
+(38, 4, 'Bureau 2'),
+(39, 10, 'Entrepôt 1'),
+(40, 10, 'Entrepôt 2'),
+(41, 10, 'Entrepôt 3'),
+(42, 10, 'Entrepôt 5'),
+(43, 10, 'Entrepôt 6'),
+(44, 12, 'Entrepôt 1'),
+(45, 12, 'Entrepôt 2'),
+(46, 12, 'Entrepôt 3'),
+(47, 12, 'Entrepôt 4'),
+(48, 13, 'Bureau 1'),
+(49, 13, 'Bureau 2'),
+(50, 13, 'Bureau 3'),
+(51, 13, 'Bureau 4'),
+(52, 13, 'Bureau 5'),
+(53, 15, 'Bureau 1'),
+(54, 15, 'Bureau 2'),
+(55, 15, 'Bureau 3'),
+(56, 15, 'Bureau 4'),
+(57, 14, 'Bureau A'),
+(58, 14, 'Bureau B'),
+(59, 14, 'Bureau C'),
+(60, 17, 'Entrepôt 1'),
+(61, 17, 'Entrepôt 2'),
+(62, 17, 'Entrepôt 3'),
+(63, 17, 'Entrepôt 4'),
+(64, 16, 'Bureau 1'),
+(65, 16, 'Bureau 2'),
+(66, 16, 'Bureau 3'),
+(67, 16, 'Bureau 4'),
+(68, 16, 'Bureau 5'),
+(69, 16, 'Bureau 6'),
+(70, 16, 'Bureau 7'),
+(72, 21, 'Entrepôt 1'),
+(73, 21, 'Entrepôt 2'),
+(74, 21, 'Entrepôt 3'),
+(75, 21, 'Entrepôt 4'),
+(76, 22, 'Bureau 1'),
+(77, 22, 'Bureau 2'),
+(78, 22, 'Bureau 3'),
+(79, 22, 'Bureau 4'),
+(80, 22, 'Bureau 5'),
+(81, 22, 'Bureau 6'),
+(82, 22, 'Bureau 7'),
+(83, 23, 'Bureau 1'),
+(84, 23, 'Bureau 2'),
+(85, 24, 'Entrepôt 1'),
+(86, 24, 'Entrepôt 2'),
+(87, 24, 'Entrepôt 3'),
+(88, 24, 'Entrepôt 4'),
+(89, 25, 'Bureau 1'),
+(90, 25, 'Bureau 2'),
+(91, 25, 'Bureau 3'),
+(92, 25, 'Bureau 4'),
+(93, 27, 'Bureau 1'),
+(95, 27, 'Bureau 2'),
+(96, 7, 'Bureau A'),
+(97, 6, 'Bureau B'),
+(98, 3, 'Entrepôt 1'),
+(99, 26, 'Bureau A'),
+(100, 3, 'Entrepôt 2');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `username` varchar(180) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `roles` json NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `poste` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `departement` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `menu` json DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `user`
+--
+
+INSERT INTO `user` (`id`, `username`, `roles`, `password`, `nom`, `poste`, `departement`, `image`, `status`, `menu`) VALUES
+(1, 'layendoyesn@gmail.com', '[\"ROLE_SuperAdmin\"]', '$argon2id$v=19$m=65536,t=4,p=1$rz6WiCYTbweUCDjVOTjGGg$QW/xGVFCDUt34Ij2YL3aYNS+fFD4DSi9Fu701mIJolY', 'Abdoulaye Ndoye', 'Poste', NULL, 'exemple.jpg', 'actif', NULL),
+(2, 'admin', '[\"ROLE_Admin\"]', '$argon2id$v=19$m=65536,t=4,p=1$0BC7DN85scK/G/PKDOMQ0A$+L9kmhk2OE2ERzYQ/gh/QmDgeOJAaFZL8Sbc5hF1DuU', 'Abdoulaye Ndoye', 'Admin', NULL, 'e841153a271a1f31fb6a045c68f86098.png', 'actif', NULL),
+(3, 'admin2', '[\"ROLE_Admin\"]', '$argon2id$v=19$m=65536,t=4,p=1$ztPiUNAWXNLZbxadasCB9A$pPoA98aM+VH+1768+00wrQDBJ6w38QsIdVWbXYDlrBc', 'Ousmane Diop', 'Admin', NULL, 'exemple.jpg', 'actif', NULL),
+(4, 'OmarDiouf@gestion-immo.com', '[\"ROLE_Superviseur\"]', '$argon2id$v=19$m=65536,t=4,p=1$Cyz6vemSQW9/5Olg8cK6hQ$9CxkKdYLUwTUDZ59cFH53aFH1vuR67ApAvzBqjtRYjM', 'Omar Diouf', 'Directeur administratif et financier', 'Direction financière', '405496101f0497e965082ec359c64329.jpeg', 'actif', '[]'),
+(5, 'AstouNdiaye@gestion-immo.com', '[\"ROLE_AC\"]', '$argon2id$v=19$m=65536,t=4,p=1$eHqxuKQ5lRoCGGZ/WY6f+g$msKNQ+ufHudmmiyjlVvWeQMaTRRY8gZStqS0FV3GK40', 'Astou Ndiaye', 'Comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(6, 'AssaneNdoye@gestion-immo.com', '[\"ROLE_Guest\"]', '$argon2id$v=19$m=65536,t=4,p=1$2Lk6kSO+cjxSE4JJFWtP3A$6+HEVh1UrPUItdEfhlBfaDeAatIA0HYdaFkze3F/NDA', 'Assane Ndoye', 'DAF', 'Direction du patrimoine', 'exemple.jpg', 'actif', NULL),
+(7, 'BabNdiaye@gestion-immo.com', '[\"ROLE_AC\"]', '$argon2id$v=19$m=65536,t=4,p=1$cOwn15No9O97VLfjq3mWJQ$oX9llnCsBal+KLGaHSlioA6mP/FMNDvKbfr9PTzEomo', 'Babacar Ndiaye', 'Chef de service', 'Direction du patrimoine', 'exemple.jpg', 'actif', NULL),
+(8, 'SaliounNdiaye@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$BT/TMEa8fuKzUblTlp58OA$8jDP7pjot/5hKhvyYVHQRL6p8Bw5e9uwN1HkLM+IFhA', 'Salioun Ndiaye', 'Comptable sénior', 'Direction comptable', 'exemple.jpg', 'actif', '[]'),
+(9, 'AstouMbaye@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$62Pas5J9hIgyXuaIxxAj1A$XZHjg29Kazf/Ag4uDRVZ3ka1cf+K406QbIA/s+biHpk', 'Astou Mbaye', 'DC', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(11, 'IbrahimaNdaw@gestion-immo.com', '[\"ROLE_Superviseur\"]', '$argon2id$v=19$m=65536,t=4,p=1$uDX6peZ7Bz+ITdQjvI6NOQ$J2FaUihEFJPzYigdEszLd/r3RTB2eAgq19n1+YBIz0A', 'Ibrahima Ndaw', 'Comptable sénior', 'Direction comptable', '3542d235f13982b480fb9478d901449d.png', 'actif', NULL),
+(12, 'DaoudaDiop@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$G+pHEx51gFZgVVo4evtmfQ$KELhBw9bDjeCyOluckuM9+CCB2/uBgefZpDemFStfIg', 'Daouda Diop', 'DAF', 'Direction financière', 'exemple.jpg', 'actif', NULL),
+(13, 'AwaNdiaye@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$fWzYE7wQpULYtOfFEEJpIQ$FZJ7Pz/Ycdi/DgWj/MddhdUZ6sP5mzE8bh0DdMlBxd4', 'Awa Ndiaye', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(14, 'FalouBâ@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$rTkQ45drXAQQeqb0agSwjA$OJeEuNuncfWVKuvtLUTFPXjrcIv2koDVU3zPAbK/gOM', 'Falou Bâ', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(15, 'ModouGueye@gestion-immo.com', '[\"ROLE_Superviseur\"]', '$argon2id$v=19$m=65536,t=4,p=1$a9rKLunFLwGn3qahmjcWYA$SbrnmM8itRbGai8WP1Me179AhH48dOMV9SbkbvD3X/s', 'Modou Gueye', 'DAF', 'Direction financière', 'd7228c7a1b7a0e8c01a49396980354d4.jpeg', 'actif', NULL),
+(16, 'SaliouSall@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$J49RFknp6JukdI+UZ5oJBQ$z1YflhlMyfPWeLtxdbfixD0CaqEeb+IUrmHcaEOqQtE', 'Saliou Sall', 'Comptable Sénior', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(17, 'LamineWade@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$lffTvxv1hDVeeHzKviqysg$BFsSvWBrS7hLR1KYxyk/2AdCK42kfecIeGW0kDrt9w4', 'Lamine Wade', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(18, 'MariamaFaye@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$iV6gX5xriifZ9o4veH1spQ$2GS5N2btTYOl3bQTkJA8P/vX+scxA14JYZz4k8rrCCo', 'Mariama Faye', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', '[]'),
+(19, 'AstouSall@gestion-immo.com', '[\"ROLE_Guest\"]', '$argon2id$v=19$m=65536,t=4,p=1$QL+M9vJgHLAl+yj2RvT2cw$djClPIY0N1+ASWGm9C5/zEOIZSEDt/fAfKoUgCP9rsA', 'Astou Sall', 'DAF', 'Direction comptable', '2e0779dfd99fdaf05dae239af18a0437.png', 'actif', NULL),
+(20, 'AmadouNdoye@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$umInuNn5+RQFIXmzurrApw$LrdrwKVxx9VNWCiICgqsj9wFNF/Z6FDWJEIzgQ5HQgE', 'Amadou Ndoye', 'DAF', 'Direction comptable', 'exemple.jpg', 'actif', '[]'),
+(21, 'SaliouNdiaye@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$RYy5KbLZPtbe0yzQUKxPNw$0HnuWW1VrPXXFlZ7+qiQmcvEr4maAKFefLUoU9JrBGs', 'Saliou Ndiaye', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(22, 'AdjaDiop@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$Hh/KnbgPZ/kXqhVN1IG7hw$oabzpoJFdC48/sHXXatJw5YVd0qGGM2erGYrw0p9FVw', 'Adja Diop', 'comptable', 'Direction comptable', 'exemple.jpg', 'actif', NULL),
+(25, 'hamidou@gestion-immo.com', '[\"ROLE_Guest\"]', '$argon2id$v=19$m=65536,t=4,p=1$RnpoWOxPoZ/qZZnRbFxt4g$tHYyobnsOJAs+kcol8AIZmpuNw6FIQw4Sgcy7l9y9CM', 'Hamidou Faye', 'DAF', 'Direction du patrimoine', 'exemple.jpg', 'actif', '[]'),
+(27, 'aminaw@gestion-immo.com', '[\"ROLE_Guest\"]', '$argon2id$v=19$m=65536,t=4,p=1$YBB7RTwu/KsBg5QD04alAQ$qtGaoCAHptCDE1odfrwaGxe9ZMx185hVmmkUOMulPVg', 'Amina Wade', 'DRH', 'Direction du patrimoine', 'exemple.jpg', 'actif', '[[\"EQUI\", []], [\"INV\", [\"INV3\", \"INV1\"]]]'),
+(28, 'MamadouNdiaye@gestion-immo.com', '[\"ROLE_Superviseur\"]', '$argon2id$v=19$m=65536,t=4,p=1$cP2Q14V+W0XnNu83nnpKkQ$hxOhHB6idopOfPRyLvBjc6qvqFtmPjx2m9RPKZQcziE', 'Mamadou Ndiaye', 'DAF', 'Direction du patrimoine', '6432b99dbf1e793f18a8b4fa40676c3c.png', 'actif', '[]'),
+(29, 'AssaneFaye@gestion-immo.com', '[\"ROLE_CE\"]', '$argon2id$v=19$m=65536,t=4,p=1$e3JPfdOG0TfYab91M0BIdw$zvttYgkwyeYudgcUmQzsody4o9HBVzZNPQF5WTPhY2k', 'Assane Faye', 'Comptable sénior', 'Direction comptable', 'exemple.jpg', 'actif', '[]'),
+(30, 'FatouFall@gestion-immo.com', '[\"ROLE_MI\"]', '$argon2id$v=19$m=65536,t=4,p=1$xj8mq1b8JdFc/gYZXVKQ5Q$+plGkii85l+vmSqfQ3hFvdWyDH5Ou+BY6jktVgPgkPw', 'Fatou Fall', 'Comptable', 'Direction comptable', 'exemple.jpg', 'actif', '[]'),
+(31, 'DaoudaKâ@gestion-immo.com', '[\"ROLE_MC\"]', '$argon2id$v=19$m=65536,t=4,p=1$Wgf0IDOPllJoQqVGR1ot1w$Wd/GK2cgGppHF8n02vwCeXUiaE8TdSZNzRpQGJAQNP8', 'Daouda Kâ', 'DAF', 'Direction financière', 'exemple.jpg', 'actif', '[]'),
+(32, 'SokhnaGueye@gestion-immo.com', '[\"ROLE_MC\"]', '$argon2id$v=19$m=65536,t=4,p=1$6cs4zhZ/ZCdkSDYI04Dr+A$K8sJq57tErj6a86r9hLkfmG2PasBzTPcSuiChM/OXic', 'Sokhna Gueye', 'DRH', 'Direction du patrimoine', 'exemple.jpg', 'actif', '[]'),
+(34, 'AmadouDiagne@gestion-immo.com', '[\"ROLE_PC\"]', '$argon2id$v=19$m=65536,t=4,p=1$iw6CtHMHWCaGR6bzrDwMHQ$3q9E0GtkQBJSr89muWet15Sg0FK6kFZEuXjZtBXzrqk', 'Amadou Diagne', 'DRH', 'Direction comptable', 'exemple.jpg', 'actif', '[]');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user_localite`
+--
+
+CREATE TABLE `user_localite` (
+  `user_id` int(11) NOT NULL,
+  `localite_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `user_localite`
+--
+
+INSERT INTO `user_localite` (`user_id`, `localite_id`) VALUES
+(8, 1),
+(9, 1),
+(9, 6),
+(12, 7),
+(13, 8),
+(14, 2),
+(16, 9),
+(17, 8),
+(18, 1),
+(18, 3),
+(18, 6),
+(20, 7),
+(20, 13),
+(21, 8),
+(22, 5),
+(22, 14),
+(29, 15),
+(30, 8);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user_sous_zone`
+--
+
+CREATE TABLE `user_sous_zone` (
+  `user_id` int(11) NOT NULL,
+  `sous_zone_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `user_sous_zone`
+--
+
+INSERT INTO `user_sous_zone` (`user_id`, `sous_zone_id`) VALUES
+(8, 30),
+(8, 31),
+(8, 32),
+(8, 34),
+(9, 4),
+(9, 30),
+(9, 34),
+(9, 36),
+(9, 38),
+(9, 39),
+(9, 40),
+(9, 41),
+(9, 43),
+(12, 44),
+(12, 46),
+(12, 47),
+(13, 54),
+(13, 56),
+(13, 57),
+(13, 59),
+(14, 6),
+(14, 29),
+(16, 60),
+(16, 62),
+(17, 57),
+(17, 66),
+(17, 69),
+(18, 25),
+(18, 30),
+(18, 33),
+(18, 39),
+(20, 45),
+(20, 76),
+(20, 79),
+(20, 80),
+(21, 57),
+(22, 83),
+(29, 89),
+(29, 91),
+(30, 53),
+(30, 54),
+(30, 56);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user_zone`
+--
+
+CREATE TABLE `user_zone` (
+  `user_id` int(11) NOT NULL,
+  `zone_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `user_zone`
+--
+
+INSERT INTO `user_zone` (`user_id`, `zone_id`) VALUES
+(8, 1),
+(8, 3),
+(8, 4),
+(9, 1),
+(9, 2),
+(9, 4),
+(9, 10),
+(12, 12),
+(13, 14),
+(13, 15),
+(14, 8),
+(16, 17),
+(17, 14),
+(18, 1),
+(18, 9),
+(18, 10),
+(20, 12),
+(20, 22),
+(21, 14),
+(22, 11),
+(22, 23),
+(29, 25),
+(30, 15);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `zone`
+--
+
+CREATE TABLE `zone` (
+  `id` int(11) NOT NULL,
+  `localite_id` int(11) DEFAULT NULL,
+  `adresse` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Contenu de la table `zone`
+--
+
+INSERT INTO `zone` (`id`, `localite_id`, `adresse`, `nom`) VALUES
+(1, 1, '', 'Zone industrielle'),
+(2, 1, NULL, 'Zone des Niayes'),
+(3, 1, NULL, 'Zone X'),
+(4, 1, NULL, 'Zone Y'),
+(6, 2, NULL, 'Zone Y'),
+(7, 2, NULL, 'Zone 1'),
+(8, 2, NULL, 'Zone 2'),
+(9, 3, NULL, 'Zone X'),
+(10, 6, NULL, 'Centre X'),
+(11, 5, NULL, 'Ndar'),
+(12, 7, NULL, 'Bamako'),
+(13, 7, NULL, 'Zone X'),
+(14, 8, NULL, 'Zone AX'),
+(15, 8, NULL, 'Zone BX'),
+(16, 9, NULL, 'Zone A'),
+(17, 9, NULL, 'Zone B'),
+(21, 13, NULL, 'Zone X'),
+(22, 13, NULL, 'Zone y'),
+(23, 14, NULL, 'Zone 1'),
+(24, 15, NULL, 'Zone A'),
+(25, 15, NULL, 'Zone B'),
+(26, 16, NULL, 'Zone 1'),
+(27, 16, NULL, 'Zone 2');
+
+--
+-- Index pour les tables exportées
+--
+
+--
+-- Index pour la table `doctrine_migration_versions`
+--
+ALTER TABLE `doctrine_migration_versions`
+  ADD PRIMARY KEY (`version`);
+
+--
+-- Index pour la table `entreprise`
+--
+ALTER TABLE `entreprise`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `entreprise_user`
+--
+ALTER TABLE `entreprise_user`
+  ADD PRIMARY KEY (`entreprise_id`,`user_id`),
+  ADD KEY `IDX_606C16EA4AEAFEA` (`entreprise_id`),
+  ADD KEY `IDX_606C16EA76ED395` (`user_id`);
+
+--
+-- Index pour la table `inventaire`
+--
+ALTER TABLE `inventaire`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_338920E0C915C04F` (`presi_comite_id`),
+  ADD KEY `IDX_338920E0A4AEAFEA` (`entreprise_id`);
+
+--
+-- Index pour la table `inventaire_localite`
+--
+ALTER TABLE `inventaire_localite`
+  ADD PRIMARY KEY (`inventaire_id`,`localite_id`),
+  ADD KEY `IDX_87379856CE430A85` (`inventaire_id`),
+  ADD KEY `IDX_87379856924DD2B5` (`localite_id`);
+
+--
+-- Index pour la table `inventaire_sous_zone`
+--
+ALTER TABLE `inventaire_sous_zone`
+  ADD PRIMARY KEY (`inventaire_id`,`sous_zone_id`),
+  ADD KEY `IDX_39691BACE430A85` (`inventaire_id`),
+  ADD KEY `IDX_39691BABC2547E6` (`sous_zone_id`);
+
+--
+-- Index pour la table `inventaire_user`
+--
+ALTER TABLE `inventaire_user`
+  ADD PRIMARY KEY (`inventaire_id`,`user_id`),
+  ADD KEY `IDX_42DF8B8CCE430A85` (`inventaire_id`),
+  ADD KEY `IDX_42DF8B8CA76ED395` (`user_id`);
+
+--
+-- Index pour la table `inventaire_zone`
+--
+ALTER TABLE `inventaire_zone`
+  ADD PRIMARY KEY (`inventaire_id`,`zone_id`),
+  ADD KEY `IDX_6FA79DC2CE430A85` (`inventaire_id`),
+  ADD KEY `IDX_6FA79DC29F2C3FAB` (`zone_id`);
+
+--
+-- Index pour la table `localite`
+--
+ALTER TABLE `localite`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_F5D7E4A9A4AEAFEA` (`entreprise_id`);
+
+--
+-- Index pour la table `refresh_tokens`
+--
+ALTER TABLE `refresh_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UNIQ_9BACE7E1C74F2195` (`refresh_token`);
+
+--
+-- Index pour la table `sous_zone`
+--
+ALTER TABLE `sous_zone`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_2EE69E4B9F2C3FAB` (`zone_id`);
+
+--
+-- Index pour la table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UNIQ_8D93D649F85E0677` (`username`);
+
+--
+-- Index pour la table `user_localite`
+--
+ALTER TABLE `user_localite`
+  ADD PRIMARY KEY (`user_id`,`localite_id`),
+  ADD KEY `IDX_155A00A9A76ED395` (`user_id`),
+  ADD KEY `IDX_155A00A9924DD2B5` (`localite_id`);
+
+--
+-- Index pour la table `user_sous_zone`
+--
+ALTER TABLE `user_sous_zone`
+  ADD PRIMARY KEY (`user_id`,`sous_zone_id`),
+  ADD KEY `IDX_2E0613AFA76ED395` (`user_id`),
+  ADD KEY `IDX_2E0613AFBC2547E6` (`sous_zone_id`);
+
+--
+-- Index pour la table `user_zone`
+--
+ALTER TABLE `user_zone`
+  ADD PRIMARY KEY (`user_id`,`zone_id`),
+  ADD KEY `IDX_DA6A8CCEA76ED395` (`user_id`),
+  ADD KEY `IDX_DA6A8CCE9F2C3FAB` (`zone_id`);
+
+--
+-- Index pour la table `zone`
+--
+ALTER TABLE `zone`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_A0EBC007924DD2B5` (`localite_id`);
+
+--
+-- AUTO_INCREMENT pour les tables exportées
+--
+
+--
+-- AUTO_INCREMENT pour la table `entreprise`
+--
+ALTER TABLE `entreprise`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT pour la table `inventaire`
+--
+ALTER TABLE `inventaire`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT pour la table `localite`
+--
+ALTER TABLE `localite`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT pour la table `refresh_tokens`
+--
+ALTER TABLE `refresh_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+--
+-- AUTO_INCREMENT pour la table `sous_zone`
+--
+ALTER TABLE `sous_zone`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+--
+-- AUTO_INCREMENT pour la table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+--
+-- AUTO_INCREMENT pour la table `zone`
+--
+ALTER TABLE `zone`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+--
+-- Contraintes pour les tables exportées
+--
+
+--
+-- Contraintes pour la table `entreprise_user`
+--
+ALTER TABLE `entreprise_user`
+  ADD CONSTRAINT `FK_606C16EA4AEAFEA` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprise` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_606C16EA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `inventaire`
+--
+ALTER TABLE `inventaire`
+  ADD CONSTRAINT `FK_338920E0A4AEAFEA` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprise` (`id`),
+  ADD CONSTRAINT `FK_338920E0C915C04F` FOREIGN KEY (`presi_comite_id`) REFERENCES `user` (`id`);
+
+--
+-- Contraintes pour la table `inventaire_localite`
+--
+ALTER TABLE `inventaire_localite`
+  ADD CONSTRAINT `FK_87379856924DD2B5` FOREIGN KEY (`localite_id`) REFERENCES `localite` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_87379856CE430A85` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaire` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `inventaire_sous_zone`
+--
+ALTER TABLE `inventaire_sous_zone`
+  ADD CONSTRAINT `FK_39691BABC2547E6` FOREIGN KEY (`sous_zone_id`) REFERENCES `sous_zone` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_39691BACE430A85` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaire` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `inventaire_user`
+--
+ALTER TABLE `inventaire_user`
+  ADD CONSTRAINT `FK_42DF8B8CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_42DF8B8CCE430A85` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaire` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `inventaire_zone`
+--
+ALTER TABLE `inventaire_zone`
+  ADD CONSTRAINT `FK_6FA79DC29F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_6FA79DC2CE430A85` FOREIGN KEY (`inventaire_id`) REFERENCES `inventaire` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `localite`
+--
+ALTER TABLE `localite`
+  ADD CONSTRAINT `FK_F5D7E4A9A4AEAFEA` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprise` (`id`);
+
+--
+-- Contraintes pour la table `sous_zone`
+--
+ALTER TABLE `sous_zone`
+  ADD CONSTRAINT `FK_2EE69E4B9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`);
+
+--
+-- Contraintes pour la table `user_localite`
+--
+ALTER TABLE `user_localite`
+  ADD CONSTRAINT `FK_155A00A9924DD2B5` FOREIGN KEY (`localite_id`) REFERENCES `localite` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_155A00A9A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `user_sous_zone`
+--
+ALTER TABLE `user_sous_zone`
+  ADD CONSTRAINT `FK_2E0613AFA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_2E0613AFBC2547E6` FOREIGN KEY (`sous_zone_id`) REFERENCES `sous_zone` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `user_zone`
+--
+ALTER TABLE `user_zone`
+  ADD CONSTRAINT `FK_DA6A8CCE9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_DA6A8CCEA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `zone`
+--
+ALTER TABLE `zone`
+  ADD CONSTRAINT `FK_A0EBC007924DD2B5` FOREIGN KEY (`localite_id`) REFERENCES `localite` (`id`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

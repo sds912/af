@@ -24,7 +24,6 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
                                       string $resourceClass, //le nom de la classe ex si on fait un getEntreprise ici resourceClass sera Entreprise
                                       ?string $operationName = null)
     {//de l interface QueryCollectionExtensionInterface
-
         if($resourceClass===User::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
             $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
             $queryBuilder->join("$rootAlias.entreprises",'entreprise')

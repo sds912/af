@@ -66,7 +66,7 @@ export class EntrepriseComponent implements OnInit {
       if(val){
         val="Total "+val.replace("total","")
         $('.page-count').empty()
-        //$('.page-count').append(val)
+        //$('.page-count').append(val) injecter directement le data.lengt
       }
     },1000)
   }

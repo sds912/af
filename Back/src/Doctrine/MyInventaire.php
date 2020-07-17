@@ -24,7 +24,7 @@ class MyInventaire implements QueryCollectionExtensionInterface,QueryItemExtensi
                                       string $resourceClass, 
                                       ?string $operationName = null)
     {
-        if($resourceClass===Inventaire::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
+        if($resourceClass===Inventaire::class){
             $rootAlias=$queryBuilder->getRootAliases()[0];
             $queryBuilder->join("$rootAlias.entreprise",'entreprise')
             ->join("entreprise.users",'user')

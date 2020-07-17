@@ -6,9 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Shared;
 use App\Entity\Entreprise;
+use App\Entity\Inventaire;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
+use App\Repository\InventaireRepository;
+use App\Repository\LocaliteRepository;
+use App\Repository\UserRepository;
+use DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -27,15 +33,27 @@ class SharedController extends AbstractController
     /** @var EntityManagerInterface */
     private $manager;
 
-    /** @var EntityManagerInterface */
+    /** @var EntrepriseRepository */
     private $repoEse;
 
-    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker)
+    /** @var InventaireRepository */
+    private $repoInv;
+
+    /** @var UserRepository */
+    private $repoUser;
+
+    /** @var UserRepository */
+    private $repoLoc;
+
+    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
         $this->repoEse=$repoEse;
         $this->droit=$checker;
+        $this->repoInv=$repoInv;
+        $this->repoUser=$repoUser;
+        $this->repoLoc=$repoLoc;
     }
     /**
     * @Route("/entreprises", methods={"POST"})
@@ -84,10 +102,10 @@ class SharedController extends AbstractController
         ]);
     }
     /**
-     * @Route("/update/pp", name="update-pp", methods={"POST"})
-     */
-     public function updatePP(Request $request)
-     {
+    * @Route("/update/pp", methods={"POST"})
+    */
+    public function updatePP(Request $request)
+    {
          $image=$this->userCo->getImage();
          $requestFile=$request->files->all();
          if($requestFile && isset($requestFile[Shared::IMAGE])){
@@ -108,8 +126,7 @@ class SharedController extends AbstractController
              Shared::MESSAGE => 'La photo de profil a été modifié avec succès'
          ];
          return $this->json($afficher);
-     }
-
+    }
     /**
     * @Route("/info", methods={"GET"})
     */
@@ -124,6 +141,114 @@ class SharedController extends AbstractController
         $data = $serializer->serialize([$user,'$mercureToken',$updatePwd], 'json', ['groups' => ['user_read']]);
         return new Response($data,200);
     }
+
+    /**
+    * @Route("/inventaires", methods={"POST"})
+    * @Route("/inventaires/{id}", methods={"POST"})
+    */
+    public function addInventaire(Request $request,$id=null){//si put tableau vide
+        $data=Shared::getData($request);
+        $tatus=201;
+        $inventaire=new Inventaire();
+        if($id){
+            $inventaire=$this->repoInv->find($id);
+            $tatus=200;
+        }
+        $requestFile=$request->files->all();
+
+        $countInstruction=$data["countInstruction"];
+        $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
+        
+        $countDecisionCC=$data["countDecisionCC"];
+        $decisionCCs=$this->traitementFile($inventaire->getDecisionCC(),$data,$requestFile,$countDecisionCC,"decisionCC");
+        
+        $countPvReunion=$data["countPvReunion"];
+        $pvReunions=$this->traitementFile($inventaire->getPvReunion(),$data,$requestFile,$countPvReunion,"pvReunion");
+        
+        $presiComite=null;
+        if($data["presiComite"]){
+           $presiComite=$this->repoUser->find($data["presiComite"]); 
+        }
+        $idMembresCom=$this->toArray($data["membresCom"]);
+        $membresCom=$this->getallByTabId($this->repoUser,$idMembresCom);
+
+        $idPresent=$this->toArray($data["presentsReunion"]);
+        $presentHere=$this->getallByTabId($this->repoUser,$idPresent);
+        
+        $presentsReunionOut=$this->toArray($data["presentsReunionOut"]);
+        $entreprise=$this->repoEse->find($data["entreprise"]); 
+
+        $idLocalites=$this->toArray($data["localites"]);
+        $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
+
+        $inventaire->setDebut(new DateTime($data["debut"]))
+                   ->setFin(new DateTime($data["fin"]))
+                   ->setLieuReunion($data["lieuReunion"])
+                   ->setDateReunion(new DateTime($data["dateReunion"]))
+                   ->setInstruction($instructions)
+                   ->setDecisionCC($decisionCCs)
+                   ->setPresiComite($presiComite)
+                   ->addAllMembreCom($membresCom)
+                   ->addAllPresentR($presentHere)
+                   ->setPresentsReunionOut($presentsReunionOut)
+                   ->setPvReunion($pvReunions)
+                   ->setEntreprise($entreprise)
+                   ->addAllLocalite($localites);
+        
+        if($tatus==201){
+            $this->manager->persist($inventaire);
+        }
+        $this->manager->flush();
+        return $this->json([
+            Shared::MESSAGE => 'Enregistré',
+            Shared::STATUS => $tatus
+        ]);
+    }
+    public function getallByTabId($repo,$tab){
+        $t=[];
+        for($i=0;$i<count($tab);$i++){
+            $object=$repo->find($tab[$i]);
+            if($object){
+                array_push($t,$object);
+            }
+        }
+        return $t;
+    }
+    public function traitementFile($oldFichiers,$data,$requestFile,$count,$name){
+        $fichiers=$this->fileExiste($oldFichiers,$data,$count,$name);
+        for($i=1;$i<=$count;$i++){
+            if($requestFile && isset($requestFile["{$name}{$i}"])){
+                $file=$requestFile["{$name}{$i}"];
+                $fileName=md5(uniqid()).'.'.$file->guessExtension();
+                $file->move($this->getParameter(Shared::DOC_DIR),$fileName);
+                $nom_fichier=$file->getClientOriginalName();
+                array_push($fichiers,[$nom_fichier,$fileName]);//["nom fichier","nom fichier hasher"]
+            }
+        }
+        return $fichiers;
+    }
+    public function fileExiste($oldFichiers,$data,$count,$name){
+        $back=[];
+        for($i=0;$i<count($oldFichiers);$i++){
+            for($j=1;$j<=$count;$j++){
+                if(isset($data["{$name}{$j}"]) && $oldFichiers[$i][1]==$data["{$name}{$j}"]){//si update instruction1: 349257a8657b2f6ac73542aabb60281d.png et non objet de type file
+                    array_push($back,$oldFichiers[$i]);
+                }
+            }
+        }
+        return $back;
+    }
+    public function toArray(string $chaine){
+        $tab=explode(',',$chaine);
+        $t2=[];
+        for($i=0;$i<count($tab);$i++){
+            if(trim($tab[$i])){
+                array_push($t2,trim($tab[$i]));
+            }
+        }
+        return  $t2;
+    }
+
     public function sameEntité($user){
         if(!$this->userCo->inHolding($user) && !$this->droit->isGranted('ROLE_SuperAdmin')){
             throw new HttpException(403,"Vous n'êtes pas dans la même entité que cet utilisateur !");

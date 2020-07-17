@@ -58,40 +58,21 @@ export const ROUTES: RouteInfo[] = [
   // },
   {
     id:'INV',
-    path: '',
-    title: 'Créer un inventaire',
+    path: '/inventaires',
+    title: 'Inventaires',
     icon: 'fas fa-barcode',
-    class: 'menu-toggle',
+    class: '',
     roles:['ROLE_Superviseur','ROLE_Guest'],
-    submenu: [
-      {
-        id:'INV1',//Ne pas modifier meme s il ne respecte pas l ordre 1,2,3... car les guest se basse sur les id pour avoir accès aux pages 
-        path: '/inventaires',
-        title: 'Inventaires',
-        icon: '',
-        class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_Guest'],
-        submenu: []
-      },
-      {
-        id:'INV2',
-        path: '/dashboard/dashboard2',
-        title: 'Désignation du comité',
-        icon: '',
-        class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_Guest'],
-        submenu: []
-      },
-      {
-        id:'INV3',
-        path: '/zonage',
-        title: 'Localités',
-        icon: '',
-        class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_Guest'],
-        submenu: []
-      }
-    ]
+    submenu: []
+  },
+  {
+    id:'ZONE',
+    path: '/zonage',
+    title: 'Localités',
+    icon: 'fas fa-map-marked-alt',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_Guest'],
+    submenu: []
   },
   {
     id:'EQUI',

@@ -156,7 +156,7 @@
         "version": "2.2.3"
     },
     "php": {
-        "version": "7.2"
+        "version": "7.4"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.1.0"
@@ -246,6 +246,9 @@
             ".env"
         ]
     },
+    "symfony/form": {
+        "version": "v4.4.10"
+    },
     "symfony/framework-bundle": {
         "version": "4.4",
         "recipe": {
@@ -275,6 +278,9 @@
     "symfony/inflector": {
         "version": "v4.4.10"
     },
+    "symfony/intl": {
+        "version": "v4.4.10"
+    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {
@@ -286,6 +292,12 @@
     },
     "symfony/mime": {
         "version": "v4.4.10"
+    },
+    "symfony/options-resolver": {
+        "version": "v4.4.10"
+    },
+    "symfony/polyfill-intl-icu": {
+        "version": "v1.18.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.17.1"

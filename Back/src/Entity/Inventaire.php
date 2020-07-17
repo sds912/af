@@ -40,10 +40,10 @@ class Inventaire
     private $fin;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="json", length=255, nullable=true)
      * @Groups({"inv_read"})
      */
-    private $instruction;
+    private $instruction=[];//[['nom','hashNom'],['nom','hashNom']...]
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
@@ -53,15 +53,10 @@ class Inventaire
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class)
+     * @ORM\JoinTable(name="membres_comite")
      * @Groups({"inv_read"})
      */
     private $membresCom;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"inv_read"})
-     */
-    private $decisionCreationCom;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -79,13 +74,13 @@ class Inventaire
      * @ORM\Column(type="json", nullable=true)
      * @Groups({"inv_read"})
      */
-    private $presentsReunion = [];
+    private $presentsReunionOut = [];
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="json", length=255, nullable=true)
      * @Groups({"inv_read"})
      */
-    private $pvReunion;
+    private $pvReunion=[];
 
     /**
      * @ORM\ManyToMany(targetEntity=Zone::class, inversedBy="inventaires")
@@ -112,12 +107,26 @@ class Inventaire
      */
     private $entreprise;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class)
+     * @ORM\JoinTable(name="presents_reunion")
+     * @Groups({"inv_read"})
+     */
+    private $presentsReunion;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"inv_read"})
+     */
+    private $decisionCC = [];
+
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
         $this->zones = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->sousZones = new ArrayCollection();
+        $this->presentsReunion = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,12 +158,12 @@ class Inventaire
         return $this;
     }
 
-    public function getInstruction(): ?string
+    public function getInstruction(): ?array
     {
         return $this->instruction;
     }
 
-    public function setInstruction(?string $instruction): self
+    public function setInstruction(?array $instruction): self
     {
         $this->instruction = $instruction;
 
@@ -199,18 +208,6 @@ class Inventaire
         return $this;
     }
 
-    public function getDecisionCreationCom(): ?string
-    {
-        return $this->decisionCreationCom;
-    }
-
-    public function setDecisionCreationCom(?string $decisionCreationCom): self
-    {
-        $this->decisionCreationCom = $decisionCreationCom;
-
-        return $this;
-    }
-
     public function getLieuReunion(): ?string
     {
         return $this->lieuReunion;
@@ -235,24 +232,24 @@ class Inventaire
         return $this;
     }
 
-    public function getPresentsReunion(): ?array
+    public function getPresentsReunionOut(): ?array
     {
-        return $this->presentsReunion;
+        return $this->presentsReunionOut;
     }
 
-    public function setPresentsReunion(?array $presentsReunion): self
+    public function setPresentsReunionOut(?array $presentsReunionOut): self
     {
-        $this->presentsReunion = $presentsReunion;
+        $this->presentsReunionOut = $presentsReunionOut;
 
         return $this;
     }
 
-    public function getPvReunion(): ?string
+    public function getPvReunion(): ?array
     {
         return $this->pvReunion;
     }
 
-    public function setPvReunion(?string $pvReunion): self
+    public function setPvReunion(?array $pvReunion): self
     {
         $this->pvReunion = $pvReunion;
 
@@ -346,6 +343,65 @@ class Inventaire
     {
         $this->entreprise = $entreprise;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getPresentsReunion(): Collection
+    {
+        return $this->presentsReunion;
+    }
+
+    public function addPresentsReunion(User $presentsReunion): self
+    {
+        if (!$this->presentsReunion->contains($presentsReunion)) {
+            $this->presentsReunion[] = $presentsReunion;
+        }
+
+        return $this;
+    }
+
+    public function removePresentsReunion(User $presentsReunion): self
+    {
+        if ($this->presentsReunion->contains($presentsReunion)) {
+            $this->presentsReunion->removeElement($presentsReunion);
+        }
+
+        return $this;
+    }
+
+    public function getDecisionCC(): ?array
+    {
+        return $this->decisionCC;
+    }
+
+    public function setDecisionCC(?array $decisionCC): self
+    {
+        $this->decisionCC = $decisionCC;
+
+        return $this;
+    }
+    public function addAllMembreCom($membres){
+        $this->membresCom = new ArrayCollection();
+        for($i=0;$i<count($membres);$i++){
+            $this->addMembresCom($membres[$i]);
+        }
+        return $this;
+    }
+    public function addAllLocalite($localites){
+        $this->localites = new ArrayCollection();
+        for($i=0;$i<count($localites);$i++){
+            $this->addLocalite($localites[$i]);
+        }
+        return $this;
+    }
+    public function addAllPresentR($membres){
+        $this->presentsReunion = new ArrayCollection();
+        for($i=0;$i<count($membres);$i++){
+            $this->addPresentsReunion($membres[$i]);
+        }
         return $this;
     }
 }
