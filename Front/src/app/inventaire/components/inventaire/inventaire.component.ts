@@ -81,6 +81,7 @@ export class InventaireComponent implements OnInit {
     )
   }
   entiteChange(id){
+    this.idCurrentInv=0
     this.showForm=false
     let entreprise=this.entreprises.find(e=>e.id==id)
     if(entreprise){
@@ -101,7 +102,7 @@ export class InventaireComponent implements OnInit {
         let inv=rep
         if(inv && inv.length>0){
           inv=rep.reverse()
-          if(this.idCurrentInv==0)this.idCurrentInv=inv[0].id
+          //if(this.idCurrentInv==0)this.idCurrentInv=inv[0].id
         }
         this.inventaires=inv
         this.show=true
