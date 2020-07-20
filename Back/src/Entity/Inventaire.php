@@ -120,6 +120,12 @@ class Inventaire
      */
     private $decisionCC = [];
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"inv_read"})
+     */
+    private $localInstructionPv = [];//['creation','creation'] le 1er c est pour les iventaires le 2pour pv 'creation' ou ''
+
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
@@ -397,11 +403,37 @@ class Inventaire
         }
         return $this;
     }
+    public function addAllZones($zones){
+        $this->zones = new ArrayCollection();
+        for($i=0;$i<count($zones);$i++){
+            $this->addZone($zones[$i]);
+        }
+        return $this;
+    }
+    public function addAllSousZones($sousZones){
+        $this->sousZones = new ArrayCollection();
+        for($i=0;$i<count($sousZones);$i++){
+            $this->addSousZone($sousZones[$i]);
+        }
+        return $this;
+    }
     public function addAllPresentR($membres){
         $this->presentsReunion = new ArrayCollection();
         for($i=0;$i<count($membres);$i++){
             $this->addPresentsReunion($membres[$i]);
         }
+        return $this;
+    }
+
+    public function getLocalInstructionPv(): ?array
+    {
+        return $this->localInstructionPv;
+    }
+
+    public function setLocalInstructionPv(?array $localInstructionPv): self
+    {
+        $this->localInstructionPv = $localInstructionPv;
+
         return $this;
     }
 }

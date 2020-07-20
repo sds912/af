@@ -41,7 +41,7 @@ class Zone
 
     /**
      * @ORM\OneToMany(targetEntity=SousZone::class, mappedBy="zone")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $sousZones;
 
@@ -65,12 +65,23 @@ class Zone
      * @Groups({"user_read"})
      */
     public function getIdEntreprise(): ?int{
-        $localite=$this->localite;
-        $id=null;
-        if($localite){
-            $id=$localite->getEntreprise()->getId();
+        $loc=$this->localite;
+        $idE=null;
+        if($loc){
+            $idE=$loc->getEntreprise()->getId();
         }
-        return $id;
+        return $idE;
+    }
+    /**
+     * @Groups({"inv_read"})
+     */
+    public function getLocName(){
+        $loc=$this->localite;
+        $n=null;
+        if($loc){
+            $n=$loc->getNom();
+        }
+        return $n;
     }
 
     public function getId(): ?int

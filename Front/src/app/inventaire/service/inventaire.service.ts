@@ -74,7 +74,24 @@ export class InventaireService {
     
     formData.append('entreprise',data.entreprise)
     formData.append('localites',data.localites)
+    formData.append('zones',data.zones)
+    formData.append('sousZones',data.sousZones)
+    formData.append('localInstructionPv',data.localInstructionPv)
+    let instrucCreer=data.instrucCreer
+    if(data.localInstructionPv[0]=='creation'){
+      formData.append('bloc1e1',instrucCreer.bloc1e1)
+      formData.append('bloc1e2',instrucCreer.bloc1e1)
+      formData.append('bloc1e3',instrucCreer.bloc1e3)
 
+      formData.append('bloc2e1',instrucCreer.bloc2e1)
+      formData.append('bloc2e2',instrucCreer.bloc2e2)
+      formData.append('bloc2e3',instrucCreer.bloc2e3)
+
+      formData.append('bloc3e1',instrucCreer.bloc2e1)
+      formData.append('bloc3e2',instrucCreer.bloc2e2)
+      formData.append('bloc3e3',instrucCreer.bloc2e3)
+      formData.append('bloc3e4',instrucCreer.bloc2e4)
+    }
     if(data.id && data.id!=0) {
       return this.sharedService.postElement(formData,"/inventaires/"+data.id)//si put avec form data tableau
     }

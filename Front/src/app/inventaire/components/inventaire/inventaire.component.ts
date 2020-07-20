@@ -24,6 +24,8 @@ export class InventaireComponent implements OnInit {
   idCurrentInv=0
   show=false
   editForm: FormGroup;
+  instForm: FormGroup;
+  pvForm: FormGroup;
   idPresiComite=0
   instructions=[]
   docsPv=[]
@@ -31,7 +33,6 @@ export class InventaireComponent implements OnInit {
   tabComite=new FormArray([]);
   tabPresents=new FormArray([]);
   tabOtherPresent=new FormArray([]);
-  tabLocalite=new FormArray([]);
   presidents=[]
   membresComite=[]
   users=[]
@@ -39,8 +40,16 @@ export class InventaireComponent implements OnInit {
   entreprises:Entreprise[]=[]
   localites=[]
   idCurrentEse=0
-  showForm=false//remettre à false
-  
+  showForm=true//remettre à false
+  tabLoc=[]
+  tabZonesPick=[]
+  tabSousZPick=[]
+  addLoc=true
+  addZone=true
+  comments=[]
+  commentsPv=[]
+  invCreer=false
+  pvCreer=false
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -56,6 +65,13 @@ export class InventaireComponent implements OnInit {
     this.myId=localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
+    const valInstruction=this.getInstValDef()
+    this.initInstrucForm(valInstruction)
+    this.comments=this.getCommentInst()
+    const valPv=this.getPvValDef()
+    console.log(valPv)
+    this.initPvForm(valPv)
+    this.commentsPv=this.getCommentPv()
     this.getInventaire()
     this.getEntreprise()
   }
@@ -122,7 +138,9 @@ export class InventaireComponent implements OnInit {
     this.tabComite=new FormArray([]);
     this.tabPresents=new FormArray([]);
     this.tabOtherPresent=new FormArray([]);
-    this.tabLocalite=new FormArray([]);
+    this.tabLoc=[];
+    this.tabZonesPick=[];
+    this.tabSousZPick=[];
     this.initForm()
   }
   updateOne(inventaire){
@@ -137,8 +155,19 @@ export class InventaireComponent implements OnInit {
     inventaire.presentsReunion.forEach(membre => this.addPresentMembre(membre.id));
     this.tabOtherPresent=new FormArray([]);
     inventaire.presentsReunionOut.forEach(nom => this.addOtherPres(nom));
-    this.tabLocalite=new FormArray([]);
-    inventaire.localites.forEach(localite => this.addLocalite(localite.id));
+    this.tabLoc=[];
+    this.tabZonesPick=[];
+    this.tabSousZPick=[];
+    inventaire.localites.forEach(localite => this.tabLoc.push(localite));
+    inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
+    inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
+    this.invCreer=false
+    if(inventaire.localInstructionPv[0]=='creation'){
+      this.invCreer=true
+      this.initInstrucForm(inventaire.instruction)
+    }
+    this.pvCreer=false
+    if(inventaire.localInstructionPv[1]=='creation')this.pvCreer=true
     this.initForm(inventaire)
   }
   initForm(data={id:0,debut:'',fin:'',lieuReunion:'',dateReunion:''}){
@@ -153,6 +182,87 @@ export class InventaireComponent implements OnInit {
       validator: this.valideDif('debut', 'fin')
     });
     if(this.formDirective)this.formDirective.resetForm()
+  }
+  initInstrucForm(data=[["","",""],["","",""],["","","",""]]){
+    this.instForm = this.fb.group({
+      bloc1e1: [data[0][0]],
+      bloc1e2: [data[0][1]],
+      bloc1e3: [data[0][2]],
+
+      bloc2e1: [data[1][0]],
+      bloc2e2: [data[1][1]],
+      bloc2e3: [data[1][2]],
+
+      bloc3e1: [data[2][0]],
+      bloc3e2: [data[2][1]],
+      bloc3e3: [data[2][2]],
+      bloc3e4: [data[2][3]],
+      
+    })
+  }
+  initPvForm(data=["","","",""]){
+    this.pvForm = this.fb.group({
+      bloc1: [data[0]],
+      bloc2: [data[1]],
+      bloc3e1: [data[2]],
+      bloc3e2: [data[3]]
+    })
+  }
+  getInstValDef(){
+    return[
+      [
+        "La réunion de lancement de l'inventaire sear tenu le 20/12. Les points suivants seront abordés:\n - la composition des équipes;\n - la méthode de comptage…",
+        "ACQUISITIONS\nL'acquisition d'immobilisations commence par une demande d'achat initiée par le demandeur. Cette demande est validée par le Chef comptable. Ensuite un BC est établi et sera signé par le DAF et le DG. Après réception de l'immobilisation, un code barre est généré et apposé sur l'immobilisation.\n\nCESSIONS\nToutes les sorties doivent faire l'objet d'un bon validé par le Chef du magasin, le DAF et le DG.",
+        "Il faudra:\n - Editer le fichier des immobilisations\n - Faire une revue des postes \n - Procéder aux régularisations nécessaires devant permettre de s'assurer de l'exactitude des mouvements de l'année",
+      ],
+      [
+        "Le Comité d'inventaire est mis en place sera composé de:\n- M. Pathé Ndiaye (Président);\n- Mme Isabelle Diouf ( membre);\n- M. Saliou Ba ( membre)\n\nIl devra:\n  - mettre en place toute la logistique nécessaire pour le démarrage effectif de l'inventaire physique à la \ndate prévue ( constitution et formation des équipes, matériel nécessaire etc..);\n  - prendre toutes les dispositions pour l'organisation et la supervision de l'inventaire;\n  - valider les résultats de l'inventaire et élaborer un rapport d'inventaire.",
+        "1. MAGASIN\nLe rangement des magasins avec vérification des CODES se fera effectué avant le 09/10. Le magasin est composé de 2 dépôts.\n1.1. Dépôt 01\nLe dépôt 01 sera divisé en 02 sous-zones de stockage:\n    - Sous-zone A : salle 1 et 2 (Equipe A)\n    - Sous-zone B : Cour extérieure (Equipe A).\n1.2. Dépôt 02 \nLe dépôt 02 sera divisé en 02 Sous-zones de stockage:\n   - Sous-zone A : Showroom (Equipe B)\n    - Sous-zone B : salle des pièces de rechange (Equipe B)\n\n2. ENTREPOT\nLe rangement de l'entrepot avec vérification des CODES se fera effectué avant le 09/10. Le comptage sera effectué par l'équipe C.",
+        "ORGANISATION\nLe rangement des magasins sera effectué à partir du Mercredi 09/12.\nIl faudra s’assurer que les étiquettes à code barre ont été apposés sur toutes les immobilisations.\n\nCOMPTAGE\nLe fichier des immobilisations sera remis à chaque équipe. Des étiquettes (gommettes) de couleur bleue et un lecteur de codes seront aussi transmis à chaque chef d’étiquette. \n\nCONTROLE\nAprès le comptage, une autre équipe de passe pour le contrôle en utilisant des étiquettes (gommettes) de couleur verte.\n\nANOMALIES\nEn cas de désaccord entre l’équipe de comptage et de contrôle, un comptage contradictoire sera piloté par le comité d’inventaire (Etiquettes de couleur rouge)."
+      ],
+      [
+        "Cette phase consistera à effectuer un rapprochement entre les résultats de l'inventaire et le fichier des immobilisations afin d'identifier:\n  - les immobilisations inscrites au fichier mais non inventoriées (manquants d'inventaire);\n  - et les immobilisations inventoriées mais non inscrites au fichier (sans numéro d'immatriculation et/ou sans étiquettes).\n\nLes écarts constatés doivent faire l'objet de recherches complémentaires, par les équipes de comptage, en vue de leur résorption. S'agissant des articles recensés au cours de cet inventaire, mais non inscrits au fichier des immobilisations, il conviendra de les répertorier sur un tableau séparé. En outre, des dispositions devront être prises pour veiller à leur immatriculation diligente au fichier des immoblisations.",
+        "Les anomalies retracées devront être analysées et corrigées, au plus le 15 janvier.",
+        "L'inventaire sera appouvé par le comité d'inventaire.",
+        "Le dossier à constituer devra comporter les documents ci-après:\n- un procès-verbal d'inventaire;\n- les annexes avant et après corrections "
+      ]
+    ]
+  }
+  getPvValDef(){
+    return  [
+      "L’AN DEUX MILLE VINGT \nET LE 09 JUILLET A 08 H EURES 10 MINUTES",
+      "La réunion de lancement de l'inventaire a été tenue au siège social sis à l'avenue Bourgui pour délibérer sur l’ordre du jour suivant : \n1.	Instructions d'inventaire\n2.	planning de l'inventaire\n3.	Questions diverses.",
+      "Une feuille de présence a été émargée en début de séance par chaque administrateur. \nEtaient présent : \n-	M. Pathé Ndiaye (Président du comité),…",
+      "Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
+    ]
+  }
+  getCommentInst(){
+    return[
+      [
+        "Commentaire :\n - Indiquer la date de réunion\n - Préciser les points qui seront traitées lors de la réunion\n-  Assurer la disponibilité du planning des inventaires",
+        "Commentaire :\n - Rappeler la procédure d'acquisition des immobilisations\n - Rappeler la procédure de sorties des immobilisations",
+        "Commentaire :\n - Décrire les différentes étapes liées à l'édition et au contrôle du fichier des immoblisations\n - Identifier les intervenants"
+      ],
+      [
+        "Commentaire :\n -Indiquer le role du comité\n -lister les membres du comité",
+        "Commentaire :\n -Lister zones à inventorier et les équpes affectées à chaque zone",
+        "Commentaire :\n - Lister les biens à inventorier\n - Décrire la procédure de comptage\n- Décrire la procédure de controle"
+      ],
+      [
+        "Commentaire :\n - Décrire la prodédure de rapprochement",
+        "Commentaire :\nDécrire la procédure de correction des anomalies",
+        "Commentaire :\nIndiquer la procédure d'approbation de l'inventaire",
+        "Commentaire :\nIndiquer les composants du dossier d'inventaire"
+      ]
+    ]
+  }
+  getCommentPv(){
+    return  [
+      "Commentaire :\nMettre la date et l'heure",
+      "Commentaire :\nindiquer les points à l'ordre du jour",
+      "Commentaire :\nLister les personnes présentes à la réunion",
+      "Commentaire :\n1er point à l'ordre du jour"
+    ]
   }
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
@@ -188,6 +298,7 @@ export class InventaireComponent implements OnInit {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=this.getData(form.value)
     data.instructions=this.getOnlyFile(this.instructions)
+    data.instrucCreer=this.instForm.value
     data.decisionCC=this.getOnlyFile(this.docsDc)
     data.presiComite=this.idPresiComite
     data.membresCom=this.tabComite.value
@@ -195,7 +306,10 @@ export class InventaireComponent implements OnInit {
     data.presentsReunionOut=this.tabOtherPresent.value
     data.pvReunion=this.getOnlyFile(this.docsPv)
     data.entreprise=this.idCurrentEse
-    data.localites=this.tabLocalite.value
+    data.localites=this.getIdAllLoc(this.tabLoc)
+    data.zones=this.tabZonesPick
+    data.sousZones=this.tabSousZPick
+    data.localInstructionPv=[this.invCreer?'creation':'',this.pvCreer?'creation':'']
     console.log(data)
     this.inventaireServ.addInventaire(data).then(
       rep=>{
@@ -211,7 +325,11 @@ export class InventaireComponent implements OnInit {
       }
     )
   }
-  
+  getIdAllLoc(localites){
+    let t=[]
+    localites.forEach(loc => t.push(loc.id));
+    return t
+  }
   getOnlyFile(tab){
     let t=[]
     tab.forEach(element => t.push(element[1]));//0 c est le nom
@@ -237,9 +355,6 @@ export class InventaireComponent implements OnInit {
   }
   addPresentMembre(valeur=0){
     this.tabPresents.push(new FormControl(valeur));
-  }
-  addLocalite(valeur=0){
-    this.tabLocalite.push(new FormControl(valeur));
   }
   addOtherPres(nom=""){
     this.tabOtherPresent.push(new FormControl(nom))
@@ -269,7 +384,6 @@ export class InventaireComponent implements OnInit {
     if(this.tabOtherPresent.length==0)this.addOtherPres()
   }
   openLocModal(){
-    if(this.tabLocalite.length==0)this.addLocalite()
   }
   inTab(valeur,tab){
     return tab.find(id=>id==valeur);
@@ -314,5 +428,53 @@ export class InventaireComponent implements OnInit {
       horizontalPosition: placementAlign,
       panelClass: [colorName,'color-white']
     });
+  }
+
+  deleteLoc(localite,i){
+    let index=this.tabLoc.indexOf(localite)
+    if (index > -1) {
+      this.tabLoc.splice(index, 1);
+      const zones=localite.zones
+      if(zones) zones.forEach(zone => { this.deleteZone(zone) });//supp les zones
+    }
+  }
+  deleteZone(zone){
+    let index=this.tabZonesPick.indexOf(zone.id)
+    if (index > -1) {
+      this.tabZonesPick.splice(index, 1);
+      const sousZones=zone.sousZones
+      if(sousZones) sousZones.forEach(sz => { this.deletSZ(sz.id) });//supp les sous-zones
+    }
+  }
+  deletSZ(id){
+    var index = this.tabSousZPick.indexOf(id);
+    if (index > -1) {
+      this.tabSousZPick.splice(index, 1);
+    }
+  }
+  rev(tab,rev=-1){
+    let t=[]
+    if(tab && tab.length>0){
+      t=tab
+      t=this.sharedService.uniq(t,'id')
+      this.sharedService.trier(t,'id',rev)
+    }
+    return t
+  }
+  checkASZ(id){
+    var index = this.tabSousZPick.indexOf(id);
+    if (index > -1) {
+      this.tabSousZPick.splice(index, 1);
+    }else{
+      this.tabSousZPick.push(id)
+    }
+  }
+  pickNewZone(zone){
+    this.tabZonesPick.push(zone.id)
+    setTimeout(()=>this.addZone=true,1)
+  }
+  pickNewLoc(localite){
+    this.tabLoc.push(localite)
+    setTimeout(()=>this.addLoc=true,1)
   }
 }

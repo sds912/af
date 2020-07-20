@@ -26,8 +26,10 @@
                         <div class="map-localite mb-5" [ngStyle]="{background: 'url(./assets/images/image-gallery/font-maps.jpg)'}">
                             <div class="pointer-localite pointer" *ngFor="let localite of rev(localites)" [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
                                 <span (click)="idCurrentLocal=localite.id" class="pl-1">{{longText(localite.nom,11)}}</span>
-                                <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id"  (click)="idCurrentLocal=localite.id">
+                                <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id && !localite.rattacher"  (click)="idCurrentLocal=localite.id">
+                                <img src="assets/images/image-gallery/pointer3.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id && localite.rattacher"  (click)="idCurrentLocal=localite.id">
                                 <img src="assets/images/image-gallery/pointer2.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal==localite.id">
+
                             </div>
                         </div>
                         <mat-accordion>

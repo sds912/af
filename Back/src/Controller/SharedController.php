@@ -13,7 +13,9 @@ use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
+use App\Repository\SousZoneRepository;
 use App\Repository\UserRepository;
+use App\Repository\ZoneRepository;
 use DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -45,7 +47,13 @@ class SharedController extends AbstractController
     /** @var UserRepository */
     private $repoLoc;
 
-    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc)
+    /** @var ZoneRepository */
+    private $repoZ;
+
+    /** @var SousZoneRepository */
+    private $repoSZ;
+
+    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc,ZoneRepository $repoZ,SousZoneRepository $repoSZ)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
@@ -54,6 +62,8 @@ class SharedController extends AbstractController
         $this->repoInv=$repoInv;
         $this->repoUser=$repoUser;
         $this->repoLoc=$repoLoc;
+        $this->repoZ=$repoZ;
+        $this->repoSZ=$repoSZ;
     }
     /**
     * @Route("/entreprises", methods={"POST"})
@@ -181,6 +191,19 @@ class SharedController extends AbstractController
         $idLocalites=$this->toArray($data["localites"]);
         $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
 
+        $idZones=$this->toArray($data["zones"]);
+        $zones=$this->getallByTabId($this->repoZ,$idZones);
+        
+        $idSousZones=$this->toArray($data["sousZones"]);
+        $sousZones=$this->getallByTabId($this->repoSZ,$idSousZones);
+        $localInstructionPv=$this->toArray($data["localInstructionPv"]);
+        if($localInstructionPv[0]==Shared::CREATION){
+            $instructions=[
+                [$data['bloc1e1'],$data['bloc1e2'],$data['bloc1e3']],
+                [$data['bloc2e1'],$data['bloc2e2'],$data['bloc2e3']],
+                [$data['bloc3e1'],$data['bloc3e2'],$data['bloc3e3'],$data['bloc3e4']]
+            ];
+        }
         $inventaire->setDebut(new DateTime($data["debut"]))
                    ->setFin(new DateTime($data["fin"]))
                    ->setLieuReunion($data["lieuReunion"])
@@ -193,7 +216,10 @@ class SharedController extends AbstractController
                    ->setPresentsReunionOut($presentsReunionOut)
                    ->setPvReunion($pvReunions)
                    ->setEntreprise($entreprise)
-                   ->addAllLocalite($localites);
+                   ->addAllLocalite($localites)
+                   ->addAllZones($zones)
+                   ->addAllSousZones($sousZones)
+                   ->setLocalInstructionPv($localInstructionPv);
         
         if($tatus==201){
             $this->manager->persist($inventaire);

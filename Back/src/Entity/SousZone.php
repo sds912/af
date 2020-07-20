@@ -48,12 +48,24 @@ class SousZone
     * @Groups({"user_read"})
     */
     public function getIdEntreprise(): ?int{
-        $zone=$this->zone;
-        $id=null;
-        if($zone){
-            $id=$zone->getIdEntreprise();
+        $z=$this->zone;
+        $idZ=null;
+        if($z){
+            $idZ=$z->getIdEntreprise();
         }
-        return $id;
+        return $idZ;
+    }
+
+    /**
+    * @Groups({"inv_read"})
+    */
+    public function getZonename(){
+        $z=$this->zone;
+        $name=null;
+        if($z){
+            $name=$z->getNom();
+        }
+        return $name;
     }
 
     /**

@@ -41,7 +41,7 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Zone::class, mappedBy="localite")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $zones;
 
@@ -77,6 +77,12 @@ class Localite
             $id=$entreprise->getId();
         }
         return $id;
+    }
+    /**
+    * @Groups({"entreprise_read"})
+    */
+    public function getRattacher(){
+        return count($this->zones)>0;
     }
 
     public function getId(): ?int
