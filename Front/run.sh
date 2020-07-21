@@ -1,1 +1,1 @@
-sudo ng serve
+ng serve --disable-host-check

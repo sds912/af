@@ -281,10 +281,9 @@
                                                 <a [href]="docLink + instruction[1]" [download]="instruction[0]" target="_blank" rel="noopener noreferrer" #openInv hidden>open</a>
                                             </span>
                                         </span>
-                                        <span class="col-8 text-success" *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]=='creation'">
+                                        <span class="col-8" *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]=='creation'">
                                             <span>
-                                                <mat-icon class="text-success mr-4 pointer" title="Instruction"  style="font-size: 50px;" (click)="openInv.click()">insert_drive_file</mat-icon>
-                                                <a href="" target="_blank" rel="noopener noreferrer" #openInv hidden>open</a>
+                                                <mat-icon class="text-primary mr-4 pointer" title="Instruction"  style="font-size: 50px;" (click)="generatePdf(inventaire.instruction,0)">insert_drive_file</mat-icon>
                                             </span>
                                         </span>
                                     </p>
@@ -333,10 +332,9 @@
                                             <a [href]="docLink + pvReunion[1]" download="pvReunion[0]" target="_blank" rel="noopener noreferrer" #openPv hidden>open</a>
                                             </span>
                                         </span>
-                                        <span class="col-8 text-success" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0 && inventaire.localInstructionPv[1]=='creation'">
+                                        <span class="col-8" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0 && inventaire.localInstructionPv[1]=='creation'">
                                             <span>
-                                                <mat-icon class="text-success mr-4 pointer" title="Procès-verbal"  style="font-size: 50px;" (click)="openPv.click()">insert_drive_file</mat-icon>
-                                                <a href="" target="_blank" rel="noopener noreferrer" #openPv hidden>open</a>
+                                                <mat-icon class="text-primary mr-4 pointer" title="Procès-verbal"  style="font-size: 50px;" (click)="generatePdf(inventaire.pvReunion,1)">insert_drive_file</mat-icon>
                                             </span>
                                         </span>
                                     </p>

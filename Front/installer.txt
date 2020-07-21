@@ -4,3 +4,4 @@ npm i @angular/material-moment-adapter
 npm rebuild node-sass
 npm uninstall --save-dev sass-loader
 npm install --save-dev sass-loader@7.1.0 
+npm install --save pdfmake

@@ -7,7 +7,10 @@ import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from '../../service/inventaire.service';
 import { Entreprise } from 'src/app/administration/model/entreprise';
-
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { timeStamp } from 'console';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-inventaire',
   templateUrl: './inventaire.component.html',
@@ -18,6 +21,7 @@ export class InventaireComponent implements OnInit {
   @ViewChild('closePresentModal', { static: false }) closePresentModal;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('formDirective') private formDirective: NgForm;
+  
   imgLink=""
   docLink=""
   inventaires=[]
@@ -51,6 +55,8 @@ export class InventaireComponent implements OnInit {
   invCreer=false
   pvCreer=false
   tabDeliberation=new FormArray([]);
+  urlInst=''
+  urlPv=''
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -150,7 +156,7 @@ export class InventaireComponent implements OnInit {
     this.instructions=inventaire.instruction
     this.docsPv=inventaire.pvReunion
     this.docsDc=inventaire.decisionCC
-    
+
     this.tabComite=new FormArray([]);
     inventaire.membresCom.forEach(membre => this.addComMembre(membre.id));
     if(this.tabComite.length==0)this.addComMembre()
@@ -527,6 +533,7 @@ export class InventaireComponent implements OnInit {
   }
   deletCreationPv(){
     this.pvCreer=false
+    this.docsPv=[]
     this.initPvForm()
     this.tabDeliberation=new FormArray([]);
   }
@@ -546,4 +553,197 @@ export class InventaireComponent implements OnInit {
     this.addDeliberation(title,content)
     console.log(this.tabDeliberation.controls[0])
   }
+  generatePdf(data,numero) {
+    let content=[]
+    if(numero==0)
+      content=[this.pageInst(data)]
+    else if(numero==1)
+      content=[this.pagePv(data)]
+    const documentDefinition = {
+      content: content, styles: this.getStyle(),pageMargins: [40, 40]
+    };
+    // pdfMake.createPdf(documentDefinition).getBase64((encodedString)=> {
+    //   const v='data:application/pdf;base64, '+encodedString;
+    //   if(numero==0)
+    //     this.urlInst=v
+    //   else if(numero==1)
+    //     this.urlPv=v
+    //   console.log(this.urlInst);
+    // });
+    pdfMake.createPdf(documentDefinition).open();
+  }
+  getStyle() {
+    return {
+      fsize: {
+        fontSize: 6.5,
+      },
+      enTete:{
+        fontSize: 6.5,
+        fillColor: '#eeeeee',
+      },
+      enTete2:{
+        fontSize: 6.5,
+        bold: true,
+        fillColor: '#bcbdbc',
+      },
+      gris:{
+        fillColor: '#bcbdbc'
+      },
+      grasGris:{
+        bold: true,
+        fillColor: '#e6e6e6'
+      },
+      grasGrisF:{
+        bold: true,
+        fillColor: '#b5b3b3'
+      },
+      gras:{
+        bold: true
+      },
+      centerGG:{
+        bold: true,
+        fillColor: '#e6e6e6',
+        alignment:'center'
+      }
+    }
+  }
+  pageInst(data){
+      const bloc1e1 = data[0][0]
+      const bloc1e2 = data[0][1]
+      const bloc1e3 = data[0][2]
+
+      const bloc2e1 = data[1][0]
+      const bloc2e2 = data[1][1]
+      const bloc2e3 = data[1][2]
+
+      const bloc3e1 = data[2][0]
+      const bloc3e2 = data[2][1]
+      const bloc3e3 = data[2][2]
+      const bloc3e4 = data[2][3]
+      return[
+        {
+          table:{
+            width:['*'],
+            body:[
+              [
+                {text:'1.TRAVAUX PREPARATOIRES', style:'grasGrisF',alignment:'center',fontSize:12}
+              ],
+              [
+                {text:"1.1. REUNION DE LANCEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:'1.2. RAPPEL DE LA PROCEDURES SUR LES IMMOBILISATIONS', style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:'1.3. EDITION ET CONTRÔLE DU FICHIER DES IMMOBILISATIONS', style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.TRAVAUX D'INVENTAIRE", style:'grasGrisF',alignment:'center'}
+              ],
+              [
+                {text:"2.1. MISE EN PLACE DU COMITE D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.2. AFFECTATION DES EQUIPES D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.3. DEROULEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.TRAVAUX POST-INVENTAIRE", style:'grasGrisF',alignment:'center'}
+              ],
+              [
+                {text:"3.1. RAPPROCHEMENT FICHIER D'IMMOBILISATIONS ET RESULTATS DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.2. CORRECTION DES ANOMALIES", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.3. APPROBATION D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.4. TRANSMISSION DU DOSSIER D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e4,margin:[2,7],fontSize:10}
+              ]
+            ]
+          }
+        }
+      ]
+  }
+  pagePv(data){
+      const bloc1 = data[0][0]
+      const bloc2 = data[0][1]
+      const bloc3 = data[0][2]
+      console.log(data)
+      return[
+        {
+          table:{
+            width:['*'],
+            body:[
+              [
+                {text:"PROCES-VERBAL DE REUNION DE LANCEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
+              [
+                {text:bloc1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:bloc2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:bloc3,margin:[2,7],fontSize:10}
+              ],
+              ...this.getPdfDel(data[1])
+            ]
+          }
+        }
+      ]
+  }
+  getPdfDel(table){
+    console.log(table)
+    let element: any = []
+    table.forEach(cel => {
+        element.push(
+        [
+          {text:cel[0],fontSize:12,style:'grasGris',alignment:'center'},
+        ],
+        [
+          {text:cel[1],fontSize:10,margin:[2,7]},
+        ])
+    })
+    return element
+
+  }
 }
+

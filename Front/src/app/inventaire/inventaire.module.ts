@@ -41,12 +41,13 @@ import { MatMenuModule } from '@angular/material/menu';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { InventaireComponent } from './components/inventaire/inventaire.component';
+import { SafeUrlPipe } from '../shared/pipe/safe-url.pipe';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 @NgModule({
-  declarations: [ZonageComponent, EquipeComponent, InventaireComponent],
+  declarations: [SafeUrlPipe,ZonageComponent, EquipeComponent, InventaireComponent],
   imports: [
     CommonModule,
     InventaireRoutingModule,
