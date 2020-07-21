@@ -8,5 +8,5 @@ api_platform:
     collection: #voir video lior 33
         pagination:
             enabled: false
-    formats:
-        json: ['application/json']
+    # formats:
+    #     json: ['application/json']

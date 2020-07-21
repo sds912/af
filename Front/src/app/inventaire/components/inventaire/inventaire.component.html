@@ -81,7 +81,7 @@
                                         <span class="col-4 pt-3 bolder">INSTRUCTIONS D'INVENTAIRE</span>
                                         <span class="col-8" *ngIf="!invCreer && (!instructions||instructions.length==0)"> 
                                             <button mat-mini-fab title="Ajouter des instructions" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                            data-target="#instrucModal" (click)="invCreer=true">
+                                            data-target="#instrucModal" (click)="createNewInv()">
                                                 <mat-icon>create</mat-icon>
                                             </button>
                                             <button mat-mini-fab color="primary" title="Importer des instructions" aria-label="Example icon-button with a heart icon" (click)="docInst.click()">
@@ -105,7 +105,7 @@
                                             <span class="">
                                                <mat-icon title="Instruction" style="font-size: 50px;color: #3f51b5;" data-keyboard="false"
                                                data-target="#instrucModal">insert_drive_file</mat-icon>
-                                                <mat-icon title="Supprimer l'instruction" class="mr-3 pointer" style="color: #f80000;" (click)='invCreer=false'>cancel</mat-icon>
+                                                <mat-icon title="Supprimer l'instruction" class="mr-3 pointer" style="color: #f80000;" (click)='deletCreationInst()'>cancel</mat-icon>
                                                 <button class="addFile" mat-mini-fab title="Instruction" color="primary" aria-label="Example icon-button with a heart icon"
                                                 data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#instrucModal">
                                                     <mat-icon>create</mat-icon>
@@ -181,7 +181,7 @@
                                         <span class="col-4 pt-3 bolder">PV DE LA RÉUNION</span>
                                         <span class="col-8" *ngIf="!pvCreer && (!docsPv||docsPv.length==0)"> 
                                             <button mat-mini-fab title="Ajouter un pv" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                            data-target="#pvModal">
+                                            data-target="#pvModal" (click)="createNewPv()">
                                                 <mat-icon>create</mat-icon>
                                             </button>
                                             <button mat-mini-fab color="primary" title="Importer un pv" aria-label="Example icon-button with a heart icon" (click)="docPv.click()">
@@ -200,11 +200,11 @@
                                         <input type="file" id="doc2" (change)="handleFileInputPv($event.target.files)" hidden #docPv multiple>
                                         <span class="col-8" *ngIf="pvCreer">
                                             <span class="">
-                                               <mat-icon title="Pv" style="font-size: 50px;color: #3f51b5;" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                               <mat-icon title="Procès-verbal" style="font-size: 50px;color: #3f51b5;" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                data-target="#pvModal">insert_drive_file</mat-icon>
-                                                <mat-icon title="Supprimer le pv" class="mr-3 pointer" style="color: #f80000;" (click)='pvCreer=false'>cancel</mat-icon>
-                                                <button class="addFile" mat-mini-fab title="Instruction" color="primary" aria-label="Example icon-button with a heart icon"
-                                                data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#instrucModal">
+                                                <mat-icon title="Supprimer le pv" class="mr-3 pointer" style="color: #f80000;" (click)='deletCreationPv()'>cancel</mat-icon>
+                                                <button class="addFile" mat-mini-fab title="Pv" color="primary" aria-label="Example icon-button with a heart icon"
+                                                data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#pvModal">
                                                     <mat-icon>create</mat-icon>
                                                 </button>
                                             </span>
@@ -327,12 +327,17 @@
                                     <p class="row mt-4">
                                         <span class="col-4 bolder"  [ngClass]="{'pt-4': inventaire.pvReunion && inventaire.pvReunion.length>0}">PV DE LA RÉUNION</span>
                                         <span class="col-8" *ngIf="!inventaire.pvReunion ||inventaire.pvReunion && inventaire.pvReunion.length==0">Aucun pv n'a été ajouté</span>
-                                        <span class="col-8 text-success" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0">
+                                        <span class="col-8 text-success" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0 && inventaire.localInstructionPv[1]!='creation'">
                                             <span *ngFor="let pvReunion of inventaire.pvReunion">
                                                 <mat-icon [title]="pvReunion[0]" style="font-size: 50px;" class="mr-4 pointer" (click)="openPv.click()">insert_drive_file</mat-icon>
                                             <a [href]="docLink + pvReunion[1]" download="pvReunion[0]" target="_blank" rel="noopener noreferrer" #openPv hidden>open</a>
                                             </span>
-                                            
+                                        </span>
+                                        <span class="col-8 text-success" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0 && inventaire.localInstructionPv[1]=='creation'">
+                                            <span>
+                                                <mat-icon class="text-success mr-4 pointer" title="Procès-verbal"  style="font-size: 50px;" (click)="openPv.click()">insert_drive_file</mat-icon>
+                                                <a href="" target="_blank" rel="noopener noreferrer" #openPv hidden>open</a>
+                                            </span>
                                         </span>
                                     </p>
                                 </div>
@@ -669,14 +674,14 @@
                                 <div class="row">
                                     <mat-form-field class="example-full-width pr-0" appearance="outline">
                                         <mat-label>APPROBATION D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="1" formControlName="bloc3e2"></textarea>
+                                        <textarea matInput rows="1" formControlName="bloc3e3"></textarea>
                                     </mat-form-field>
                                     <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][2]">info_outline</mat-icon>
                                 </div>
                                 <div class="row">
                                     <mat-form-field class="example-full-width pr-0" appearance="outline">
                                         <mat-label>TRANSMISSION DU DOSSIER D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="1" formControlName="bloc3e3"></textarea>
+                                        <textarea matInput rows="3" formControlName="bloc3e4"></textarea>
                                     </mat-form-field>
                                     <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][3]">info_outline</mat-icon>
                                 </div>
@@ -698,7 +703,7 @@
 <!-- Instruction -->
 
 <!-- PV -->
-<div class="modal fade" id="pvModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="pvModal" tabindex="-1" role="dialog" 
 aria-labelledby="exampleModalLabel" aria-hidden="true">
 <div class="modal-dialog instruction-modal" role="document">
     <form class="modal-content"  [formGroup]="pvForm">
@@ -716,36 +721,46 @@ aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <i class="material-icons">clear</i>
             </button>
         </div>
-        <div class="modal-body"  [perfectScrollbar]>
+        <div class="modal-body pr-1"  [perfectScrollbar]>
            <div class="row mb-2">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                     <mat-form-field class="example-full-width pr-0" appearance="outline">
                         <mat-label>Date et heure </mat-label>
                         <textarea matInput rows="2" formControlName="bloc1"></textarea>
                     </mat-form-field>
                     <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[0]">info_outline</mat-icon>
                 </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                     <mat-form-field class="example-full-width pr-0" appearance="outline">
                         <mat-label>Ordre du jour </mat-label>
                         <textarea matInput rows="4" formControlName="bloc2"></textarea>
                     </mat-form-field>
                     <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[1]">info_outline</mat-icon>
                 </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                     <mat-form-field class="example-full-width pr-0" appearance="outline">
                         <mat-label>Feuille de présence </mat-label>
-                        <textarea matInput rows="3" formControlName="bloc3e1"></textarea>
+                        <textarea matInput rows="3" formControlName="bloc3"></textarea>
                     </mat-form-field>
                     <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[2]">info_outline</mat-icon>
                 </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                        <mat-label>DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE</mat-label>
-                        <textarea matInput rows="1" formControlName="bloc3e2"></textarea>
-                    </mat-form-field>
-                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[3]">info_outline</mat-icon>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0 pl-0" *ngFor="let oneForm of tabDeliberation.controls; index as i">
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                            <mat-label>Titre</mat-label>
+                            <input matInput  [formControl]="oneForm.controls.titre">
+                        </mat-form-field>
+                        <mat-icon matSuffix class="pointer pl-2 pt-3" [hidden]="i!=(tabDeliberation.length-1)" (click)="addDeliberation()">add_circle_outline</mat-icon>
+                    </div> 
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                            <mat-label>DELIBERATION {{i+1}}</mat-label>
+                            <textarea matInput rows="3"  [formControl]="oneForm.controls.content"></textarea>
+                        </mat-form-field>
+                        <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="getCommentDel(i)">info_outline</mat-icon>
+                    </div>  
                 </div>
+                
            </div>
            <div class="modal-footer pr-2">
                <div class="button-demo">

@@ -165,16 +165,23 @@ class SharedController extends AbstractController
             $tatus=200;
         }
         $requestFile=$request->files->all();
+        $instructions=[];
+        if(isset($data["countInstruction"])){
+            $countInstruction=$data["countInstruction"];
+            $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
+        }
 
-        $countInstruction=$data["countInstruction"];
-        $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
+        $decisionCCs=[];
+        if(isset($data["countDecisionCC"])){
+            $countDecisionCC=$data["countDecisionCC"];
+            $decisionCCs=$this->traitementFile($inventaire->getDecisionCC(),$data,$requestFile,$countDecisionCC,"decisionCC"); 
+        }
         
-        $countDecisionCC=$data["countDecisionCC"];
-        $decisionCCs=$this->traitementFile($inventaire->getDecisionCC(),$data,$requestFile,$countDecisionCC,"decisionCC");
-        
-        $countPvReunion=$data["countPvReunion"];
-        $pvReunions=$this->traitementFile($inventaire->getPvReunion(),$data,$requestFile,$countPvReunion,"pvReunion");
-        
+        $pvReunions=[];
+        if(isset($data["countPvReunion"])){
+            $countPvReunion=$data["countPvReunion"];
+            $pvReunions=$this->traitementFile($inventaire->getPvReunion(),$data,$requestFile,$countPvReunion,"pvReunion");
+        }
         $presiComite=null;
         if($data["presiComite"]){
            $presiComite=$this->repoUser->find($data["presiComite"]); 
@@ -197,12 +204,15 @@ class SharedController extends AbstractController
         $idSousZones=$this->toArray($data["sousZones"]);
         $sousZones=$this->getallByTabId($this->repoSZ,$idSousZones);
         $localInstructionPv=$this->toArray($data["localInstructionPv"]);
-        if($localInstructionPv[0]==Shared::CREATION){
+        if($localInstructionPv[0]==Shared::CREATION && isset($data['bloc1e1'])){
             $instructions=[
                 [$data['bloc1e1'],$data['bloc1e2'],$data['bloc1e3']],
                 [$data['bloc2e1'],$data['bloc2e2'],$data['bloc2e3']],
                 [$data['bloc3e1'],$data['bloc3e2'],$data['bloc3e3'],$data['bloc3e4']]
             ];
+        }
+        if($localInstructionPv[1]==Shared::CREATION && isset($data['pvCB1'])){
+            $pvReunions=$this->getPvCreer($data);
         }
         $inventaire->setDebut(new DateTime($data["debut"]))
                    ->setFin(new DateTime($data["fin"]))
@@ -229,6 +239,20 @@ class SharedController extends AbstractController
             Shared::MESSAGE => 'Enregistré',
             Shared::STATUS => $tatus
         ]);
+    }
+    public function getPvCreer($data){
+        $d=[
+            [
+                $data['pvCB1'],$data['pvCB2'],$data['pvCB3']
+            ],
+            [
+                // ['titre1','content1'],['titre2','content2']
+            ]
+        ];
+        for($i=1;$i<=$data['countPvCreer'];$i++){
+            array_push($d[1],[$data["pvDelTitre{$i}"],$data["pvDelContent{$i}"]]);
+        }
+        return $d;
     }
     public function getallByTabId($repo,$tab){
         $t=[];

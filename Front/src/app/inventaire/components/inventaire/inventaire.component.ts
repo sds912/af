@@ -40,7 +40,7 @@ export class InventaireComponent implements OnInit {
   entreprises:Entreprise[]=[]
   localites=[]
   idCurrentEse=0
-  showForm=true//remettre à false
+  showForm=false//remettre à false
   tabLoc=[]
   tabZonesPick=[]
   tabSousZPick=[]
@@ -50,6 +50,7 @@ export class InventaireComponent implements OnInit {
   commentsPv=[]
   invCreer=false
   pvCreer=false
+  tabDeliberation=new FormArray([]);
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -65,12 +66,9 @@ export class InventaireComponent implements OnInit {
     this.myId=localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
-    const valInstruction=this.getInstValDef()
-    this.initInstrucForm(valInstruction)
+    this.initInstrucForm()
     this.comments=this.getCommentInst()
-    const valPv=this.getPvValDef()
-    console.log(valPv)
-    this.initPvForm(valPv)
+    this.initPvForm()
     this.commentsPv=this.getCommentPv()
     this.getInventaire()
     this.getEntreprise()
@@ -141,6 +139,9 @@ export class InventaireComponent implements OnInit {
     this.tabLoc=[];
     this.tabZonesPick=[];
     this.tabSousZPick=[];
+    this.tabDeliberation=new FormArray([]);
+    this.pvCreer=false
+    this.invCreer=false
     this.initForm()
   }
   updateOne(inventaire){
@@ -149,12 +150,19 @@ export class InventaireComponent implements OnInit {
     this.instructions=inventaire.instruction
     this.docsPv=inventaire.pvReunion
     this.docsDc=inventaire.decisionCC
+    
     this.tabComite=new FormArray([]);
-    inventaire.membresCom.forEach(membre => this.addComMembre(membre.id));  
+    inventaire.membresCom.forEach(membre => this.addComMembre(membre.id));
+    if(this.tabComite.length==0)this.addComMembre()
+
     this.tabPresents=new FormArray([]);
     inventaire.presentsReunion.forEach(membre => this.addPresentMembre(membre.id));
+    if(this.tabPresents.length==0)this.addPresentMembre()
+
     this.tabOtherPresent=new FormArray([]);
     inventaire.presentsReunionOut.forEach(nom => this.addOtherPres(nom));
+    if(this.tabOtherPresent.length==0)this.addOtherPres()
+
     this.tabLoc=[];
     this.tabZonesPick=[];
     this.tabSousZPick=[];
@@ -167,7 +175,14 @@ export class InventaireComponent implements OnInit {
       this.initInstrucForm(inventaire.instruction)
     }
     this.pvCreer=false
-    if(inventaire.localInstructionPv[1]=='creation')this.pvCreer=true
+    if(inventaire.localInstructionPv[1]=='creation'){
+      this.pvCreer=true
+      let data=inventaire.pvReunion
+      this.tabDeliberation=new FormArray([]);
+      data[1].forEach(del => this.addDeliberation(del[0],del[1]));
+      this.initPvForm([data[0][0],data[0][1],data[0][2]])
+      if(this.tabDeliberation.length==0)this.addDeliberation()
+    }
     this.initForm(inventaire)
   }
   initForm(data={id:0,debut:'',fin:'',lieuReunion:'',dateReunion:''}){
@@ -200,12 +215,12 @@ export class InventaireComponent implements OnInit {
       
     })
   }
-  initPvForm(data=["","","",""]){
+
+  initPvForm(data=["","",""]){
     this.pvForm = this.fb.group({
       bloc1: [data[0]],
       bloc2: [data[1]],
-      bloc3e1: [data[2]],
-      bloc3e2: [data[3]]
+      bloc3: [data[2]]
     })
   }
   getInstValDef(){
@@ -260,10 +275,24 @@ export class InventaireComponent implements OnInit {
     return  [
       "Commentaire :\nMettre la date et l'heure",
       "Commentaire :\nindiquer les points à l'ordre du jour",
-      "Commentaire :\nLister les personnes présentes à la réunion",
-      "Commentaire :\n1er point à l'ordre du jour"
+      "Commentaire :\nLister les personnes présentes à la réunion"
     ]
   }
+  getCommentDel(i){
+    let mot='eme'
+    if(i==0)mot='er'
+    i++ // car commence par 0
+    return "Commentaire :\n"+i+mot+" point à l'ordre du jour"
+  }
+  addDeliberation(titre='',content='') {
+    this.tabDeliberation.push(
+      new FormGroup({
+        titre:new FormControl(titre),
+        content:new FormControl(content)
+      })
+    );
+  }
+
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
         const control = formGroup.controls[controlName];
@@ -305,11 +334,12 @@ export class InventaireComponent implements OnInit {
     data.presentsReunion=this.tabPresents.value
     data.presentsReunionOut=this.tabOtherPresent.value
     data.pvReunion=this.getOnlyFile(this.docsPv)
+    data.pvReunionCreer=this.getDataPvCreer()
     data.entreprise=this.idCurrentEse
     data.localites=this.getIdAllLoc(this.tabLoc)
     data.zones=this.tabZonesPick
     data.sousZones=this.tabSousZPick
-    data.localInstructionPv=[this.invCreer?'creation':'',this.pvCreer?'creation':'']
+    data.localInstructionPv=[this.invCreer?'creation':'download',this.pvCreer?'creation':'download']
     console.log(data)
     this.inventaireServ.addInventaire(data).then(
       rep=>{
@@ -324,6 +354,19 @@ export class InventaireComponent implements OnInit {
         this.showNotification('bg-red',message,'top','right')
       }
     )
+  }
+  getDataPvCreer(){
+    let val=this.pvForm.value
+    const data1=[val.bloc1,val.bloc2,val.bloc3]
+    let data2=[]
+    this.tabDeliberation.value.forEach(del => {
+      let titre=del.titre.trim()
+      let content=del.content.trim()
+      if(titre!='' || content!=''){
+        data2.push({titre:titre,content:content})
+      }
+    });
+    return [data1,data2]
   }
   getIdAllLoc(localites){
     let t=[]
@@ -476,5 +519,31 @@ export class InventaireComponent implements OnInit {
   pickNewLoc(localite){
     this.tabLoc.push(localite)
     setTimeout(()=>this.addLoc=true,1)
+  }
+  deletCreationInst(){
+    this.invCreer=false
+    this.instructions=[]
+    this.initInstrucForm()
+  }
+  deletCreationPv(){
+    this.pvCreer=false
+    this.initPvForm()
+    this.tabDeliberation=new FormArray([]);
+  }
+  createNewInv(){
+    this.invCreer=true
+    const valInstruction=this.getInstValDef()
+    this.initInstrucForm(valInstruction)
+  }
+  createNewPv(){
+    this.pvCreer=true
+    this.tabDeliberation=new FormArray([]);
+    const valPv=this.getPvValDef()
+    this.initPvForm(valPv)
+    this.tabDeliberation=new FormArray([]);
+    const content="Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
+    const title="DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
+    this.addDeliberation(title,content)
+    console.log(this.tabDeliberation.controls[0])
   }
 }

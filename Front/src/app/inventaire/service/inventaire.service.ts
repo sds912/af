@@ -49,11 +49,8 @@ export class InventaireService {
     formData.append('fin',data.fin)
     formData.append('lieuReunion',data.lieuReunion)
     formData.append('dateReunion',data.dateReunion)
-    const instructions=data.instructions
-    for(let i=1;i<=instructions.length;i++){
-      formData.append('instruction'+i,instructions[i-1])
-    }
-    formData.append('countInstruction',instructions.length)
+
+    
 
     const decisionCC=data.decisionCC
     for(let i=1;i<=decisionCC.length;i++){
@@ -66,11 +63,7 @@ export class InventaireService {
     formData.append('presentsReunion',data.presentsReunion)
     formData.append('presentsReunionOut',data.presentsReunionOut)
 
-    const pvReunion=data.pvReunion
-    for(let i=1;i<=pvReunion.length;i++){
-      formData.append('pvReunion'+i,pvReunion[i-1])
-    }
-    formData.append('countPvReunion',pvReunion.length)
+    
     
     formData.append('entreprise',data.entreprise)
     formData.append('localites',data.localites)
@@ -78,20 +71,47 @@ export class InventaireService {
     formData.append('sousZones',data.sousZones)
     formData.append('localInstructionPv',data.localInstructionPv)
     let instrucCreer=data.instrucCreer
+
     if(data.localInstructionPv[0]=='creation'){
       formData.append('bloc1e1',instrucCreer.bloc1e1)
-      formData.append('bloc1e2',instrucCreer.bloc1e1)
+      formData.append('bloc1e2',instrucCreer.bloc1e2)
       formData.append('bloc1e3',instrucCreer.bloc1e3)
 
       formData.append('bloc2e1',instrucCreer.bloc2e1)
       formData.append('bloc2e2',instrucCreer.bloc2e2)
       formData.append('bloc2e3',instrucCreer.bloc2e3)
 
-      formData.append('bloc3e1',instrucCreer.bloc2e1)
-      formData.append('bloc3e2',instrucCreer.bloc2e2)
-      formData.append('bloc3e3',instrucCreer.bloc2e3)
-      formData.append('bloc3e4',instrucCreer.bloc2e4)
+      formData.append('bloc3e1',instrucCreer.bloc3e1)
+      formData.append('bloc3e2',instrucCreer.bloc3e2)
+      formData.append('bloc3e3',instrucCreer.bloc3e3)
+      formData.append('bloc3e4',instrucCreer.bloc3e4)
+    }else{
+      const instructions=data.instructions
+      for(let i=1;i<=instructions.length;i++){
+        formData.append('instruction'+i,instructions[i-1])
+      }
+      formData.append('countInstruction',instructions.length)
     }
+
+    let pvReunionCreer=data.pvReunionCreer
+    if(data.localInstructionPv[1]=='creation'){
+      formData.append('pvCB1',pvReunionCreer[0][0])
+      formData.append('pvCB2',pvReunionCreer[0][1])
+      formData.append('pvCB3',pvReunionCreer[0][2])
+      let tabDel=pvReunionCreer[1]
+      for(let i=1;i<=tabDel.length;i++){
+        formData.append('pvDelTitre'+i,tabDel[i-1].titre)
+        formData.append('pvDelContent'+i,tabDel[i-1].content)
+      }
+      formData.append('countPvCreer',tabDel.length)
+    }else{
+      const pvReunion=data.pvReunion
+      for(let i=1;i<=pvReunion.length;i++){
+        formData.append('pvReunion'+i,pvReunion[i-1])
+      }
+      formData.append('countPvReunion',pvReunion.length)
+    }
+
     if(data.id && data.id!=0) {
       return this.sharedService.postElement(formData,"/inventaires/"+data.id)//si put avec form data tableau
     }
