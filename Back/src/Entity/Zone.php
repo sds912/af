@@ -83,6 +83,17 @@ class Zone
         }
         return $n;
     }
+    /**
+    * @Groups({"inv_read"})
+    */
+    public function getidLoc(){
+        $loc=$this->localite;
+        $n=null;
+        if($loc){
+            $n=$loc->getId();
+        }
+        return $n;
+    }
 
     public function getId(): ?int
     {

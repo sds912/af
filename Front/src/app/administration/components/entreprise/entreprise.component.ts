@@ -18,6 +18,7 @@ export class EntrepriseComponent implements OnInit {
   @ViewChild('closeAddModal', { static: false }) closeAddModal;
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
   @ViewChild('formDirective') private formDirective: NgForm;
+  totalMessage="Total"
   rows = [];
   selectedRowData: selectRowInterface;
   newUserImg = '';
@@ -60,16 +61,6 @@ export class EntrepriseComponent implements OnInit {
     this.securityServ.showLoadingIndicatior.next(true)
     this.getEntreprise()
   }
-  changeTotal(){
-    setTimeout(()=>{
-      let val=$('.page-count').html()
-      if(val){
-        val="Total "+val.replace("total","")
-        $('.page-count').empty()
-        //$('.page-count').append(val) injecter directement le data.lengt
-      }
-    },1000)
-  }
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
@@ -80,7 +71,6 @@ export class EntrepriseComponent implements OnInit {
         this.data = e;
         this.filteredData = rep;
         this.show=true
-        this.changeTotal()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)

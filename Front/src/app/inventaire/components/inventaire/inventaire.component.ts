@@ -9,7 +9,6 @@ import { InventaireService } from '../../service/inventaire.service';
 import { Entreprise } from 'src/app/administration/model/entreprise';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { timeStamp } from 'console';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-inventaire',
@@ -57,6 +56,9 @@ export class InventaireComponent implements OnInit {
   tabDeliberation=new FormArray([]);
   urlInst=''
   urlPv=''
+  locHover=null
+  zoneHover=null
+  szHover=null
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -76,7 +78,6 @@ export class InventaireComponent implements OnInit {
     this.comments=this.getCommentInst()
     this.initPvForm()
     this.commentsPv=this.getCommentPv()
-    this.getInventaire()
     this.getEntreprise()
   }
   getEntreprise(){
@@ -88,11 +89,12 @@ export class InventaireComponent implements OnInit {
           this.idCurrentEse=e[0].id
           this.localites=rep[0].localites
           this.getUsers(rep[0].users)
+          this.getInventaireByEse()
         }
         console.log(rep);
         
         this.entreprises=e
-        this.securityServ.showLoadingIndicatior.next(false)
+        //this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -102,6 +104,8 @@ export class InventaireComponent implements OnInit {
   }
   entiteChange(id){
     this.idCurrentInv=0
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.getInventaireByEse()
     this.showForm=false
     let entreprise=this.entreprises.find(e=>e.id==id)
     if(entreprise){
@@ -109,16 +113,11 @@ export class InventaireComponent implements OnInit {
       this.getUsers(entreprise.users)
     }
   }
-  forOnLyEntity(tab){
-    const invemtaires=tab?.filter(inv=>inv.entreprise.id==this.idCurrentEse)
-    if(invemtaires)return invemtaires
-    return []
-  }
-  getInventaire(){
-    this.inventaireServ.getInventaire().then(
+  getInventaireByEse(){
+    this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
       rep=>{
         console.log(rep)
-        this.securityServ.showLoadingIndicatior.next(false)
+        this.securityServ.showLoadingIndicatior.next(false)//ne pas sup sinon revoir celui de onEditSave
         let inv=rep
         if(inv && inv.length>0){
           inv=rep.reverse()
@@ -331,6 +330,22 @@ export class InventaireComponent implements OnInit {
   }
   onEditSave(form: FormGroup){
     this.securityServ.showLoadingIndicatior.next(true)
+    let data=this.getAllDataToSend(form)
+    this.inventaireServ.addInventaire(data).then(
+      rep=>{
+        console.log(rep)
+        //this.securityServ.showLoadingIndicatior.next(false) gerer par getInventaire
+        this.showNotification('bg-success',rep.message,'top','center')
+        this.getInventaireByEse()
+        this.showForm=false
+      },message=>{
+        console.log(message)
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
+  }
+  getAllDataToSend(form: FormGroup){
     let data=this.getData(form.value)
     data.instructions=this.getOnlyFile(this.instructions)
     data.instrucCreer=this.instForm.value
@@ -347,19 +362,7 @@ export class InventaireComponent implements OnInit {
     data.sousZones=this.tabSousZPick
     data.localInstructionPv=[this.invCreer?'creation':'download',this.pvCreer?'creation':'download']
     console.log(data)
-    this.inventaireServ.addInventaire(data).then(
-      rep=>{
-        console.log(rep)
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-success',rep.message,'top','center')
-        this.getInventaire()
-        this.showForm=false
-      },message=>{
-        console.log(message)
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-red',message,'top','right')
-      }
-    )
+    return data
   }
   getDataPvCreer(){
     let val=this.pvForm.value
@@ -745,5 +748,22 @@ export class InventaireComponent implements OnInit {
     return element
 
   }
-}
+  overLoc(localite){
+    console.log(localite)
+    this.locHover=localite
+  }
+  overZone(zone){
+    console.log(zone)
+    this.zoneHover=zone
+  }
+  overSz(sz){
+    console.log(sz)
+    this.szHover=sz
+  }
+  outHoverLZS(){
+    this.locHover=null
+    this.zoneHover=null
+    this.szHover=null
+  }
+} 
 

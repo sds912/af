@@ -22,9 +22,9 @@
                         </div>
                     </div>
                     <div class="body">
-                        <mat-accordion>
+                        <mat-accordion multi="true">
                             <!--Add and Update-->
-                            <mat-expansion-panel class="mb-4" expanded="true" hideToggle *ngIf="showForm">
+                            <mat-expansion-panel class="mb-4" expanded hideToggle *ngIf="showForm">
                                 <mat-expansion-panel-header class="pr-0" style="background-color: #d8d5d5;">
                                     <mat-panel-title  class="pl-0 col-11 pt-5 pb-4 mr-0">
                                         <p>
@@ -38,7 +38,7 @@
                                     </mat-panel-description>
                                 </mat-expansion-panel-header>
                                 <!--Corps-->
-                                <form class="mt-5" [formGroup]="editForm" #formDirective="ngForm">
+                                <form class="mt-4" [formGroup]="editForm" #formDirective="ngForm">
                                     <div class="input-field col s12 d-none">
                                         <input formControlName="id" class="form-control" type="hidden">
                                     </div>
@@ -66,7 +66,7 @@
                                     <p class="row mt-4">
                                         <span class="col-4 pt-3 bolder">Localités</span>
                                         <span class="col-8">
-                                            <button *ngFor="let idLoc of noNull(tabLoc)" mat-mini-fab [title]="getLocById(idLoc)?.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2"
+                                            <button *ngFor="let loc of noNull(tabLoc)" mat-mini-fab [title]="loc.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2"
                                             data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#localiteModal">
                                                 <mat-icon>room</mat-icon>
                                             </button>
@@ -103,7 +103,7 @@
 
                                         <span class="col-8" *ngIf="invCreer">
                                             <span class="">
-                                               <mat-icon title="Instruction" style="font-size: 50px;color: #3f51b5;" data-keyboard="false"
+                                               <mat-icon class="text-info" title="Instruction" style="font-size: 50px;" data-keyboard="false"
                                                data-target="#instrucModal">insert_drive_file</mat-icon>
                                                 <mat-icon title="Supprimer l'instruction" class="mr-3 pointer" style="color: #f80000;" (click)='deletCreationInst()'>cancel</mat-icon>
                                                 <button class="addFile" mat-mini-fab title="Instruction" color="primary" aria-label="Example icon-button with a heart icon"
@@ -200,7 +200,7 @@
                                         <input type="file" id="doc2" (change)="handleFileInputPv($event.target.files)" hidden #docPv multiple>
                                         <span class="col-8" *ngIf="pvCreer">
                                             <span class="">
-                                               <mat-icon title="Procès-verbal" style="font-size: 50px;color: #3f51b5;" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                               <mat-icon class="text-info" title="Procès-verbal" style="font-size: 50px;" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                data-target="#pvModal">insert_drive_file</mat-icon>
                                                 <mat-icon title="Supprimer le pv" class="mr-3 pointer" style="color: #f80000;" (click)='deletCreationPv()'>cancel</mat-icon>
                                                 <button class="addFile" mat-mini-fab title="Pv" color="primary" aria-label="Example icon-button with a heart icon"
@@ -220,7 +220,7 @@
                             <!--Add and Update-->
 
                             <!--List-->
-                            <mat-expansion-panel class="mb-4" *ngFor="let inventaire of forOnLyEntity(inventaires);let i=index" hideToggle [hidden]="showForm"  [expanded]="inventaire.id===idCurrentInv ||idCurrentInv==0 && i==0" (opened)="idCurrentInv=inventaire.id">
+                            <mat-expansion-panel class="mb-4" *ngFor="let inventaire of inventaires;let i=index" hideToggle [hidden]="showForm"  [expanded]="inventaire.id===idCurrentInv ||idCurrentInv==0 && i==0" (opened)="idCurrentInv=inventaire.id">
                                 <mat-expansion-panel-header class="pr-0" style="background-color: #d8d5d5;" #panelHL (click)="panelHL._toggle()">
                                     <mat-panel-title  class="pl-0 col-11 pt-5 pb-4 mr-0" (click)="panelHL._toggle()">
                                         <p>
@@ -235,7 +235,7 @@
                                     </mat-panel-description>
                                 </mat-expansion-panel-header>
                                 <!--Corps-->
-                                <div class="mt-5">
+                                <div class="mt-4">
                                     <p class="row mt-3">
                                         <span class="col-4 bolder">PÉRIODE </span>
                                         <span class="col-4">Du : {{inventaire.debut|date:'dd-MM-yyyy'}} </span>
@@ -246,7 +246,7 @@
                                         <span class="col-4 bolder"  [ngClass]="{'pt-3': inventaire.localites && inventaire.localites.length>0}">Localités</span>
                                         <span class="col-8">
                                             <span *ngIf="!inventaire.localites ||inventaire.localites && inventaire.localites.length==0">Aucune localité n'a été ajoutée</span>
-                                            <button *ngFor="let localite of inventaire.localites" mat-mini-fab [title]="localite.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2">
+                                            <button *ngFor="let localite of inventaire.localites" mat-mini-fab [title]="localite.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2 " (mouseover)="overLoc(localite)" (mouseout)="outHoverLZS()">
                                                 <mat-icon>room</mat-icon>
                                             </button>
                                         </span>
@@ -256,9 +256,12 @@
                                         <span class="col-4 bolder"  [ngClass]="{'pt-3': inventaire.zones?.length>0}">Zones</span>
                                         <span class="col-8">
                                             <span *ngIf="!inventaire.zones ||inventaire.zones?.length==0">Aucune zone n'a été ajoutée</span>
-                                            <button *ngFor="let zone of inventaire.zones" mat-mini-fab [title]="zone.nom + ' ( '+zone.locName+' ) '" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2">
-                                                <mat-icon>room</mat-icon>
-                                            </button>
+                                            <span *ngFor="let zone of inventaire.zones" class="mr-2 " style="position: relative;">
+                                                <button mat-mini-fab [title]="zone.nom + ' ( Localité : '+zone.locName+' ) '" color="primary" aria-label="Example icon-button with a heart icon" class="" (mouseover)="overZone(zone)" (mouseout)="outHoverLZS()">
+                                                    <mat-icon>room</mat-icon>
+                                                </button>
+                                                <!--<span style="position: relative;top: -33px;left: 0px;" hidden>{{zone.nom}}</span> A revoir plutard pour afficher le nom en hover et le nom de la localité-->
+                                            </span>
                                         </span>
                                     </p>
                                     <hr>
@@ -266,7 +269,7 @@
                                         <span class="col-4 bolder"  [ngClass]="{'pt-3': inventaire.sousZones?.length>0}">Sous zones</span>
                                         <span class="col-8">
                                             <span *ngIf="!inventaire.sousZones ||inventaire.sousZones?.length==0">Aucune sous-zone n'a été ajoutée</span>
-                                            <button *ngFor="let sousZone of inventaire.sousZones" mat-mini-fab [title]="sousZone.nom+ ' ( '+sousZone.zonename+' ) '" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2">
+                                            <button *ngFor="let sousZone of inventaire.sousZones" mat-mini-fab [title]="sousZone.nom+ ' (  Zone : '+sousZone.zonename+' ) '" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2 " (mouseover)="overSz(sousZone)" (mouseout)="outHoverLZS()">
                                                 <mat-icon>room</mat-icon>
                                             </button>
                                         </span>
@@ -283,7 +286,7 @@
                                         </span>
                                         <span class="col-8" *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]=='creation'">
                                             <span>
-                                                <mat-icon class="text-primary mr-4 pointer" title="Instruction"  style="font-size: 50px;" (click)="generatePdf(inventaire.instruction,0)">insert_drive_file</mat-icon>
+                                                <mat-icon class="text-info mr-4 pointer" title="Instruction"  style="font-size: 50px;" (click)="generatePdf(inventaire.instruction,0)">insert_drive_file</mat-icon>
                                             </span>
                                         </span>
                                     </p>
@@ -334,7 +337,7 @@
                                         </span>
                                         <span class="col-8" *ngIf="inventaire.pvReunion && inventaire.pvReunion.length>0 && inventaire.localInstructionPv[1]=='creation'">
                                             <span>
-                                                <mat-icon class="text-primary mr-4 pointer" title="Procès-verbal"  style="font-size: 50px;" (click)="generatePdf(inventaire.pvReunion,1)">insert_drive_file</mat-icon>
+                                                <mat-icon class="text-info mr-4 pointer" title="Procès-verbal"  style="font-size: 50px;" (click)="generatePdf(inventaire.pvReunion,1)">insert_drive_file</mat-icon>
                                             </span>
                                         </span>
                                     </p>

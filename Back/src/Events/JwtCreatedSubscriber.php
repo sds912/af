@@ -4,7 +4,7 @@ namespace App\Events;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 
 class JwtCreatedSubscriber{//dans services.yaml
-    public function updateJwtData(JWTCreatedEvent $event){
+    public function updateJwtData(JWTCreatedEvent $event){//pose quel probleme avec le refresh token
         // $user=$event->getUser();
         // $data=$event->getData();// c est un tableau
         // if($user && $user->getId()){}

@@ -7,7 +7,8 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class SharedService {
-  public baseUrl="http://127.0.0.1:8000"//image et autre
+  //public baseUrl="http://127.0.0.1:8000"//image et autre
+  public baseUrl="https://a152836fa4c1.ngrok.io"
   public urlBack=this.baseUrl+'/api';
   public baseAsset="assets"
   constructor(public httpClient: HttpClient,public router:Router) { }

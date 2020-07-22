@@ -25,7 +25,7 @@ export class EquipeComponent implements OnInit {
   colNmbre=5
   selectedRowData: selectRowInterface;
   newUserImg = '';
-   
+  totalMessage="Total"
   data = [];
   filteredData = [];
   editForm: FormGroup;
@@ -98,6 +98,7 @@ export class EquipeComponent implements OnInit {
     this.getEntreprises()
     this.securityServ.getUser()
     this.sidebarItems = this.useInSideBI(ROUTES);
+    let data={username:'ooo',password:'iii'}
   }
   useInSideBI(tab){
     let objs=[]
@@ -162,16 +163,6 @@ export class EquipeComponent implements OnInit {
       bool=tabSub.indexOf(idSub)>-1
     }
     return bool
-  }
-  changeTotal(){
-    setTimeout(()=>{
-      let val=$('.page-count').html()
-      if(val){
-        val="Total "+val.replace("total","")//mettre une regex
-        $('.page-count').empty()
-        //$('.page-count').append(val)
-      }
-    },1000)
   }
   roleChange(role){
     this.isMembreEquipe=false
@@ -268,6 +259,7 @@ export class EquipeComponent implements OnInit {
   getUsers(){
     this.adminServ.getUsers().then(
       rep=>{
+        console.log(rep);
         let users=[]
         if(rep && rep.length>0){
           users=rep.reverse();
@@ -281,7 +273,6 @@ export class EquipeComponent implements OnInit {
 
         this.idCurrentEse=0//les users de toutes les entreprises pour le chargement lorsqu'on fait une requête
         this.entiteChange(0)
-        this.changeTotal()
         if(this.searchValue!="")this.filterDatatable(this.searchValue)//exemple si on cherche un user et on le bloque ne pas bougé
       },
       error=>{
@@ -302,6 +293,7 @@ export class EquipeComponent implements OnInit {
           this.idCurrentEse=rep[0].id//ne jamais utiliser pour une requête car elle peut etre egal à 0 si on selectionne toutes les entreprises c est juste pour les filtres des select
           this.currentLocs=rep[0].localites
         }
+        console.log(rep);
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -688,6 +680,9 @@ export class EquipeComponent implements OnInit {
     this.userLocalites[i].forEach(localite => {
       this.deleteLoc(localite,i)
     });
+  }
+  look(v){
+    console.log(v)
   }
 }
 export interface selectRowInterface {

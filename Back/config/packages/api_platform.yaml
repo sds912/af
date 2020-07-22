@@ -5,7 +5,7 @@ api_platform:
         json: ['application/merge-patch+json']
     swagger:
         versions: [3]
-    collection: #voir video lior 33
+    collection: #voir video lior 33 on peut aussi mettre sur l url ?pagination=true
         pagination:
             enabled: false
     # formats:

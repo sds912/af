@@ -24,12 +24,12 @@ class MyInventaire implements QueryCollectionExtensionInterface,QueryItemExtensi
                                       string $resourceClass, 
                                       ?string $operationName = null)
     {
-        if($resourceClass===Inventaire::class){
-            $rootAlias=$queryBuilder->getRootAliases()[0];
-            $queryBuilder->join("$rootAlias.entreprise",'entreprise')
-            ->join("entreprise.users",'user')
-            ->andWhere('user = :user')
-            ->setParameter('user', $this->userCo);
+        if($resourceClass===Inventaire::class){//ca marche mais ca rend les requetes lent
+            // $rootAlias=$queryBuilder->getRootAliases()[0];
+            // $queryBuilder->join("$rootAlias.entreprise",'entreprise')
+            // ->join("entreprise.users",'user')
+            // ->andWhere('user = :user')
+            // ->setParameter('user', $this->userCo);
         }
     }
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])

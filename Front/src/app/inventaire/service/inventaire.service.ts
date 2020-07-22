@@ -43,6 +43,9 @@ export class InventaireService {
   getInventaire(){
     return this.sharedService.getElement("/inventaires")
   }
+  getInventaireByEse(id){
+    return this.sharedService.getElement("/inventaires?entreprise.id="+id)
+  }
   addInventaire(data){
     const formData:FormData=new FormData();
     formData.append('debut',data.debut)

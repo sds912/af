@@ -44,6 +44,7 @@ export class ZonageComponent implements OnInit {
   localiteForm:FormGroup;
   zoneForm:FormGroup;
   souZoneForm:FormGroup;
+  currentImage='map3.jpeg'//'font-maps.jpg'
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeZoneModal', { static: false }) closeZoneModal;
@@ -59,6 +60,7 @@ export class ZonageComponent implements OnInit {
               private securityServ:SecurityService) {
   }//revoir le delete sous-zone quand on ajout des user à ces sz
   ngOnInit() {
+    this.carrousel()
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
     this.initForm2()
@@ -382,5 +384,14 @@ export class ZonageComponent implements OnInit {
   getValPourcentage(val){
     const valeur=parseInt(val.replace('%',''))
     return valeur
+  }
+  carrousel(){
+    const images=['map4.jpg','map2.jpeg','map3.jpeg']
+    let a=0
+    window.setInterval(()=>{
+      if(a>=images.length)a=0
+      this.currentImage=images[a]
+      a++
+    },5000)
   }
 }

@@ -69,6 +69,18 @@ class SousZone
     }
 
     /**
+    * @Groups({"inv_read"})
+    */
+    public function getidLoc(){
+        $z=$this->zone;
+        $name=null;
+        if($z){
+            $name=$z->getidLoc();
+        }
+        return $name;
+    }
+
+    /**
     * @Groups({"entreprise_read"})
     */
     public function getRemovable(){
