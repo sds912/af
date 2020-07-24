@@ -57,6 +57,14 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *              "summary"="Modifier ses informations personnelles",
  *              "description"=""
  *           }
+ *      },
+ *      "MY_INFO"={
+ *          "method"="get",
+ *          "path"="/info",
+ *           "swagger_context"={
+ *              "summary"="Avoir ses informations personnelles",
+ *              "description"=""
+ *           }
  *      }
  *  }
  * )
@@ -149,12 +157,18 @@ class User implements UserInterface
      */
     private $menu = [];
 
+    /**
+     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="lecteur")
+     */
+    private $lectures;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->zones = new ArrayCollection();
         $this->sousZones = new ArrayCollection();
+        $this->lectures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -420,6 +434,37 @@ class User implements UserInterface
     public function setMenu(?array $menu): self
     {
         $this->menu = $menu;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Lecture[]
+     */
+    public function getLectures(): Collection
+    {
+        return $this->lectures;
+    }
+
+    public function addLecture(Lecture $lecture): self
+    {
+        if (!$this->lectures->contains($lecture)) {
+            $this->lectures[] = $lecture;
+            $lecture->setLecteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLecture(Lecture $lecture): self
+    {
+        if ($this->lectures->contains($lecture)) {
+            $this->lectures->removeElement($lecture);
+            // set the owning side to null (unless already changed)
+            if ($lecture->getLecteur() === $this) {
+                $lecture->setLecteur(null);
+            }
+        }
 
         return $this;
     }

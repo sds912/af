@@ -10,6 +10,7 @@ import { Entreprise } from 'src/app/administration/model/entreprise';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+const dd=x=>console.log(x)
 @Component({
   selector: 'app-inventaire',
   templateUrl: './inventaire.component.html',
@@ -113,7 +114,7 @@ export class InventaireComponent implements OnInit {
       this.getUsers(entreprise.users)
     }
   }
-  getInventaireByEse(){
+  getInventaireByEse(add=false){
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
       rep=>{
         console.log(rep)
@@ -121,7 +122,7 @@ export class InventaireComponent implements OnInit {
         let inv=rep
         if(inv && inv.length>0){
           inv=rep.reverse()
-          //if(this.idCurrentInv==0)this.idCurrentInv=inv[0].id
+          if(add)this.idCurrentInv=inv[0].id
         }
         this.inventaires=inv
         this.show=true
@@ -190,9 +191,10 @@ export class InventaireComponent implements OnInit {
     }
     this.initForm(inventaire)
   }
-  initForm(data={id:0,debut:'',fin:'',lieuReunion:'',dateReunion:''}){
+  initForm(data={id:0,dateInv:new Date().getFullYear()+'-12-31T00:00:00+00:00',debut:'',fin:'',lieuReunion:'',dateReunion:''}){
     this.editForm = this.fb.group({
       id: [data.id],
+      dateInv: [data.dateInv],
       debut: [data.debut],
       fin: [data.fin],
       lieuReunion: [data.lieuReunion],
@@ -220,6 +222,14 @@ export class InventaireComponent implements OnInit {
       
     })
   }
+  detailsLoc(inventaire){
+    this.tabLoc=[];
+    this.tabZonesPick=[];
+    this.tabSousZPick=[];
+    inventaire.localites.forEach(localite => this.tabLoc.push(localite));
+    inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
+    inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
+  }
 
   initPvForm(data=["","",""]){
     this.pvForm = this.fb.group({
@@ -231,28 +241,28 @@ export class InventaireComponent implements OnInit {
   getInstValDef(){
     return[
       [
-        "La réunion de lancement de l'inventaire sear tenu le 20/12. Les points suivants seront abordés:\n - la composition des équipes;\n - la méthode de comptage…",
-        "ACQUISITIONS\nL'acquisition d'immobilisations commence par une demande d'achat initiée par le demandeur. Cette demande est validée par le Chef comptable. Ensuite un BC est établi et sera signé par le DAF et le DG. Après réception de l'immobilisation, un code barre est généré et apposé sur l'immobilisation.\n\nCESSIONS\nToutes les sorties doivent faire l'objet d'un bon validé par le Chef du magasin, le DAF et le DG.",
-        "Il faudra:\n - Editer le fichier des immobilisations\n - Faire une revue des postes \n - Procéder aux régularisations nécessaires devant permettre de s'assurer de l'exactitude des mouvements de l'année",
+        "La réunion de lancement de l'inventaire sera tenue le 20/12. Les points suivants seront abordés:\n - la composition des équipes;\n  - la méthode de comptage…",
+        "ACQUISITIONS\nPour l'acquisition d'immobilisations, une demande d'achat initiée par le service demandeur. Cette demande est validée par le Chef comptable. Ensuite, un Bon de Commande est établi et sera signé par le DAF et le DG. Après réception de l'immobilisation, un code barre est généré et apposé sur l'immobilisation.\n\nCESSIONS\nToutes les sorties doivent faire l'objet d'un bon validé par le Chef du magasin, le DAF et le DG.",
+        "Il faudra:\n - Editer le fichier des immobilisations\n - Faire une revue des postes  \n - Procéder aux régularisations nécessaires devant permettre de s'assurer de l'exactitude des mouvements de l'année",
       ],
       [
-        "Le Comité d'inventaire est mis en place sera composé de:\n- M. Pathé Ndiaye (Président);\n- Mme Isabelle Diouf ( membre);\n- M. Saliou Ba ( membre)\n\nIl devra:\n  - mettre en place toute la logistique nécessaire pour le démarrage effectif de l'inventaire physique à la \ndate prévue ( constitution et formation des équipes, matériel nécessaire etc..);\n  - prendre toutes les dispositions pour l'organisation et la supervision de l'inventaire;\n  - valider les résultats de l'inventaire et élaborer un rapport d'inventaire.",
-        "1. MAGASIN\nLe rangement des magasins avec vérification des CODES se fera effectué avant le 09/10. Le magasin est composé de 2 dépôts.\n1.1. Dépôt 01\nLe dépôt 01 sera divisé en 02 sous-zones de stockage:\n    - Sous-zone A : salle 1 et 2 (Equipe A)\n    - Sous-zone B : Cour extérieure (Equipe A).\n1.2. Dépôt 02 \nLe dépôt 02 sera divisé en 02 Sous-zones de stockage:\n   - Sous-zone A : Showroom (Equipe B)\n    - Sous-zone B : salle des pièces de rechange (Equipe B)\n\n2. ENTREPOT\nLe rangement de l'entrepot avec vérification des CODES se fera effectué avant le 09/10. Le comptage sera effectué par l'équipe C.",
-        "ORGANISATION\nLe rangement des magasins sera effectué à partir du Mercredi 09/12.\nIl faudra s’assurer que les étiquettes à code barre ont été apposés sur toutes les immobilisations.\n\nCOMPTAGE\nLe fichier des immobilisations sera remis à chaque équipe. Des étiquettes (gommettes) de couleur bleue et un lecteur de codes seront aussi transmis à chaque chef d’étiquette. \n\nCONTROLE\nAprès le comptage, une autre équipe de passe pour le contrôle en utilisant des étiquettes (gommettes) de couleur verte.\n\nANOMALIES\nEn cas de désaccord entre l’équipe de comptage et de contrôle, un comptage contradictoire sera piloté par le comité d’inventaire (Etiquettes de couleur rouge)."
+        "Le Comité d'inventaire est mis en place sera composé de:\n- M. Pathé Ndiaye (Président);\n- Mme Isabelle Diouf (membre);\n- M. Saliou Ba (membre)\n\nIl devra:\n  - mettre en place toute la logistique nécessaire pour le démarrage effectif de l'inventaire physique à la date prévue ( constitution et formation des équipes, matériel nécessaire etc..);\n  - prendre toutes les dispositions pour l'organisation et la supervision de l'inventaire;\n  - valider les résultats de l'inventaire et élaborer un rapport d'inventaire.",
+        "1. MAGASIN\nLe rangement des magasins avec vérification des CODES se fera effectué avant le 09/10. Le magasin est composé de 2 dépôts.\n1.1. Dépôt 01\nLe dépôt 01 sera divisé en 02 sous-zones de stockage :\n    - Sous-zone A : salle 1 et 2 (Equipe A)\n    - Sous-zone B : Cour extérieure (Equipe A).\n1.2. Dépôt 02 \nLe dépôt 02 sera divisé en 02 Sous-zones de stockage :\n - Sous-zone A : Showroom (Equipe B)\n    - Sous-zone B : salle des pièces de rechange (Equipe B)\n\n2. ENTREPOT\nLe comptage sera effectué par l'équipe C.",
+        "ORGANISATION\nLe rangement des magasins sera effectué à partir du Mercredi 09/12.\nIl faudra s’assurer que les étiquettes à code barre ont été apposées sur toutes les immobilisations.\n\nCOMPTAGE\nLe fichier des immobilisations sera remis à chaque équipe. Des étiquettes (gommettes) de couleur bleue et un lecteur de codes seront aussi transmis à chaque chef d’équipe. \n\nCONTROLE\nAprès le comptage, une autre équipe  passe pour le contrôle en utilisant des étiquettes (gommettes) de couleur verte.\n\nANOMALIES\nEn cas de désaccord entre l’équipe de comptage et de contrôle, un comptage contradictoire sera piloté par le comité d’inventaire (Etiquettes de couleur rouge)."
       ],
       [
-        "Cette phase consistera à effectuer un rapprochement entre les résultats de l'inventaire et le fichier des immobilisations afin d'identifier:\n  - les immobilisations inscrites au fichier mais non inventoriées (manquants d'inventaire);\n  - et les immobilisations inventoriées mais non inscrites au fichier (sans numéro d'immatriculation et/ou sans étiquettes).\n\nLes écarts constatés doivent faire l'objet de recherches complémentaires, par les équipes de comptage, en vue de leur résorption. S'agissant des articles recensés au cours de cet inventaire, mais non inscrits au fichier des immobilisations, il conviendra de les répertorier sur un tableau séparé. En outre, des dispositions devront être prises pour veiller à leur immatriculation diligente au fichier des immoblisations.",
+        "Cette phase consistera à effectuer un rapprochement entre le fichier des immobilisations et les résultats de l'inventaire et afin d'identifier:\n  - les immobilisations inscrites au fichier mais non inventoriées (manquants d'inventaire);\n  - et les immobilisations inventoriées mais non inscrites au fichier (sans numéro d'immatriculation et/ou sans étiquettes).\n\nLes écarts constatés doivent faire l'objet de recherches complémentaires, par les équipes de comptage, en vue de leur résorption. S'agissant des articles recensés au cours de cet inventaire, mais non inscrits au fichier des immobilisations, il conviendra de les répertorier sur un tableau séparé. En outre, des dispositions devront être prises pour veiller à leur immatriculation diligente au fichier des immoblisations.",
         "Les anomalies retracées devront être analysées et corrigées, au plus le 15 janvier.",
         "L'inventaire sera appouvé par le comité d'inventaire.",
-        "Le dossier à constituer devra comporter les documents ci-après:\n- un procès-verbal d'inventaire;\n- les annexes avant et après corrections "
+        "Le dossier à constituer devra comporter les documents ci-après:\n- un procès-verbal d'inventaire;\n- les annexes avant et après corrections"
       ]
     ]
   }
   getPvValDef(){
     return  [
-      "L’AN DEUX MILLE VINGT \nET LE 09 JUILLET A 08 H EURES 10 MINUTES",
-      "La réunion de lancement de l'inventaire a été tenue au siège social sis à l'avenue Bourgui pour délibérer sur l’ordre du jour suivant : \n1.	Instructions d'inventaire\n2.	planning de l'inventaire\n3.	Questions diverses.",
-      "Une feuille de présence a été émargée en début de séance par chaque administrateur. \nEtaient présent : \n-	M. Pathé Ndiaye (Président du comité),…",
+      "L’AN DEUX MILLE VINGT \nET LE 09 JUILLET A 08 HEURES 10 MINUTES",
+      "La réunion de lancement de l'inventaire a été tenue au siège social sis à l'avenue Bourgui pour délibérer sur l’ordre du jour suivant :  \n1.	Instructions d'inventaire\n2.	Planning de l'inventaire\n3.	Questions diverses.",
+      "Une feuille de présence a été émargée en début de séance par chaque participant. \nEtaient présent : \n-	M. Pathé Ndiaye (Président du comité),…",
       "Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
     ]
   }
@@ -289,7 +299,7 @@ export class InventaireComponent implements OnInit {
     i++ // car commence par 0
     return "Commentaire :\n"+i+mot+" point à l'ordre du jour"
   }
-  addDeliberation(titre='',content='') {
+  addDeliberation(titre='DÉLIBERATION '+(this.tabDeliberation.length+1)+" :",content='') {
     this.tabDeliberation.push(
       new FormGroup({
         titre:new FormControl(titre),
@@ -336,7 +346,8 @@ export class InventaireComponent implements OnInit {
         console.log(rep)
         //this.securityServ.showLoadingIndicatior.next(false) gerer par getInventaire
         this.showNotification('bg-success',rep.message,'top','center')
-        this.getInventaireByEse()
+        let add=data.id==0?true:false
+        this.getInventaireByEse(add)
         this.showForm=false
       },message=>{
         console.log(message)
@@ -450,6 +461,9 @@ export class InventaireComponent implements OnInit {
     this.docsDc.splice(index, 1)
   }
   getData(data){
+    if(data.dateInv){
+      data.dateInv=this.formattedDate(data.dateInv)
+    }
     if(data.debut){
       data.debut=this.formattedDate(data.debut)
     }
@@ -482,7 +496,7 @@ export class InventaireComponent implements OnInit {
     });
   }
 
-  deleteLoc(localite,i){
+  deleteLoc(localite){
     let index=this.tabLoc.indexOf(localite)
     if (index > -1) {
       this.tabLoc.splice(index, 1);
@@ -521,13 +535,15 @@ export class InventaireComponent implements OnInit {
       this.tabSousZPick.push(id)
     }
   }
-  pickNewZone(zone){
+  pickNewZone(zone,fast=false){
     this.tabZonesPick.push(zone.id)
-    setTimeout(()=>this.addZone=true,1)
+    if(!fast)
+      setTimeout(()=>this.addZone=true,1)
   }
-  pickNewLoc(localite){
+  pickNewLoc(localite,fast=false){
     this.tabLoc.push(localite)
-    setTimeout(()=>this.addLoc=true,1)
+    if(!fast)
+      setTimeout(()=>this.addLoc=true,1)
   }
   deletCreationInst(){
     this.invCreer=false
@@ -552,9 +568,8 @@ export class InventaireComponent implements OnInit {
     this.initPvForm(valPv)
     this.tabDeliberation=new FormArray([]);
     const content="Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
-    const title="DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
+    const title="DÉLIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
     this.addDeliberation(title,content)
-    console.log(this.tabDeliberation.controls[0])
   }
   generatePdf(data,numero) {
     let content=[]
@@ -706,7 +721,6 @@ export class InventaireComponent implements OnInit {
       const bloc1 = data[0][0]
       const bloc2 = data[0][1]
       const bloc3 = data[0][2]
-      console.log(data)
       return[
         {
           table:{
@@ -719,13 +733,7 @@ export class InventaireComponent implements OnInit {
                 {text:'',margin:[2,7],border:[false,false,false,false]}
               ],
               [
-                {text:bloc1,margin:[2,7],fontSize:10}
-              ],
-              [
-                {text:bloc2,margin:[2,7],fontSize:10}
-              ],
-              [
-                {text:bloc3,margin:[2,7],fontSize:10}
+                {text:bloc1+"\n"+bloc2+"\n"+bloc3,margin:[2,7],fontSize:10}
               ],
               ...this.getPdfDel(data[1])
             ]
@@ -737,16 +745,16 @@ export class InventaireComponent implements OnInit {
     console.log(table)
     let element: any = []
     table.forEach(cel => {
-        element.push(
-        [
-          {text:cel[0],fontSize:12,style:'grasGris',alignment:'center'},
-        ],
-        [
-          {text:cel[1],fontSize:10,margin:[2,7]},
-        ])
+        if(cel[0]?.trim()!="" && cel[1]?.trim()!="")
+          element.push(
+          [
+            {text:cel[0],fontSize:12,style:'grasGris',alignment:'center'},
+          ],
+          [
+            {text:cel[1],fontSize:10,margin:[2,7]},
+          ])
     })
     return element
-
   }
   overLoc(localite){
     console.log(localite)
@@ -764,6 +772,32 @@ export class InventaireComponent implements OnInit {
     this.locHover=null
     this.zoneHover=null
     this.szHover=null
+  }
+  checkAllLoc(){
+    const localites=this.localites
+    let allIsChec=this.allLocIsChec()
+    localites.forEach(localite=>this.deleteLoc(localite))
+    if(!allIsChec)
+      localites.forEach(localite=>{
+        this.pickNewLoc(localite,true)
+        localite.zones.forEach(zone =>{
+          this.pickNewZone(zone,true)
+          zone.sousZones.forEach(sz =>this.checkASZ(sz.id))
+        })
+      })
+  }
+  allLocIsChec(){
+    let bool=true
+    const localites=this.localites
+    localites.forEach(localite=>{
+      localite.zones.forEach(zone =>{
+        zone.sousZones.forEach(sz =>{
+          if(bool)bool=this.inTab(sz.id,this.tabSousZPick)
+        })
+      })
+    })
+    //si tous les sous zones sont cochés alors on a tous choisi
+    return bool
   }
 } 
 

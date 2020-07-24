@@ -214,7 +214,8 @@ class SharedController extends AbstractController
         if($localInstructionPv[1]==Shared::CREATION && isset($data['pvCB1'])){
             $pvReunions=$this->getPvCreer($data);
         }
-        $inventaire->setDebut(new DateTime($data["debut"]))
+        $inventaire->setDateInv(new DateTime($data["dateInv"]))
+                   ->setDebut(new DateTime($data["debut"]))
                    ->setFin(new DateTime($data["fin"]))
                    ->setLieuReunion($data["lieuReunion"])
                    ->setDateReunion(new DateTime($data["dateReunion"]))
@@ -246,7 +247,7 @@ class SharedController extends AbstractController
                 $data['pvCB1'],$data['pvCB2'],$data['pvCB3']
             ],
             [
-                // ['titre1','content1'],['titre2','content2']
+                //ca sera apres ['titre1','content1'],['titre2','content2']
             ]
         ];
         for($i=1;$i<=$data['countPvCreer'];$i++){

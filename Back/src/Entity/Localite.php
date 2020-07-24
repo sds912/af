@@ -41,7 +41,7 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Zone::class, mappedBy="localite")
-     * @Groups({"entreprise_read","inv_read"})
+     * @Groups({"entreprise_read"})
      */
     private $zones;
 

@@ -41,7 +41,7 @@ class Zone
 
     /**
      * @ORM\OneToMany(targetEntity=SousZone::class, mappedBy="zone")
-     * @Groups({"entreprise_read","inv_read"})
+     * @Groups({"entreprise_read"})
      */
     private $sousZones;
 

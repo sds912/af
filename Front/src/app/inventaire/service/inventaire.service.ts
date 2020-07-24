@@ -48,12 +48,11 @@ export class InventaireService {
   }
   addInventaire(data){
     const formData:FormData=new FormData();
+    formData.append('dateInv',data.dateInv)
     formData.append('debut',data.debut)
     formData.append('fin',data.fin)
     formData.append('lieuReunion',data.lieuReunion)
     formData.append('dateReunion',data.dateReunion)
-
-    
 
     const decisionCC=data.decisionCC
     for(let i=1;i<=decisionCC.length;i++){

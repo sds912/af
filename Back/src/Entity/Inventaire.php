@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
-*   normalizationContext={
+ *   normalizationContext={
  *      "groups"={"inv_read"}
  *  }
  * )
@@ -129,7 +129,18 @@ class Inventaire
      * @ORM\Column(type="json", nullable=true)
      * @Groups({"inv_read"})
      */
-    private $localInstructionPv = [];//['creation','creation'] le 1er c est pour les iventaires le 2pour pv 'creation' ou ''
+    private $localInstructionPv = [];//['creation','creation'] le 1er c est pour les iventaires le 2pour pv 'creation' ou 'download'
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     * @Groups({"inv_read"})
+     */
+    private $dateInv;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="inventaire")
+     */
+    private $lectures;
 
     public function __construct()
     {
@@ -138,6 +149,7 @@ class Inventaire
         $this->localites = new ArrayCollection();
         $this->sousZones = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
+        $this->lectures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -438,6 +450,49 @@ class Inventaire
     public function setLocalInstructionPv(?array $localInstructionPv): self
     {
         $this->localInstructionPv = $localInstructionPv;
+
+        return $this;
+    }
+
+    public function getDateInv(): ?\DateTimeInterface
+    {
+        return $this->dateInv;
+    }
+
+    public function setDateInv(?\DateTimeInterface $dateInv): self
+    {
+        $this->dateInv = $dateInv;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Lecture[]
+     */
+    public function getLectures(): Collection
+    {
+        return $this->lectures;
+    }
+
+    public function addLecture(Lecture $lecture): self
+    {
+        if (!$this->lectures->contains($lecture)) {
+            $this->lectures[] = $lecture;
+            $lecture->setInventaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLecture(Lecture $lecture): self
+    {
+        if ($this->lectures->contains($lecture)) {
+            $this->lectures->removeElement($lecture);
+            // set the owning side to null (unless already changed)
+            if ($lecture->getInventaire() === $this) {
+                $lecture->setInventaire(null);
+            }
+        }
 
         return $this;
     }

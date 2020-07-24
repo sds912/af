@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInterface{//pour un get d une collection et le get d'un seul élément video 80 lior
-    
+    /** @var User */
     private $userCo;
     private $droit;
     public function __construct(Security $security,AuthorizationCheckerInterface $checker)
@@ -28,8 +28,8 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
             $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
             $queryBuilder->join("$rootAlias.entreprises",'entreprise')
             ->join("entreprise.users",'user')
-            ->andWhere('user = :user')
-            ->setParameter('user', $this->userCo);//comme dans un query buider
+            ->andWhere('user.id = :id')
+            ->setParameter('id', $this->userCo->getId());//comme dans un query buider
         }
     }
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])
