@@ -105,6 +105,7 @@ export class EntrepriseComponent implements OnInit {
   }
   update(row){
     this.details=false
+    this.image=""
     this.editRow(row)
   }
   showDetails(row){

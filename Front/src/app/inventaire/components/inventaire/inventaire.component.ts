@@ -152,7 +152,7 @@ export class InventaireComponent implements OnInit {
   }
   updateOne(inventaire){
     this.showForm=true
-    this.idPresiComite=inventaire.presiComite.id
+    this.idPresiComite=inventaire.presiComite?.id
     this.instructions=inventaire.instruction
     this.docsPv=inventaire.pvReunion
     this.docsDc=inventaire.decisionCC
@@ -172,7 +172,7 @@ export class InventaireComponent implements OnInit {
     this.tabLoc=[];
     this.tabZonesPick=[];
     this.tabSousZPick=[];
-    inventaire.localites.forEach(localite => this.tabLoc.push(localite));
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getLocById(localite.id)));//this.getLocById pour ne pas remettre une colection de zones et de sous zones ds les loc trop lourd
     inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
     inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
     this.invCreer=false
@@ -226,7 +226,7 @@ export class InventaireComponent implements OnInit {
     this.tabLoc=[];
     this.tabZonesPick=[];
     this.tabSousZPick=[];
-    inventaire.localites.forEach(localite => this.tabLoc.push(localite));
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getLocById(localite.id)));
     inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
     inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
   }
@@ -269,13 +269,13 @@ export class InventaireComponent implements OnInit {
   getCommentInst(){
     return[
       [
-        "Commentaire :\n - Indiquer la date de réunion\n - Préciser les points qui seront traitées lors de la réunion\n-  Assurer la disponibilité du planning des inventaires",
+        "Commentaire :\n - Indiquer la date de réunion\n - Préciser les points qui seront traités lors de la réunion\n-  S'assurer de la disponibilité du planning des inventaires",
         "Commentaire :\n - Rappeler la procédure d'acquisition des immobilisations\n - Rappeler la procédure de sorties des immobilisations",
         "Commentaire :\n - Décrire les différentes étapes liées à l'édition et au contrôle du fichier des immoblisations\n - Identifier les intervenants"
       ],
       [
-        "Commentaire :\n -Indiquer le role du comité\n -lister les membres du comité",
-        "Commentaire :\n -Lister zones à inventorier et les équpes affectées à chaque zone",
+        "Commentaire :\n -Indiquer les missions du comité\n -lister les membres du comité",
+        "Commentaire :\n -Lister zones à inventorier et les équipes affectées à chaque zone",
         "Commentaire :\n - Lister les biens à inventorier\n - Décrire la procédure de comptage\n- Décrire la procédure de controle"
       ],
       [
