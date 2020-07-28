@@ -66,52 +66,6 @@ class SharedController extends AbstractController
         $this->repoSZ=$repoSZ;
     }
     /**
-    * @Route("/entreprises", methods={"POST"})
-    * @Route("/entreprises/{id}", methods={"POST"})
-    */
-    public function addEntreprise(Request $request,$id=null){//à cause du logo
-        $data=Shared::getData($request);
-        $tatus=201;
-        $entreprise=new Entreprise();
-        if($id){
-            $entreprise=$this->repoEse->find($id);//l injection de dependances ne marchait pas
-            $tatus=200;
-            $this->inEntreprise($entreprise);
-        }
-        $entreprise->addUser($this->userCo);
-        $entreprise->setDenomination($data['denomination'])
-                   ->setNinea($data['ninea'])
-                   ->setVille($data['ville'])
-                   ->setAdresse($data['adresse'])
-                   ->setRepublique($data['republique'])
-                   ->setSigleUsuel($data['sigleUsuel']);
-        $requestFile=$request->files->all();
-        $image=$entreprise->getImage();
-        if(!$image){
-            $image=Shared::IMAGEDEFAULT2;
-        }
-        // if($requestFile && isset($requestFile[Shared::IMAGE])){
-        //     $file=$requestFile[Shared::IMAGE];
-        //     $fileName=md5(uniqid()).'.'.$file->guessExtension();//on change le nom du fichier
-        //     $file->move($this->getParameter(Shared::IMAGE_DIR),$fileName); //definir le image_directory dans service.yaml
-        //     $ancienPhoto=$this->getParameter(Shared::IMAGE_DIR)."/".$image;
-        //     if($image!=Shared::IMAGEDEFAULT2){
-        //        unlink($ancienPhoto);//supprime l'ancienne 
-        //     }
-        //     $image=$fileName;
-        // }
-        $entreprise->setImage($data['image']);
-        if($tatus==201){
-            $this->manager->persist($entreprise);
-        }
-        
-        $this->manager->flush();
-        return $this->json([
-            Shared::MESSAGE => 'Enregistré',
-            Shared::STATUS => $tatus
-        ]);
-    }
-    /**
     * @Route("/update/pp", methods={"POST"})
     */
     public function updatePP(Request $request)

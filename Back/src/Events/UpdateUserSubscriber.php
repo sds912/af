@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 //pour gener les evenements du coeur de symfony (kernel)
 class UpdateUserSubscriber implements EventSubscriberInterface{
-
+    /** @var User */
     private $userCo;
     private $encoder;
     private $droit;
