@@ -111,7 +111,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read"})
+     * @Groups({"user_read","inv_read"})
      */
     private $poste;
 
@@ -161,6 +161,12 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="lecteur")
      */
     private $lectures;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Entreprise::class)
+     * @Groups({"user_read"})
+     */
+    private $currentEse;
 
     public function __construct()
     {
@@ -465,6 +471,18 @@ class User implements UserInterface
                 $lecture->setLecteur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCurrentEse(): ?Entreprise
+    {
+        return $this->currentEse;
+    }
+
+    public function setCurrentEse(?Entreprise $currentEse): self
+    {
+        $this->currentEse = $currentEse;
 
         return $this;
     }

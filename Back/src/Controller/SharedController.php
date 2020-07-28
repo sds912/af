@@ -44,7 +44,7 @@ class SharedController extends AbstractController
     /** @var UserRepository */
     private $repoUser;
 
-    /** @var UserRepository */
+    /** @var LocaliteRepository */
     private $repoLoc;
 
     /** @var ZoneRepository */
@@ -90,17 +90,17 @@ class SharedController extends AbstractController
         if(!$image){
             $image=Shared::IMAGEDEFAULT2;
         }
-        if($requestFile && isset($requestFile[Shared::IMAGE])){
-            $file=$requestFile[Shared::IMAGE];
-            $fileName=md5(uniqid()).'.'.$file->guessExtension();//on change le nom du fichier
-            $file->move($this->getParameter(Shared::IMAGE_DIR),$fileName); //definir le image_directory dans service.yaml
-            $ancienPhoto=$this->getParameter(Shared::IMAGE_DIR)."/".$image;
-            if($image!=Shared::IMAGEDEFAULT2){
-               unlink($ancienPhoto);//supprime l'ancienne 
-            }
-            $image=$fileName;
-        }
-        $entreprise->setImage($image);
+        // if($requestFile && isset($requestFile[Shared::IMAGE])){
+        //     $file=$requestFile[Shared::IMAGE];
+        //     $fileName=md5(uniqid()).'.'.$file->guessExtension();//on change le nom du fichier
+        //     $file->move($this->getParameter(Shared::IMAGE_DIR),$fileName); //definir le image_directory dans service.yaml
+        //     $ancienPhoto=$this->getParameter(Shared::IMAGE_DIR)."/".$image;
+        //     if($image!=Shared::IMAGEDEFAULT2){
+        //        unlink($ancienPhoto);//supprime l'ancienne 
+        //     }
+        //     $image=$fileName;
+        // }
+        $entreprise->setImage($data['image']);
         if($tatus==201){
             $this->manager->persist($entreprise);
         }

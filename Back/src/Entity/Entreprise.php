@@ -46,7 +46,7 @@ class Entreprise
     private $adresse;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Groups({"entreprise_read"})
      */
     private $image;
@@ -85,6 +85,12 @@ class Entreprise
      * @ORM\OneToMany(targetEntity=Inventaire::class, mappedBy="entreprise")
      */
     private $inventaires;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     * @Groups({"entreprise_read"})
+     */
+    private $capital;
 
     public function __construct()
     {
@@ -266,6 +272,18 @@ class Entreprise
                 $inventaire->setEntreprise(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCapital(): ?float
+    {
+        return $this->capital;
+    }
+
+    public function setCapital(?float $capital): self
+    {
+        $this->capital = $capital;
 
         return $this;
     }

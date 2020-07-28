@@ -26,10 +26,14 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
     {//de l interface QueryCollectionExtensionInterface
         if($resourceClass===User::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
             $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
-            $queryBuilder->join("$rootAlias.entreprises",'entreprise')
-            ->join("entreprise.users",'user')
-            ->andWhere('user.id = :id')
-            ->setParameter('id', $this->userCo->getId());//comme dans un query buider
+            $queryBuilder->join("$rootAlias.entreprises",'entreprise');
+            if($this->droit->isGranted('ROLE_Admin')){
+               $queryBuilder->join("entreprise.users",'user')
+                ->andWhere('user.id = :id')
+                ->setParameter('id', $this->userCo->getId());
+            }else{
+                $queryBuilder->andWhere('entreprise.id = :id')->setParameter('id', $this->getIdCurrentEse());
+            }
         }
     }
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])
@@ -40,5 +44,11 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
         //         throw new HttpException(403,"Vous n'êtes pas dans la même entité que cet utilisateur !");
         //     }
         // }
+    }
+    public function getIdCurrentEse(){
+        if(count($this->userCo->getEntreprises())==1){
+            return $this->userCo->getEntreprises()[0]->getId();
+        }
+        return $this->userCo->getCurrentEse()->getId();
     }
 }
