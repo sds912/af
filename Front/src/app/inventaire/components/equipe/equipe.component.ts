@@ -98,7 +98,6 @@ export class EquipeComponent implements OnInit {
     this.getEntreprises()
     this.securityServ.getUser()
     this.sidebarItems = this.useInSideBI(ROUTES);
-    let data={username:'ooo',password:'iii'}
   }
   useInSideBI(tab){
     let objs=[]
@@ -453,7 +452,8 @@ export class EquipeComponent implements OnInit {
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
-    data.entreprises=this.getDataEse()
+    data.entreprises=this.getDataEse(data)
+    data.currentEse=data.entreprises.length==1?data.entreprises[0]:null//s'il est rattaché à une seule entité
     const role=this.getRole(data.role,false)
     data.roles=[role]
     data.menu=this.getDataMenu(role)//pour les Guest
@@ -473,11 +473,12 @@ export class EquipeComponent implements OnInit {
       }
     )
   }
-  getDataEse(){
+  getDataEse(data){
+    if(!this.securityServ.admin && data.id==0){
+      return ["/api/entreprises/"+localStorage.getItem("idEse")]
+    }
     let e=[]
-    this.tabEse.value.forEach(id =>{
-      if(id) e.push("/api/entreprises/"+id)
-    });
+    this.tabEse.value.forEach(id =>{if(id) e.push("/api/entreprises/"+id)});
     return e
   }
   getDataMenu(role){

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ElementRef } from '@angular/core';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { FormGroup, FormBuilder, FormControl, Validators,NgForm, FormArray } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -9,8 +9,10 @@ import { InventaireService } from '../../service/inventaire.service';
 import { Entreprise } from 'src/app/administration/model/entreprise';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const dd=x=>console.log(x)
 @Component({
   selector: 'app-inventaire',
   templateUrl: './inventaire.component.html',
@@ -21,7 +23,7 @@ export class InventaireComponent implements OnInit {
   @ViewChild('closePresentModal', { static: false }) closePresentModal;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('formDirective') private formDirective: NgForm;
-  
+  isLinear = false;
   imgLink=""
   docLink=""
   inventaires=[]
@@ -60,17 +62,21 @@ export class InventaireComponent implements OnInit {
   locHover=null
   zoneHover=null
   szHover=null
+  entreprise=null
+  signatairesPv: string[] = [];
+  signPvCtrl = new FormControl();
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  signatairesInst: string[] = [];
+  signInstCtrl = new FormControl();
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
               private sharedService:SharedService,
               private securityServ:SecurityService,
               private inventaireServ:InventaireService) {
-    
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.docLink=this.sharedService.baseUrl +"/documents/"
   }
-  
   ngOnInit() {
     this.myId=localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(true)
@@ -79,22 +85,20 @@ export class InventaireComponent implements OnInit {
     this.comments=this.getCommentInst()
     this.initPvForm()
     this.commentsPv=this.getCommentPv()
-    this.getEntreprise()
+    this.getOneEntreprise()
   }
-  getEntreprise(){
-    this.adminServ.getEntreprise().then(
+  getOneEntreprise(){
+    const idEse=localStorage.getItem("currentEse")
+    this.adminServ.getOneEntreprise(idEse).then(
       rep=>{
         let e=rep
-        if(e && e.length>0){
-          e=rep.reverse()
-          this.idCurrentEse=e[0].id
-          this.localites=rep[0].localites
-          this.getUsers(rep[0].users)
+        if(e){
+          this.idCurrentEse=e.id
+          this.localites=rep.localites
+          this.getUsers(rep.users)
           this.getInventaireByEse()
         }
-        console.log(rep);
-        
-        this.entreprises=e
+        this.entreprise=rep
         //this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
@@ -103,21 +107,9 @@ export class InventaireComponent implements OnInit {
       }
     )
   }
-  entiteChange(id){
-    this.idCurrentInv=0
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.getInventaireByEse()
-    this.showForm=false
-    let entreprise=this.entreprises.find(e=>e.id==id)
-    if(entreprise){
-      this.localites=entreprise.localites
-      this.getUsers(entreprise.users)
-    }
-  }
   getInventaireByEse(add=false){
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)//ne pas sup sinon revoir celui de onEditSave
         let inv=rep
         if(inv && inv.length>0){
@@ -148,6 +140,8 @@ export class InventaireComponent implements OnInit {
     this.tabDeliberation=new FormArray([]);
     this.pvCreer=false
     this.invCreer=false
+    this.signatairesPv=[]
+    this.signatairesInst=[]
     this.initForm()
   }
   updateOne(inventaire){
@@ -186,7 +180,10 @@ export class InventaireComponent implements OnInit {
       let data=inventaire.pvReunion
       this.tabDeliberation=new FormArray([]);
       data[1].forEach(del => this.addDeliberation(del[0],del[1]));
-      this.initPvForm([data[0][0],data[0][1],data[0][2]])
+      this.initPvForm([
+        data[0][0], data[0][1], data[0][2],
+        data[0][3]?data[0][3]:[]
+      ])
       if(this.tabDeliberation.length==0)this.addDeliberation()
     }
     this.initForm(inventaire)
@@ -205,7 +202,7 @@ export class InventaireComponent implements OnInit {
     });
     if(this.formDirective)this.formDirective.resetForm()
   }
-  initInstrucForm(data=[["","",""],["","",""],["","","",""]]){
+  initInstrucForm(data=[["","",""],["","",""],["","","",""],[]]){
     this.instForm = this.fb.group({
       bloc1e1: [data[0][0]],
       bloc1e2: [data[0][1]],
@@ -219,8 +216,8 @@ export class InventaireComponent implements OnInit {
       bloc3e2: [data[2][1]],
       bloc3e3: [data[2][2]],
       bloc3e4: [data[2][3]],
-      
     })
+    this.signatairesInst=data[3]?data[3]:[]
   }
   detailsLoc(inventaire){
     this.tabLoc=[];
@@ -230,13 +227,17 @@ export class InventaireComponent implements OnInit {
     inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
     inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
   }
-
-  initPvForm(data=["","",""]){
+  initPvForm(data=["","","",[]]){
     this.pvForm = this.fb.group({
       bloc1: [data[0]],
       bloc2: [data[1]],
       bloc3: [data[2]]
     })
+    this.signatairesPv=this.getSignatairePv(data[3])
+  }
+  getSignatairePv(data){
+    if(data?.length>0)return data
+    return []
   }
   getInstValDef(){
     return[
@@ -307,7 +308,6 @@ export class InventaireComponent implements OnInit {
       })
     );
   }
-
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
         const control = formGroup.controls[controlName];
@@ -343,7 +343,6 @@ export class InventaireComponent implements OnInit {
     let data=this.getAllDataToSend(form)
     this.inventaireServ.addInventaire(data).then(
       rep=>{
-        console.log(rep)
         //this.securityServ.showLoadingIndicatior.next(false) gerer par getInventaire
         this.showNotification('bg-success',rep.message,'top','center')
         let add=data.id==0?true:false
@@ -359,7 +358,7 @@ export class InventaireComponent implements OnInit {
   getAllDataToSend(form: FormGroup){
     let data=this.getData(form.value)
     data.instructions=this.getOnlyFile(this.instructions)
-    data.instrucCreer=this.instForm.value
+    data.instrucCreer=this.getDataInstCreer()
     data.decisionCC=this.getOnlyFile(this.docsDc)
     data.presiComite=this.idPresiComite
     data.membresCom=this.tabComite.value
@@ -375,9 +374,14 @@ export class InventaireComponent implements OnInit {
     console.log(data)
     return data
   }
+  getDataInstCreer(){
+    let d=this.instForm.value
+    d.signataire=this.signatairesInst//on y ajoute les signataires
+    return d
+  }
   getDataPvCreer(){
     let val=this.pvForm.value
-    const data1=[val.bloc1,val.bloc2,val.bloc3]
+    const data1=[val.bloc1,val.bloc2,val.bloc3,this.signatairesPv]
     let data2=[]
     this.tabDeliberation.value.forEach(del => {
       let titre=del.titre.trim()
@@ -431,7 +435,6 @@ export class InventaireComponent implements OnInit {
   closeLoc(){
     this.closeLocaliteModal.nativeElement.click();
   }
-  
   noNull(tab){
     let t=[]
     tab.forEach(element => {
@@ -495,7 +498,6 @@ export class InventaireComponent implements OnInit {
       panelClass: [colorName,'color-white']
     });
   }
-
   deleteLoc(localite){
     let index=this.tabLoc.indexOf(localite)
     if (index > -1) {
@@ -565,7 +567,7 @@ export class InventaireComponent implements OnInit {
     this.pvCreer=true
     this.tabDeliberation=new FormArray([]);
     const valPv=this.getPvValDef()
-    this.initPvForm(valPv)
+    this.initPvForm([valPv[0],valPv[1],valPv[2],[]])
     this.tabDeliberation=new FormArray([]);
     const content="Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
     const title="DÉLIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
@@ -622,6 +624,9 @@ export class InventaireComponent implements OnInit {
         bold: true,
         fillColor: '#e6e6e6',
         alignment:'center'
+      },
+      no_border:{
+        border:false
       }
     }
   }
@@ -638,11 +643,25 @@ export class InventaireComponent implements OnInit {
       const bloc3e2 = data[2][1]
       const bloc3e3 = data[2][2]
       const bloc3e4 = data[2][3]
+      const signataires= [3]?data[3]:[]
+      console.log(signataires);
+      
       return[
+        ...this.getImage(),
         {
           table:{
             width:['*'],
             body:[
+              ...this.getEntete(),
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
+              [
+                {text:"INSTRUCTIONS D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
               [
                 {text:'1.TRAVAUX PREPARATOIRES', style:'grasGrisF',alignment:'center',fontSize:12}
               ],
@@ -713,19 +732,26 @@ export class InventaireComponent implements OnInit {
                 {text:bloc3e4,margin:[2,7],fontSize:10}
               ]
             ]
-          }
-        }
+          },margin:[0,10,0,0]
+        },
+        ...this.getSignatairePdf(signataires)
       ]
   }
   pagePv(data){
       const bloc1 = data[0][0]
       const bloc2 = data[0][1]
       const bloc3 = data[0][2]
+      const signataires= data[0][3]?data[0][3]:[]
       return[
+        ...this.getImage(),
         {
           table:{
-            width:['*'],
+            width:["*"],
             body:[
+              ...this.getEntete(),
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
               [
                 {text:"PROCES-VERBAL DE REUNION DE LANCEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
               ],
@@ -737,26 +763,100 @@ export class InventaireComponent implements OnInit {
               ],
               ...this.getPdfDel(data[1])
             ]
-          }
-        }
+          },margin:[0,10,0,0]
+        },
+        ...this.getSignatairePdf(signataires)
       ]
   }
+  getImage(){
+    if(this.entreprise.image && this.entreprise.image!=IMAGE64)return [{image: this.entreprise.image ,width: 75}]
+    return [{}]
+  }
+  getEntete(){
+    const e=this.entreprise
+    let k=e.capital?this.sharedService.numStr(e.capital,' ')+" de FCFA":""
+    return[
+      [
+        {text:"Dénomination : "+e.denomination,border:[false,false,false,false],margin:[-5,0,0,0]}
+      ],
+      [
+        {text:"Capital : "+k,border:[false,false,false,false],margin:[-5,0,0,0]}
+      ],
+      [
+        {text:"Pays : "+e.republique,border:[false,false,false,false],margin:[-5,0,0,0]}
+      ]
+    ]
+  }
   getPdfDel(table){
-    console.log(table)
     let element: any = []
     table.forEach(cel => {
-        if(cel[0]?.trim()!="" && cel[1]?.trim()!="")
-          element.push(
-          [
-            {text:cel[0],fontSize:12,style:'grasGris',alignment:'center'},
-          ],
-          [
-            {text:cel[1],fontSize:10,margin:[2,7]},
-          ])
+      if(cel[0]?.trim()!="" && cel[1]?.trim()!="")
+        element.push(
+        [
+          {text:cel[0],fontSize:12,style:'grasGris',alignment:'center'},
+        ],
+        [
+          {text:cel[1],fontSize:10,margin:[2,7]},
+        ])
     })
     return element
   }
-  overLoc(localite){
+  getSignatairePdf(signataires){
+    return [{}]//enlever
+    if(!signataires || signataires.length==0)return [{}]
+    if(signataires.length==1)return this.getOneSignatairePdf(signataires)
+    if(signataires.length==3)return this.get3SignatairePdf(signataires)//modif
+    return this.getOtherSignatairePdf(signataires)
+  }
+  getOneSignatairePdf(signataires){
+    return [{text:signataires[0],margin:[0,20,0,0],fontSize:10,decoration: 'underline'}]
+  }
+  get3SignatairePdf(signataires){
+    return [
+      {
+        table:{
+          widths:["*","*"],
+          body:[
+            [
+              {text:signataires[0], fontSize:10, margin:[0,20,0,0], decoration: 'underline', border:[false,false,false,false]},
+              {text:signataires[2], fontSize:10, margin:[0,20,0,0], decoration: 'underline', border:[false,false,false,false], alignment:'right'}
+            ],
+            [
+              {text:signataires[1], fontSize:10, margin:[0,0,0,0], decoration: 'underline', border:[false,false,false,false], alignment:'center',colSpan: 2},{}
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  getOtherSignatairePdf(signataires){
+    return [
+      {
+        table:{
+          widths:["*","*"],
+          body:[
+            ...this.lignesSignataires(signataires)
+          ]
+        }
+      }
+    ]
+  }
+  lignesSignataires(signataires){
+    let tab=[]
+    let a=0
+    for(let i=0;i<signataires.length;i+=2){
+      let nom1=signataires[i]
+      let nom2=signataires[i+1]?signataires[i+1]:""
+      tab.push(
+        [
+          {text:nom1,fontSize:10,margin:[0,20,0,70],decoration: 'underline',border:[false,false,false,false]},
+          {text:nom2,fontSize:10,margin:[0,20,0,70],decoration: 'underline',alignment:'right',border:[false,false,false,false]}
+        ]
+      )
+    }
+    return tab
+  }
+  overLoc(localite){// au cas ou tu veux faire des traitement au hover d une localite
     console.log(localite)
     this.locHover=localite
   }
@@ -798,6 +898,55 @@ export class InventaireComponent implements OnInit {
     })
     //si tous les sous zones sont cochés alors on a tous choisi
     return bool
+  }
+  longText(text,limit){
+    return this.sharedService.longText(text,limit)
+  }
+  addSignPv(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our fruit
+    if ((value || '').trim()) {
+      this.signatairesPv.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.signPvCtrl.setValue(null);
+  }
+  removeSignPv(fruit: string): void {
+    const index = this.signatairesPv.indexOf(fruit);
+
+    if (index >= 0) {
+      this.signatairesPv.splice(index, 1);
+    }
+  }
+  addSignInst(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our fruit
+    if ((value || '').trim()) {
+      this.signatairesInst.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.signInstCtrl.setValue(null);
+  }
+  removeSignInst(fruit: string): void {
+    const index = this.signatairesInst.indexOf(fruit);
+
+    if (index >= 0) {
+      this.signatairesInst.splice(index, 1);
+    }
   }
 } 
 

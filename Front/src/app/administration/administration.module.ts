@@ -23,7 +23,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatMenuModule } from '@angular/material/menu';
-import { UserComponent } from './components/user/user.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -33,8 +32,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 };
 @NgModule({
   declarations: [
-    EntrepriseComponent,
-    UserComponent],
+    EntrepriseComponent
+    ],
   imports: [
     CommonModule,
     AdministrationRoutingModule,

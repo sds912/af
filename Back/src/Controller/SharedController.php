@@ -162,7 +162,8 @@ class SharedController extends AbstractController
             $instructions=[
                 [$data['bloc1e1'],$data['bloc1e2'],$data['bloc1e3']],
                 [$data['bloc2e1'],$data['bloc2e2'],$data['bloc2e3']],
-                [$data['bloc3e1'],$data['bloc3e2'],$data['bloc3e3'],$data['bloc3e4']]
+                [$data['bloc3e1'],$data['bloc3e2'],$data['bloc3e3'],$data['bloc3e4']],
+                $this->toArray($data['signataireInst'])
             ];
         }
         if($localInstructionPv[1]==Shared::CREATION && isset($data['pvCB1'])){
@@ -198,7 +199,7 @@ class SharedController extends AbstractController
     public function getPvCreer($data){
         $d=[
             [
-                $data['pvCB1'],$data['pvCB2'],$data['pvCB3']
+                $data['pvCB1'],$data['pvCB2'],$data['pvCB3'],$this->toArray($data['pvCB4'])//les signataires
             ],
             [
                 //ca sera apres ['titre1','content1'],['titre2','content2']

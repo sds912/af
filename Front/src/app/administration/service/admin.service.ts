@@ -15,19 +15,12 @@ export class AdminService {
     return this.sharedService.getElement("/entreprises/"+id)
   }
   addEntreprise(data){
-    const formData:FormData=new FormData();
-    formData.append('denomination',data.denomination)
-    formData.append('republique',data.republique)
-    formData.append('ville',data.ville)
-    formData.append('image',data.image)
-    formData.append('ninea',data.ninea)
-    formData.append('adresse',data.adresse)
-    formData.append('sigleUsuel',data.sigleUsuel)
-
-    if(data.id==0)
-      return this.sharedService.postElement(formData,"/entreprises")
+    if(data.id==0){
+      delete data.id;
+      return this.sharedService.postElement(data,"/entreprises")
+    }
     else
-      return this.sharedService.postElement(formData,"/entreprises/"+data.id)
+      return this.sharedService.putElement(data,"/entreprises/"+data.id)
   }
   getUsers(){
     return this.sharedService.getElement("/users")

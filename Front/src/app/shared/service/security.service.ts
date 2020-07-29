@@ -16,7 +16,7 @@ export class SecurityService {
     this.showLoadingIndicatior.subscribe((value) => {
       setTimeout(()=>this.loading = value,1)//pour eviter l erreur: Expression has changed after it was checked
     })
-   }
+  }
   sharedService=this.injector.get(SharedService)
   urlBack=this.sharedService.urlBack
   user:any;
@@ -38,7 +38,6 @@ export class SecurityService {
         .post<any>(this.urlBack+"/login",data)
         .subscribe(
           (rep)=>{
-            console.log(rep)
             this.traitementLogin(rep.token,rep.refresh_token);
             resolve();
           },
@@ -117,6 +116,9 @@ export class SecurityService {
     this.securePwd=true
     return this.sharedService.getElement("/info").then(rep=>{
       this.user=rep[0]
+      if(this.user.entreprises.length==1){
+        localStorage.setItem("currentEse",this.user.entreprises[0].id)
+      }
       localStorage.setItem('idUser',this.user.id);
       if(rep[2]==1){
         this.securePwd=false
@@ -169,5 +171,8 @@ export class SecurityService {
       });
     }
     return id
+  }
+  updateCurentEse(data){
+    return this.sharedService.putElement(data,"/users/"+localStorage.getItem("idUser"))
   }
 }

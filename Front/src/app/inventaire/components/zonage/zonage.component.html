@@ -6,12 +6,6 @@
                     <div class="header" style="border-bottom: 1px solid #00000021;">
                         <div class="row">
                             <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder">Localités</h2>
-                            <h2 class="col-xl-1 col-lg-2 col-md-2 col-sm-2 pb-0 pt-2 pr-0" [hidden]="entreprises && entreprises.length<=1">Entités :</h2>
-                            <div class="col-xl-3 col-lg-3 col-md-5 col-sm-5 pb-0" [hidden]="entreprises && entreprises.length<=1">
-                                <select [(ngModel)]="idCurrentEse" class="form-control select-trie" (change)="entiteChange($event.target.value)">
-                                    <option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</option>
-                                </select>
-                            </div>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <button class="addInv" data-toggle="modal" data-target="#localiteModal" data-backdrop="static" data-keyboard="false"

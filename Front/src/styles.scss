@@ -36,8 +36,13 @@
 .hoverLoc:hover span{
     display: initial !important;
 }
-::ng-deep { 
-    .mat-form-field-looks-outline .mat-form-field-outline { 
-    color: white; 
-    }
-} 
+.mat-form-field-outline-start, 
+.mat-form-field-outline-gap, 
+.mat-form-field-outline-end{
+    color: rgba(0, 0, 0, 0.459) !important;
+}
+.instructionModal .mat-form-field-outline-start, 
+.instructionModal .mat-form-field-outline-gap, 
+.instructionModal .mat-form-field-outline-end{
+    color: black !important;
+}

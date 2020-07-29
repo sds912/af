@@ -42,6 +42,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { InventaireComponent } from './components/inventaire/inventaire.component';
 import { SafeUrlPipe } from '../shared/pipe/safe-url.pipe';
+import { MatStepperModule } from '@angular/material/stepper';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
@@ -96,6 +97,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MaterialFileInputModule,
     MatMenuModule,
     NgxDatatableModule,
+    MatStepperModule
   ]
 })
 export class InventaireModule { }

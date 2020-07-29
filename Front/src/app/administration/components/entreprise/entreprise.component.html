@@ -29,7 +29,7 @@
                                     <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
-                                                <img width="40" height="40" src="{{ imgLink + value }}" />
+                                                <img width="40" height="40" src="{{ value }}" />
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -123,7 +123,7 @@
                                             <div class="modal-header">
                                                 <div class="editRowModal">
                                                     <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
-                                                        <img *ngIf="!image" width="45" height="45" [src]='imgLink+selectedRowData?.image' alt="avatar">
+                                                        <img *ngIf="!image" width="45" height="45" [src]='selectedRowData?.image' alt="avatar">
                                                         <img *ngIf="image" width="45" height="45" [src]="image" alt="Logo">
                                                         <div class="modal-about">
                                                             <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.denomination">Nouvelle entité</div>
@@ -145,13 +145,13 @@
                                                     <div class="row">
                                                         <div class="col-xl-4 col-lg-4"></div>
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4" *ngIf="selectedRowData?.image||image">
-                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" (click)="pp.click()" [hidden]="details">
+                                                            <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" (click)="pp.click()" [hidden]="details">
                                                             <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" [hidden]="details">
-                                                            <img *ngIf="!image" [src]='imgLink+selectedRowData?.image' alt="avatar" class="img-pp img-circle user-img-circle" [hidden]="!details">
+                                                            <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" class="img-pp img-circle user-img-circle" [hidden]="!details">
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Dénomination</mat-label>
@@ -163,6 +163,8 @@
                                                                 </mat-error>
                                                             </mat-form-field>
                                                         </div>
+                                                    </div>
+                                                    <div class="row">
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
@@ -173,6 +175,13 @@
                                                                     *ngIf="editForm.get('sigleUsuel').hasError('required')">
                                                                     La dénomination est requise
                                                                 </mat-error>
+                                                            </mat-form-field>
+                                                        </div>
+                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                            <mat-form-field class="example-full-width"
+                                                                appearance="outline">
+                                                                <mat-label>Capital</mat-label>
+                                                                <input matInput type="number" formControlName="capital">
                                                             </mat-form-field>
                                                         </div>
                                                     </div>

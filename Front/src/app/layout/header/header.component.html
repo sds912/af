@@ -17,7 +17,14 @@
                         <mat-icon>menu</mat-icon>
                     </button>
                 </li>
+                
             </ul>
+            <ul class="pull-left collapse-menu-icon">
+                <li> 
+                    <span class="p-1" style="border: 1px solid #00000054;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
+                </li>
+            </ul>
+            
             <ul class="nav navbar-nav navbar-right">
                 <!-- Full Screen Button -->
                 <li class="fullscreen">
@@ -25,6 +32,7 @@
                         <mat-icon>fullscreen</mat-icon>
                     </button>
                 </li>
+                
                 <!-- #END# Full Screen Button -->
                 <!-- #START# Notifications-->
                 <li class="dropdown">
@@ -60,7 +68,6 @@
                 </li>
                 <!-- #END# Notifications-->
 
-
                 <li class="dropdown user_profile" >
                     <a href="#" onClick="return false;" data-toggle="dropdown" role="button" class="pt-0">
                         <img *ngIf="securityServ.user && securityServ.user.image" [src]="sharedService.baseUrl +'/images/'+securityServ.user.image" class="rounded-circle" width="32" height="32" alt="User">
@@ -69,6 +76,11 @@
                     <ul class="dropdown-menu pullDown">
                         <li class="body">
                             <ul class="user_dw_menu">
+                                <li [hidden]="securityServ.user?.entreprises?.length==1||securityServ.admin">
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#eseModal" data-backdrop="static" data-keyboard="false" (click)="initForm3()" #openEseModal>
+                                        <mat-icon aria-hidden="false" class="mr-2">business</mat-icon>Entité actuelle
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="#" onClick="return false;"  data-toggle="modal" data-target="#infoModal" data-backdrop="static" data-keyboard="false" (click)="updateInfos()">
                                         <mat-icon aria-hidden="false" class="mr-2">person</mat-icon>Infos personnelles
@@ -98,9 +110,6 @@
                         </li>
                     </ul>
                 </li>
-
-                 
-
                 <!-- #END# Tasks -->
                 <li class="pull-right">
                     <button mat-icon-button (click)="toggleRightSidebar()" class="nav-notification-icons">
@@ -178,7 +187,7 @@
                     <div class="modal-footer pr-0">
                         <div class="button-demo">
                             <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="editForm.invalid">Enregistrer</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]="!securityServ.securePwd">Annuler</button>
                         </div>
                     </div>
                 </div>
@@ -242,3 +251,52 @@
     </div>
 </div>
 <!-- Modal Window Info-->
+
+<!-- Modal entreprise-->
+<div class="modal fade" id="eseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" *ngIf="securityServ.user?.entreprises?.length>1" [hidden]="!securityServ.securePwd">
+    <div class="modal-dialog mt-5" role="document">
+        <form class="modal-content"  [formGroup]="eseForm" (ngSubmit)="onSaveEse(eseForm)">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Entité actuelle</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closeEseModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close" hidden>
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            
+                            <!--<mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Entité</mat-label>
+                                <mat-select formControlName="entreprise" name="ese">
+                                    <mat-option  value=""></mat-option>
+                                    <mat-option *ngFor="let e of securityServ.user?.entreprises" [value]="e.id">{{e.denomination}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>-->
+                            <select name="" id="" formControlName="entreprise" class="form-control">
+                                <option value=""></option>
+                                <option *ngFor="let e of securityServ.user?.entreprises" [value]="e.id">{{e.denomination}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer pr-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="eseForm.invalid">Enregistrer</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]="eseForm.invalid||!idEse">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal entreprise-->

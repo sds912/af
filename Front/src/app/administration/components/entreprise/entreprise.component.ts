@@ -7,6 +7,7 @@ import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
 import * as $ from 'jquery';
+import { IMAGE64 } from './image';
 @Component({
   selector: 'app-entreprise',
   templateUrl: './entreprise.component.html',
@@ -22,7 +23,6 @@ export class EntrepriseComponent implements OnInit {
   rows = [];
   selectedRowData: selectRowInterface;
   newUserImg = '';
-   
   data = [];
   filteredData = [];
   editForm: FormGroup;
@@ -34,9 +34,9 @@ export class EntrepriseComponent implements OnInit {
   ];
   show=false
   imgLink=""
-  image:string;
+  image:string=IMAGE64;
   fileToUploadPp:File=null;
-  defaultImag="exemple2.png"
+  defaultImag=IMAGE64
   details=false
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
@@ -49,6 +49,7 @@ export class EntrepriseComponent implements OnInit {
       denomination: ['', [Validators.required]],
       republique: [''],
       sigleUsuel: [''],
+      capital: [''],
       ville: [''],
       ninea: [''],
       adresse: ['']
@@ -59,7 +60,7 @@ export class EntrepriseComponent implements OnInit {
   
   ngOnInit() {
     this.securityServ.showLoadingIndicatior.next(true)
-    this.getEntreprise()
+    this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
   }
   getEntreprise(){
     this.adminServ.getEntreprise().then(
@@ -68,6 +69,23 @@ export class EntrepriseComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0)e=rep.reverse()
+        this.data = e;
+        this.filteredData = rep;
+        this.show=true
+      },
+      error=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
+  }
+  getOneEntreprise(){
+    const id=localStorage.getItem("currentEse")
+    this.adminServ.getOneEntreprise(id).then(
+      rep=>{
+        console.log(rep)
+        this.securityServ.showLoadingIndicatior.next(false)
+        let e=[rep]
         this.data = e;
         this.filteredData = rep;
         this.show=true
@@ -94,6 +112,7 @@ export class EntrepriseComponent implements OnInit {
       denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
       republique: [{value: row.republique, disabled: lock}],
       sigleUsuel: [{value: row.sigleUsuel, disabled: lock}],
+      capital: [{value: row.capital, disabled: lock}],
       ville: [{value: row.ville, disabled: lock}],
       ninea: [{value: row.ninea, disabled: lock}],
       adresse: [{value: row.adresse, disabled: lock}]
@@ -121,13 +140,14 @@ export class EntrepriseComponent implements OnInit {
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
-    data.image=this.fileToUploadPp
+    data.image=this.image!=""?this.image:IMAGE64
+    if(data.id==0)data.users=["/api/users/"+localStorage.getItem("idUser")]
     this.adminServ.addEntreprise(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','top','center')
         this.closeEditModal.nativeElement.click();
-        this.getEntreprise()
+        this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)

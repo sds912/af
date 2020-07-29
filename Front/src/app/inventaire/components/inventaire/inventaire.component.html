@@ -6,12 +6,6 @@
                     <div class="header">
                         <div class="row">
                             <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder">Inventaires</h2>
-                            <h2 class="col-xl-1 col-lg-2 col-md-2 col-sm-2 pb-0 pt-2 pr-0" [hidden]="entreprises && entreprises.length<=1">Entités :</h2>
-                            <div class="col-xl-3 col-lg-3 col-md-5 col-sm-5 pb-0" [hidden]="entreprises && entreprises.length<=1">
-                                <select [(ngModel)]="idCurrentEse" class="form-control select-trie" (change)="entiteChange($event.target.value)">
-                                    <option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</option>
-                                </select>
-                            </div>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <button class="addInv" (click)="addNew()" mat-mini-fab title="Ajouter un inventaire" color="primary" aria-label="Example icon-button with a heart icon">
@@ -161,7 +155,7 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">RÉUNION D'INVENTAIRE</span>
+                                        <span class="col-4 pt-3 bolder">RÉUNION DE LANCEMENT</span>
                                         <span class="col-2">
                                             <mat-form-field class="example-full-width">
                                                 <mat-label>Lieu</mat-label>
@@ -238,7 +232,7 @@
                                 <mat-expansion-panel-header class="pr-0" style="background-color: #d8d5d5;" #panelHL (click)="panelHL._toggle()">
                                     <mat-panel-title  class="pl-0 col-11 pt-5 pb-4 mr-0" (click)="panelHL._toggle()">
                                         <p>
-                                            Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd-MM-yyyy'}} </span> 
+                                            Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}} </span> 
                                         </p>
                                     </mat-panel-title>
                                     <mat-panel-description class="mr-0">
@@ -252,13 +246,13 @@
                                 <div class="mt-4">
                                     <p class="row mt-3">
                                         <span class="col-4 bolder">DATE D'INVENTAIRE</span>
-                                        <span class="col-4">{{inventaire.dateInv|date:'dd-MM-yyyy'}} </span>
+                                        <span class="col-4">{{inventaire.dateInv|date:'dd/MM/yyyy'}} </span>
                                     </p>
                                     <hr>
                                     <p class="row mt-3">
                                         <span class="col-4 bolder">PÉRIODE DE COMPTAGE</span>
-                                        <span class="col-4">Du : {{inventaire.debut|date:'dd-MM-yyyy'}} </span>
-                                        <span class="col-4">Au : {{inventaire.fin|date:'dd-MM-yyyy'}}</span>
+                                        <span class="col-4">Du : {{inventaire.debut|date:'dd/MM/yyyy'}} </span>
+                                        <span class="col-4">Au : {{inventaire.fin|date:'dd/MM/yyyy'}}</span>
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
@@ -299,26 +293,51 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">COMITE D'INVENTAIRE</span>
-                                        <span class="col-8"> 
-                                            <span  *ngIf="!inventaire.presiComite && inventaire.membresCom.length==0">Membres du comité non définis</span>
-                                            <img *ngIf="inventaire.presiComite" class="img-circle user-img-circle img-membre pointer ml-2" [src]="imgLink+inventaire.presiComite.image" [title]="'Président du comité : '+ inventaire.presiComite.nom">
-                                            <img *ngFor="let membre of inventaire.membresCom" class="img-circle user-img-circle img-membre pointer ml-2" [src]="imgLink+membre.image" [title]="'Membre du comité : '+ membre.nom">
+                                        <span class="col-4 bolder" [ngClass]="{'pt-5': inventaire.presiComite || inventaire.membresCom.length>0}">COMITE D'INVENTAIRE</span>
+                                        <span class="col-8 row"> 
+                                            <span *ngIf="!inventaire.presiComite && inventaire.membresCom.length==0">Membres du comité non définis</span>
+                                            
+                                            <img hidden *ngIf="inventaire.presiComite" class="img-circle user-img-circle img-membre pointer ml-2" [src]="imgLink+inventaire.presiComite.image" [title]="'Président du comité : '+ inventaire.presiComite.nom">
+                                            <span *ngIf="inventaire.presiComite" class="p-0 pt-1 ml-3 mb-2 block-user">
+                                                <img alt="photo" class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+inventaire.presiComite.image"  [title]="'Président du comité : '+ inventaire.presiComite.nom">
+                                                <small>{{longText(inventaire.presiComite.nom,18)}}</small>
+                                                <small class="text-primary titre-membre">Président</small>
+                                            </span>
+                                            
+                                            <img hidden *ngFor="let membre of inventaire.membresCom" class="img-circle user-img-circle img-membre pointer ml-2" [src]="imgLink+membre.image" [title]="'Membre du comité : '+ membre.nom">
+                                            <span *ngFor="let membre of inventaire.membresCom" class="p-0 pt-1 ml-3 mb-2  block-user">
+                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+membre.image"  [title]="'Membre du comité : '+ membre.nom">
+                                                <small>{{longText(membre.nom,18)}}</small>
+                                                <small class="text-primary titre-membre">Membre</small>
+                                            </span>
                                         </span>
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 bolder">RÉUNION D'INVENTAIRE</span>
+                                        <span class="col-4 bolder">RÉUNION DE LANCEMENT</span>
                                         <span class="col-4">Lieu : {{inventaire.lieuReunion}}</span>
-                                        <span class="col-4">Date : {{inventaire.dateReunion|date:'dd-MM-yyyy à HH:mm'}}</span>
+                                        <span class="col-4">Date : {{inventaire.dateReunion|date:'dd/MM/yyyy'}}</span>
                                     </p>
                                     <hr>
                                     <div class="row mt-4">
-                                        <span class="col-4 bolder" [ngClass]="{'pt-3': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS A LA RÉUNION</span>
-                                        <span class="col-8">
-                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0">Membres présents à la réunion d'inventaire non définis</span>
-                                            <img *ngFor="let membre of inventaire.presentsReunion" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+membre.image" [title]="membre.nom">
-                                            <img *ngFor="let membre of inventaire.presentsReunionOut" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+'exemple.jpg'" [title]="membre">
+                                        <span class="col-4 bolder" [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS A LA RÉUNION</span>
+                                        <span class="col-8 row">
+                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0">Membres présents à la réunion de lancement non définis</span>
+                                            
+                                            <img hidden *ngFor="let membre of inventaire.presentsReunion" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+membre.image" [title]="membre.nom">
+                                            <span *ngFor="let membre of inventaire.presentsReunion" class="p-0 pt-1 ml-3 mb-2 block-user">
+                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+membre.image"  [title]="membre.nom">
+                                                <small>{{longText(membre.nom,18)}}</small>
+                                                <small class="text-primary titre-membre" [title]="membre.poste">{{longText(membre.poste,18)}}</small>
+                                            </span>
+                                            
+                                            
+                                            <img hidden *ngFor="let membre of inventaire.presentsReunionOut" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+'exemple.jpg'" [title]="membre">
+                                            <span *ngFor="let membre of inventaire.presentsReunionOut" class="p-0 pt-1 ml-3 mb-2 block-user">
+                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+'exemple.jpg'"  [title]="membre">
+                                                <small>{{longText(membre,18)}}</small>
+                                                <small class="text-primary titre-membre">Autre participant</small>
+                                            </span>
                                         </span>
                                     </div>
                                     <hr>
@@ -372,7 +391,7 @@
              <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="outline">
-                        <mat-label>Président comité</mat-label>
+                        <mat-label>Président</mat-label>
                         <mat-select [(ngModel)]="idPresiComite" name="presi">
                             <mat-option  value=""></mat-option>
                             <mat-option *ngFor="let president of presidents" [value]="president.id">{{president.nom}}</mat-option>
@@ -438,7 +457,7 @@
             <div class="row mb-2" *ngFor="let control of tabOtherPresent.controls; index as i">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                     <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
-                        <mat-label>Autre</mat-label>
+                        <mat-label>Autre participant</mat-label>
                         <input matInput [formControl]="control">
                         <mat-icon matSuffix>face</mat-icon>
                     </mat-form-field>
@@ -454,7 +473,8 @@
      </form>
  </div>
 </div>
-<!-- Modal Window Add comité-->
+<!-- Modal Window Add comité<img [src]="imgLink+entreprise.image" alt="" *ngIf="entreprise" [(ngModel)]="imageEse">-->
+
 
  <!-- Localité -->
  <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog"
@@ -565,211 +585,220 @@
 <!-- Localité -->
 
  <!-- Instruction -->
- <div class="modal fade" id="instrucModal" tabindex="-1" role="dialog"
- aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog instruction-modal" role="document">
-     <form class="modal-content"  [formGroup]="instForm">
-         <div class="modal-header">
-             <div class="editRowModal">
-                 <div class="modal-header clearfix">
-                     <div class="modal-about">
-                         <div class="font-weight-bold p-t-10 font-17">Instructions</div>
-                     </div>
-                 </div>
-             </div>
-             <button type="button" #closeInstrucModal
-                 class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                 aria-label="Close">
-                 <i class="material-icons">clear</i>
-             </button>
-         </div>
-         <div class="modal-body"  [perfectScrollbar]>
-            <div class="row mb-2">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                    <mat-accordion>
-                        <div class="row">
-                            <mat-expansion-panel  class="example-full-width mb-4" [expanded]="true">
-                                <mat-expansion-panel-header style="background-color: #d8d5d5a2;">
-                                        <mat-panel-title class="pl-0 col-10 pt-4 pb-4">
-                                            TRAVAUX PREPARATOIRES
-                                        </mat-panel-title>
-                                        <mat-panel-description> 
-                                        </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                <div class="row pt-4">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>REUNION DE LANCEMENT DE L'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="3" formControlName="bloc1e1"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[0][0]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>RAPPEL DE LA PROCEDURES SUR LES IMMOBILISATIONS</mat-label>
-                                        <textarea matInput rows="8"  formControlName="bloc1e2"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[0][1]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width  pr-0" appearance="outline">
-                                        <mat-label>EDITION ET CONTRÔLE DU FICHIER DES IMMOBILISATIONS</mat-label>
-                                        <textarea matInput rows="5" formControlName="bloc1e3"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[0][2]">info_outline</mat-icon>
-                                </div>
-                            </mat-expansion-panel>
-                            
-                            <mat-expansion-panel  class="example-full-width mb-4" >
-                                <mat-expansion-panel-header style="background-color: #d8d5d5a2;">
-                                        <mat-panel-title class="pl-0 col-10 pt-4 pb-4">
-                                            TRAVAUX D'INVENTAIRE
-                                        </mat-panel-title>
-                                        <mat-panel-description> 
-                                        </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                <div class="row pt-4">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>MISE EN PLACE DU COMITE D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="10" formControlName="bloc2e1"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[1][0]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>AFFECTATION DES EQUIPES D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="16" formControlName="bloc2e2"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[1][1]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>DEROULEMENT DE L'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="15" formControlName="bloc2e3"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[1][2]">info_outline</mat-icon>
-                                </div>
-                            </mat-expansion-panel>
-
-                            <mat-expansion-panel  class="example-full-width" >
-                                <mat-expansion-panel-header style="background-color: #d8d5d5a2;">
-                                        <mat-panel-title class="pl-0 col-10 pt-4 pb-4">
-                                            TRAVAUX POST-INVENTAIRE
-                                        </mat-panel-title>
-                                        <mat-panel-description> 
-                                        </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                <div class="row pt-4">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>RAPPROCHEMENT FICHIER D'IMMOBILISATIONS ET RESULTATS DE L'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="11" formControlName="bloc3e1"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][0]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>CORRECTION DES ANOMALIES</mat-label>
-                                        <textarea matInput rows="1" formControlName="bloc3e2"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][1]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>APPROBATION D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="1" formControlName="bloc3e3"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][2]">info_outline</mat-icon>
-                                </div>
-                                <div class="row">
-                                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                                        <mat-label>TRANSMISSION DU DOSSIER D'INVENTAIRE</mat-label>
-                                        <textarea matInput rows="3" formControlName="bloc3e4"></textarea>
-                                    </mat-form-field>
-                                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="comments[2][3]">info_outline</mat-icon>
-                                </div>
-                            </mat-expansion-panel>
-
+ <div class="modal fade instructionModal" id="instrucModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog instruction-modal" role="document">
+        <form class="modal-content"  [formGroup]="instForm">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Instructions</div>
                         </div>
-                    </mat-accordion>
+                    </div>
+                </div>
+                <button type="button" #closeInstrucModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body"  [perfectScrollbar]>
+                <div class="row mb-2">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <div class="body pb-0">
+                            <mat-vertical-stepper [linear]="isLinear" #stepper>
+                                <mat-step>
+                                        <ng-template matStepLabel>TRAVAUX PREPARATOIRES</ng-template>
+                                        <div class="row">
+                                            <mat-form-field class="example-full-width pr-0" color="primary" appearance="outline">
+                                                <mat-label>REUNION DE LANCEMENT DE L'INVENTAIRE</mat-label>
+                                                <textarea matInput rows="3" formControlName="bloc1e1"></textarea>
+                                            </mat-form-field>
+                                            <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[0][0]">info_outline</mat-icon>
+                                        </div>
+                                        <div class="row">
+                                            <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                                <mat-label>RAPPEL DE LA PROCEDURES SUR LES IMMOBILISATIONS</mat-label>
+                                                <textarea matInput rows="8"  formControlName="bloc1e2"></textarea>
+                                            </mat-form-field>
+                                            <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[0][1]">info_outline</mat-icon>
+                                        </div>
+                                        <div class="row">
+                                            <mat-form-field class="example-full-width  pr-0" appearance="outline">
+                                                <mat-label>EDITION ET CONTRÔLE DU FICHIER DES IMMOBILISATIONS</mat-label>
+                                                <textarea matInput rows="5" formControlName="bloc1e3"></textarea>
+                                            </mat-form-field>
+                                            <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[0][2]">info_outline</mat-icon>
+                                        </div>
+                                </mat-step>
+
+                                <mat-step>
+                                    <ng-template matStepLabel>TRAVAUX D'INVENTAIRE</ng-template>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>MISE EN PLACE DU COMITE D'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="10" formControlName="bloc2e1"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[1][0]">info_outline</mat-icon>
+                                    </div>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>AFFECTATION DES EQUIPES D'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="16" formControlName="bloc2e2"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[1][1]">info_outline</mat-icon>
+                                    </div>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>DEROULEMENT DE L'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="15" formControlName="bloc2e3"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[1][2]">info_outline</mat-icon>
+                                    </div>
+                                </mat-step>
+
+                                <mat-step>
+                                    <ng-template matStepLabel>TRAVAUX POST-INVENTAIRE</ng-template>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>RAPPROCHEMENT FICHIER D'IMMOBILISATIONS ET RESULTATS DE L'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="11" formControlName="bloc3e1"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[2][0]">info_outline</mat-icon>
+                                    </div>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>CORRECTION DES ANOMALIES</mat-label>
+                                            <textarea matInput rows="1" formControlName="bloc3e2"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[2][1]">info_outline</mat-icon>
+                                    </div>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>APPROBATION D'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="1" formControlName="bloc3e3"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[2][2]">info_outline</mat-icon>
+                                    </div>
+                                    <div class="row">
+                                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                            <mat-label>TRANSMISSION DU DOSSIER D'INVENTAIRE</mat-label>
+                                            <textarea matInput rows="3" formControlName="bloc3e4"></textarea>
+                                        </mat-form-field>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[2][3]">info_outline</mat-icon>
+                                    </div>
+                                </mat-step>
+                                <!--
+                                <mat-step hidden>
+                                    <ng-template matStepLabel>SIGNATAIRES</ng-template>
+                                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                                        <mat-form-field class="example-chip-list example-full-width">
+                                            <mat-chip-list #chipList1 aria-label="Fruit selection">
+                                                <mat-chip *ngFor="let signataire of signatairesInst" [selectable]="true" [removable]="true" (removed)="removeSignInst(signataire)">
+                                                    {{signataire}}<mat-icon matChipRemove>cancel</mat-icon>
+                                                </mat-chip>
+                                                <input placeholder="Signataires" [formControl]="signInstCtrl"
+                                                    [matChipInputFor]="chipList1"
+                                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                    (matChipInputTokenEnd)="addSignInst($event)">
+                                            </mat-chip-list>
+                                        </mat-form-field>
+                                    </div>
+                                </mat-step>-->
+                            </mat-vertical-stepper>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer pr-2">
+                    <div class="button-demo">
+                        <button type="submit" class="btn btn-outline-success btn-border-radius" (click)="closeInstrucModal.click()">Fermer</button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer pr-2">
-                <div class="button-demo">
-                    <button type="submit" class="btn btn-outline-success btn-border-radius" (click)="closeInstrucModal.click()">Fermer</button>
-                </div>
-            </div>
-         </div>
-     </form>
- </div>
+        </form>
+    </div>
 </div>
 <!-- Instruction -->
 
 <!-- PV -->
-<div class="modal fade" id="pvModal" tabindex="-1" role="dialog" 
-aria-labelledby="exampleModalLabel" aria-hidden="true">
-<div class="modal-dialog instruction-modal" role="document">
-    <form class="modal-content"  [formGroup]="pvForm">
-        <div class="modal-header">
-            <div class="editRowModal">
-                <div class="modal-header clearfix">
-                    <div class="modal-about">
-                        <div class="font-weight-bold p-t-10 font-17">Procès-verbal</div>
+<div class="modal fade" id="pvModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog instruction-modal" role="document">
+        <form class="modal-content"  [formGroup]="pvForm">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Procès-verbal</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closePvModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body pr-1" [perfectScrollbar]>
+                <div class="row mb-2">
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                            <mat-label>Date et heure </mat-label>
+                            <textarea matInput rows="2" formControlName="bloc1"></textarea>
+                        </mat-form-field>
+                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="commentsPv[0]">info_outline</mat-icon>
+                    </div>
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                            <mat-label>Ordre du jour </mat-label>
+                            <textarea matInput rows="4" formControlName="bloc2"></textarea>
+                        </mat-form-field>
+                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="commentsPv[1]">info_outline</mat-icon>
+                    </div>
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-full-width pr-0" appearance="outline">
+                            <mat-label>Feuille de présence </mat-label>
+                            <textarea matInput rows="3" formControlName="bloc3"></textarea>
+                        </mat-form-field>
+                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="commentsPv[2]">info_outline</mat-icon>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0 pl-0" *ngFor="let oneForm of tabDeliberation.controls; index as i">
+                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                            <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                <mat-label>Titre</mat-label>
+                                <input matInput  [formControl]="oneForm.controls.titre">
+                            </mat-form-field>
+                            <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [hidden]="i!=(tabDeliberation.length-1)" (click)="addDeliberation()">add_circle_outline</mat-icon>
+                        </div> 
+                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                            <mat-form-field class="example-full-width pr-0" appearance="outline">
+                                <mat-label>DÉLIBERATION {{i+1}}</mat-label>
+                                <textarea matInput rows="3"  [formControl]="oneForm.controls.content"></textarea>
+                            </mat-form-field>
+                            <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="getCommentDel(i)">info_outline</mat-icon>
+                        </div>  
+                    </div>
+                    <!--
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
+                        <mat-form-field class="example-chip-list example-full-width">
+                            <mat-chip-list #chipList aria-label="Fruit selection">
+                                <mat-chip *ngFor="let signataire of signatairesPv" [selectable]="true" [removable]="true" (removed)="removeSignPv(signataire)">
+                                    {{signataire}}<mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input placeholder="Signataires" [formControl]="signPvCtrl"
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    (matChipInputTokenEnd)="addSignPv($event)">
+                            </mat-chip-list>
+                        </mat-form-field>
+                    </div>-->
+                </div>
+                <div class="modal-footer pr-2">
+                    <div class="button-demo">
+                        <button type="submit" class="btn btn-outline-success btn-border-radius" (click)="closePvModal.click()">Fermer</button>
                     </div>
                 </div>
             </div>
-            <button type="button" #closePvModal
-                class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                aria-label="Close">
-                <i class="material-icons">clear</i>
-            </button>
-        </div>
-        <div class="modal-body pr-1" [perfectScrollbar]>
-           <div class="row mb-2">
-                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                        <mat-label>Date et heure </mat-label>
-                        <textarea matInput rows="2" formControlName="bloc1"></textarea>
-                    </mat-form-field>
-                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[0]">info_outline</mat-icon>
-                </div>
-                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                        <mat-label>Ordre du jour </mat-label>
-                        <textarea matInput rows="4" formControlName="bloc2"></textarea>
-                    </mat-form-field>
-                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[1]">info_outline</mat-icon>
-                </div>
-                <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                    <mat-form-field class="example-full-width pr-0" appearance="outline">
-                        <mat-label>Feuille de présence </mat-label>
-                        <textarea matInput rows="3" formControlName="bloc3"></textarea>
-                    </mat-form-field>
-                    <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="commentsPv[2]">info_outline</mat-icon>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0 pl-0" *ngFor="let oneForm of tabDeliberation.controls; index as i">
-                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                        <mat-form-field class="example-full-width pr-0" appearance="outline">
-                            <mat-label>Titre</mat-label>
-                            <input matInput  [formControl]="oneForm.controls.titre">
-                        </mat-form-field>
-                        <mat-icon matSuffix class="pointer pl-2 pt-3" [hidden]="i!=(tabDeliberation.length-1)" (click)="addDeliberation()">add_circle_outline</mat-icon>
-                    </div> 
-                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                        <mat-form-field class="example-full-width pr-0" appearance="outline">
-                            <mat-label>DÉLIBERATION {{i+1}}</mat-label>
-                            <textarea matInput rows="3"  [formControl]="oneForm.controls.content"></textarea>
-                        </mat-form-field>
-                        <mat-icon matSuffix class="pointer pl-2 pt-3" [title]="getCommentDel(i)">info_outline</mat-icon>
-                    </div>  
-                </div>
-                
-           </div>
-           <div class="modal-footer pr-2">
-               <div class="button-demo">
-                   <button type="submit" class="btn btn-outline-success btn-border-radius" (click)="closePvModal.click()">Fermer</button>
-               </div>
-           </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 </div>
 <!-- PV -->

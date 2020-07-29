@@ -96,25 +96,21 @@ export class ZonageComponent implements OnInit {
     this.initForm2(zone)
   }
   getEntreprise(){
-    this.adminServ.getEntreprise().then(
+    const idEse=localStorage.getItem("currentEse")
+    this.adminServ.getOneEntreprise(idEse).then(
       rep=>{
         let e=rep
-        if(e && e.length>0){
-          e=rep.reverse()
-          this.idCurrentEse=e[0].id
-          this.localites=rep[0].localites
+        if(e){
+          this.idCurrentEse=e.id
+          this.localites=rep.localites
         }
-        this.entreprises=e
-         this.securityServ.showLoadingIndicatior.next(false)
+        this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
       }
     )
-  }
-  entiteChange(id){
-    this.getOneEntreprise()
   }
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(

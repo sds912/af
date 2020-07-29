@@ -12,7 +12,7 @@
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
                                             <input placeholder="Recherche" type="text" class="browser-default search-field search-team" (keyup)='filterDatatable($event.target.value)' aria-label="Search box" [(ngModel)]="searchValue">
                                         </li>
-                                        <li class="dropdown m-l-20" [hidden]="entreprises && entreprises.length==1">
+                                        <li class="dropdown m-l-20" hidden>
                                             <select [(ngModel)]="idCurrentEse" class="form-control select-trie pl-0 pr-0" (change)="entiteChange($event.target.value)" title="Entité">
                                                 <option value="0">Toutes les entités</option>
                                                 <option *ngFor="let e of entreprises" [value]="e.id">{{e.denomination}}</option>
@@ -105,6 +105,9 @@
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
                                                     <i class="material-icons">mode_edit</i>
+                                                </button>
+                                                <button class="btn tblActnBtn pointer h-auto text-secondary ml-4" title="Rattacher à une localité" *ngIf="row.localites?.length>0">
+                                                    <i class="material-icons">room</i>
                                                 </button>
                                             </span>
                                         </ng-template>
@@ -231,9 +234,9 @@
                                                     <div class="row">
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width" appearance="outline">
-                                                                <mat-label>Département</mat-label>
+                                                                <mat-label>Direction</mat-label>
                                                                 <input matInput [value]="firstDep" disabled="true"  *ngIf="details">
-                                                                <mat-select  name="depart" [value]="firstDep" (selectionChange)="depChange($event.value)" *ngIf="!details">
+                                                                <mat-select  name="depart" [(ngModel)]="firstDep" [ngModelOptions]="{standalone: true}" (selectionChange)="depChange($event.value)" *ngIf="!details">
                                                                     <mat-option *ngFor="let d of dep" [value]="d">{{d}}</mat-option>
                                                                 </mat-select>                                                               
                                                             </mat-form-field>
@@ -243,7 +246,7 @@
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
-                                                                <mat-label>Autre département</mat-label>
+                                                                <mat-label>Autre direction</mat-label>
                                                                  <input matInput formControlName="departement">
                                                             </mat-form-field>
                                                         </div>
@@ -303,7 +306,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="row mb-2" *ngFor="let control of tabEse.controls; index as i">
+                                                    <div class="row mb-2" *ngFor="let control of tabEse.controls; index as i" [hidden]="!securityServ.admin">
                                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0" [hidden]="entreprises && entreprises.length<2">
                                                             <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
                                                                 <mat-label>Entité {{i+1}}</mat-label>

@@ -25,18 +25,23 @@ export class HeaderComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
+  @ViewChild('openEseModal', { static: true }) openEseModal;
+
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
+  @ViewChild('closeEseModal', { static: false }) closeEseModal;
   @ViewChild('formDirective') private formDirective: NgForm;
   isNavbarShow: boolean;
   imagePP=""
   editForm: FormGroup;
   InfoForm: FormGroup;
+  eseForm: FormGroup;
   showPwd=false
   showPwd2=false
   showPwd3=false
   errorConfPwd=false
   errorPwd=false
   updateInfo=false
+  idEse=null
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -111,10 +116,17 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+    //this.isNavbarShow = true;
     this.setStartupStyles();
     this.initForm()
+    this.initForm3()
     setTimeout(()=>{
-        if(!this.securityServ.securePwd)this.openPasswordModal.nativeElement.click()
+        if(!this.securityServ.securePwd){
+          this.openPasswordModal.nativeElement.click()
+        }
+        if(!localStorage.getItem("currentEse") && !this.securityServ.admin){
+          this.openEseModal.nativeElement.click()
+        }
     },1000);
   }
   initForm(){
@@ -157,6 +169,12 @@ export class HeaderComponent implements OnInit {
       poste: [user.poste, [Validators.required]]
     });
   }
+  initForm3(){
+    this.idEse=localStorage.getItem("currentEse")?localStorage.getItem("currentEse"):""
+    this.eseForm = this.fb.group({
+      entreprise: [this.idEse, [Validators.required]]
+    });
+  }
   updatePwd(){
     this.errorConfPwd=false
     this.errorPwd=false
@@ -177,6 +195,7 @@ export class HeaderComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Mot de passe modifié','top','center')
         this.closePasswordModal.nativeElement.click();
+        this.securityServ.securePwd=true
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
@@ -202,6 +221,24 @@ export class HeaderComponent implements OnInit {
         this.showNotification('bg-red',message,'top','right')
       }
     ) 
+  }
+  onSaveEse(form: FormGroup){
+    this.securityServ.showLoadingIndicatior.next(true)
+    const id=form.value.entreprise
+    const data={currentEse:"/api/entreprises/"+id}
+    this.securityServ.updateCurentEse(data).then(
+      rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.securityServ.user.currentEse=rep.currentEse
+        this.showNotification('bg-success',"Enregistrer",'top','center')
+        this.closeEseModal.nativeElement.click();
+        localStorage.setItem("currentEse",id)
+        setTimeout(()=>{window.location.reload()},1000);
+      },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
   }
 
   showNotification(colorName, text, placementFrom, placementAlign) {
@@ -299,5 +336,8 @@ export class HeaderComponent implements OnInit {
   }
   logOut(){
     this.securityServ.logOut()
+  }
+  getEntite(){
+    return this.securityServ.user?.entreprises?.find(e=>e.id==this.idEse)
   }
 }

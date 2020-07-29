@@ -87,6 +87,7 @@ export class InventaireService {
       formData.append('bloc3e2',instrucCreer.bloc3e2)
       formData.append('bloc3e3',instrucCreer.bloc3e3)
       formData.append('bloc3e4',instrucCreer.bloc3e4)
+      formData.append('signataireInst',instrucCreer.signataire)
     }else{
       const instructions=data.instructions
       for(let i=1;i<=instructions.length;i++){
@@ -100,6 +101,7 @@ export class InventaireService {
       formData.append('pvCB1',pvReunionCreer[0][0])
       formData.append('pvCB2',pvReunionCreer[0][1])
       formData.append('pvCB3',pvReunionCreer[0][2])
+      formData.append('pvCB4',pvReunionCreer[0][3])//signataires
       let tabDel=pvReunionCreer[1]
       for(let i=1;i<=tabDel.length;i++){
         formData.append('pvDelTitre'+i,tabDel[i-1].titre)

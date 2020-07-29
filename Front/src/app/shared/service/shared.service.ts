@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -199,6 +200,9 @@ export class SharedService {
           }
         );
       })
+  }
+  getBlob(url: string): Observable<Blob> {
+    return this.httpClient.get<Blob>(url, { observe: 'body', responseType: 'blob' as 'json',withCredentials:false })
   }
   errerForm(rep:any){
     var err='';
