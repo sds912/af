@@ -92,6 +92,12 @@ class Entreprise
      */
     private $capital;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"entreprise_read"})
+     */
+    private $subdivisions = [];
+
     public function __construct()
     {
         $this->localites = new ArrayCollection();
@@ -284,6 +290,18 @@ class Entreprise
     public function setCapital(?float $capital): self
     {
         $this->capital = $capital;
+
+        return $this;
+    }
+
+    public function getSubdivisions(): ?array
+    {
+        return $this->subdivisions;
+    }
+
+    public function setSubdivisions(?array $subdivisions): self
+    {
+        $this->subdivisions = $subdivisions;
 
         return $this;
     }

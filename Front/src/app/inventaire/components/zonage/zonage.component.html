@@ -8,9 +8,16 @@
                             <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder">Localités</h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
-                                    <button class="addInv" data-toggle="modal" data-target="#localiteModal" data-backdrop="static" data-keyboard="false"
+                                    <button class="addInv" data-toggle="modal" data-target="#localiteModal" data-backdrop="static" data-keyboard="false" *ngIf="subdivisions && subdivisions.length>0"
                                     (click)="initForm()" mat-mini-fab title="Ajouter un inventaire" color="primary" aria-label="Example icon-button with a heart icon">
                                         <mat-icon>add</mat-icon>
+                                    </button>
+                                    <button class="addInv" *ngIf="subdivisions && subdivisions.length==0" mat-mini-fab disabled title="Ajouter les différentes subdivisions" color="primary" aria-label="Example icon-button with a heart icon">
+                                            <mat-icon>add</mat-icon>
+                                        </button>
+                                    <button class="addInv" data-toggle="modal" data-target="#Subdivision" data-backdrop="static" data-keyboard="false" style="left: -100px;"
+                                        #subd mat-mini-fab title="Ajouter une subdivision" color="primary" aria-label="Example icon-button with a heart icon" (click)="initSub()">
+                                        <mat-icon>reorder</mat-icon>
                                     </button>
                                 </li>
                             </ul>
@@ -40,7 +47,7 @@
                                         </div>
                                     </mat-panel-description>
                                 </mat-expansion-panel-header>
-                                    <p class="mt-4 mb-3 bolder">Zones / Sites</p>
+                                    <p class="mt-4 mb-3 bolder" *ngIf="subdivisions[1]">{{subdivisions[1]}}</p>
                                     <mat-expansion-panel class="mb-4" *ngFor="let zone of rev(localite.zones)"  [expanded]="idCurrentZ === zone.id" hideToggle>
                                         <mat-expansion-panel-header  class="pr-0" style="background-color: #eab9b9;"  #panelHZ (click)="panelHZ._toggle()">
                                             <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHZ._toggle()">
@@ -103,8 +110,7 @@
                 <div class="editRowModal">
                     <div class="modal-header clearfix">
                         <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17" *ngIf="localiteForm.get('id').value==0">Ajouter une localité</div>
-                            <div class="font-weight-bold p-t-10 font-17" *ngIf="localiteForm.get('id').value!=0">Modifier une localité</div>
+                            <div class="font-weight-bold p-t-10 font-17">{{subdivisions[0]}}</div>
                         </div>
                     </div>
                 </div>
@@ -122,7 +128,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pb-0">
                             <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Nom de la localité</mat-label>
+                                <mat-label>Nom</mat-label>
                                 <input matInput formControlName="nom" >
                                 <mat-icon matSuffix>room</mat-icon>
                                 <mat-error *ngIf="localiteForm.get('nom').hasError('required')">
@@ -243,3 +249,48 @@
     </div>
 </div>
 <!--Sous-zone-->
+
+<!--Subdivision-->
+<div class="modal fade" id="Subdivision" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Subdivision</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closeSubdivision
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pb-0 pr-0" *ngFor="let control of tabSubdivision.controls; index as i">
+                            <mat-form-field class="example-full-width mr-2" appearance="outline" style="width: 92% !important;">
+                                <mat-label *ngIf="i==0">Nom de la subdivision</mat-label>
+                                <mat-label *ngIf="i>0">Un(e) {{lowerCase(tabSubdivision.value[i-1])}} peut contenir un(e) :</mat-label>
+                                <input matInput [formControl]="control">
+                                <mat-icon matSuffix>room</mat-icon>
+                            </mat-form-field>
+                             <mat-icon matSuffix [hidden]="i!=(tabSubdivision.controls.length-1) || !control.value" (click)="addSubdivision()" class="pointer" title="Ajouter un membre">add_circle_outline</mat-icon>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer pr-4 pt-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" (click)="oneSaveSubdiv()">Enregistrer</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--Subdivision-->

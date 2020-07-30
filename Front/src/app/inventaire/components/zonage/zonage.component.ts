@@ -9,7 +9,7 @@ import { InventaireService } from '../../service/inventaire.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators, NgForm, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 export interface ChipColor {
@@ -36,7 +36,7 @@ export class ZonageComponent implements OnInit {
   anelOpenState = false;
   step = 2;
   entreprises=[]
-  idCurrentEse=0
+  idCurrentEse=''
   idCurrentLocal=0
   idCurrentZ=0
   currentLocal=null
@@ -44,14 +44,18 @@ export class ZonageComponent implements OnInit {
   localiteForm:FormGroup;
   zoneForm:FormGroup;
   souZoneForm:FormGroup;
+  tabSubdivision=new FormArray([]);
+  subdivisions=[]
   currentImage='map3.jpeg'//'font-maps.jpg'
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeZoneModal', { static: false }) closeZoneModal;
   @ViewChild('closeSousZoneModal', { static: false }) closeSousZoneModal;
+  @ViewChild('closeSubdivision', { static: false }) closeSubdivision;
   @ViewChild('formDirective1') private formDirective1: NgForm;
   @ViewChild('formDirective2') private formDirective2: NgForm;
   @ViewChild('formDirective3') private formDirective3: NgForm;
+  @ViewChild('subd', { static: true }) subd;
   constructor(private adminServ:AdminService,
               private inventaireServ:InventaireService,
               private fb: FormBuilder, 
@@ -65,7 +69,10 @@ export class ZonageComponent implements OnInit {
     this.initForm()
     this.initForm2()
     this.initForm3()
-    this.getEntreprise()
+    this.idCurrentEse=localStorage.getItem("currentEse")
+    this.getOneEntreprise()
+    setTimeout(()=>this.subd?.nativeElement?.click(),2000)
+    this.addSubdivision("Localité")
   }
   initForm(localite={id:0,nom:'',position:[]}){
     if(this.formDirective1)this.formDirective1.resetForm()
@@ -95,28 +102,13 @@ export class ZonageComponent implements OnInit {
   updateZone(zone){
     this.initForm2(zone)
   }
-  getEntreprise(){
-    const idEse=localStorage.getItem("currentEse")
-    this.adminServ.getOneEntreprise(idEse).then(
-      rep=>{
-        let e=rep
-        if(e){
-          this.idCurrentEse=e.id
-          this.localites=rep.localites
-        }
-        this.securityServ.showLoadingIndicatior.next(false)
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep=>{
         console.log(rep)
         this.localites=rep.localites
+        this.subdivisions=rep.subdivisions
+        this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
         //this.securityServ.showLoadingIndicatior.next(false)
@@ -389,5 +381,38 @@ export class ZonageComponent implements OnInit {
       this.currentImage=images[a]
       a++
     },5000)
+  }
+  addSubdivision(nom=""){
+    this.tabSubdivision.push(new FormControl(nom));
+  }
+  lowerCase(nom:string){
+    return nom.toLowerCase()
+  }
+  capitalize(nom){
+    return this.sharedService.capitalize(nom)
+  }
+  capitalizeAll(tab){
+    let t=[]
+    tab.forEach(element => {
+      if(element.trim()) t.push(this.capitalize(element))
+    });
+    return t
+  }
+  oneSaveSubdiv(){
+    let data={id:this.idCurrentEse,subdivisions:this.capitalizeAll(this.tabSubdivision.value)}
+    this.adminServ.addEntreprise(data).then(
+      rep=>{
+        this.subdivisions=rep.subdivisions
+        this.closeSubdivision.nativeElement.click();
+        this.showNotification('bg-success',"Enregistré",'top','center')
+      },
+      message=>this.showNotification('bg-danger',message,'top','center')
+    )
+  }
+  initSub(){
+    this.tabSubdivision=new FormArray([]);
+    if(!this.subdivisions||this.subdivisions.length==0) this.addSubdivision("Localité")
+    this.subdivisions?.forEach(sub =>this.addSubdivision(sub));
+    if(!this.subdivisions||this.subdivisions.length==0) this.addSubdivision("Localité")
   }
 }
