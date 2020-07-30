@@ -759,7 +759,7 @@ export class InventaireComponent implements OnInit {
                 {text:'',margin:[2,7],border:[false,false,false,false]}
               ],
               [
-                {text:bloc1+"\n"+bloc2+"\n"+bloc3,margin:[2,7],fontSize:10}
+                {text:bloc1+"\n\n"+bloc2+"\n\n"+bloc3,margin:[2,7],fontSize:10}
               ],
               ...this.getPdfDel(data[1])
             ]
@@ -802,7 +802,6 @@ export class InventaireComponent implements OnInit {
     return element
   }
   getSignatairePdf(signataires){
-    return [{}]//enlever
     if(!signataires || signataires.length==0)return [{}]
     if(signataires.length==1)return this.getOneSignatairePdf(signataires)
     if(signataires.length==3)return this.get3SignatairePdf(signataires)//modif

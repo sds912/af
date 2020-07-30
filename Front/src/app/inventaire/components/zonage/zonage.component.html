@@ -2,17 +2,19 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                
                 <div class="card">
                     <div class="header" style="border-bottom: 1px solid #00000021;">
                         <div class="row">
-                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder">Localités</h2>
+                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder" *ngIf="subdivisions && subdivisions[0]">{{subdivisions[0]}}</h2>
+                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder" *ngIf="!subdivisions || subdivisions.length==0">Localités</h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
-                                    <button class="addInv" data-toggle="modal" data-target="#localiteModal" data-backdrop="static" data-keyboard="false" *ngIf="subdivisions && subdivisions.length>0"
-                                    (click)="initForm()" mat-mini-fab title="Ajouter un inventaire" color="primary" aria-label="Example icon-button with a heart icon">
+                                    <button #openF class="addInv" data-toggle="modal" data-target="#localiteModal" data-backdrop="static" data-keyboard="false" *ngIf="subdivisions && subdivisions.length>0"
+                                    (click)="initForm()" (click)="update=false" mat-mini-fab title="Ajouter un inventaire" color="primary" aria-label="Example icon-button with a heart icon">
                                         <mat-icon>add</mat-icon>
                                     </button>
-                                    <button class="addInv" *ngIf="subdivisions && subdivisions.length==0" mat-mini-fab disabled title="Ajouter les différentes subdivisions" color="primary" aria-label="Example icon-button with a heart icon">
+                                    <button class="addInv" *ngIf="!subdivisions || subdivisions.length==0" mat-mini-fab disabled title="Ajouter les différentes subdivisions" color="primary" aria-label="Example icon-button with a heart icon">
                                             <mat-icon>add</mat-icon>
                                         </button>
                                     <button class="addInv" data-toggle="modal" data-target="#Subdivision" data-backdrop="static" data-keyboard="false" style="left: -100px;"
@@ -24,93 +26,71 @@
                         </div>
                     </div>
                     <div class="body">
-                        <div class="map-localite mb-5" [ngStyle]="{background: 'url(./assets/images/image-gallery/'+currentImage+') no-repeat center center'}">
-                            <div class="pointer-localite pointer" *ngFor="let localite of rev(localites)" [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
+                        <div class="map-localite mb-2" [ngStyle]="{background: 'url(./assets/images/image-gallery/'+currentImage+') no-repeat center center'}">
+                            <div class="pointer-localite pointer" *ngFor="let localite of rev(firstSub(localites))" [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
                                 <span (click)="idCurrentLocal=localite.id" class="pl-1">{{longText(localite.nom,11)}}</span>
-                                <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id && !localite.rattacher"  (click)="idCurrentLocal=localite.id">
-                                <img src="assets/images/image-gallery/pointer4.png" [title]="localite.nom" style="width:40%;" *ngIf="idCurrentLocal!=localite.id && localite.rattacher"  (click)="idCurrentLocal=localite.id">
+                                <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id && !localite.rattacher"  (click)="openFirst(localite.id)">
+                                <img src="assets/images/image-gallery/pointer4.png" [title]="localite.nom" style="width:40%;" *ngIf="idCurrentLocal!=localite.id && localite.rattacher"  (click)="openFirst(localite.id)">
                                 <img src="assets/images/image-gallery/pointer2.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal==localite.id">
                             </div>
                         </div>
-                        <mat-accordion>
-                            <mat-expansion-panel class="mb-4" *ngFor="let localite of rev(localites)" [expanded]="idCurrentLocal === localite.id"  hideToggle [hidden]="idCurrentLocal != localite.id">
-                                <mat-expansion-panel-header  class="pr-0" style="background-color: #d8d5d5;" (click)="pickLocalite(localite)"  #panelHL (click)="panelHL._toggle()">
-                                    <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHL._toggle()">
-                                        {{localite.nom}}
-                                    </mat-panel-title>
-                                    <mat-panel-description> 
-                                        <i></i>
-                                        <div class="pt-4 pb-4">
-                                            <mat-icon data-toggle="modal" class="mr-2 icone-loc" data-target="#localiteModal" data-backdrop="static" data-keyboard="false"  (click)="updateLoc(localite)">edit</mat-icon>
-                                            <mat-icon *ngIf="localite.zones.length==0" class="icone-loc" (click)="deleteLoc(localite)">delete</mat-icon>
-                                            <mat-icon *ngIf="localite.zones.length>0" class="icone-loc" title="Impossible de supprimer une localité contenant des zones" (click)="noteRemovable('localité')">delete</mat-icon>
-                                        </div>
-                                    </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                    <p class="mt-4 mb-3 bolder" *ngIf="subdivisions[1]">{{subdivisions[1]}}</p>
-                                    <mat-expansion-panel class="mb-4" *ngFor="let zone of rev(localite.zones)"  [expanded]="idCurrentZ === zone.id" hideToggle>
-                                        <mat-expansion-panel-header  class="pr-0" style="background-color: #eab9b9;"  #panelHZ (click)="panelHZ._toggle()">
-                                            <mat-panel-title class="pl-0 col-11 pt-4 pb-4 mr-0" (click)="panelHZ._toggle()">
-                                                {{zone.nom}}
-                                            </mat-panel-title>
-                                            <mat-panel-description><i></i> 
-                                                <div  class="pt-4 pb-4">
-                                                    <mat-icon class="icone-loc" data-toggle="modal" data-target="#zoneModal" #ezone data-backdrop="static" data-keyboard="false" (click)="updateZone(zone)">edit</mat-icon>
-                                                    <mat-icon *ngIf="getSousZone(zone).length==0" class="icone-loc" (click)="deleteZone(zone)">delete</mat-icon>
-                                                    <mat-icon *ngIf="getSousZone(zone).length>0" class="icone-loc" title="Impossible de supprimer une zone contenant des sous-zones" (click)="noteRemovable('zone')">delete</mat-icon>
-                                                </div>
-                                            </mat-panel-description>
-                                        </mat-expansion-panel-header>
+                    </div>
+                </div>
+
+                <div class="card mb-5 pb-3" *ngFor="let idParent of tabOpen;let i=index" [hidden]="!idCurrentLocal || !getOnById(idParent)!">
+                    <div class="header" style="border-bottom: 1px solid #00000021;">
+                        <div class="row">
+                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder" *ngIf="getOnById(idParent)">{{getOnById(idParent).nom}}</h2>
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown">
+                                    <button (click)="updateL(getOnById(idParent))" (click)="openLocM.click()" class="addInv" mat-mini-fab  title="Modifier" color="primary" aria-label="Example icon-button with a heart icon">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <mat-form-field class="example-chip-list example-full-width zonage" *ngIf="subdivisions[i+1]">
+                            <mat-chip-list #chipList aria-label="Sous-zones">
+                                <mat-chip *ngFor="let sub of getCurrentSubById(idParent)" [selectable]="selectable" [removable]="false"
+                                    class="w-25 row pt-1" style="min-width: 275px;">
+                                    <span class="col-8 p-0 pl-1" [title]="sub.nom">{{longText(sub.nom,20)}}</span>
+                                    <span class="col-4 p-0">
+                                        <mat-icon class="edit-sousZ pointer text-secondary" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
                                         
-                                        <div class="row">
+                                        <mat-icon class="ml-2 edit-sousZ pointer text-secondary" title="Modifier" (click)="updateL(sub)"  (click)="openLocM.click()">edit</mat-icon>
                                         
-                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                                <div class="card">
-                                                    <div class="body">
-                                                        <mat-form-field class="example-chip-list example-full-width">
-                                                            <mat-chip-list #chipList aria-label="Sous-zones">
-                                                                <mat-chip *ngFor="let sousZone of getSousZone(zone)" [selectable]="selectable" [removable]="removable"
-                                                                    (removed)="remove(zone,sousZone)">
-                                                                    {{sousZone}}
-                                                                    <mat-icon *ngIf="removable" class="ml-2 edit-sousZ pointer text-secondary" (click)="updateSousZones(zone,sousZone)"  (click)="openSZModal.click()">edit</mat-icon>
-                                                                    <!---->
-                                                                    <mat-icon matChipRemove *ngIf="removable" class="ml-0">delete</mat-icon>
-                                                                    
-                                                                </mat-chip>
-                                                                <input placeholder="Sous-zone" #fruitInput [formControl]="fruitCtrl"
-                                                                    [matChipInputFor]="chipList"
-                                                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                                                    (matChipInputTokenEnd)="add($event,zone)">
-                                                            </mat-chip-list>
-                                                        </mat-form-field>
-                                                        <!--Pour editer sous-zone -->
-                                                        <i data-toggle="modal" hidden data-target="#SousZoneModal" data-backdrop="static" data-keyboard="false" #openSZModal></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                    </mat-expansion-panel>
-                                    <p class="mt-4"><i class="material-icons pointer" title="Ajouter zone/site" data-toggle="modal" data-target="#zoneModal" data-backdrop="static" data-keyboard="false" (click)="pickLocalite(localite)" (click)="initForm2()">add_circle</i></p>
-                            </mat-expansion-panel>
-                        </mat-accordion>
+
+                                        <mat-icon matChipRemove class="ml-0" title="Supprimer" (click)="deleteLoc(sub)">delete</mat-icon>
+                                    </span>
+                                </mat-chip>
+                                <input [placeholder]="subdivisions[i+1]" #fruitInput [formControl]="fruitCtrl"
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    (matChipInputTokenEnd)="add($event,idParent)">
+                            </mat-chip-list>
+                        </mat-form-field>
+                        <p *ngIf="!subdivisions[i+1]">Veuillez ajouter une nouvelle subdivision</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<!--Pour editer -->
+<em data-toggle="modal" hidden data-target="#localiteModal" data-backdrop="static" data-keyboard="false" #openLocM></em>
 
-
-<!--Localités-->
+<!--Form-->
 <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog" role="document">
-        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="addLocalite(localiteForm)" #formDirective1="ngForm">
+        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="saveLocalite(localiteForm)" #formDirective1="ngForm">
             <div class="modal-header">
                 <div class="editRowModal">
                     <div class="modal-header clearfix">
                         <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17">{{subdivisions[0]}}</div>
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="subdivisions && subdivisions[0] && !update">{{subdivisions[0]}}</div>
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="update">Modification</div>
                         </div>
                     </div>
                 </div>
@@ -149,106 +129,7 @@
         </form>
     </div>
 </div>
-<!--Localités-->
-
-<!--Zone-->
-<div class="modal fade" id="zoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog" role="document">
-        <form class="modal-content"  [formGroup]="zoneForm" (ngSubmit)="addZone(zoneForm)" #formDirective2="ngForm">
-            <div class="modal-header">
-                <div class="editRowModal">
-                    <div class="modal-header clearfix">
-                        <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17" *ngIf="zoneForm.get('id').value==0">Ajouter une zone</div>
-                            <div class="font-weight-bold p-t-10 font-17" *ngIf="zoneForm.get('id').value!=0">Modifier une zone</div>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" #closeZoneModal
-                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                    aria-label="Close">
-                    <i class="material-icons">clear</i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <div class="row">
-                        <div class="input-field col s12 d-none">
-                            <input formControlName="id" class="form-control" type="hidden">
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pb-0">
-                            <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Nom de la zone</mat-label>
-                                <input matInput formControlName="nom">
-                                <mat-icon matSuffix>room</mat-icon>
-                                <mat-error *ngIf="zoneForm.get('nom').hasError('required')">
-                                    Ce champ est requise
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer pr-0 pt-0">
-                        <div class="button-demo">
-                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="zoneForm.invalid">Enregistrer</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-<!--Zone-->
-
-<!--Sous-zone-->
-<div class="modal fade" id="SousZoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog" role="document">
-        <form class="modal-content"  [formGroup]="souZoneForm" (ngSubmit)="updateSZ(souZoneForm)" #formDirective3="ngForm">
-            <div class="modal-header">
-                <div class="editRowModal">
-                    <div class="modal-header clearfix">
-                        <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17">Modifier sous-zone</div>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" #closeSousZoneModal
-                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                    aria-label="Close">
-                    <i class="material-icons">clear</i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <div class="row">
-                        <div class="input-field col s12 d-none">
-                            <input formControlName="id" class="form-control" type="hidden">
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pb-0">
-                            <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Nom sous-zone</mat-label>
-                                <input matInput formControlName="nom">
-                                <mat-icon matSuffix>room</mat-icon>
-                                <mat-error *ngIf="souZoneForm.get('nom').hasError('required')">
-                                    Ce champ est requise
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer pr-0 pt-0">
-                        <div class="button-demo">
-                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="souZoneForm.invalid">Enregistrer</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-<!--Sous-zone-->
+<!--Form-->
 
 <!--Subdivision-->
 <div class="modal fade" id="Subdivision" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">

@@ -42,20 +42,23 @@ export class ZonageComponent implements OnInit {
   currentLocal=null
   localites=[]
   localiteForm:FormGroup;
-  zoneForm:FormGroup;
-  souZoneForm:FormGroup;
   tabSubdivision=new FormArray([]);
   subdivisions=[]
+  tabOpen=[]
+  update=false
   currentImage='map3.jpeg'//'font-maps.jpg'
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
-  @ViewChild('closeZoneModal', { static: false }) closeZoneModal;
-  @ViewChild('closeSousZoneModal', { static: false }) closeSousZoneModal;
   @ViewChild('closeSubdivision', { static: false }) closeSubdivision;
   @ViewChild('formDirective1') private formDirective1: NgForm;
   @ViewChild('formDirective2') private formDirective2: NgForm;
   @ViewChild('formDirective3') private formDirective3: NgForm;
   @ViewChild('subd', { static: true }) subd;
+  availableColors: ChipColor[] = [
+    { name: 'Primary', color: 'primary' },
+    { name: 'Accent', color: 'accent' },
+    { name: 'Warn', color: 'warn' }
+  ];
   constructor(private adminServ:AdminService,
               private inventaireServ:InventaireService,
               private fb: FormBuilder, 
@@ -67,8 +70,6 @@ export class ZonageComponent implements OnInit {
     this.carrousel()
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
-    this.initForm2()
-    this.initForm3()
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getOneEntreprise()
     setTimeout(()=>this.subd?.nativeElement?.click(),2000)
@@ -82,32 +83,13 @@ export class ZonageComponent implements OnInit {
       position:[localite.position]
     });
   }
-  initForm2(zone={id:0,nom:''}){
-    if(this.formDirective2)this.formDirective2.resetForm()
-    this.zoneForm = this.fb.group({
-      id:[zone.id],
-      nom: [zone.nom, [Validators.required]]
-    });
-  }
-  initForm3(sousZone={id:0,nom:''}){
-    if(this.formDirective3)this.formDirective3.resetForm()
-    this.souZoneForm = this.fb.group({
-      id:[sousZone.id],
-      nom: [sousZone.nom, [Validators.required]]
-    });
-  }
-  updateLoc(localite){
-    this.initForm(localite)
-  }
-  updateZone(zone){
-    this.initForm2(zone)
-  }
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep=>{
         console.log(rep)
         this.localites=rep.localites
         this.subdivisions=rep.subdivisions
+        if(this.tabOpen?.length==0)this.subdivisions.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
         this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
@@ -115,19 +97,6 @@ export class ZonageComponent implements OnInit {
         console.log(error)
       }
     )
-  }
-  pickLocalite(localite){
-    this.idCurrentLocal=localite.id
-    this.currentLocal=localite
-  }
-  getSousZone(zone){
-    let tab=[]
-    if(zone && zone.sousZones){
-      let sousZones=zone.sousZones
-      this.sharedService.trier(sousZones,'id')
-      sousZones.forEach(sousZone =>tab.push(sousZone.nom));
-    }
-    return tab
   }
   addLocalite(form: FormGroup){
     if(this.localites.length<=45){
@@ -152,123 +121,24 @@ export class ZonageComponent implements OnInit {
     }
     
   }
-  deleteLoc(localite){
-     Swal.fire({
-      title: 'Confirmation',
-      text: "Voulez-vous confirmer la suppression de cette localité ?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non'
-    }).then(result => {
-      if (result.value) {
-        this.securityServ.showLoadingIndicatior.next(true)
-        this.inventaireServ.deleteLoc(localite.id).then(
-          rep=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            this.getOneEntreprise()
-          },
-          error=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            console.log(error)
-          }
-        )
-      }
-    });
-  }
-  deleteZone(zone){
-     Swal.fire({
-      title: 'Confirmation',
-      text: "Voulez-vous confirmer la suppression de cette zone ?",
-      icon: 'warning',
-      width:500,
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non'
-    }).then(result => {
-      if (result.value) {
-        this.securityServ.showLoadingIndicatior.next(true)
-        this.inventaireServ.deleteZone(zone.id).then(
-          rep=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            this.getOneEntreprise()
-          },
-          error=>{
-            this.securityServ.showLoadingIndicatior.next(false)
-            console.log(error)
-          }
-        )
-      }
-    });
-  }
-  addZone(form: FormGroup){
-    let data=form.value
-    data.localite="/api/localites/"+ this.currentLocal.id
+  updateOne(form: FormGroup){
+    const data=form.value
     this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addZone(data).then(
+    this.inventaireServ.addLocalite({id:data.id,nom:data.nom}).then(
       rep=>{
+        this.update=false
         this.securityServ.showLoadingIndicatior.next(false)
-        this.closeZoneModal.nativeElement.click();
+        this.closeLocaliteModal.nativeElement.click();
         this.getOneEntreprise()
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
-      }
-    )
+      })
   }
-  updateSousZones(zone,sousZoneName){
-    this.idCurrentZ=zone.id
-    const sousZone=zone.sousZones.find(sz=>sz.nom==sousZoneName)
-    this.initForm3(sousZone)
-  }
-  updateSZ(form: FormGroup){
-    let data=form.value
-    data.zone="/api/zones/"+this.idCurrentZ
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addSousZone(data).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.closeSousZoneModal.nativeElement.click();
-        this.getOneEntreprise()
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
-  majZone(data){
-     const entreprise=this.entreprises.find(id=>this.idCurrentEse)
-     if(entreprise){
-       const localites=entreprise.localites
-      if(localites) {
-         const localite=localites.find(id=>this.idCurrentLocal)
-         if(localite){
-           const idLoc=localite.id
-           this.entreprises.find(id=>this.idCurrentEse).localites.find(id=>this.idCurrentLocal).push(data)
-         }
-      }
-     }
-  }
-  addSousZone(value,zone){
-    this.idCurrentZ=zone.id
-    let data={ nom:value, zone:"/api/zones/"+this.idCurrentZ }
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addSousZone(data).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.getOneEntreprise()
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
+  saveLocalite(form: FormGroup){
+    if(!this.update) this.addLocalite(form)
+    else this.updateOne(form)
   }
   rev(tab){
     let t=[]
@@ -278,15 +148,14 @@ export class ZonageComponent implements OnInit {
     }
     return t
   }
-
-  add(event: MatChipInputEvent,zone): void {
+  add(event: MatChipInputEvent,idParent): void {
     const input = event.input;
     const value = event.value;
 
-    // Add our sous-zone
+    // Add our sub
     if ((value || '').trim()) {
       const v=value.trim()
-      if(v) this.addSousZone(value,zone)
+      if(v) this.addSub(value,idParent)
     }
 
     // Reset the input value
@@ -296,40 +165,48 @@ export class ZonageComponent implements OnInit {
 
     this.fruitCtrl.setValue(null);
   }
-
-  remove(zone,sousZoneName: string): void {
-    const sousZone=zone.sousZones.find(sz=>sz.nom==sousZoneName)
-    const removable=sousZone.removable
-    this.idCurrentZ=zone.id
-    if(removable)
-      Swal.fire({
-        title: 'Confirmation',
-        text: "Voulez-vous confirmer la suppression de cette sous-zone ?",
-        icon: 'warning',
-        width:500,
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Oui',
-        cancelButtonText: 'Non'
-      }).then(result => {
-        if (result.value) {
-          this.securityServ.showLoadingIndicatior.next(true)
-          this.inventaireServ.deleteSousZone(sousZone.id).then(
-            rep=>{
-              this.securityServ.showLoadingIndicatior.next(false)
-              this.getOneEntreprise()
-            },
-            error=>{
-              this.securityServ.showLoadingIndicatior.next(false)
-              console.log(error)
-            }
-          )
-        }
-      });
-    else
-      Swal.fire({title: '',text: "Impossible de supprimer cette sous-zone, des utilisateurs y sont affectés !",icon: 'info'})
+  addSub(value,idParent){
+    let data={nom:value,entreprise:"/api/entreprises/"+this.idCurrentEse,parent:"/api/localites/"+idParent}
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.addLocalite(data).then(
+      rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.closeLocaliteModal.nativeElement.click();
+        this.getOneEntreprise()//update
+      },
+      error=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
   }
+  deleteLoc(localite){
+    Swal.fire({
+     title: 'Confirmation',
+     text: "Voulez-vous confirmer la suppression de cet élément ?",
+     icon: 'warning',
+     showCancelButton: true,
+     confirmButtonColor: '#3085d6',
+     cancelButtonColor: '#d33',
+     confirmButtonText: 'Oui',
+     cancelButtonText: 'Non'
+   }).then(result => {
+     if (result.value) {
+       this.securityServ.showLoadingIndicatior.next(true)
+       this.inventaireServ.deleteLoc(localite.id).then(
+         rep=>{
+           this.securityServ.showLoadingIndicatior.next(false)
+           this.getOneEntreprise()
+         },
+         error=>{
+           this.securityServ.showLoadingIndicatior.next(false)
+           console.log(error)
+         }
+       )
+     }
+   });
+ }
+
   showNotification(colorName, text, placementFrom, placementAlign) {
     this._snackBar.open(text, '', {
       duration: 2000,
@@ -337,14 +214,6 @@ export class ZonageComponent implements OnInit {
       horizontalPosition: placementAlign,
       panelClass: colorName
     });
-  }
-  setStep(index: number) {
-    this.step = index;
-  }
-  noteRemovable(type:string){
-    let text="Impossible de supprimer une localité contenant des zones"
-    if(type=='zone')text="Impossible de supprimer une zone contenant des sous-zones"
-    Swal.fire({title: '',text: text,icon: 'info'})
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
@@ -411,8 +280,35 @@ export class ZonageComponent implements OnInit {
   }
   initSub(){
     this.tabSubdivision=new FormArray([]);
-    if(!this.subdivisions||this.subdivisions.length==0) this.addSubdivision("Localité")
     this.subdivisions?.forEach(sub =>this.addSubdivision(sub));
     if(!this.subdivisions||this.subdivisions.length==0) this.addSubdivision("Localité")
+  }
+  firstSub(localites){
+    return localites?.filter(loc=>loc.position?.length>0)
+  }
+  getCurrentSubById(id){
+    let l= this.getOnById(id)?.subdivisions
+    return l?l:[]
+  }
+  getOnById(id){
+    let l= this.localites?.find(loc=>loc.id==id)
+    return l?l:null
+  }
+  openFirst(id){
+    this.idCurrentLocal=id
+    this.tabOpen[0]=id
+  }
+  openOther(i,id){
+    this.tabOpen[i]=id
+    this.offUnderSub(i+1)//les surdivisions en dessous
+  }
+  offUnderSub(j){
+    for(let i=j;i<this.tabOpen.length;i++){
+      if(this.tabOpen[i])this.tabOpen[i]=0
+    }
+  }
+  updateL(sub){
+    this.update=true
+    this.initForm(sub)
   }
 }

@@ -61,11 +61,23 @@ class Localite
      */
     private $inventaires;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="subdivisions")
+     */
+    private $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="parent")
+     * @Groups({"entreprise_read","user_read","inv_read"})
+     */
+    private $subdivisions;
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
+        $this->subdivisions = new ArrayCollection();
     }
     /**
     * @Groups({"user_read"})
@@ -220,6 +232,49 @@ class Localite
         if ($this->inventaires->contains($inventaire)) {
             $this->inventaires->removeElement($inventaire);
             $inventaire->removeLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getSubdivisions(): Collection
+    {
+        return $this->subdivisions;
+    }
+
+    public function addSubdivision(self $subdivision): self
+    {
+        if (!$this->subdivisions->contains($subdivision)) {
+            $this->subdivisions[] = $subdivision;
+            $subdivision->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubdivision(self $subdivision): self
+    {
+        if ($this->subdivisions->contains($subdivision)) {
+            $this->subdivisions->removeElement($subdivision);
+            // set the owning side to null (unless already changed)
+            if ($subdivision->getParent() === $this) {
+                $subdivision->setParent(null);
+            }
         }
 
         return $this;

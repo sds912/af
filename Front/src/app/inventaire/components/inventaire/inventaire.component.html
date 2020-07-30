@@ -585,7 +585,7 @@
 <!-- Localité -->
 
  <!-- Instruction -->
- <div class="modal fade instructionModal" id="instrucModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade instructionModal inv" id="instrucModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog instruction-modal" role="document">
         <form class="modal-content"  [formGroup]="instForm">
             <div class="modal-header">
@@ -688,7 +688,7 @@
                                         <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="comments[2][3]">info_outline</mat-icon>
                                     </div>
                                 </mat-step>
-                                <!--
+                                
                                 <mat-step hidden>
                                     <ng-template matStepLabel>SIGNATAIRES</ng-template>
                                     <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
@@ -704,7 +704,7 @@
                                             </mat-chip-list>
                                         </mat-form-field>
                                     </div>
-                                </mat-step>-->
+                                </mat-step>
                             </mat-vertical-stepper>
                         </div>
                     </div>
@@ -721,7 +721,7 @@
 <!-- Instruction -->
 
 <!-- PV -->
-<div class="modal fade" id="pvModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade inv" id="pvModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog instruction-modal" role="document">
         <form class="modal-content"  [formGroup]="pvForm">
             <div class="modal-header">
@@ -777,7 +777,6 @@
                             <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" [title]="getCommentDel(i)">info_outline</mat-icon>
                         </div>  
                     </div>
-                    <!--
                     <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                         <mat-form-field class="example-chip-list example-full-width">
                             <mat-chip-list #chipList aria-label="Fruit selection">
@@ -790,7 +789,7 @@
                                     (matChipInputTokenEnd)="addSignPv($event)">
                             </mat-chip-list>
                         </mat-form-field>
-                    </div>-->
+                    </div>
                 </div>
                 <div class="modal-footer pr-2">
                     <div class="button-demo">
