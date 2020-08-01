@@ -72,7 +72,7 @@
                                     <p class="row mt-4">
                                         <span class="col-4 pt-3 bolder">LOCALITÉS</span>
                                         <span class="col-8">
-                                            <button *ngFor="let loc of noNull(tabLoc)" mat-mini-fab [title]="loc.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2"
+                                            <button *ngFor="let loc of firstSub(noNull(tabLoc))" mat-mini-fab [title]="loc.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2"
                                             data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#localiteModal">
                                                 <mat-icon>room</mat-icon>
                                             </button>
@@ -259,7 +259,7 @@
                                         <span class="col-4 bolder"  [ngClass]="{'pt-3': inventaire.localites && inventaire.localites.length>0}">LOCALITÉS</span>
                                         <span class="col-8">
                                             <span *ngIf="!inventaire.localites ||inventaire.localites && inventaire.localites.length==0">Aucune localité n'a été ajoutée</span>
-                                            <button *ngFor="let localite of inventaire.localites" (click)="detailsLoc(inventaire)"  data-toggle="modal" data-target="#localiteModal" mat-mini-fab [title]="localite.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2 " (mouseover)="overLoc(localite)" (mouseout)="outHoverLZS()">
+                                            <button *ngFor="let localite of firstSub(inventaire.localites)" (click)="detailsLoc(inventaire)"  data-toggle="modal" data-target="#localiteModal" mat-mini-fab [title]="localite.nom" color="primary" aria-label="Example icon-button with a heart icon" class="mr-2 " (mouseover)="overLoc(localite)" (mouseout)="outHoverLZS()">
                                                 <mat-icon>room</mat-icon>
                                             </button>
                                         </span>
@@ -498,78 +498,48 @@
          <div class="modal-body pl-2 pr-2"  [perfectScrollbar]>
             <!-- Localités -->
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                <mat-accordion>
-                    <div class="row" style="padding-left: 1.2rem !important;">
-                        <mat-expansion-panel  class="example-full-width mb-4 col-11 pl-0 pr-0" *ngFor="let localite of tabLoc">
-                            <mat-expansion-panel-header style="background-color: #d8d5d538;">
-                                    <mat-panel-title class="pl-0 col-10 pt-4 pb-4">
-                                        {{localite.nom}}
-                                    </mat-panel-title>
-                                    <mat-panel-description> 
-                                        <mat-icon class="icone-loc pt-4 pb-4" (click)="deleteLoc(localite)" *ngIf="showForm">delete</mat-icon>
-                                    </mat-panel-description>
-                            </mat-expansion-panel-header>
+                <!--1ere subdivision-->
+                <div class="p-2 mt-1 pb-4" style="border: solid 1px #00000024;border-radius: 5%;background-color: #f6f6f6;">
+                    <p class="ml-2">{{subdivisions[0]}}</p>
+                    <hr>
+                    <mat-chip-list aria-label="Fish selection" class="mt-4">
+                        <mat-chip class="w-100" color="primary" [ngClass]="{'mt-3': i!=0}" *ngFor="let localite of firstSub(localites); index as i">
+                            <span class="col-11 pl-0">
+                                <section class="example-section">
+                                    <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">{{localite.nom}}</mat-checkbox>
+                                </section>
+                            </span>
+                            <span class="col-1">
+                                <mat-icon class="icone-affectation pointer text-secondary" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                            </span>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+                <!--1ere subdivision-->
 
-                            <p class="mt-4 mb-3 bolder">Zones / Sites</p>
-                            <div class="row" style="padding-left: 1.2rem !important;">
-                                <mat-expansion-panel class="mb-4 col-11 pl-0 pr-0" *ngFor="let zone of rev(localite.zones)"  [hidden]="!inTab(zone.id,tabZonesPick)">
-                                    <mat-expansion-panel-header style="background-color: #eab9b9;">
-                                            <mat-panel-title class="pl-0 col-10 pt-4 pb-4">
-                                                {{zone.nom}}
-                                            </mat-panel-title>
-                                            <mat-panel-description>
-                                                <mat-icon class="icone-loc  m-r--5 pt-4 pb-4" (click)="deleteZone(zone)" *ngIf="showForm">delete</mat-icon>
-                                            </mat-panel-description>
-                                    </mat-expansion-panel-header>
-
-                                    <!--Sous-zones-->
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-0">
-                                            <div class="card">
-                                                <div class="body pl-0 pr-0">
-                                                    <section class="example-section all-height row" *ngIf="zone.sousZones.length>0">
-                                                        <mat-checkbox class="example-margin" *ngFor="let sousZone of rev(zone.sousZones,1)" (change)="checkASZ(sousZone.id)" [checked]="inTab(sousZone.id,tabSousZPick)" [title]="sousZone.nom" [disabled]="!showForm">{{sousZone.nom}}</mat-checkbox>
-                                                    </section>
-                                                    <span *ngIf="zone.sousZones.length==0">Il n'y a pas de sous-zone dans cette zone</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--Sous-zones-->
-
-                                </mat-expansion-panel>
-                                <p class="mt-3 pl-2" *ngIf="addZone">
-                                    <i class="material-icons pointer" title="Ajouter zone/site" data-keyboard="false" *ngIf="rev(localite.zones).length>0 && addZone && !allLocIsChec() && showForm"  (click)="addZone=false">add_circle</i>
-                                    <span *ngIf="rev(localite.zones).length==0">Il n'y a pas de zone dans cette localité</span>
-                                </p>
-                            </div>
-                            <!--Select pour ajouter des zones-->
-                            <mat-form-field class="example-full-width" appearance="outline"  *ngIf="!addZone && showForm">
-                                    <mat-label>Zones</mat-label>
-                                    <mat-select (selectionChange)="pickNewZone($event.value)">
-                                        <mat-option *ngFor="let z of rev(localite.zones)" [value]="z" [hidden]="inTab(z.id,tabZonesPick)">{{z.nom}}</mat-option>
-                                    </mat-select>                                                               
-                            </mat-form-field>
-                            <!--Select pour ajouter des zones-->
-
-                        </mat-expansion-panel>
-                        <mat-icon matSuffix class="pointer col-1 pl-2 pt-3" *ngIf="addLoc && tabLoc.length>0 && !allLocIsChec() && showForm" (click)="addLoc=false" title="Ajouter une localité">add_circle_outline</mat-icon>
-                    </div>
-
-                    <!--Select pour ajouter des localités-->
-                    <mat-form-field class="example-full-width" appearance="outline"  *ngIf="showForm && (!addLoc||tabLoc.length==0)">
-                            <mat-label>Localités</mat-label>
-                            
-                            <mat-select (selectionChange)="pickNewLoc($event.value)" #newLoc>
-                                <mat-option *ngFor="let l of localites" [value]="l" [hidden]="inTab(l,tabLoc)">{{l.nom}}</mat-option>
-                            </mat-select>                                                               
-                    </mat-form-field>
-                    <!--Select pour ajouter des localités-->
-
-                </mat-accordion>
+                <!--Autres subdivisions-->
+                <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4" [hidden]="!openLocalite || !getOneLocById(idParent)" style="border: solid 1px #00000024;border-radius: 5%;background-color: #f6f6f6;">
+                    <p class="mt-3 ml-2">{{getOneLocById(idParent)?.nom}}</p>
+                    <hr>
+                    <mat-chip-list aria-label="Fish selection">
+                        <small class="ml-3" style="font-style: italic;">{{subdivisions[i+1]}}</small>
+                        <mat-chip class="w-100" color="primary" [ngClass]="{'mt-3': i!=0}" *ngFor="let sub of getCurrentSubById(idParent);">
+                            <span class="col-11 pl-0">
+                                <section class="example-section">
+                                    <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}</mat-checkbox>
+                                </section>
+                            </span>
+                            <span class="col-1">
+                                <mat-icon class="icone-affectation pointer text-secondary" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                            </span>
+                        </mat-chip>
+                    </mat-chip-list>
+                    <p *ngIf="getCurrentSubById(idParent).length==0" class="ml-2 mt-2">Cette subdivision est vide</p>
+                </div>
+                <!--Autres subdivisions-->
             </div>
             <!-- Localités -->
-            <div class="row pl-4 pr-3" *ngIf="showForm">
+            <div class="row pl-4 pr-0 mt-4" *ngIf="showForm">
                 <div class="col-4">
                     <section class="example-section all-height row">
                         <mat-checkbox class="example-margin" (change)="checkAllLoc()" [checked]="allLocIsChec()">Toutes les localités</mat-checkbox>

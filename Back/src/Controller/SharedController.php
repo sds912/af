@@ -13,9 +13,7 @@ use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
-use App\Repository\SousZoneRepository;
 use App\Repository\UserRepository;
-use App\Repository\ZoneRepository;
 use DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -47,13 +45,7 @@ class SharedController extends AbstractController
     /** @var LocaliteRepository */
     private $repoLoc;
 
-    /** @var ZoneRepository */
-    private $repoZ;
-
-    /** @var SousZoneRepository */
-    private $repoSZ;
-
-    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc,ZoneRepository $repoZ,SousZoneRepository $repoSZ)
+    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
@@ -62,8 +54,6 @@ class SharedController extends AbstractController
         $this->repoInv=$repoInv;
         $this->repoUser=$repoUser;
         $this->repoLoc=$repoLoc;
-        $this->repoZ=$repoZ;
-        $this->repoSZ=$repoSZ;
     }
     /**
     * @Route("/update/pp", methods={"POST"})
@@ -151,12 +141,7 @@ class SharedController extends AbstractController
 
         $idLocalites=$this->toArray($data["localites"]);
         $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
-
-        $idZones=$this->toArray($data["zones"]);
-        $zones=$this->getallByTabId($this->repoZ,$idZones);
         
-        $idSousZones=$this->toArray($data["sousZones"]);
-        $sousZones=$this->getallByTabId($this->repoSZ,$idSousZones);
         $localInstructionPv=$this->toArray($data["localInstructionPv"]);
         if($localInstructionPv[0]==Shared::CREATION && isset($data['bloc1e1'])){
             $instructions=[
@@ -183,8 +168,6 @@ class SharedController extends AbstractController
                    ->setPvReunion($pvReunions)
                    ->setEntreprise($entreprise)
                    ->addAllLocalite($localites)
-                   ->addAllZones($zones)
-                   ->addAllSousZones($sousZones)
                    ->setLocalInstructionPv($localInstructionPv);
         
         if($tatus==201){
@@ -254,7 +237,6 @@ class SharedController extends AbstractController
         }
         return  $t2;
     }
-
     public function sameEntité($user){
         if(!$this->userCo->inHolding($user) && !$this->droit->isGranted('ROLE_SuperAdmin')){
             throw new HttpException(403,"Vous n'êtes pas dans la même entité que cet utilisateur !");

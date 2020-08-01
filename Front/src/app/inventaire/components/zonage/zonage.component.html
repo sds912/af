@@ -40,7 +40,7 @@
                 <div class="card mb-5 pb-3" *ngFor="let idParent of tabOpen;let i=index" [hidden]="!idCurrentLocal || !getOnById(idParent)!">
                     <div class="header" style="border-bottom: 1px solid #00000021;">
                         <div class="row">
-                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder" *ngIf="getOnById(idParent)">{{getOnById(idParent).nom}}</h2>
+                            <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder" *ngIf="getOnById(idParent)">{{getOnById(idParent)?.nom}}</h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
                                     <button (click)="updateL(getOnById(idParent))" (click)="openLocM.click()" class="addInv" mat-mini-fab  title="Modifier" color="primary" aria-label="Example icon-button with a heart icon">
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="body">
-                        <mat-form-field class="example-chip-list example-full-width zonage" *ngIf="subdivisions[i+1]">
+                        <mat-form-field class="example-chip-list example-full-width zonage" *ngIf="subdivisions && subdivisions[i+1]">
                             <mat-chip-list #chipList aria-label="Sous-zones">
                                 <mat-chip *ngFor="let sub of getCurrentSubById(idParent)" [selectable]="selectable" [removable]="false"
                                     class="w-25 row pt-1" style="min-width: 275px;">

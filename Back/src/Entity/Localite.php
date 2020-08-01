@@ -30,20 +30,9 @@ class Localite
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $adresse;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="localites")
      */
     private $entreprise;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Zone::class, mappedBy="localite")
-     * @Groups({"entreprise_read"})
-     */
-    private $zones;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, mappedBy="localites")
@@ -52,7 +41,7 @@ class Localite
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $position = [];
 
@@ -74,7 +63,6 @@ class Localite
 
     public function __construct()
     {
-        $this->zones = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
         $this->subdivisions = new ArrayCollection();
@@ -94,7 +82,18 @@ class Localite
     * @Groups({"entreprise_read"})
     */
     public function getRattacher(){
-        return count($this->zones)>0;
+        return count($this->subdivisions)>0;
+    }
+    /**
+    * @Groups({"entreprise_read"})
+    */
+    public function getIdParent(){
+        $p=$this->parent;
+        $id=null;
+        if($p){
+            $id=$p->getId();
+        }
+        return $id;
     }
 
     public function getId(): ?int
@@ -114,18 +113,6 @@ class Localite
         return $this;
     }
 
-    public function getAdresse(): ?string
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?string $adresse): self
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
     public function getEntreprise(): ?Entreprise
     {
         return $this->entreprise;
@@ -134,37 +121,6 @@ class Localite
     public function setEntreprise(?Entreprise $entreprise): self
     {
         $this->entreprise = $entreprise;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Zone[]
-     */
-    public function getZones(): Collection
-    {
-        return $this->zones;
-    }
-
-    public function addZone(Zone $zone): self
-    {
-        if (!$this->zones->contains($zone)) {
-            $this->zones[] = $zone;
-            $zone->setLocalite($this);
-        }
-
-        return $this;
-    }
-
-    public function removeZone(Zone $zone): self
-    {
-        if ($this->zones->contains($zone)) {
-            $this->zones->removeElement($zone);
-            // set the owning side to null (unless already changed)
-            if ($zone->getLocalite() === $this) {
-                $zone->setLocalite(null);
-            }
-        }
 
         return $this;
     }
