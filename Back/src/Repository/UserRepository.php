@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,9 +18,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry,Security $security)
     {
         parent::__construct($registry, User::class);
+        $this->userCo=$security->getUser();
     }
 
     /**
@@ -36,6 +38,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    public function SuperViseurGeneExiste()
+    {
+        $result= $this->createQueryBuilder('u')
+            ->join("u.entreprises",'entreprise')
+            ->join("entreprise.users",'user')
+            ->andWhere('user.id = :id')
+            ->setParameter('id', $this->userCo->getId())
+
+            ->andWhere('u.roles LIKE :role')
+            ->setParameter('role', '%"'.'ROLE_SuperViseurGene'.'"%')
+
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+        return $result!=null;
+    }
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
