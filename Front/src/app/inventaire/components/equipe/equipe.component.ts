@@ -59,24 +59,18 @@ export class EquipeComponent implements OnInit {
   localites=[]
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
-  userLocalites=[]
-  tabZonesPick=[]
-  tabSousZPick=[]
-  addLoc=true
-  addZone=true
+  tabLoc=[]
   idCurrentEse=0//ne jamais utiliser pour une requête car elle peut etre egal à 0 si on selectionne toutes les entreprises c est juste pour les filtres des select
-  idCurrentLoc=0
-  currentLocs:any=[]//les localites de l entité selectionné dans le select
-  idCurrentZ=0
-  currentZs:any=[]//les zones
-  idCurrentSZ=0
-  currentSZs:any=[]//les sous-zones
+  idEseLocalStor=""//utiliser celui là
 
   usersTampon=[]
   isMembreEquipe=false
   isGuest=false
   tabMenu=[]
   searchValue=""
+  subdivisions=[]//leurs libelles
+  tabOpen=[]//les subdivisions ouvertes
+  openLocalite=null
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar,private adminServ:AdminService,private sharedService:SharedService,public securityServ:SecurityService) {
     this.editForm = this.fb.group({
       id: [0],
@@ -91,9 +85,11 @@ export class EquipeComponent implements OnInit {
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
+  //ngif sur le bouton ajouter juste pour admin
   ngOnInit() {//si on recup les entreprise des users ne pas oublier de recup le getUser()
     this.securityServ.showLoadingIndicatior.next(true)
     this.myId=localStorage.getItem('idUser')
+    this.idEseLocalStor=localStorage.getItem('currentEse')
     this.getUsers()
     this.getEntreprises()
     this.securityServ.getUser()
@@ -136,7 +132,6 @@ export class EquipeComponent implements OnInit {
   menuIsPick(id){
     return this.getIndexMenu(id)> -1
   }
-  
   checksubMenuChange(idMenu,idSub){
     let indexMenu=this.getIndexMenu(idMenu)//l index du menu
     if(indexMenu==-1){//si on ne l a jamais coché
@@ -173,92 +168,21 @@ export class EquipeComponent implements OnInit {
     }
   }
   initByRole(){
-    this.userLocalites=[] 
-    this.tabEse.value.forEach(element => {//sinon ca gener des erreurs sur la boucle des entité userLocalites[i]
-      this.userLocalites.push([])
-    });
-    this.tabZonesPick=[]
-    this.tabSousZPick=[]
+    this.tabLoc=[]
     this.tabMenu=[]
   }
   entiteChange(id){
-    if(this.entreprises && this.entreprises.length>1){//si une seule entité le 1er select sera celui des localités donc on ne doit pas reinitialiser ces valeurs
-      this.currentLocs=[]
-    }
-    this.idCurrentLoc=0
-    this.idCurrentZ=0
-    this.currentZs=[]
-    this.idCurrentSZ=0
-    this.currentSZs=[]
     if(id==0){
       this.setTableData(this.usersTampon)
       return
     }
     const currentEse=this.entreprises.find(e=>e.id==id)
-    const localites= currentEse.localites
     const users=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==id))
-    this.setTableData(users)
-    if(localites && localites.length>0){
-      this.currentLocs=localites
-    }
-  }
-  localiteChange(id){
-    this.idCurrentZ=0
-    this.currentZs=[]
-    this.idCurrentSZ=0
-    this.currentSZs=[]
-    if(id==0){
-      if(this.idCurrentEse!=0 && this.entreprises.length>1){
-        const u=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==this.idCurrentEse))
-        this.setTableData(u)
-      }
-      else if(this.entreprises.length==1)
-        this.setTableData(this.usersTampon)//si une seule entité le 1er select sera celui des localités
-
-      return//si id=0 ne pas executer le reste du code
-    }
-
-    const users=this.usersTampon.filter(u=>u.localites.find(e=>e.id==id))
-    this.setTableData(users)
-    const activLoc=this.currentLocs.find(l=>l.id==id)//la localité sélectionnée
-    if(activLoc && activLoc.zones && activLoc.zones.length>0){
-      this.currentZs=activLoc.zones
-    }
-  }
-  zoneChange(id){
-    this.idCurrentSZ=0
-    this.currentSZs=[]
-    if(id==0){
-      if(this.idCurrentLoc!=0){
-        const u=this.usersTampon.filter(u=>u.localites.find(e=>e.id==this.idCurrentLoc))
-        this.setTableData(u)
-      }
-      return
-    }
-    
-    const users=this.usersTampon.filter(u=>u.zones.find(e=>e.id==id))
-    this.setTableData(users)
-    const activeZone=this.currentZs.find(z=>z.id==id)//la zone selectionner
-    if( activeZone && activeZone.sousZones && activeZone.sousZones.length>0){
-      this.currentSZs=activeZone.sousZones
-      this.sharedService.trier(this.currentSZs,'id')
-    }
-  }
-  sousZoneChange(id){
-    if(id==0) {
-      if(this.idCurrentZ!=0){
-        const u=this.usersTampon.filter(u=>u.zones.find(e=>e.id==this.idCurrentZ))
-        this.setTableData(u)
-      }
-      return
-    }
-    const users=this.usersTampon.filter(u=>u.sousZones.find(e=>e.id==id))
     this.setTableData(users)
   }
   getUsers(){
     this.adminServ.getUsers().then(
       rep=>{
-        console.log(rep);
         let users=[]
         if(rep && rep.length>0){
           users=rep.reverse();
@@ -290,9 +214,12 @@ export class EquipeComponent implements OnInit {
         this.entreprises=rep
         if(rep && rep.length==1){
           this.idCurrentEse=rep[0].id//ne jamais utiliser pour une requête car elle peut etre egal à 0 si on selectionne toutes les entreprises c est juste pour les filtres des select
-          this.currentLocs=rep[0].localites
         }
-        console.log(rep);
+        let entreprise=this.idEseLocalStor?this.getEntreprise(this.idEseLocalStor):null
+        this.localites=entreprise?.localites//l admin n a pas besoin des localites
+        console.log(this.localites)
+        this.subdivisions=entreprise?.subdivisions?entreprise?.subdivisions:[]
+        if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
       },
       error=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -300,9 +227,24 @@ export class EquipeComponent implements OnInit {
       }
     )
   }
+  getEntreprise(id){
+    let e=null
+    if (this.entreprises && this.entreprises.length>0 && id)e=this.entreprises.find(e=>e.id==id)
+    return e
+  }
+  getOneEntreprise(id){
+    this.adminServ.getOneEntreprise(id).then(
+      rep=>{
+        this.localites=rep.localites
+      },
+      error=>{
+        //this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
+  }
   addEntreprise(valeur=null) {
     this.tabEse.push(new FormControl(valeur));
-    this.userLocalites.push([])//pour que userLocalites[i] soit celui de tabEse[i]
   }
   depChange(dep){
     this.autreDep=false
@@ -338,24 +280,12 @@ export class EquipeComponent implements OnInit {
   traitementUpdate(user){
     this.roleChange(user.roles[0])
     this.tabEse=new FormArray([]);
-    this.userLocalites=[]
-    this.tabZonesPick=[]
-    this.tabSousZPick=[]
     if(user.menu)this.tabMenu=user.menu
-    let entreprises=user.entreprises
-    for(let i=0;i<entreprises.length;i++){
-      let idEse=entreprises[i].id
-      this.addEntreprise(idEse)
-      user.localites.forEach(l=>{
-        if(idEse==l.idEntreprise) this.pickNewLoc(l.id,i,l.idEntreprise)
-      });
-      user.zones.forEach(z=>{
-        if(idEse==z.idEntreprise) this.pickNewZone(z.id)
-      });
-      user.sousZones.forEach(sz=>{
-        if(idEse==sz.idEntreprise) this.checkASZ(sz.id)
-      });
-    }
+    user.entreprises.forEach(e=>this.addEntreprise(e.id));
+    this.tabLoc=[]
+    user.localites.forEach(l=>this.checkLoc(l));
+    this.tabOpen=[]
+    this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
   }
   editRow(row,lock=false) {
      if(this.formDirective)this.formDirective.resetForm()
@@ -407,7 +337,7 @@ export class EquipeComponent implements OnInit {
   longText(text,limit){
     return this.sharedService.longText(text,limit)
   }
-  addRow() {
+  addRow() {//pour l admin
     this.firstDep=""
     this.details=false
     this.autreDep=false
@@ -415,13 +345,12 @@ export class EquipeComponent implements OnInit {
     this.isGuest=false
     this.isMembreEquipe=false
     this.tabEse=new FormArray([]);
-    this.userLocalites=[]
-    this.tabZonesPick=[]
-    this.tabSousZPick=[]
+    this.tabLoc=[]
     let id=""
+    this.tabOpen=[]
+    this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
     if (this.entreprises && this.entreprises.length>0)id=this.entreprises[0].id
     this.addEntreprise(id)//rempli l id si il y a une seule entreprise aussi
-    this.getOneEntreprise(id)
     let user={id:0,username:'',nom:'',poste:'',departement:'',role:'',image:this.defaultImag,status:'actif'}
     this.editRow(user)
   }
@@ -444,11 +373,6 @@ export class EquipeComponent implements OnInit {
     if (this.entreprises && this.entreprises.length>0 && id)denomination=this.entreprises.find(e=>e.id==id).denomination
     return denomination
   }
-  getEntreprise(id){
-    let e=null
-    if (this.entreprises && this.entreprises.length>0 && id)e=this.entreprises.find(e=>e.id==id)
-    return e
-  }
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
@@ -458,8 +382,6 @@ export class EquipeComponent implements OnInit {
     data.roles=[role]
     data.menu=this.getDataMenu(role)//pour les Guest
     data.localites=this.getDataLoc()
-    data.zones=this.getDataZone()
-    data.sousZones=this.getDataSZ() // un mot de passe par defaut ajouter à PasswordEncoderSubscriber et le status
     this.adminServ.addUser(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
@@ -487,26 +409,10 @@ export class EquipeComponent implements OnInit {
   }
   getDataLoc(){
     let localites=[]
-    this.userLocalites.forEach(tab=>
-      tab.forEach(l => {
-        if(l && l.id) localites.push("/api/localites/"+l.id)
-      })
-    )
+    this.tabLoc.forEach(id=>{
+      if(id) localites.push("/api/localites/"+id)
+    })
     return localites
-  }
-  getDataZone(){
-    let zones=[]
-    this.tabZonesPick.forEach(id => {
-      if(id) zones.push("/api/zones/"+id)
-    });
-    return zones
-  }
-  getDataSZ(){
-    let sousZones=[]
-    this.tabSousZPick.forEach(id => {
-        if(id) sousZones.push("/api/sous_zones/"+id)
-    });
-    return sousZones
   }
   getRole(role,show=true){
     let r1='',r2=''
@@ -610,84 +516,71 @@ export class EquipeComponent implements OnInit {
     }
     return t
   }
-  getOneEntreprise(id){
-    this.adminServ.getOneEntreprise(id).then(
-      rep=>{
-        this.localites=rep.localites
-      },
-      error=>{
-        //this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
-  deleteLoc(localite,i){
-    let index=this.userLocalites[i].indexOf(localite)
-    if (index > -1) {
-      this.userLocalites[i].splice(index, 1);
-      const zones=localite.zones
-      if(zones) zones.forEach(zone => { this.deleteZone(zone) });//supp les zones
-    }
-  }
-  deleteZone(zone){
-    let index=this.tabZonesPick.indexOf(zone.id)
-    if (index > -1) {
-      this.tabZonesPick.splice(index, 1);
-      const sousZones=zone.sousZones
-      if(sousZones) sousZones.forEach(sz => { this.deletSZ(sz.id) });//supp les sous-zones
-    }
-  }
-  deletSZ(id){
-    var index = this.tabSousZPick.indexOf(id);
-    if (index > -1) {
-      this.tabSousZPick.splice(index, 1);
-    }
-  }
-  pickNewLoc(id,i,idEse){//l id de la localite, index dans la liste et id de l entreprise
-    const localites=this.getEntreprise(idEse).localites
-    const localite=localites.find(l=>l.id==id)
-    if(localite) this.userLocalites[i].push(localite)
-    setTimeout(()=>this.addLoc=true,1)
-  }
-  locIsPick(id,i){
-    const localites=this.userLocalites[i]
-    return localites.find(l=>l.id==id)
-  }
-  pickNewZone(id){
-    this.tabZonesPick.push(id)
-    setTimeout(()=>this.addZone=true,1)
-  }
-  zoneIsPick(id){
-    return this.tabZonesPick.find(idZ=>idZ==id)
-  }
-  sousZIsPick(id){
-    return this.tabSousZPick.find(idSZ=>idSZ==id)
-  }
-  checkASZ(id){
-    var index = this.tabSousZPick.indexOf(id);
-    if (index > -1) {
-      this.tabSousZPick.splice(index, 1);
-    }else{
-      this.tabSousZPick.push(id)
-    }
-  }
   inTabEse(valeur){
     return this.tabEse.value.find(id=>id==valeur);
   }
   trierSZ(sousZones){
     return this.sharedService.trier(sousZones,'id')
   }
-  entiteAddEquipeChange(id,i){
-    this.userLocalites[i].forEach(localite => {
-      this.deleteLoc(localite,i)
-    });
+  firstSub(localites){
+    return localites?.filter(loc=>loc.position?.length>0)
   }
-  look(v){
-    console.log(v)
+  getCurrentSubById(id){
+    let l= this.getOnById(id)?.subdivisions
+    return l?l:[]
+  }
+  getOnById(id){
+    let l= this.localites?.find(loc=>loc.id==id)
+    return l?l:null
+  }
+  openOther(i,id){
+    this.tabOpen[i]=id
+    this.offUnderSub(i+1)//les surdivisions en dessous
+  }
+  offUnderSub(j){
+    for(let i=j;i<this.tabOpen.length;i++){
+      if(this.tabOpen[i])this.tabOpen[i]=0
+    }
+  }
+  openFirst(id){
+    this.openLocalite=id
+    this.tabOpen[0]=id
+    this.offUnderSub(1)
+  }
+  inTab(valeur,tab){
+    return tab?.find(id=>id==valeur);
+  }
+  checkLoc(loc){
+    var index = this.tabLoc.indexOf(loc.id);
+    if (index > -1) {
+      this.tabLoc.splice(index, 1);
+    }else{
+      this.tabLoc.push(loc.id)
+      const idParent=loc.idParent
+      if(idParent && !this.inTab(idParent,this.tabLoc))this.checkLoc(this.getOnById(idParent))//cocher les parents recursif
+    }
+  }
+  checkAllLoc(){
+    const allIsCheck=this.allLocIsChec()
+    if(allIsCheck){
+      this.tabLoc=[]
+      return
+    }
+    this.localites.forEach(localite=>{
+      if(!this.inTab(localite.id,this.tabLoc))this.checkLoc(localite)
+    })
+  }
+  allLocIsChec(){
+    let bool=true
+    this.localites.forEach(localite=>{
+      if(bool)bool=this.inTab(localite.id,this.tabLoc)
+    })
+    return bool
   }
 }
 export interface selectRowInterface {
-  image: String;
-  denomination: String;
-  republique: String;
+  nom: string;
+  image: string;
+  denomination: string;
+  republique: string;
 }

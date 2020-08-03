@@ -48,10 +48,6 @@ export class InventaireComponent implements OnInit {
   idCurrentEse=0
   showForm=false//remettre à false
   tabLoc=[]
-  tabZonesPick=[]
-  tabSousZPick=[]
-  addLoc=true
-  addZone=true
   comments=[]
   commentsPv=[]
   invCreer=false
@@ -68,6 +64,9 @@ export class InventaireComponent implements OnInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
   signatairesInst: string[] = [];
   signInstCtrl = new FormControl();
+  subdivisions=[]//leurs libelles
+  tabOpen=[]
+  openLocalite=null
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -76,7 +75,7 @@ export class InventaireComponent implements OnInit {
               private inventaireServ:InventaireService) {
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.docLink=this.sharedService.baseUrl +"/documents/"
-  }
+  }//afficher que la 1ere sub et modifier Localite par sub[0]
   ngOnInit() {
     this.myId=localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(true)
@@ -97,6 +96,8 @@ export class InventaireComponent implements OnInit {
           this.localites=rep.localites
           this.getUsers(rep.users)
           this.getInventaireByEse()
+          this.subdivisions=e?.subdivisions?e?.subdivisions:[]
+          if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
         }
         this.entreprise=rep
         //this.securityServ.showLoadingIndicatior.next(false)
@@ -135,13 +136,13 @@ export class InventaireComponent implements OnInit {
     this.tabPresents=new FormArray([]);
     this.tabOtherPresent=new FormArray([]);
     this.tabLoc=[];
-    this.tabZonesPick=[];
-    this.tabSousZPick=[];
     this.tabDeliberation=new FormArray([]);
     this.pvCreer=false
     this.invCreer=false
     this.signatairesPv=[]
     this.signatairesInst=[]
+    this.tabOpen=[]
+    this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
     this.initForm()
   }
   updateOne(inventaire){
@@ -163,12 +164,8 @@ export class InventaireComponent implements OnInit {
     inventaire.presentsReunionOut.forEach(nom => this.addOtherPres(nom));
     if(this.tabOtherPresent.length==0)this.addOtherPres()
 
-    this.tabLoc=[];
-    this.tabZonesPick=[];
-    this.tabSousZPick=[];
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getLocById(localite.id)));//this.getLocById pour ne pas remettre une colection de zones et de sous zones ds les loc trop lourd
-    inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
-    inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
+    this.tabLoc=[]
+    inventaire.localites.forEach(loc=>this.checkLoc(this.getOneLocById(loc.id)));//this.getOneLocById a cause de la serialisation
     this.invCreer=false
     if(inventaire.localInstructionPv[0]=='creation'){
       this.invCreer=true
@@ -221,11 +218,9 @@ export class InventaireComponent implements OnInit {
   }
   detailsLoc(inventaire){
     this.tabLoc=[];
-    this.tabZonesPick=[];
-    this.tabSousZPick=[];
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getLocById(localite.id)));
-    inventaire.zones.forEach(zone => this.tabZonesPick.push(zone.id));
-    inventaire.sousZones.forEach(sousZone => this.tabSousZPick.push(sousZone.id));
+    this.tabOpen==[];
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));//this.getOneLocById car serialisation fait que l objet n est pas complet
+    this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
   }
   initPvForm(data=["","","",[]]){
     this.pvForm = this.fb.group({
@@ -335,9 +330,6 @@ export class InventaireComponent implements OnInit {
   getUserById(id){
     return this.users.find(u=>u.id==id)
   }
-  getLocById(id){
-    return this.localites.find(u=>u.id==id)
-  }
   onEditSave(form: FormGroup){
     this.securityServ.showLoadingIndicatior.next(true)
     let data=this.getAllDataToSend(form)
@@ -367,12 +359,15 @@ export class InventaireComponent implements OnInit {
     data.pvReunion=this.getOnlyFile(this.docsPv)
     data.pvReunionCreer=this.getDataPvCreer()
     data.entreprise=this.idCurrentEse
-    data.localites=this.getIdAllLoc(this.tabLoc)
-    data.zones=this.tabZonesPick
-    data.sousZones=this.tabSousZPick
+    data.localites=this.getOneLyId(this.tabLoc)
     data.localInstructionPv=[this.invCreer?'creation':'download',this.pvCreer?'creation':'download']
     console.log(data)
     return data
+  }
+  getOneLyId(localites){
+    let l=[]
+    localites.forEach(loc => l.push(loc.id));
+    return l
   }
   getDataInstCreer(){
     let d=this.instForm.value
@@ -391,11 +386,6 @@ export class InventaireComponent implements OnInit {
       }
     });
     return [data1,data2]
-  }
-  getIdAllLoc(localites){
-    let t=[]
-    localites.forEach(loc => t.push(loc.id));
-    return t
   }
   getOnlyFile(tab){
     let t=[]
@@ -498,28 +488,6 @@ export class InventaireComponent implements OnInit {
       panelClass: [colorName,'color-white']
     });
   }
-  deleteLoc(localite){
-    let index=this.tabLoc.indexOf(localite)
-    if (index > -1) {
-      this.tabLoc.splice(index, 1);
-      const zones=localite.zones
-      if(zones) zones.forEach(zone => { this.deleteZone(zone) });//supp les zones
-    }
-  }
-  deleteZone(zone){
-    let index=this.tabZonesPick.indexOf(zone.id)
-    if (index > -1) {
-      this.tabZonesPick.splice(index, 1);
-      const sousZones=zone.sousZones
-      if(sousZones) sousZones.forEach(sz => { this.deletSZ(sz.id) });//supp les sous-zones
-    }
-  }
-  deletSZ(id){
-    var index = this.tabSousZPick.indexOf(id);
-    if (index > -1) {
-      this.tabSousZPick.splice(index, 1);
-    }
-  }
   rev(tab,rev=-1){
     let t=[]
     if(tab && tab.length>0){
@@ -528,24 +496,6 @@ export class InventaireComponent implements OnInit {
       this.sharedService.trier(t,'id',rev)
     }
     return t
-  }
-  checkASZ(id){
-    var index = this.tabSousZPick.indexOf(id);
-    if (index > -1) {
-      this.tabSousZPick.splice(index, 1);
-    }else{
-      this.tabSousZPick.push(id)
-    }
-  }
-  pickNewZone(zone,fast=false){
-    this.tabZonesPick.push(zone.id)
-    if(!fast)
-      setTimeout(()=>this.addZone=true,1)
-  }
-  pickNewLoc(localite,fast=false){
-    this.tabLoc.push(localite)
-    if(!fast)
-      setTimeout(()=>this.addLoc=true,1)
   }
   deletCreationInst(){
     this.invCreer=false
@@ -872,32 +822,6 @@ export class InventaireComponent implements OnInit {
     this.zoneHover=null
     this.szHover=null
   }
-  checkAllLoc(){
-    const localites=this.localites
-    let allIsChec=this.allLocIsChec()
-    localites.forEach(localite=>this.deleteLoc(localite))
-    if(!allIsChec)
-      localites.forEach(localite=>{
-        this.pickNewLoc(localite,true)
-        localite.zones.forEach(zone =>{
-          this.pickNewZone(zone,true)
-          zone.sousZones.forEach(sz =>this.checkASZ(sz.id))
-        })
-      })
-  }
-  allLocIsChec(){
-    let bool=true
-    const localites=this.localites
-    localites.forEach(localite=>{
-      localite.zones.forEach(zone =>{
-        zone.sousZones.forEach(sz =>{
-          if(bool)bool=this.inTab(sz.id,this.tabSousZPick)
-        })
-      })
-    })
-    //si tous les sous zones sont cochés alors on a tous choisi
-    return bool
-  }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
   }
@@ -946,6 +870,61 @@ export class InventaireComponent implements OnInit {
     if (index >= 0) {
       this.signatairesInst.splice(index, 1);
     }
+  }
+  firstSub(localites){
+    return localites?.filter(loc=>loc.position?.length>0)
+  }
+  checkLoc(loc){
+    var index = this.tabLoc.indexOf(loc);
+    if (index > -1) {
+      this.tabLoc.splice(index, 1);
+    }else{
+      this.tabLoc.push(loc)
+      const idParent=loc.idParent
+      if(idParent && !this.isChecked(idParent)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
+    }
+  }
+  checkAllLoc(){
+    const allIsCheck=this.allLocIsChec()
+    if(allIsCheck){
+      this.tabLoc=[]
+      return
+    }
+    this.localites.forEach(localite=>{
+      if(!this.isChecked(localite.id))this.checkLoc(localite)
+    })
+  }
+  allLocIsChec(){
+    let bool=true
+    this.localites.forEach(localite=>{
+      if(bool)bool=this.isChecked(localite.id)
+    })
+    return bool
+  }
+  openFirst(id){
+    this.openLocalite=id
+    this.tabOpen[0]=id
+    this.offUnderSub(1)
+  }
+  getOneLocById(id){
+    let l= this.localites?.find(loc=>loc.id==id)
+    return l?l:null
+  }
+  getCurrentSubById(id){
+    let l= this.getOneLocById(id)?.subdivisions
+    return l?l:[]
+  }
+  openOther(i,id){
+    this.tabOpen[i]=id
+    this.offUnderSub(i+1)//les surdivisions en dessous
+  }
+  offUnderSub(j){
+    for(let i=j;i<this.tabOpen.length;i++){
+      if(this.tabOpen[i])this.tabOpen[i]=0
+    }
+  }
+  isChecked(id){
+    return this.tabLoc.find(loc=>loc.id==id)
   }
 } 
 

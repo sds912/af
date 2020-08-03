@@ -89,7 +89,7 @@ export class ZonageComponent implements OnInit {
         console.log(rep)
         this.localites=rep.localites
         this.subdivisions=rep.subdivisions
-        if(this.tabOpen?.length==0)this.subdivisions.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
+        if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
         this.securityServ.showLoadingIndicatior.next(false)
       },
       error=>{
@@ -297,6 +297,7 @@ export class ZonageComponent implements OnInit {
   openFirst(id){
     this.idCurrentLocal=id
     this.tabOpen[0]=id
+    this.offUnderSub(1)
   }
   openOther(i,id){
     this.tabOpen[i]=id

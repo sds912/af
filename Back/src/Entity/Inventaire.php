@@ -88,22 +88,10 @@ class Inventaire
     private $pvReunion=[];
 
     /**
-     * @ORM\ManyToMany(targetEntity=Zone::class, inversedBy="inventaires")
-     * @Groups({"inv_read"})
-     */
-    private $zones;
-
-    /**
      * @ORM\ManyToMany(targetEntity=Localite::class, inversedBy="inventaires")
      * @Groups({"inv_read"})
      */
     private $localites;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=SousZone::class, inversedBy="inventaires")
-     * @Groups({"inv_read"})
-     */
-    private $sousZones;
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="inventaires")
@@ -145,9 +133,7 @@ class Inventaire
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
-        $this->zones = new ArrayCollection();
         $this->localites = new ArrayCollection();
-        $this->sousZones = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->lectures = new ArrayCollection();
     }
@@ -280,32 +266,6 @@ class Inventaire
     }
 
     /**
-     * @return Collection|Zone[]
-     */
-    public function getZones(): Collection
-    {
-        return $this->zones;
-    }
-
-    public function addZone(Zone $zone): self
-    {
-        if (!$this->zones->contains($zone)) {
-            $this->zones[] = $zone;
-        }
-
-        return $this;
-    }
-
-    public function removeZone(Zone $zone): self
-    {
-        if ($this->zones->contains($zone)) {
-            $this->zones->removeElement($zone);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|Localite[]
      */
     public function getLocalites(): Collection
@@ -326,32 +286,6 @@ class Inventaire
     {
         if ($this->localites->contains($localite)) {
             $this->localites->removeElement($localite);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|SousZone[]
-     */
-    public function getSousZones(): Collection
-    {
-        return $this->sousZones;
-    }
-
-    public function addSousZone(SousZone $sousZone): self
-    {
-        if (!$this->sousZones->contains($sousZone)) {
-            $this->sousZones[] = $sousZone;
-        }
-
-        return $this;
-    }
-
-    public function removeSousZone(SousZone $sousZone): self
-    {
-        if ($this->sousZones->contains($sousZone)) {
-            $this->sousZones->removeElement($sousZone);
         }
 
         return $this;

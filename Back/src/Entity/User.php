@@ -140,18 +140,6 @@ class User implements UserInterface
     private $localites;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Zone::class, inversedBy="users") 
-     * @Groups({"user_read"})
-     */
-    private $zones;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=SousZone::class, inversedBy="users")
-     * @Groups({"user_read"})
-     */
-    private $sousZones;
-
-    /**
      * @ORM\Column(type="json", nullable=true)
      * @Groups({"user_read"})
      */
@@ -172,8 +160,6 @@ class User implements UserInterface
     {
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
-        $this->zones = new ArrayCollection();
-        $this->sousZones = new ArrayCollection();
         $this->lectures = new ArrayCollection();
     }
 
@@ -375,58 +361,6 @@ class User implements UserInterface
     {
         if ($this->localites->contains($localite)) {
             $this->localites->removeElement($localite);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Zone[]
-     */
-    public function getZones(): Collection
-    {
-        return $this->zones;
-    }
-
-    public function addZone(Zone $zone): self
-    {
-        if (!$this->zones->contains($zone)) {
-            $this->zones[] = $zone;
-        }
-
-        return $this;
-    }
-
-    public function removeZone(Zone $zone): self
-    {
-        if ($this->zones->contains($zone)) {
-            $this->zones->removeElement($zone);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|SousZone[]
-     */
-    public function getSousZones(): Collection
-    {
-        return $this->sousZones;
-    }
-
-    public function addSousZone(SousZone $sousZone): self
-    {
-        if (!$this->sousZones->contains($sousZone)) {
-            $this->sousZones[] = $sousZone;
-        }
-
-        return $this;
-    }
-
-    public function removeSousZone(SousZone $sousZone): self
-    {
-        if ($this->sousZones->contains($sousZone)) {
-            $this->sousZones->removeElement($sousZone);
         }
 
         return $this;

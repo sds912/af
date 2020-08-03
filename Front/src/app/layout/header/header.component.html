@@ -19,7 +19,7 @@
                 </li>
                 
             </ul>
-            <ul class="pull-left collapse-menu-icon">
+            <ul class="pull-left collapse-menu-icon" *ngIf="getEntite()">
                 <li> 
                     <span class="p-1 pl-5 pr-5" style="border: 1px solid #fcb036;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
                 </li>
