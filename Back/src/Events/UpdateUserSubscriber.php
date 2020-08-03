@@ -57,7 +57,9 @@ class UpdateUserSubscriber implements EventSubscriberInterface{
     public function onlyFor(){//les gens qui peuvent modifier les infos des users
         if(!$this->droit->isGranted('ROLE_SuperAdmin') && 
            !$this->droit->isGranted('ROLE_Admin') && 
-           !$this->droit->isGranted('ROLE_Superviseur') 
+           !$this->droit->isGranted('ROLE_Superviseur') && 
+           !$this->droit->isGranted('ROLE_SuperViseurGene') && 
+           !$this->droit->isGranted('ROLE_SuperViseurAdjoint') 
         ){
             throw new HttpException(403,"Vous n'êtes pas autoriser à modifier les informations d'un utilisateur !");
         }

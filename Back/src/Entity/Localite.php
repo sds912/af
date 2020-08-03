@@ -61,6 +61,12 @@ class Localite
      */
     private $subdivisions;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
+     * @Groups({"entreprise_read"})
+     */
+    private $createur;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -232,6 +238,18 @@ class Localite
                 $subdivision->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreateur(): ?User
+    {
+        return $this->createur;
+    }
+
+    public function setCreateur(?User $createur): self
+    {
+        $this->createur = $createur;
 
         return $this;
     }

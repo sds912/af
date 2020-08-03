@@ -8,7 +8,7 @@
                             <h2 class="col-xl-3 col-lg-3 col-md-3 col-sm-3 pb-0 pt-2 bolder">Inventaires</h2>
                             <ul class="header-dropdown m-r--5">
                                 <li class="dropdown">
-                                    <button class="addInv" (click)="addNew()" mat-mini-fab title="Ajouter un inventaire" color="primary" aria-label="Example icon-button with a heart icon">
+                                    <button [title]="titleAdd" [disabled]="securityServ.superviseurAdjoint" class="addInv" (click)="addNew()" mat-mini-fab color="primary" aria-label="Example icon-button with a heart icon">
                                         <mat-icon>add</mat-icon>
                                     </button>
                                 </li>
@@ -236,7 +236,7 @@
                                         </p>
                                     </mat-panel-title>
                                     <mat-panel-description class="mr-0">
-                                        <div class="pt-5 pb-4">
+                                        <div class="pt-5 pb-4" *ngIf="!securityServ.superviseurAdjoint">
                                             <mat-icon data-toggle="modal" class="mr-2 icone-loc" (click)="updateOne(inventaire)">edit</mat-icon>
                                             <mat-icon class="icone-loc">delete</mat-icon>
                                         </div>
@@ -295,7 +295,7 @@
                                     <p class="row mt-4">
                                         <span class="col-4 bolder" [ngClass]="{'pt-5': inventaire.presiComite || inventaire.membresCom.length>0}">COMITE D'INVENTAIRE</span>
                                         <span class="col-8 row"> 
-                                            <span *ngIf="!inventaire.presiComite && inventaire.membresCom.length==0">Membres du comité non définis</span>
+                                            <span *ngIf="!inventaire.presiComite && inventaire.membresCom.length==0" class="pl-3">Membres du comité non définis</span>
                                             
                                             <img hidden *ngIf="inventaire.presiComite" class="img-circle user-img-circle img-membre pointer ml-2" [src]="imgLink+inventaire.presiComite.image" [title]="'Président du comité : '+ inventaire.presiComite.nom">
                                             <span *ngIf="inventaire.presiComite" class="p-0 pt-1 ml-3 mb-2 block-user">
@@ -473,8 +473,7 @@
      </form>
  </div>
 </div>
-<!-- Modal Window Add comité<img [src]="imgLink+entreprise.image" alt="" *ngIf="entreprise" [(ngModel)]="imageEse">-->
-
+<!-- Modal Window Add comité -->
 
  <!-- Localité -->
  <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog"

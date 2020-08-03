@@ -36,10 +36,12 @@ export class EquipeComponent implements OnInit {
     'Direction du patrimoine',
     'Autre (à préciser)'
   ]
-  roles=[//si modifier modifier la fonction getRole ET roleChange
+  roles=[//si modifier modifier la fonction getRole ET roleChange et hiddenSuperviseur
     "Chef d'équipe",
     "Membre inventaire",
     'Superviseur',
+    'Superviseur général',
+    'Superviseur adjoint',
     'Guest',
     'Président du comité',
     'Membre du comité'
@@ -217,7 +219,7 @@ export class EquipeComponent implements OnInit {
         }
         let entreprise=this.idEseLocalStor?this.getEntreprise(this.idEseLocalStor):null
         this.localites=entreprise?.localites//l admin n a pas besoin des localites
-        console.log(this.localites)
+        if(this.securityServ.superviseurAdjoint)this.localites=this.localites.filter(loc=>loc.createur?.id==this.myId)
         this.subdivisions=entreprise?.subdivisions?entreprise?.subdivisions:[]
         if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
       },
@@ -374,7 +376,6 @@ export class EquipeComponent implements OnInit {
     return denomination
   }
   onEditSave(form: FormGroup) {
-    this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
     data.entreprises=this.getDataEse(data)
     data.currentEse=data.entreprises.length==1?data.entreprises[0]:null//s'il est rattaché à une seule entité
@@ -382,18 +383,31 @@ export class EquipeComponent implements OnInit {
     data.roles=[role]
     data.menu=this.getDataMenu(role)//pour les Guest
     data.localites=this.getDataLoc()
+    const changeSup=this.changeSuperviseur(data.role)
+    if(!changeSup[0])
+      this.sendData(data)
+    else
+      this.textChangeSup(data.role,changeSup)
+  }
+  sendData(data){
+    this.securityServ.showLoadingIndicatior.next(true)
     this.adminServ.addUser(data).then(
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','top','center')
         this.closeEditModal.nativeElement.click();
         this.getUsers()
+        if(this.securityServ.admin)this.getEntreprises()//pour le hiddenSuperviseur quand un superviseur ajout un supeviseur
       },message=>{
         console.log(message)
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-red',message,'top','right')
       }
     )
+  }
+  textChangeSup(role,data){
+    let message="Vous ne pouvez pas crée un "+this.sharedService.decapitalize(role)+" car vous avez déja un "+data[2]+" dans l'entité "+data[1].denomination
+    this.showNotification('bg-red',message,'top','right',7000)
   }
   getDataEse(data){
     if(!this.securityServ.admin && data.id==0){
@@ -419,6 +433,14 @@ export class EquipeComponent implements OnInit {
     if(role && (role=='Superviseur'||role[0]=="ROLE_Superviseur")){
       r1='Superviseur'
       r2="ROLE_Superviseur"
+    }
+    else if(role && (role=='Superviseur général'||role[0]=="ROLE_SuperViseurGene")){
+      r1='Superviseur général'
+      r2="ROLE_SuperViseurGene"
+    }
+    else if(role && (role=='Superviseur adjoint'||role[0]=="ROLE_SuperViseurAdjoint")){
+      r1='Superviseur adjoint'
+      r2="ROLE_SuperViseurAdjoint"
     }else if(role && (role=='Guest'||role[0]=="ROLE_Guest")){
       r1='Guest'
       r2="ROLE_Guest"
@@ -473,9 +495,9 @@ export class EquipeComponent implements OnInit {
       panelClass: ['bg-red']
     });
   }
-  showNotification(colorName, text, placementFrom, placementAlign) {
+  showNotification(colorName, text, placementFrom, placementAlign,duree=2000) {
     this._snackBar.open(text, '', {
-      duration: 2000,
+      duration: duree,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: [colorName,'color-white']
@@ -563,7 +585,10 @@ export class EquipeComponent implements OnInit {
   checkAllLoc(){
     const allIsCheck=this.allLocIsChec()
     if(allIsCheck){
-      this.tabLoc=[]
+      //ne pas mettre this.tabLoc=[] car si un superviseur adjout enleve tous il doit reste ceux des autres sup adjoints
+      this.localites.forEach(localite=>{
+        if(this.inTab(localite.id,this.tabLoc))this.checkLoc(localite)
+      })
       return
     }
     this.localites.forEach(localite=>{
@@ -576,6 +601,24 @@ export class EquipeComponent implements OnInit {
       if(bool)bool=this.inTab(localite.id,this.tabLoc)
     })
     return bool
+  }
+  changeSuperviseur(role){
+    let change=[false,null,""]
+    const entreprises=this.tabEse.value
+    entreprises.forEach(id => {
+      const e=this.entreprises.find(ese=>ese.id==id)
+      const users=e?.users?e.users:[]
+      const superviseurExist=users.find(u=>u.roles[0]=="ROLE_Superviseur")?[true,"superviseur"]:false
+      const supGeneExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurGene")?[true,"superviseur général"]:false
+      const supAdjointExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurAdjoint")?[true,"superviseur adjoint"]:false
+      if(superviseurExist[0] && (role=="Superviseur général" || role=="Superviseur adjoint") || (supGeneExist[0] || supAdjointExist[0]) && role=="Superviseur"){
+        let n=superviseurExist[0]?superviseurExist[1]:""
+        n=supAdjointExist[0]?supAdjointExist[1]:n
+        n=supGeneExist[0]?supGeneExist[1]:n
+        change=[true,e,n]
+      }
+    });
+    return change
   }
 }
 export interface selectRowInterface {

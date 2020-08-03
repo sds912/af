@@ -14,6 +14,7 @@ use App\Repository\EntrepriseRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
 use App\Repository\UserRepository;
+use App\Service\MercureCookieGenerator;
 use DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -84,15 +85,15 @@ class SharedController extends AbstractController
     /**
     * @Route("/info", methods={"GET"})
     */
-    public function userConnecte(SerializerInterface $serializer,UserPasswordEncoderInterface $encodePassword){
-        //,MercureCookieGenerator $cookieGenerator
+    public function userConnecte(SerializerInterface $serializer,UserPasswordEncoderInterface $encodePassword,MercureCookieGenerator $cookieGenerator){
+        
         $user = $this->userCo;
-        //$mercureToken=$cookieGenerator->generate($user);
+        $mercureToken=$cookieGenerator->generate($user);
         $updatePwd=0;
         if($encodePassword->isPasswordValid($user, Shared::DEFAULTPWD)){
             $updatePwd=1;
         }
-        $data = $serializer->serialize([$user,'$mercureToken',$updatePwd], 'json', ['groups' => ['user_read']]);
+        $data = $serializer->serialize([$user,$mercureToken,$updatePwd], 'json', ['groups' => ['user_read']]);
         return new Response($data,200);
     }
 

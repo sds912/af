@@ -13,10 +13,13 @@ export class SharedService {
   public urlBack=this.baseUrl+'/api';
   public baseAsset="assets"
   constructor(public httpClient: HttpClient,public router:Router) { }
-  distinct=(value,index,self)=>{return self.indexOf(value)===index}//ex : tabContact=tabContact.filter(this.distinct)
   capitalize(s){//Maj 1er lettre
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+  decapitalize(s){//Maj 1er lettre
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toLowerCase() + s.slice(1)
   }
   getVariation(initial,final){
     if(initial==0) return 0
@@ -213,4 +216,5 @@ export class SharedService {
     }
     return err;
   }
+  distinct=(value,index,self)=>{return self.indexOf(value)===index}//ex : tabContact=tabContact.filter(this.distinct)
 }

@@ -67,12 +67,14 @@ export class InventaireComponent implements OnInit {
   subdivisions=[]//leurs libelles
   tabOpen=[]
   openLocalite=null
+  titleAdd="Ajouter un inventaire"
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
               private sharedService:SharedService,
-              private securityServ:SecurityService,
+              public securityServ:SecurityService,
               private inventaireServ:InventaireService) {
+    this.titleAdd=this.securityServ.superviseurAdjoint?"Demandez au superviseur général de créer l'inventaire":"Ajouter un inventaire"
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.docLink=this.sharedService.baseUrl +"/documents/"
   }//afficher que la 1ere sub et modifier Localite par sub[0]

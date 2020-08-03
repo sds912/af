@@ -13,7 +13,8 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angular/forms';
-
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import { LayoutService } from '../layout.service';
 const document: any = window.document;
 
 @Component({
@@ -51,7 +52,8 @@ export class HeaderComponent implements OnInit {
     public sharedService:SharedService,//ici laisser à public à cause du html
     public securityServ:SecurityService,
     private fb: FormBuilder,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private layouteSev:LayoutService
     ){
       
   }
@@ -120,6 +122,9 @@ export class HeaderComponent implements OnInit {
     this.setStartupStyles();
     this.initForm()
     this.initForm3()
+    const params="pagination=true&page=1&maximum_items_per_page=6"
+    this.getNotif(params)
+    this.realTime('notification')
     setTimeout(()=>{
         if(!this.securityServ.securePwd){
           this.openPasswordModal.nativeElement.click()
@@ -339,5 +344,26 @@ export class HeaderComponent implements OnInit {
   }
   getEntite(){
     return this.securityServ.user?.entreprises?.find(e=>e.id==this.idEse)
+  }
+  realTime(type){
+    setTimeout(() => {//on attend 10 secondes le temps que le mercureAuthorization soit recupéré et stocké dans le localstorage
+      const url = new URL('http://localhost:3000/.well-known/mercure')
+      url.searchParams.append('topic', 'http://monsite.com/'+type)
+      const mercureAuthorization=localStorage.getItem('mercureAuthorization')
+      const eventSource = new EventSourcePolyfill(url.toString(), {headers: {Authorization: mercureAuthorization} });
+      eventSource.onmessage = e => {
+        if(type=="notification") this.getNotif()
+      };
+    }, 10000);
+  }
+  getNotif(params=""){
+    this.layouteSev.getNotifs(params).then(
+      rep=>{
+        console.log(rep)
+      },
+      message=>{
+        console.log(message)
+      }
+    )
   }
 }

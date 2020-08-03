@@ -7,7 +7,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Home',
     icon: 'fas fa-tachometer-alt',
     class: 'menu-toggle',
-    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_Guest'],//ne pas oublier les guards en fonction des roles
+    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],//ne pas oublier les guards en fonction des roles
     submenu: [
       {
         id:'DASH1',
@@ -15,7 +15,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 1',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
         submenu: []
       },
       {
@@ -24,7 +24,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 2',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
         submenu: []
       },
       {
@@ -33,7 +33,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 3',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
         submenu: []
       }
     ]
@@ -44,7 +44,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Entités',
     icon: 'fas fa-building',
     class: '',
-    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_Guest'],
+    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
     submenu: []
   },
   // {
@@ -62,7 +62,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Inventaires',
     icon: 'fas fa-barcode',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
     submenu: []
   },
   {
@@ -71,7 +71,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Localités',
     icon: 'fas fa-map-marked-alt',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
     submenu: []
   },
   {
@@ -80,7 +80,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Utilisateurs',
     icon: 'fas fa-users',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_Admin','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
     submenu: []
   },
 ];

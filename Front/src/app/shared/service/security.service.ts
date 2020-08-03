@@ -25,6 +25,8 @@ export class SecurityService {
   SupAdmin=false
   admin=false
   superviseur=false
+  superviseurGene=false
+  superviseurAdjoint=false
   guest=false
   fonction=""
   securePwd=true
@@ -69,10 +71,20 @@ export class SecurityService {
     else if(roles.search("ROLE_Admin")>=0){
         this.admin=true;
         this.fonction="Admin";
-    }else if(roles.search("ROLE_Superviseur")>=0){
-        this.superviseur=true;
-        this.fonction="Superviseur";
-    }else if(roles.search("ROLE_Guest")>=0){
+    }
+    else if(roles.search("ROLE_SuperViseurGene")>=0){
+      this.superviseurGene=true;
+      this.fonction="Superviseur général";
+    }
+    else if(roles.search("ROLE_SuperViseurAdjoint")>=0){
+      this.superviseurAdjoint=true;
+      this.fonction="Superviseur adjoint";
+    }
+    else if(roles.search("ROLE_Superviseur")>=0){
+      this.superviseur=true;
+      this.fonction="Superviseur";
+    }
+    else if(roles.search("ROLE_Guest")>=0){
         this.guest=true;
         this.fonction="Invité";
     }
@@ -82,6 +94,8 @@ export class SecurityService {
     this.SupAdmin=false;
     this.admin=false;
     this.superviseur=false;
+    this.superviseurGene=false;
+    this.superviseurAdjoint=false;
     this.guest=false;
     localStorage.clear();
     this.router.navigate(['/login']);
@@ -120,6 +134,7 @@ export class SecurityService {
         localStorage.setItem("currentEse",this.user.entreprises[0].id)
       }
       localStorage.setItem('idUser',this.user.id);
+      localStorage.setItem('mercureAuthorization',rep[1])
       if(rep[2]==1){
         this.securePwd=false
       }

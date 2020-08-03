@@ -47,13 +47,14 @@ export class ZonageComponent implements OnInit {
   tabOpen=[]
   update=false
   currentImage='map3.jpeg'//'font-maps.jpg'
+  myId=""
+  titleAdd=""
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeSubdivision', { static: false }) closeSubdivision;
   @ViewChild('formDirective1') private formDirective1: NgForm;
   @ViewChild('formDirective2') private formDirective2: NgForm;
   @ViewChild('formDirective3') private formDirective3: NgForm;
-  @ViewChild('subd', { static: true }) subd;
   availableColors: ChipColor[] = [
     { name: 'Primary', color: 'primary' },
     { name: 'Accent', color: 'accent' },
@@ -64,15 +65,16 @@ export class ZonageComponent implements OnInit {
               private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private sharedService:SharedService,
-              private securityServ:SecurityService) {
+              public securityServ:SecurityService) {
+    this.titleAdd=this.securityServ.superviseurAdjoint?"Demandez au superviseur général d'ajouter une subdivision":"Ajouter une subdivision"
   }//revoir le delete sous-zone quand on ajout des user à ces sz
   ngOnInit() {
+    this.myId=localStorage.getItem('idUser')
     this.carrousel()
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getOneEntreprise()
-    setTimeout(()=>this.subd?.nativeElement?.click(),2000)
     this.addSubdivision("Localité")
   }
   initForm(localite={id:0,nom:'',position:[]}){
@@ -86,8 +88,8 @@ export class ZonageComponent implements OnInit {
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep=>{
-        console.log(rep)
         this.localites=rep.localites
+        if(this.securityServ.superviseurAdjoint)this.localites=this.localites.filter(loc=>loc.createur?.id==this.myId)
         this.subdivisions=rep.subdivisions
         if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
         this.securityServ.showLoadingIndicatior.next(false)
@@ -98,10 +100,12 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  addLocalite(form: FormGroup){
-    if(this.localites.length<=45){
+  addLocalite(form: FormGroup){//les premieres subdivisions et le update de toutes
+    const firstL=this.localites.filter(l=>l.position?.length>0)
+    if(firstL.length<=45){
       let data=form.value
       data.entreprise="/api/entreprises/"+this.idCurrentEse
+      if(data.id==0)data.createur="/api/users/"+this.myId
       if(data.position && data.position.length==0)data.position=this.getPosition()
       this.securityServ.showLoadingIndicatior.next(true)
       this.inventaireServ.addLocalite(data).then(
@@ -120,6 +124,21 @@ export class ZonageComponent implements OnInit {
       Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
     }
     
+  }
+  addSub(value,idParent){//l ajout des autres sub
+    let data={nom:value,entreprise:"/api/entreprises/"+this.idCurrentEse,parent:"/api/localites/"+idParent,createur:"/api/users/"+this.myId}
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.addLocalite(data).then(
+      rep=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.closeLocaliteModal.nativeElement.click();
+        this.getOneEntreprise()//update
+      },
+      error=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
   }
   updateOne(form: FormGroup){
     const data=form.value
@@ -165,21 +184,7 @@ export class ZonageComponent implements OnInit {
 
     this.fruitCtrl.setValue(null);
   }
-  addSub(value,idParent){
-    let data={nom:value,entreprise:"/api/entreprises/"+this.idCurrentEse,parent:"/api/localites/"+idParent}
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addLocalite(data).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.closeLocaliteModal.nativeElement.click();
-        this.getOneEntreprise()//update
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
+  
   deleteLoc(localite){
     Swal.fire({
      title: 'Confirmation',

@@ -156,11 +156,17 @@ class User implements UserInterface
      */
     private $currentEse;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="createur")
+     */
+    private $localitesCrees;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->lectures = new ArrayCollection();
+        $this->localitesCrees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -417,6 +423,37 @@ class User implements UserInterface
     public function setCurrentEse(?Entreprise $currentEse): self
     {
         $this->currentEse = $currentEse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Localite[]
+     */
+    public function getLocalitesCrees(): Collection
+    {
+        return $this->localitesCrees;
+    }
+
+    public function addLocalitesCree(Localite $localitesCree): self
+    {
+        if (!$this->localitesCrees->contains($localitesCree)) {
+            $this->localitesCrees[] = $localitesCree;
+            $localitesCree->setCreateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocalitesCree(Localite $localitesCree): self
+    {
+        if ($this->localitesCrees->contains($localitesCree)) {
+            $this->localitesCrees->removeElement($localitesCree);
+            // set the owning side to null (unless already changed)
+            if ($localitesCree->getCreateur() === $this) {
+                $localitesCree->setCreateur(null);
+            }
+        }
 
         return $this;
     }
