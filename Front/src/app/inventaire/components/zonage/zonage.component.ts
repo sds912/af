@@ -41,6 +41,7 @@ export class ZonageComponent implements OnInit {
   idCurrentZ=0
   currentLocal=null
   localites=[]
+  allLoc=[]//surtout pour les positions
   localiteForm:FormGroup;
   tabSubdivision=new FormArray([]);
   subdivisions=[]
@@ -88,8 +89,9 @@ export class ZonageComponent implements OnInit {
   getOneEntreprise(){
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep=>{
-        this.localites=rep.localites
-        if(this.securityServ.superviseurAdjoint)this.localites=this.localites.filter(loc=>loc.createur?.id==this.myId)
+        this.allLoc=rep.localites//les positions
+        this.localites=rep.localites//all sauf adjoint
+        if(this.securityServ.superviseurAdjoint)this.localites=this.allLoc.filter(loc=>loc.createur?.id==this.myId)
         this.subdivisions=rep.subdivisions
         if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
         this.securityServ.showLoadingIndicatior.next(false)
@@ -100,7 +102,7 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  addLocalite(form: FormGroup){//les premieres subdivisions et le update de toutes
+  addLocalite(form: FormGroup){//les premieres subdivisions
     const firstL=this.localites.filter(l=>l.position?.length>0)
     if(firstL.length<=45){
       let data=form.value
@@ -108,6 +110,7 @@ export class ZonageComponent implements OnInit {
       if(data.id==0)data.createur="/api/users/"+this.myId
       if(data.position && data.position.length==0)data.position=this.getPosition()
       this.securityServ.showLoadingIndicatior.next(true)
+      console.log(data.position);
       this.inventaireServ.addLocalite(data).then(
         rep=>{
           this.securityServ.showLoadingIndicatior.next(false)
@@ -140,7 +143,7 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  updateOne(form: FormGroup){
+  updateOne(form: FormGroup){//les update
     const data=form.value
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addLocalite({id:data.id,nom:data.nom}).then(
@@ -157,7 +160,7 @@ export class ZonageComponent implements OnInit {
   }
   saveLocalite(form: FormGroup){
     if(!this.update) this.addLocalite(form)
-    else this.updateOne(form)
+    else this.updateOne(form) // le update de toutes
   }
   rev(tab){
     let t=[]
@@ -231,15 +234,16 @@ export class ZonageComponent implements OnInit {
       arrond=false
       l=(Math.floor(Math.random() * 94) + 2); 
       t=(Math.floor(Math.random() * 83) + 2);
-      this.localites.forEach(localite => {
-        const left=this.getValPourcentage(localite.position[0])
-        const top=this.getValPourcentage(localite.position[1])
-        if(left==l && top==t||l>=(left-6) && l<=(left+6) && t>=(top-16) && t<=(top+16)){
-          console.log("arrond",[left,top],[l,t])
-          arrond=true
+      this.allLoc.forEach(localite => {
+        if(localite.position && localite.position.length>0){
+          const left=this.getValPourcentage(localite.position[0])
+          const top=this.getValPourcentage(localite.position[1])
+          if(left==l && top==t||l>=(left-6) && l<=(left+6) && t>=(top-16) && t<=(top+16)){
+            console.log("arrond",[left,top],[l,t])
+            arrond=true
+          }
         }
       });
-      
     }while (arrond);
     return [l+'%',t+'%']
   }

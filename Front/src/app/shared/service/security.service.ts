@@ -130,7 +130,7 @@ export class SecurityService {
     this.securePwd=true
     return this.sharedService.getElement("/info").then(rep=>{
       this.user=rep[0]
-      if(this.user.entreprises.length==1){
+      if(this.user.entreprises?.length==1){
         localStorage.setItem("currentEse",this.user.entreprises[0].id)
       }
       localStorage.setItem('idUser',this.user.id);

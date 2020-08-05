@@ -8,5 +8,8 @@ api_platform:
     collection: #voir video lior 33 on peut aussi mettre sur l url ?pagination=true
         pagination:
             enabled: false
+            client_enabled: true
+            client_items_per_page: true
+            items_per_page_parameter_name: "count"
     # formats:
     #     json: ['application/json']

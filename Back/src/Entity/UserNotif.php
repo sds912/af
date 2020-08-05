@@ -13,12 +13,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 /**
  * @ApiResource(
  *  normalizationContext={
- *    "groups"={"list_userNotif"}
+ *      "groups"={"list_userNotif"}
  *  }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserNotifRepository")
- * @ApiFilter(SearchFilter::class, properties={"recepteur.id": "exact"})
- * @ApiFilter(OrderFilter::class, properties={"id"="DESC"})
+ * @ApiFilter(SearchFilter::class, properties={"recepteur.id": "exact","type": "exact"})
+ * @ApiFilter(OrderFilter::class, properties={"id"})
  */
 class UserNotif
 {

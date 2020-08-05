@@ -36,33 +36,38 @@
                 <!-- #END# Full Screen Button -->
                 <!-- #START# Notifications-->
                 <li class="dropdown">
-                    <button mat-icon-button data-toggle="dropdown" class=" nav-notification-icons">
+                    <button mat-icon-button data-toggle="dropdown" class="nav-notification-icons">
                         <mat-icon>notifications_none</mat-icon>
-                        <span class="label-count bg-orange"></span>
+                        <span class="label-count bg-orange" *ngIf="news>0"></span>
                     </button>
                     <ul class="dropdown-menu pullDown">
-                        <li class="header">NOTIFICATIONS</li>
+                        <li class="header">NOTIFICATIONS <span *ngIf="news>0">( {{news}} )</span> </li>
                         <li class="body">
-                            <ul class="menu" style="position: relative; max-width: 600px; max-height: 200px;"
+                            <ul class="menu" style="position: relative; max-width: 600px; max-height: 300px;"
                                 [perfectScrollbar]>
                                 <li>
-                                    <a href="#" *ngFor="let notification of notifications" onClick="return false;">
+                                    <a *ngFor="let n of notifs"  [href]="'#'+n.notification.lien" (click)="lireNotif(n.id)" [ngClass]="{'new-notif': n.status==0}">
                                         <span class="table-img msg-user">
-                                            <img src="{{notification.userImg}}" alt="">
+                                            <img src="{{imgLink+n.notification.emetteur.image}}" alt="">
                                         </span>
                                         <span class="menu-info">
-                                            <span class="menu-title">{{notification.userName}}</span>
+                                            <span class="menu-title">{{n.notification.emetteur.nom}}</span>
                                             <span class="menu-desc">
-                                                <i class="material-icons">access_time</i> {{notification.time}}
+                                                <i class="material-icons">access_time</i> {{n.notification.date |date:'dd/MM/yyyy à HH:mm'}}
                                             </span>
-                                            <span class="menu-desc">{{notification.message}}</span>
+                                            <span class="menu-desc">{{n.notification.message}}</span>
+                                        </span>
+                                    </a>
+                                    <a href="#" onClick="return false;" *ngIf="notifs.length==0">
+                                        <span class="menu-info">
+                                            <span class="menu-desc">Aucune notification</span>
                                         </span>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="footer">
-                            <a href="#" onClick="return false;">View All Notifications</a>
+                        <li class="footer" [hidden]="!paginateN">
+                            <a href="#" onClick="return false;" (click)="showAllNotif()">Voir toutes les Notifications</a>
                         </li>
                     </ul>
                 </li>

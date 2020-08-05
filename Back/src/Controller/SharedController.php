@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
+use App\Repository\UserNotifRepository;
 use App\Repository\UserRepository;
 use App\Service\MercureCookieGenerator;
 use DateTime;
@@ -95,6 +96,13 @@ class SharedController extends AbstractController
         }
         $data = $serializer->serialize([$user,$mercureToken,$updatePwd], 'json', ['groups' => ['user_read']]);
         return new Response($data,200);
+    }
+    /**
+    * @Route("/user_notis/count/new", methods={"GET"})
+    */
+    public function newNotif(UserNotifRepository $repo){
+        $count=$repo->findCountNew($this->userCo->getId());
+        return new Response($count,200);
     }
 
     /**
@@ -180,6 +188,7 @@ class SharedController extends AbstractController
             Shared::STATUS => $tatus
         ]);
     }
+
     public function getPvCreer($data){
         $d=[
             [

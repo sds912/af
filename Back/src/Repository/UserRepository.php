@@ -38,21 +38,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    public function SuperViseurGeneExiste()
+    /**
+    * @return User[] Returns an array of User objects
+    */
+    public function findAllSuperViseurGene($id)
     {
-        $result= $this->createQueryBuilder('u')
+        return $this->createQueryBuilder('u')
             ->join("u.entreprises",'entreprise')
             ->join("entreprise.users",'user')
             ->andWhere('user.id = :id')
-            ->setParameter('id', $this->userCo->getId())
+            ->setParameter('id', $id)
 
             ->andWhere('u.roles LIKE :role')
             ->setParameter('role', '%"'.'ROLE_SuperViseurGene'.'"%')
 
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
-        return $result!=null;
     }
     // /**
     //  * @return User[] Returns an array of User objects

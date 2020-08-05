@@ -28,21 +28,10 @@ class Notification
     private $message;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"list_userNotif"})
-     */
-    private $icon;
-
-    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"list_userNotif"})
      */
     private $lien;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $statut;
 
     /**
      * @ORM\Column(type="datetime")
@@ -51,7 +40,7 @@ class Notification
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="notifications")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User",)
      * @Groups({"list_userNotif"})
      */
     private $emetteur;
@@ -85,18 +74,6 @@ class Notification
     public function setMessage(string $message): self
     {
         $this->message = $message;
-
-        return $this;
-    }
-
-    public function getIcon(): ?string
-    {
-        return $this->icon;
-    }
-
-    public function setIcon(?string $icon): self
-    {
-        $this->icon = $icon;
 
         return $this;
     }

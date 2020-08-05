@@ -14,31 +14,11 @@ export class InventaireService {
     delete data.id;
     return this.sharedService.postElement(data,"/localites")
   }
-  addZone(data){
-    if(data.id && data.id!=0){
-      return this.sharedService.putElement(data,"/zones/"+data.id)
-    }
-    delete data.id;
-    return this.sharedService.postElement(data,"/zones")
-  }
-  addSousZone(data){
-    if(data.id && data.id!=0) {
-      return this.sharedService.putElement(data,"/sous_zones/"+data.id)
-    }
-    delete data.id;
-    return this.sharedService.postElement(data,"/sous_zones")
-  }
   getLocalite(id){
     return this.sharedService.getElement("/localites/"+id)
   }
-  deleteSousZone(id){
-    return this.sharedService.deleteElement("/sous_zones/"+id)
-  }
   deleteLoc(id){
     return this.sharedService.deleteElement("/localites/"+id)
-  }
-  deleteZone(id){
-    return this.sharedService.deleteElement("/zones/"+id)
   }
   getInventaire(){
     return this.sharedService.getElement("/inventaires")

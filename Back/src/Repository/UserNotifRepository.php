@@ -18,6 +18,19 @@ class UserNotifRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, UserNotif::class);
     }
+    public function findCountNew($id)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->andWhere('u.status = :status')
+            ->setParameter('status', 0)
+            ->join('u.recepteur','recepteur')
+            ->andWhere('recepteur.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
 
     // /**
     //  * @return UserNotif[] Returns an array of UserNotif objects

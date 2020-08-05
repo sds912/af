@@ -1,12 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import {
-  Component,
-  Inject,
-  ElementRef,
-  OnInit,
-  Renderer2,
-  HostListener, ViewChild, TemplateRef 
-} from '@angular/core';
+import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener, ViewChild, TemplateRef } from '@angular/core';
 import { RightSidebarService } from '../../services/rightsidebar.service';
 import { WINDOW } from '../../services/window.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
@@ -43,6 +36,11 @@ export class HeaderComponent implements OnInit {
   errorPwd=false
   updateInfo=false
   idEse=null
+  notifs=[]
+  imgLink=""
+  countNotif=6
+  paginateN=false
+  news=0
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -122,9 +120,13 @@ export class HeaderComponent implements OnInit {
     this.setStartupStyles();
     this.initForm()
     this.initForm3()
-    const params="pagination=true&page=1&maximum_items_per_page=6"
-    this.getNotif(params)
-    this.realTime('notification')
+    
+    if(this.securityServ.isAuth){
+      this.getCountNew()
+      this.imgLink=this.sharedService.baseUrl +"/images/"
+      this.getNotif()
+      this.realTime('notification')
+    }
     setTimeout(()=>{
         if(!this.securityServ.securePwd){
           this.openPasswordModal.nativeElement.click()
@@ -133,6 +135,16 @@ export class HeaderComponent implements OnInit {
           this.openEseModal.nativeElement.click()
         }
     },1000);
+  }
+  showAllNotif(){
+    this.paginateN=false
+    this.getNotif()
+  }
+  lireNotif(id){
+    this.layouteSev.lireNotification(id).then(()=>this.news--)
+  }
+  getCountNew(){
+    this.layouteSev.getCountNewNotifs().then(rep=>this.news=rep)
   }
   initForm(){
     this.editForm = this.fb.group({
@@ -343,7 +355,8 @@ export class HeaderComponent implements OnInit {
     this.securityServ.logOut()
   }
   getEntite(){
-    return this.securityServ.user?.entreprises?.find(e=>e.id==this.idEse)
+    const idEse=localStorage.getItem("currentEse")?localStorage.getItem("currentEse"):""
+    return this.securityServ.user?.entreprises?.find(e=>e.id==idEse)
   }
   realTime(type){
     setTimeout(() => {//on attend 10 secondes le temps que le mercureAuthorization soit recupéré et stocké dans le localstorage
@@ -352,14 +365,18 @@ export class HeaderComponent implements OnInit {
       const mercureAuthorization=localStorage.getItem('mercureAuthorization')
       const eventSource = new EventSourcePolyfill(url.toString(), {headers: {Authorization: mercureAuthorization} });
       eventSource.onmessage = e => {
-        if(type=="notification") this.getNotif()
+        if(type=="notification") {
+          this.getNotif()
+        }
       };
     }, 10000);
   }
-  getNotif(params=""){
+  getNotif(){
+    const params="pagination="+this.paginateN+"&count="+this.countNotif+"&order[id]=desc"
     this.layouteSev.getNotifs(params).then(
       rep=>{
         console.log(rep)
+        this.notifs=rep
       },
       message=>{
         console.log(message)
