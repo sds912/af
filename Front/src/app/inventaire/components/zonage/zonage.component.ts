@@ -91,6 +91,8 @@ export class ZonageComponent implements OnInit {
       rep=>{
         this.allLoc=rep.localites//les positions
         this.localites=rep.localites//all sauf adjoint
+        console.log(this.localites);
+        
         if(this.securityServ.superviseurAdjoint)this.localites=this.allLoc.filter(loc=>loc.createur?.id==this.myId)
         this.subdivisions=rep.subdivisions
         if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
@@ -189,38 +191,48 @@ export class ZonageComponent implements OnInit {
   }
   
   deleteLoc(localite){
+    if(localite.rattacher){
+      this.showNotification('bg-danger',"Impossible de supprimer cet élément car il contient des subdivisions.",'bottom','center',5000)
+    }
+    else if(localite.linkToUser){
+      this.showNotification('bg-danger',"Impossible de supprimer cet élément car des personnes y sont affectées.",'bottom','center',5000)
+    }
+    else if(!localite.linkToUser && !localite.rattacher){
+      this.supLocPossible(localite)
+    }
+  }
+  supLocPossible(localite){
     Swal.fire({
-     title: 'Confirmation',
-     text: "Voulez-vous confirmer la suppression de cet élément ?",
-     icon: 'warning',
-     showCancelButton: true,
-     confirmButtonColor: '#3085d6',
-     cancelButtonColor: '#d33',
-     confirmButtonText: 'Oui',
-     cancelButtonText: 'Non'
-   }).then(result => {
-     if (result.value) {
-       this.securityServ.showLoadingIndicatior.next(true)
-       this.inventaireServ.deleteLoc(localite.id).then(
-         rep=>{
-           this.securityServ.showLoadingIndicatior.next(false)
-           this.getOneEntreprise()
-         },
-         error=>{
-           this.securityServ.showLoadingIndicatior.next(false)
-           console.log(error)
-         }
-       )
-     }
-   });
- }
-
-  showNotification(colorName, text, placementFrom, placementAlign) {
+      title: 'Confirmation',
+      text: "Voulez-vous confirmer la suppression de cet élément ?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then(result => {
+      if (result.value) {
+        this.securityServ.showLoadingIndicatior.next(true)
+        this.inventaireServ.deleteLoc(localite.id).then(
+          rep=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            this.getOneEntreprise()
+          },
+          error=>{
+            this.securityServ.showLoadingIndicatior.next(false)
+            console.log(error)
+          }
+        )
+      }
+    });
+  }
+  showNotification(colorName, text, placementFrom, placementAlign,duration=2000) {
     this._snackBar.open(text, '', {
-      duration: 2000,
+      duration: duration,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
-      panelClass: colorName
+      panelClass: [colorName,'color-white']
     });
   }
   longText(text,limit){

@@ -93,13 +93,19 @@ class Localite
     /**
     * @Groups({"entreprise_read"})
     */
-    public function getIdParent(){
+    public function getLinkToUser(){
+        return count($this->users)>0;
+    }
+    /**
+    * @Groups({"entreprise_read"})
+    */
+    public function getIdParent(){//utilisé ne pas sup
         $p=$this->parent;
-        $id=null;
+        $idP=null;
         if($p){
-            $id=$p->getId();
+            $idP=$p->getId();
         }
-        return $id;
+        return $idP;
     }
 
     public function getId(): ?int

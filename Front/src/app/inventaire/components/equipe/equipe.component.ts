@@ -383,7 +383,7 @@ export class EquipeComponent implements OnInit {
     data.roles=[role]
     data.menu=this.getDataMenu(role)//pour les Guest
     data.localites=this.getDataLoc()
-    const changeSup=this.changeSuperviseur(data.role)
+    const changeSup=this.changeSuperviseur(data.role,data.id)
     if(!changeSup[0])
       this.sendData(data)
     else
@@ -602,15 +602,15 @@ export class EquipeComponent implements OnInit {
     })
     return bool
   }
-  changeSuperviseur(role){
+  changeSuperviseur(role,idUserUpdate){
     let change=[false,null,""]
     const entreprises=this.tabEse.value
     entreprises.forEach(id => {
       const e=this.entreprises.find(ese=>ese.id==id)
       const users=e?.users?e.users:[]
-      const superviseurExist=users.find(u=>u.roles[0]=="ROLE_Superviseur")?[true,"superviseur"]:false
-      const supGeneExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurGene")?[true,"superviseur général"]:false
-      const supAdjointExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurAdjoint")?[true,"superviseur adjoint"]:false
+      const superviseurExist=users.find(u=>u.roles[0]=="ROLE_Superviseur" && u.id!=idUserUpdate)?[true,"superviseur"]:false
+      const supGeneExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurGene" && u.id!=idUserUpdate)?[true,"superviseur général"]:false
+      const supAdjointExist=users.find(u=>u.roles[0]=="ROLE_SuperViseurAdjoint" && u.id!=idUserUpdate)?[true,"superviseur adjoint"]:false
       if(superviseurExist[0] && (role=="Superviseur général" || role=="Superviseur adjoint") || (supGeneExist[0] || supAdjointExist[0]) && role=="Superviseur"){
         let n=superviseurExist[0]?superviseurExist[1]:""
         n=supAdjointExist[0]?supAdjointExist[1]:n
