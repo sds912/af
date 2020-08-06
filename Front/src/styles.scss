@@ -50,3 +50,7 @@
 .zonage .mat-chip-list-wrapper{
     margin-bottom: 0.5%;
 }
+.pick-loc .mat-checkbox-disabled.mat-checkbox-checked .mat-checkbox-background, 
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #f15381 !important;
+}

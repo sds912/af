@@ -96,7 +96,7 @@
 <!--Form-->
 <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog" role="document">
-        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="saveLocalite(localiteForm)" #formDirective1="ngForm">
+        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="onSubmit(localiteForm)" #formDirective1="ngForm">
             <div class="modal-header">
                 <div class="editRowModal">
                     <div class="modal-header clearfix">

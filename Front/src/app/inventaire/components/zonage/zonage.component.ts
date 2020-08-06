@@ -98,8 +98,6 @@ export class ZonageComponent implements OnInit {
       }
     });
   }
-
-  
   initForm(localite={id:0,nom:'',position:[]}){
     if(this.formDirective1)this.formDirective1.resetForm()
     this.localiteForm = this.fb.group({
@@ -126,9 +124,23 @@ export class ZonageComponent implements OnInit {
     )
   }
   addLocalite(form: FormGroup){//les premieres subdivisions
-    const firstL=this.localites.filter(l=>l.position?.length>0)
-    if(firstL.length<=45){
-      let data=form.value
+    const firstL=this.allLoc.filter(l=>l.position?.length>0)
+    const firstExist=this.firstSubNameExiste(this.allLoc,form.value)
+    if(firstL.length<=45 && !firstExist){
+      this.saveValideLoc(form)
+    }else if(firstExist){
+      const here=this.firstSubNameExiste(this.localites,form.value)//si elle fais parties de celles que j ai créé
+      let more=""
+      if(this.securityServ.superviseurAdjoint && !here){//si superviseur adjoint et que c est pas ma localité
+        more=", veuillez contacter le superviseur général"
+      }
+      this.showNotification('bg-info',form.value.nom+" existe déja"+more+".",'bottom','center',5000)
+    }else{
+      Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
+    }
+  }
+  saveValideLoc(form){
+    let data=form.value
       data.entreprise="/api/entreprises/"+this.idCurrentEse
       if(data.id==0)data.createur="/api/users/"+this.myId
       if(data.position && data.position.length==0)data.position=this.getPosition()
@@ -145,10 +157,6 @@ export class ZonageComponent implements OnInit {
           console.log(error)
         }
       )
-    }else{
-      Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
-    }
-    
   }
   addSub(value,idParent){//l ajout des autres sub
     let data={nom:value,entreprise:"/api/entreprises/"+this.idCurrentEse,parent:"/api/localites/"+idParent,createur:"/api/users/"+this.myId}
@@ -180,9 +188,20 @@ export class ZonageComponent implements OnInit {
         console.log(error)
       })
   }
-  saveLocalite(form: FormGroup){
+  onSubmit(form: FormGroup){
     if(!this.update) this.addLocalite(form)
     else this.updateOne(form) // le update de toutes
+  }
+  firstSubNameExiste(tab,localite){
+    const nom=localite.nom.trim()
+    return tab.find(
+      loc=>loc.nom?.toLowerCase()==nom?.toLowerCase() && 
+      loc.id!=localite.id && 
+      (
+        loc.position?.length>0||//si update first subdivison 
+        localite.id==0//si add first subdivison
+      )
+    )!=null
   }
   rev(tab){
     let t=[]
@@ -195,13 +214,14 @@ export class ZonageComponent implements OnInit {
   add(event: MatChipInputEvent,idParent): void {
     const input = event.input;
     const value = event.value;
-    const exist=this.localites.find(loc=>loc.nom==value.trim() && loc.idParent==idParent)
+    const exist=this.localites.find(loc=>loc.nom?.toLowerCase()==value.trim()?.toLowerCase() && loc.idParent==idParent)
     // Add our sub
     if ((value || '').trim() && !exist) {
       const v=value.trim()
       if(v) this.addSub(value,idParent)
     }else if(exist){
-      this.showNotification('bg-danger',value.trim()+" existe déja.",'bottom','center',5000)
+      this.showNotification('bg-info',value.trim()+" existe déja.",'bottom','center',5000)
+      return
     }
 
     // Reset the input value
@@ -211,7 +231,6 @@ export class ZonageComponent implements OnInit {
 
     this.fruitCtrl.setValue(null);
   }
-  
   deleteLoc(localite){
     if(localite.rattacher){
       this.showNotification('bg-danger',"Impossible de supprimer cet élément car il contient des subdivisions.",'bottom','center',5000)

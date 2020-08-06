@@ -220,7 +220,7 @@ export class InventaireComponent implements OnInit {
   }
   detailsLoc(inventaire){
     this.tabLoc=[];
-    this.tabOpen==[];
+    this.tabOpen=[];
     inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));//this.getOneLocById car serialisation fait que l objet n est pas complet
     this.subdivisions?.forEach(sub=>this.tabOpen.push(0))
   }
