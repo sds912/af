@@ -141,7 +141,10 @@ export class HeaderComponent implements OnInit {
     this.getNotif()
   }
   lireNotif(id){
-    this.layouteSev.lireNotification(id).then(()=>this.news--)
+    this.layouteSev.lireNotification(id).then(()=>{
+      this.notifs.find(notif=>notif.id==id).status=1
+      this.news--
+    })
   }
   getCountNew(){
     this.layouteSev.getCountNewNotifs().then(rep=>this.news=rep)
@@ -361,12 +364,13 @@ export class HeaderComponent implements OnInit {
   realTime(type){
     setTimeout(() => {//on attend 10 secondes le temps que le mercureAuthorization soit recupéré et stocké dans le localstorage
       const url = new URL('http://localhost:3000/.well-known/mercure')
-      url.searchParams.append('topic', 'http://monsite.com/'+type)
+      url.searchParams.append('topic', 'http://asma-gestion-immo.com/'+type)
       const mercureAuthorization=localStorage.getItem('mercureAuthorization')
       const eventSource = new EventSourcePolyfill(url.toString(), {headers: {Authorization: mercureAuthorization} });
       eventSource.onmessage = e => {
         if(type=="notification") {
           this.getNotif()
+          this.getCountNew()
         }
       };
     }, 10000);
@@ -375,7 +379,6 @@ export class HeaderComponent implements OnInit {
     const params="pagination="+this.paginateN+"&count="+this.countNotif+"&order[id]=desc"
     this.layouteSev.getNotifs(params).then(
       rep=>{
-        console.log(rep)
         this.notifs=rep
       },
       message=>{

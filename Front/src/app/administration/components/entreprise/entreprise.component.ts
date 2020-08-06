@@ -65,7 +65,6 @@ export class EntrepriseComponent implements OnInit {
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0)e=rep.reverse()
@@ -83,7 +82,6 @@ export class EntrepriseComponent implements OnInit {
     const id=localStorage.getItem("currentEse")
     this.adminServ.getOneEntreprise(id).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         let e=[rep]
         this.data = e;

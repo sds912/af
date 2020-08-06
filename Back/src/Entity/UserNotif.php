@@ -100,7 +100,7 @@ class UserNotif
         if($user){
             $idUser=$user->getId();//le destinataire
         }
-        $update = new Update("http://monsite.com/{$this->type}",json_encode([]),true,$idUser);//l'url n'est pas important ça doit etre le même qu'on front
+        $update = new Update("http://asma-gestion-immo.com/{$this->type}",json_encode([]),true,$idUser);//l'url n'est pas important ça doit etre le même qu'on front
         $this->bus->dispatch($update);//asynchrone 
     }
 }

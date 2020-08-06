@@ -322,7 +322,7 @@
                                     <div class="row mt-4">
                                         <span class="col-4 bolder" [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS A LA RÉUNION</span>
                                         <span class="col-8 row">
-                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0">Membres présents à la réunion de lancement non définis</span>
+                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0" class="pl-3">Membres présents à la réunion de lancement non définis</span>
                                             
                                             <img hidden *ngFor="let membre of inventaire.presentsReunion" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+membre.image" [title]="membre.nom">
                                             <span *ngFor="let membre of inventaire.presentsReunion" class="p-0 pt-1 ml-3 mb-2 block-user">
@@ -502,14 +502,14 @@
                     <p class="ml-2">{{subdivisions[0]}}</p>
                     <hr>
                     <mat-chip-list aria-label="Fish selection" class="mt-4">
-                        <mat-chip class="w-100" color="primary" [ngClass]="{'mt-3': i!=0}" *ngFor="let localite of firstSub(localites); index as i">
+                        <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let localite of firstSub(localites); index as i">
                             <span class="col-11 pl-0">
                                 <section class="example-section">
                                     <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">{{localite.nom}}</mat-checkbox>
                                 </section>
                             </span>
                             <span class="col-1">
-                                <mat-icon class="icone-affectation pointer text-secondary" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                                <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
                             </span>
                         </mat-chip>
                     </mat-chip-list>
@@ -522,14 +522,14 @@
                     <hr>
                     <mat-chip-list aria-label="Fish selection">
                         <small class="ml-3" style="font-style: italic;">{{subdivisions[i+1]}}</small>
-                        <mat-chip class="w-100" color="primary" [ngClass]="{'mt-3': i!=0}" *ngFor="let sub of getCurrentSubById(idParent);">
+                        <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let sub of getCurrentSubById(idParent);">
                             <span class="col-11 pl-0">
                                 <section class="example-section">
                                     <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}</mat-checkbox>
                                 </section>
                             </span>
                             <span class="col-1">
-                                <mat-icon class="icone-affectation pointer text-secondary" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                                <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
                             </span>
                         </mat-chip>
                     </mat-chip-list>

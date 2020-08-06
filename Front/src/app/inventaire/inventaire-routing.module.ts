@@ -8,6 +8,7 @@ import { EquipeComponent } from './components/equipe/equipe.component';
 import { InventaireComponent } from './components/inventaire/inventaire.component';
 const routes: Routes = [
   {path: 'zonage',canActivate:[SuperviseurGuard],component: ZonageComponent},
+  {path: 'zonage/:id',canActivate:[SuperviseurGuard],component: ZonageComponent},
   {path: 'users',canActivate:[SupervAdminGuard],component: EquipeComponent},
   {path: 'inventaires',canActivate:[SupervAdminGuard],component: InventaireComponent},
 ];

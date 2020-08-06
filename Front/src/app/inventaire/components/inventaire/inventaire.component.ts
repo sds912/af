@@ -363,7 +363,6 @@ export class InventaireComponent implements OnInit {
     data.entreprise=this.idCurrentEse
     data.localites=this.getOneLyId(this.tabLoc)
     data.localInstructionPv=[this.invCreer?'creation':'download',this.pvCreer?'creation':'download']
-    console.log(data)
     return data
   }
   getOneLyId(localites){
@@ -596,8 +595,6 @@ export class InventaireComponent implements OnInit {
       const bloc3e3 = data[2][2]
       const bloc3e4 = data[2][3]
       const signataires= [3]?data[3]:[]
-      console.log(signataires);
-      
       return[
         ...this.getImage(),
         {
@@ -808,15 +805,12 @@ export class InventaireComponent implements OnInit {
     return tab
   }
   overLoc(localite){// au cas ou tu veux faire des traitement au hover d une localite
-    console.log(localite)
     this.locHover=localite
   }
   overZone(zone){
-    console.log(zone)
     this.zoneHover=zone
   }
   overSz(sz){
-    console.log(sz)
     this.szHover=sz
   }
   outHoverLZS(){
