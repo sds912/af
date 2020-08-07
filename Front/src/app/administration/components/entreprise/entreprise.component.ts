@@ -57,7 +57,6 @@ export class EntrepriseComponent implements OnInit {
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
-  
   ngOnInit() {
     this.securityServ.showLoadingIndicatior.next(true)
     this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()

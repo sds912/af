@@ -181,7 +181,7 @@ export class EquipeComponent implements OnInit {
     const users=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==id))
     this.setTableData(users)
   }
-  getUsers(){
+  getUsers(){//voir doctrine/MyUser du Bac pour comprendre comment seul les users de l entreprise s affiche
     this.adminServ.getUsers().then(
       rep=>{
         let users=[]
