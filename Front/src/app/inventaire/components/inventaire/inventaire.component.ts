@@ -726,16 +726,16 @@ export class InventaireComponent implements OnInit {
   }
   getEntete(){
     const e=this.entreprise
-    let k=e.capital?this.sharedService.numStr(e.capital,' ')+" de FCFA":""
+    let k=e.capital?this.sharedService.numStr(e.capital,' ')+" FCFA":""
     return[
       [
-        {text:"Dénomination : "+e.denomination,border:[false,false,false,false],margin:[-5,0,0,0]}
+        {text:""+e.denomination,border:[false,false,false,false],margin:[-5,0,0,0]}
       ],
       [
-        {text:"Capital : "+k,border:[false,false,false,false],margin:[-5,0,0,0]}
+        {text:"Capital: "+k,border:[false,false,false,false],margin:[-5,0,0,0]}
       ],
       [
-        {text:"Pays : "+e.republique,border:[false,false,false,false],margin:[-5,0,0,0]}
+        {text:""+e.republique+"/"+e.ville,border:[false,false,false,false],margin:[-5,0,0,0]}
       ]
     ]
   }

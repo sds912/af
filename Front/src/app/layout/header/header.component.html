@@ -21,7 +21,7 @@
             </ul>
             <ul class="pull-left collapse-menu-icon" *ngIf="getEntite()">
                 <li> 
-                    <span class="p-1 pl-5 pr-5" style="border: 1px solid #fcb036;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
+                    <span class="p-1 pl-5 pr-5" style="margin-left: 600px; font-size: xx-large;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
                 </li>
             </ul>
             
@@ -38,7 +38,7 @@
                 <li class="dropdown">
                     <button mat-icon-button data-toggle="dropdown" class="nav-notification-icons">
                         <mat-icon>notifications_none</mat-icon>
-                        <span class="label-count bg-orange" *ngIf="news>0"></span>
+                        <span class="label-count bg-primary" *ngIf="news>0"></span>
                     </button>
                     <ul class="dropdown-menu pullDown">
                         <li class="header">NOTIFICATIONS <span *ngIf="news>0">( {{news}} )</span> </li>
