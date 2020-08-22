@@ -57,7 +57,6 @@ export class EntrepriseComponent implements OnInit {
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
-  
   ngOnInit() {
     this.securityServ.showLoadingIndicatior.next(true)
     this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
@@ -65,7 +64,6 @@ export class EntrepriseComponent implements OnInit {
   getEntreprise(){
     this.adminServ.getEntreprise().then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
         if(e && e.length>0)e=rep.reverse()
@@ -83,7 +81,6 @@ export class EntrepriseComponent implements OnInit {
     const id=localStorage.getItem("currentEse")
     this.adminServ.getOneEntreprise(id).then(
       rep=>{
-        console.log(rep)
         this.securityServ.showLoadingIndicatior.next(false)
         let e=[rep]
         this.data = e;

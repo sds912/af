@@ -39,7 +39,7 @@ class LocaliteSubscriber implements EventSubscriberInterface{
     {
         return [
             //On utilise la fonction encodePassword avant d ecrire dans la base de donnée d ou PRE_WRITE
-            KernelEvents::VIEW=>['addLocalite',EventPriorities::PRE_VALIDATE]// si ca doit etre fait avant la validation utiliser: EventPriorities::PRE_VALIDATE voir video 77 lior api plat
+            KernelEvents::VIEW=>['addLocalite',EventPriorities::POST_WRITE]
         ];
     }
     public function addLocalite(ViewEvent $event){//on peut changer le user par une autre classe et mettre l algo du traitement à faire juste avant que l on ecrive dans la base de donnée
@@ -47,10 +47,18 @@ class LocaliteSubscriber implements EventSubscriberInterface{
         $method=$event->getRequest()->getMethod();
         if($localite instanceof Localite && $method=="POST" && $this->droit->isGranted('ROLE_SuperViseurAdjoint')){
             $user=$this->userCo;
+            $nomParent=$localite->getParent()?$localite->getParent()->getNom():null;
+            $nomNew=$localite->getNom();
+            $message=$user->getNom()." vient d'ajouter $nomNew dans la liste des localités.";
+            $message=!$nomParent?$message:$user->getNom()." vient d'ajouter $nomNew dans $nomParent.";
+            
             $notif=new Notification();
-            $notif->setLien("/zonage")
+            $id=$localite->getId();
+            $idHash= $id?Shared::hashId($id):null;
+            $lien=$idHash?"/zonage/$idHash":"/zonage";
+            $notif->setLien($lien)
                   ->setEmetteur($user)
-                  ->setMessage($user->getNom()." vient de modifier la liste des localités.")
+                  ->setMessage($message)
                   ->setType(Shared::NOTIFICATION)
                   ->setDate(new \DateTime());
             $this->manager->persist($notif);
@@ -60,6 +68,7 @@ class LocaliteSubscriber implements EventSubscriberInterface{
                 $userNotif->setRecepteur($supervGen)->setNotification($notif)->setStatus(0);
                 $this->manager->persist($userNotif); 
             }
+            $this->manager->flush();//vu k POST_WRITE il faut flush
         }
     }
 }

@@ -248,9 +248,15 @@ export class InventaireComponent implements OnInit {
     })
     this.signatairesInst = data[3] ? data[3] : []
   }
+<<<<<<< HEAD
   detailsLoc(inventaire) {
     this.tabLoc = [];
     this.tabOpen == [];
+=======
+  detailsLoc(inventaire){
+    this.tabLoc=[];
+    this.tabOpen=[];
+>>>>>>> master
     inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));//this.getOneLocById car serialisation fait que l objet n est pas complet
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
@@ -379,6 +385,7 @@ export class InventaireComponent implements OnInit {
       }
     )
   }
+<<<<<<< HEAD
   getAllDataToSend(form: FormGroup) {
     let data = this.getData(form.value)
     data.instructions = this.getOnlyFile(this.instructions)
@@ -394,6 +401,22 @@ export class InventaireComponent implements OnInit {
     data.localites = this.getOneLyId(this.tabLoc)
     data.localInstructionPv = [this.invCreer ? 'creation' : 'download', this.pvCreer ? 'creation' : 'download']
     console.log(data)
+=======
+  getAllDataToSend(form: FormGroup){
+    let data=this.getData(form.value)
+    data.instructions=this.getOnlyFile(this.instructions)
+    data.instrucCreer=this.getDataInstCreer()
+    data.decisionCC=this.getOnlyFile(this.docsDc)
+    data.presiComite=this.idPresiComite
+    data.membresCom=this.tabComite.value
+    data.presentsReunion=this.tabPresents.value
+    data.presentsReunionOut=this.tabOtherPresent.value
+    data.pvReunion=this.getOnlyFile(this.docsPv)
+    data.pvReunionCreer=this.getDataPvCreer()
+    data.entreprise=this.idCurrentEse
+    data.localites=this.getOneLyId(this.tabLoc)
+    data.localInstructionPv=[this.invCreer?'creation':'download',this.pvCreer?'creation':'download']
+>>>>>>> master
     return data
   }
   getOneLyId(localites) {
@@ -612,6 +635,7 @@ export class InventaireComponent implements OnInit {
       }
     }
   }
+<<<<<<< HEAD
   pageInst(data) {
     const bloc1e1 = data[0][0]
     const bloc1e2 = data[0][1]
@@ -712,6 +736,107 @@ export class InventaireComponent implements OnInit {
             ],
             [
               { text: bloc3e4, margin: [2, 7], fontSize: 10 }
+=======
+  pageInst(data){
+      const bloc1e1 = data[0][0]
+      const bloc1e2 = data[0][1]
+      const bloc1e3 = data[0][2]
+
+      const bloc2e1 = data[1][0]
+      const bloc2e2 = data[1][1]
+      const bloc2e3 = data[1][2]
+
+      const bloc3e1 = data[2][0]
+      const bloc3e2 = data[2][1]
+      const bloc3e3 = data[2][2]
+      const bloc3e4 = data[2][3]
+      const signataires= [3]?data[3]:[]
+      return[
+        ...this.getImage(),
+        {
+          table:{
+            width:['*'],
+            body:[
+              ...this.getEntete(),
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
+              [
+                {text:"INSTRUCTIONS D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:'',margin:[2,7],border:[false,false,false,false]}
+              ],
+              [
+                {text:'1.TRAVAUX PREPARATOIRES', style:'grasGrisF',alignment:'center',fontSize:12}
+              ],
+              [
+                {text:"1.1. REUNION DE LANCEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:'1.2. RAPPEL DE LA PROCEDURES SUR LES IMMOBILISATIONS', style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:'1.3. EDITION ET CONTRÔLE DU FICHIER DES IMMOBILISATIONS', style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc1e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.TRAVAUX D'INVENTAIRE", style:'grasGrisF',alignment:'center'}
+              ],
+              [
+                {text:"2.1. MISE EN PLACE DU COMITE D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.2. AFFECTATION DES EQUIPES D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"2.3. DEROULEMENT DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc2e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.TRAVAUX POST-INVENTAIRE", style:'grasGrisF',alignment:'center'}
+              ],
+              [
+                {text:"3.1. RAPPROCHEMENT FICHIER D'IMMOBILISATIONS ET RESULTATS DE L'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e1,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.2. CORRECTION DES ANOMALIES", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e2,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.3. APPROBATION D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e3,margin:[2,7],fontSize:10}
+              ],
+              [
+                {text:"3.4. TRANSMISSION DU DOSSIER D'INVENTAIRE", style:'grasGris',alignment:'center'}
+              ],
+              [
+                {text:bloc3e4,margin:[2,7],fontSize:10}
+              ]
+>>>>>>> master
             ]
           ]
         }, margin: [0, 10, 0, 0]
@@ -837,6 +962,7 @@ export class InventaireComponent implements OnInit {
     }
     return tab
   }
+<<<<<<< HEAD
   overLoc(localite) {// au cas ou tu veux faire des traitement au hover d une localite
     console.log(localite)
     this.locHover = localite
@@ -848,6 +974,16 @@ export class InventaireComponent implements OnInit {
   overSz(sz) {
     console.log(sz)
     this.szHover = sz
+=======
+  overLoc(localite){// au cas ou tu veux faire des traitement au hover d une localite
+    this.locHover=localite
+  }
+  overZone(zone){
+    this.zoneHover=zone
+  }
+  overSz(sz){
+    this.szHover=sz
+>>>>>>> master
   }
   outHoverLZS() {
     this.locHover = null

@@ -19,7 +19,7 @@
                 </li>
                 
             </ul>
-            <ul class="pull-left collapse-menu-icon" *ngIf="getEntite()">
+            <ul class="pull-left collapse-menu-icon" *ngIf="getEntite() && !securityServ.admin">
                 <li> 
                     <span class="p-1 pl-5 pr-5" style="margin-left: 600px; font-size: xx-large;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
                 </li>
@@ -46,7 +46,7 @@
                             <ul class="menu" style="position: relative; max-width: 600px; max-height: 300px;"
                                 [perfectScrollbar]>
                                 <li>
-                                    <a *ngFor="let n of notifs"  [href]="'#'+n.notification.lien" (click)="lireNotif(n.id)" [ngClass]="{'new-notif': n.status==0}">
+                                    <a *ngFor="let n of notifs"  [routerLink]="n.notification.lien" (click)="lireNotif(n.id)" [ngClass]="{'new-notif': n.status==0}">
                                         <span class="table-img msg-user">
                                             <img src="{{imgLink+n.notification.emetteur.image}}" alt="">
                                         </span>
@@ -295,7 +295,7 @@
                     </div>
                     <div class="modal-footer pr-0">
                         <div class="button-demo">
-                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="eseForm.invalid">Enregistrer</button>
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="eseForm.invalid">Valider</button>
                             <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]="eseForm.invalid||!idEse">Annuler</button>
                         </div>
                     </div>

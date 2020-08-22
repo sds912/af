@@ -14,7 +14,7 @@ class MercureCookieGenerator{
     }
     public function generate(User $user){
         $token=(new Builder())
-                ->withClaim('mercure', ['subscribe' => ["http://monsite.com/user/{$user->getId()}"]])
+                ->withClaim('mercure', ['subscribe' => ["http://asma-gestion-immo.com/user/{$user->getId()}"]])
                 ->getToken(new Sha384(), new Key($this->secret));
         return "Bearer {$token}";
     }

@@ -63,7 +63,7 @@
                         <mat-form-field class="example-chip-list example-full-width zonage" *ngIf="subdivisions && subdivisions[i+1]">
                             <mat-chip-list #chipList aria-label="Sous-zones">
                                 <mat-chip *ngFor="let sub of getCurrentSubById(idParent)" [selectable]="selectable" [removable]="false"
-                                    class="w-25 row pt-1" style="min-width: 275px;">
+                                    class="w-25 row pt-1 color-chips" style="min-width: 275px;">
                                     <span class="p-0 pl-1" [ngClass]="{'col-8': !securityServ.superviseurGene,'col-11': securityServ.superviseurGene}" [title]="sub.nom">{{longText(sub.nom,20)}}</span>
                                     <span class="p-0" [ngClass]="{'col-4': !securityServ.superviseurGene,'col-1': securityServ.superviseurGene}">
                                         <mat-icon class="edit-sousZ pointer text-secondary" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
@@ -73,7 +73,11 @@
                                         <mat-icon *ngIf="!securityServ.superviseurGene" matChipRemove class="ml-0" title="Supprimer" (click)="deleteLoc(sub)">delete</mat-icon>
                                     </span>
                                 </mat-chip>
-                                <input [placeholder]="subdivisions[i+1]" #fruitInput [formControl]="fruitCtrl" [disabled]="securityServ.superviseurGene"
+                                <input [placeholder]="subdivisions[i+1]" #fruitInput 
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    (matChipInputTokenEnd)="add($event,idParent)" disabled *ngIf="securityServ.superviseurGene">
+                                <input [placeholder]="subdivisions[i+1]" #fruitInput [formControl]="fruitCtrl" *ngIf="!securityServ.superviseurGene"
                                     [matChipInputFor]="chipList"
                                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                     (matChipInputTokenEnd)="add($event,idParent)">
@@ -92,7 +96,7 @@
 <!--Form-->
 <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog" role="document">
-        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="saveLocalite(localiteForm)" #formDirective1="ngForm">
+        <form class="modal-content"  [formGroup]="localiteForm" (ngSubmit)="onSubmit(localiteForm)" #formDirective1="ngForm">
             <div class="modal-header">
                 <div class="editRowModal">
                     <div class="modal-header clearfix">

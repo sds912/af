@@ -106,7 +106,7 @@ monthYearA11yLabel: 'MMMM YYYY',
     SharedModule
   ],
   providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    //{ provide: LocationStrategy, useClass: HashLocationStrategy },//pour le # sur l url
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG

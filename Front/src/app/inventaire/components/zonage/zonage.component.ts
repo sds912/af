@@ -11,6 +11,7 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormGroup, FormBuilder, FormControl, Validators, NgForm, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 export interface ChipColor {
   name: string;
@@ -50,6 +51,7 @@ export class ZonageComponent implements OnInit {
   currentImage='map3.jpeg'//'font-maps.jpg'
   myId=""
   titleAdd=""
+  idToOpen=0
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeSubdivision', { static: false }) closeSubdivision;
@@ -66,7 +68,9 @@ export class ZonageComponent implements OnInit {
               private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private sharedService:SharedService,
-              public securityServ:SecurityService) {
+              public securityServ:SecurityService,
+              private route:ActivatedRoute,
+              public router:Router) {
     this.titleAdd=this.securityServ.superviseurAdjoint?"Demandez au superviseur général d'ajouter une subdivision":"Ajouter une subdivision"
   }//revoir le delete sous-zone quand on ajout des user à ces sz
   ngOnInit() {
@@ -77,6 +81,22 @@ export class ZonageComponent implements OnInit {
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getOneEntreprise()
     this.addSubdivision("Localité")
+    if(this.route.snapshot.params['id']){
+      const id=this.route.snapshot.params['id']
+      this.idToOpen=this.sharedService.decodId(+id)
+    }
+    this.sameComponent()
+  }
+  sameComponent(){
+    this.router.events.subscribe((event) => {
+      if(event instanceof NavigationEnd) {//apres changement de la route
+        if(this.route.snapshot.params['id']){
+          const id=this.route.snapshot.params['id']
+          this.idToOpen=this.sharedService.decodId(+id)
+          this.getOneEntreprise()//notif sup gene
+        }
+      }
+    });
   }
   initForm(localite={id:0,nom:'',position:[]}){
     if(this.formDirective1)this.formDirective1.resetForm()
@@ -91,8 +111,7 @@ export class ZonageComponent implements OnInit {
       rep=>{
         this.allLoc=rep.localites//les positions
         this.localites=rep.localites//all sauf adjoint
-        console.log(this.localites);
-        
+        if(this.idToOpen && this.securityServ.superviseurGene)this.openOneById(this.idToOpen)//notif sup gene
         if(this.securityServ.superviseurAdjoint)this.localites=this.allLoc.filter(loc=>loc.createur?.id==this.myId)
         this.subdivisions=rep.subdivisions
         if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
@@ -105,14 +124,27 @@ export class ZonageComponent implements OnInit {
     )
   }
   addLocalite(form: FormGroup){//les premieres subdivisions
-    const firstL=this.localites.filter(l=>l.position?.length>0)
-    if(firstL.length<=45){
-      let data=form.value
+    const firstL=this.allLoc.filter(l=>l.position?.length>0)
+    const firstExist=this.firstSubNameExiste(this.allLoc,form.value)
+    if(firstL.length<=45 && !firstExist){
+      this.saveValideLoc(form)
+    }else if(firstExist){
+      const here=this.firstSubNameExiste(this.localites,form.value)//si elle fais parties de celles que j ai créé
+      let more=""
+      if(this.securityServ.superviseurAdjoint && !here){//si superviseur adjoint et que c est pas ma localité
+        more=", veuillez contacter le superviseur général"
+      }
+      this.showNotification('bg-info',form.value.nom+" existe déja"+more+".",'bottom','center',5000)
+    }else{
+      Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
+    }
+  }
+  saveValideLoc(form){
+    let data=form.value
       data.entreprise="/api/entreprises/"+this.idCurrentEse
       if(data.id==0)data.createur="/api/users/"+this.myId
       if(data.position && data.position.length==0)data.position=this.getPosition()
       this.securityServ.showLoadingIndicatior.next(true)
-      console.log(data.position);
       this.inventaireServ.addLocalite(data).then(
         rep=>{
           this.securityServ.showLoadingIndicatior.next(false)
@@ -125,10 +157,6 @@ export class ZonageComponent implements OnInit {
           console.log(error)
         }
       )
-    }else{
-      Swal.fire({title: '',text: "Vous avez atteint le nombre limite de localité.",icon: 'info'})
-    }
-    
   }
   addSub(value,idParent){//l ajout des autres sub
     let data={nom:value,entreprise:"/api/entreprises/"+this.idCurrentEse,parent:"/api/localites/"+idParent,createur:"/api/users/"+this.myId}
@@ -160,9 +188,20 @@ export class ZonageComponent implements OnInit {
         console.log(error)
       })
   }
-  saveLocalite(form: FormGroup){
+  onSubmit(form: FormGroup){
     if(!this.update) this.addLocalite(form)
     else this.updateOne(form) // le update de toutes
+  }
+  firstSubNameExiste(tab,localite){
+    const nom=localite.nom.trim()
+    return tab.find(
+      loc=>loc.nom?.toLowerCase()==nom?.toLowerCase() && 
+      loc.id!=localite.id && 
+      (
+        loc.position?.length>0||//si update first subdivison 
+        localite.id==0//si add first subdivison
+      )
+    )!=null
   }
   rev(tab){
     let t=[]
@@ -175,11 +214,14 @@ export class ZonageComponent implements OnInit {
   add(event: MatChipInputEvent,idParent): void {
     const input = event.input;
     const value = event.value;
-
+    const exist=this.localites.find(loc=>loc.nom?.toLowerCase()==value.trim()?.toLowerCase() && loc.idParent==idParent)
     // Add our sub
-    if ((value || '').trim()) {
+    if ((value || '').trim() && !exist) {
       const v=value.trim()
       if(v) this.addSub(value,idParent)
+    }else if(exist){
+      this.showNotification('bg-info',value.trim()+" existe déja.",'bottom','center',5000)
+      return
     }
 
     // Reset the input value
@@ -189,7 +231,6 @@ export class ZonageComponent implements OnInit {
 
     this.fruitCtrl.setValue(null);
   }
-  
   deleteLoc(localite){
     if(localite.rattacher){
       this.showNotification('bg-danger',"Impossible de supprimer cet élément car il contient des subdivisions.",'bottom','center',5000)
@@ -251,7 +292,6 @@ export class ZonageComponent implements OnInit {
           const left=this.getValPourcentage(localite.position[0])
           const top=this.getValPourcentage(localite.position[1])
           if(left==l && top==t||l>=(left-6) && l<=(left+6) && t>=(top-16) && t<=(top+16)){
-            console.log("arrond",[left,top],[l,t])
             arrond=true
           }
         }
@@ -332,5 +372,18 @@ export class ZonageComponent implements OnInit {
   updateL(sub){
     this.update=true
     this.initForm(sub)
+  }
+  openOneById(id){//on par de id et on recup tous ses parents
+    this.tabOpen.push(id)
+    this.tabOpen=[]
+    let idParent=null;
+    let loc=this.allLoc.find(localite=>localite.id==id)
+    do{
+      if(idParent)this.tabOpen.push(idParent) //si il y a un idParent on le pend et le dernier on prend son id ca sera le first
+      idParent=loc?loc.idParent:null
+      loc=this.allLoc.find(localite=>localite.id==idParent)
+    }while(idParent)
+    this.tabOpen.sort(function(a, b) {return a - b;});
+    this.idCurrentLocal=this.tabOpen[0]
   }
 }

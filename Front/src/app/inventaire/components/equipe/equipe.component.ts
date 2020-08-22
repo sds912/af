@@ -149,7 +149,6 @@ export class EquipeComponent implements OnInit {
     }
     this.tabMenu[indexMenu][1]=tabSub//on replace le tableau des sous menus à sa place
     if(tabSub && tabSub.length==0)this.tabMenu.splice(indexMenu, 1)
-    console.log(this.tabMenu)
   }
   subMenuIsPick(idMenu,idSub){
     let indexMenu=this.getIndexMenu(idMenu)
@@ -182,7 +181,7 @@ export class EquipeComponent implements OnInit {
     const users=this.usersTampon.filter(u=>u.entreprises.find(e=>e.id==id))
     this.setTableData(users)
   }
-  getUsers(){
+  getUsers(){//voir doctrine/MyUser du Bac pour comprendre comment seul les users de l entreprise s affiche
     this.adminServ.getUsers().then(
       rep=>{
         let users=[]
@@ -357,7 +356,6 @@ export class EquipeComponent implements OnInit {
     this.editRow(user)
   }
   showDetails(row){
-    console.log(row)
     this.autreDep=false
     this.traitementUpdate(row)
     var n = this.dep.includes(row.departement);//si son departement est dans la liste
