@@ -65,7 +65,7 @@ class Entreprise
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="entreprise")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $localites;
 
@@ -94,7 +94,7 @@ class Entreprise
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $subdivisions = [];
 

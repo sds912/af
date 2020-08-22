@@ -28,19 +28,19 @@ class Inventaire
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read"})
      */
     private $fin;
 
@@ -89,7 +89,7 @@ class Inventaire
 
     /**
      * @ORM\ManyToMany(targetEntity=Localite::class, inversedBy="inventaires")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_loc_read"})
      */
     private $localites;
 
@@ -129,6 +129,11 @@ class Inventaire
      * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="inventaire")
      */
     private $lectures;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $status;/** status : open et close */
 
     public function __construct()
     {
@@ -354,20 +359,6 @@ class Inventaire
         }
         return $this;
     }
-    public function addAllZones($zones){
-        $this->zones = new ArrayCollection();
-        for($i=0;$i<count($zones);$i++){
-            $this->addZone($zones[$i]);
-        }
-        return $this;
-    }
-    public function addAllSousZones($sousZones){
-        $this->sousZones = new ArrayCollection();
-        for($i=0;$i<count($sousZones);$i++){
-            $this->addSousZone($sousZones[$i]);
-        }
-        return $this;
-    }
     public function addAllPresentR($membres){
         $this->presentsReunion = new ArrayCollection();
         for($i=0;$i<count($membres);$i++){
@@ -427,6 +418,18 @@ class Inventaire
                 $lecture->setInventaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

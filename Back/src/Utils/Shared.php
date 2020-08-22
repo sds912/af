@@ -38,6 +38,8 @@ class Shared{
     const DEBUT="debut";
     const FIN="fin";
     const ENTREPRISE="entreprise";
+    const OPEN="open";
+    const CLOSE="close";
     public static function  getData(Request $request){
         $data=json_decode($request->getContent(),true);
         if(!$data){

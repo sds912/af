@@ -20,19 +20,19 @@ class Immobilisation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read"})
      */
     private $code;
     /**
@@ -47,6 +47,7 @@ class Immobilisation
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_read","mobile_inv_read"})
      */
     private $emplacement;
 
@@ -99,6 +100,17 @@ class Immobilisation
      * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="immobilisation")
      */
     private $lectures;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $etat;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"mobile_inv_read"})
+     */
+    private $description;
 
     public function __construct()
     {
@@ -305,6 +317,30 @@ class Immobilisation
                 $lecture->setImmobilisation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?string $etat): self
+    {
+        $this->etat = $etat;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
