@@ -1,0 +1,62 @@
+{
+    "nom":"invantaire  du 12/12/2020",
+    "membre" : [
+        {
+            "id" : 1 , 
+            "nom" : "Issa Kane",
+            "email": "diikaanedev@gmail.com",
+            "poste":"Chef d'Équipe",
+            "password":"passer123"
+        },
+        {
+            "id" : 2 , 
+            "nom" : "Babacar Sall",
+            "email": "diikaane@gmail.com",
+            "poste":"Membre Inventaire",
+            "password":"passer123"
+        }
+    ] , 
+    "pieces" : [
+        {
+            "id":1,
+            "libelle": "THINKPAD L590 Issa ",
+            "scan_code": "087190A0A39D",
+            "description":"this is a description"
+        },
+        {
+            "id":2,
+            "libelle": "THINKPAD L590 Ndoye",
+            "scan_code": "087190A0E542",
+            "description":"this is a description"
+        }, 
+        {
+            "id":3,
+            "libelle": "TMARQUEUR  BLEU",
+            "scan_code": "4004675011671",
+            "description":"this is a description"
+        },
+        {
+            "id":4,
+            "libelle": "MARQUEUR  ROUGE",
+            "scan_code": "4004675011640",
+            "description":"this is a description"
+        }, {
+            "id":3,
+            "libelle": "BOUTEILLE D'EAU CASAMANCAISE",
+            "scan_code": "6046000010803",
+            "description":"this is a description"
+        },
+        {
+            "id":4,
+            "libelle": "PLATEAU CAFE",
+            "scan_code": "6935828205341",
+            "description":"this is a description"
+        },
+        {
+            "id":4,
+            "libelle": "BOITE NESPRESSO ROMA",
+            "scan_code": "7640140338682",
+            "description":"this is a description"
+        }
+    ]
+}

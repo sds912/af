@@ -43,12 +43,13 @@ import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfi
 import { InventaireComponent } from './components/inventaire/inventaire.component';
 import { SafeUrlPipe } from '../shared/pipe/safe-url.pipe';
 import { MatStepperModule } from '@angular/material/stepper';
+import { FonctionSignComponent } from './components/fonction-sign/fonction-sign.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 @NgModule({
-  declarations: [SafeUrlPipe,ZonageComponent, EquipeComponent, InventaireComponent],
+  declarations: [SafeUrlPipe,ZonageComponent, EquipeComponent, InventaireComponent, FonctionSignComponent],
   imports: [
     CommonModule,
     InventaireRoutingModule,
