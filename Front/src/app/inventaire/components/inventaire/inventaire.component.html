@@ -442,7 +442,6 @@
                                             [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS
                                             A LA RÉUNION</span>
                                         <span class="col-8 row">
-<<<<<<< HEAD
                                             <span
                                                 *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0">Membres
                                                 présents à la réunion de lancement non définis</span>
@@ -454,13 +453,6 @@
                                                 class="p-0 pt-1 ml-3 mb-2 block-user">
                                                 <img class="img-circle user-img-circle img-membre pointer ng-star-inserted"
                                                     [src]="imgLink+membre.image" [title]="membre.nom">
-=======
-                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0" class="pl-3">Membres présents à la réunion de lancement non définis</span>
-                                            
-                                            <img hidden *ngFor="let membre of inventaire.presentsReunion" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+membre.image" [title]="membre.nom">
-                                            <span *ngFor="let membre of inventaire.presentsReunion" class="p-0 pt-1 ml-3 mb-2 block-user">
-                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+membre.image"  [title]="membre.nom">
->>>>>>> master
                                                 <small>{{longText(membre.nom,18)}}</small>
                                                 <small class="text-primary titre-membre"
                                                     [title]="membre.poste">{{longText(membre.poste,18)}}</small>
@@ -637,7 +629,6 @@
 </div>
 <!-- Modal Window Add comité -->
 
-<<<<<<< HEAD
 <!-- Localité -->
 <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
@@ -650,46 +641,6 @@
                             <div class="font-weight-bold p-t-10 font-17">Localités</div>
                         </div>
                     </div>
-=======
- <!-- Localité -->
- <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog"
- aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog" role="document">
-     <form class="modal-content">
-         <div class="modal-header">
-             <div class="editRowModal">
-                 <div class="modal-header clearfix">
-                     <div class="modal-about">
-                         <div class="font-weight-bold p-t-10 font-17">Localités</div>
-                     </div>
-                 </div>
-             </div>
-             <button type="button" #closeLocaliteModal
-                 class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                 aria-label="Close">
-                 <i class="material-icons">clear</i>
-             </button>
-         </div>
-         <div class="modal-body pl-2 pr-2"  [perfectScrollbar]>
-            <!-- Localités -->
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                <!--1ere subdivision-->
-                <div class="p-2 mt-1 pb-4 box-loc">
-                    <p class="ml-2">{{subdivisions[0]}}</p>
-                    <hr>
-                    <mat-chip-list aria-label="Fish selection" class="mt-4">
-                        <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let localite of firstSub(localites); index as i">
-                            <span class="col-11 pl-0">
-                                <section class="example-section pick-loc">
-                                    <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">{{localite.nom}}</mat-checkbox>
-                                </section>
-                            </span>
-                            <span class="col-1">
-                                <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
-                            </span>
-                        </mat-chip>
-                    </mat-chip-list>
->>>>>>> master
                 </div>
                 <button type="button" #closeLocaliteModal class="btn p-t-10 modal-close-button" data-dismiss="modal"
                     aria-label="Close">
@@ -723,7 +674,6 @@
                     </div>
                     <!--1ere subdivision-->
 
-<<<<<<< HEAD
                     <!--Autres subdivisions-->
                     <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4"
                         [hidden]="!openLocalite || !getOneLocById(idParent)"
@@ -751,26 +701,6 @@
                         </p>
                     </div>
                     <!--Autres subdivisions-->
-=======
-                <!--Autres subdivisions-->
-                <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4 box-loc" [hidden]="!openLocalite || !getOneLocById(idParent)">
-                    <p class="mt-3 ml-2">{{getOneLocById(idParent)?.nom}}</p>
-                    <hr>
-                    <mat-chip-list aria-label="Fish selection">
-                        <small class="ml-3" style="font-style: italic;">{{subdivisions[i+1]}}</small>
-                        <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let sub of getCurrentSubById(idParent);">
-                            <span class="col-11 pl-0">
-                                <section class="example-section pick-loc">
-                                    <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}</mat-checkbox>
-                                </section>
-                            </span>
-                            <span class="col-1">
-                                <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
-                            </span>
-                        </mat-chip>
-                    </mat-chip-list>
-                    <p *ngIf="getCurrentSubById(idParent).length==0" class="ml-2 mt-2">Cette subdivision est vide</p>
->>>>>>> master
                 </div>
                 <!-- Localités -->
                 <div class="row pl-4 pr-0 mt-4" *ngIf="showForm">
