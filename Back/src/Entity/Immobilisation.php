@@ -7,12 +7,13 @@ use App\Repository\ImmobilisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={"entreprise.id": "exact"})
  */
 class Immobilisation
 {
@@ -111,6 +112,11 @@ class Immobilisation
      * @Groups({"mobile_inv_read"})
      */
     private $description;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="immobilisations")
+     */
+    private $entreprise;
 
     public function __construct()
     {
@@ -341,6 +347,18 @@ class Immobilisation
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): self
+    {
+        $this->entreprise = $entreprise;
 
         return $this;
     }
