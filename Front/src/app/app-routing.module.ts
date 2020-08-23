@@ -29,6 +29,7 @@ const routes: Routes = [
     path: 'forms',canActivate:[AuthGuard],
     loadChildren: () => import('./forms/forms.module').then(m => m.FormModule)
   },
+  
   {
     path: 'tables',canActivate:[AuthGuard],
     loadChildren: () =>
@@ -75,6 +76,10 @@ const routes: Routes = [
   {
     path: '',canActivate:[AuthGuard],
     loadChildren: () => import('./inventaire/inventaire.module').then(m => m.InventaireModule)
+  },
+  {
+    path: '',canActivate:[AuthGuard],
+    loadChildren: () => import('./immobilisation/immobilisation.module').then(m => m.ImmobilisationModule)
   },
   {
     path: '',
