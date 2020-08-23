@@ -36,8 +36,8 @@
                 <!-- #END# Full Screen Button -->
                 <!-- #START# Notifications-->
                 <li class="dropdown">
-                    <button mat-icon-button data-toggle="dropdown" class="nav-notification-icons">
-                        <mat-icon>notifications_none</mat-icon>
+                    <button mat-icon-button data-toggle="dropdown" #openNotif class="nav-notification-icons">
+                        <mat-icon style="color: blue;">notifications_none</mat-icon>
                         <span class="label-count bg-orange" *ngIf="news>0"></span>
                     </button>
                     <ul class="dropdown-menu pullDown">
@@ -265,7 +265,7 @@
                 <div class="editRowModal">
                     <div class="modal-header clearfix">
                         <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17">Entité actuelle</div>
+                            <div class="font-weight-bold p-t-10 font-17">Choisissez votre entité</div>
                         </div>
                     </div>
                 </div>

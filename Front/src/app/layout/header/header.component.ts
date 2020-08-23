@@ -20,6 +20,7 @@ export class HeaderComponent implements OnInit {
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
   @ViewChild('openEseModal', { static: true }) openEseModal;
+  @ViewChild('openNotif' , {static:true}) openNotif;
 
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
   @ViewChild('closeEseModal', { static: false }) closeEseModal;
@@ -120,6 +121,13 @@ export class HeaderComponent implements OnInit {
     this.setStartupStyles();
     this.initForm()
     this.initForm3()
+
+    setTimeout(()=> {
+      console.log('on est la');
+        console.log(this.openNotif._elementRef.nativeElement);
+        
+        this.openNotif?._elementRef?.nativeElement?.click();
+    },500);
     
     if(this.securityServ.isAuth){
       this.getCountNew()

@@ -14,7 +14,6 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { FonctionSignComponent } from '../fonction-sign/fonction-sign.component';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-inventaire',
@@ -78,6 +77,8 @@ export class InventaireComponent implements OnInit {
   tabOpen = []
   openLocalite = null
   titleAdd = "Ajouter un inventaire"
+  tabSignataires = new FormArray([]);
+  tabSignatairesPv = new FormArray([]);
   constructor(private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
@@ -105,19 +106,7 @@ export class InventaireComponent implements OnInit {
 
       }
     )
-  }
-  openDialog(): void {
-
-    const dialogRef = this.dialog.open(FonctionSignComponent, {
-      data: {name: 'Papa Laye Kane'}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
-
-
+  };
   getOneEntreprise() {
     const idEse = localStorage.getItem("currentEse")
     this.adminServ.getOneEntreprise(idEse).then(
@@ -246,7 +235,12 @@ export class InventaireComponent implements OnInit {
       bloc3e3: [data[2][2]],
       bloc3e4: [data[2][3]],
     })
-    this.signatairesInst = data[3] ? data[3] : []
+    console.log(data[3])
+    const dataSignataire = data[3]?.length>0 ? data[3] : ["",""]
+    this.tabSignataires=new FormArray([])
+    for (let index = 0; index < dataSignataire.length; index +=2) {
+      this.addSignataire(dataSignataire[index],dataSignataire[index+1])
+    }
   }
   detailsLoc(inventaire) {
     this.tabLoc = [];
@@ -260,6 +254,11 @@ export class InventaireComponent implements OnInit {
       bloc2: [data[1]],
       bloc3: [data[2]]
     })
+    this.tabSignatairesPv=new FormArray([])
+    const dataSignataire = data[3]?.length>0 ? data[3] : ["",""]
+    for (let index = 0; index < dataSignataire.length; index +=2) {
+      this.addSignatairePv(dataSignataire[index],dataSignataire[index+1])
+    }
     this.signatairesPv = this.getSignatairePv(data[3])
   }
   getSignatairePv(data) {
@@ -335,6 +334,22 @@ export class InventaireComponent implements OnInit {
       })
     );
   }
+  addSignataire(nom="",fonction="") {
+    this.tabSignataires.push(
+      new FormGroup({
+        nom: new FormControl(nom),
+        fonction: new FormControl(fonction)
+      })
+    );
+  }
+  addSignatairePv(nom="",fonction="") {
+    this.tabSignatairesPv.push(
+      new FormGroup({
+        nom: new FormControl(nom),
+        fonction: new FormControl(fonction)
+      })
+    );
+  }
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
       const control = formGroup.controls[controlName];
@@ -363,6 +378,7 @@ export class InventaireComponent implements OnInit {
     return this.users.find(u => u.id == id)
   }
   onEditSave(form: FormGroup) {
+    console.log('form.value => ',form.value);
     this.securityServ.showLoadingIndicatior.next(true)
     let data = this.getAllDataToSend(form)
     this.inventaireServ.addInventaire(data).then(
@@ -403,12 +419,16 @@ export class InventaireComponent implements OnInit {
   }
   getDataInstCreer() {
     let d = this.instForm.value
-    d.signataire = this.signatairesInst//on y ajoute les signataires
+    let tab =[]
+    this.tabSignataires.value?.forEach(element => tab.push([element.nom,element.fonction]));
+    d.signataire = tab//on y ajoute les signataires
     return d
   }
   getDataPvCreer() {
     let val = this.pvForm.value
-    const data1 = [val.bloc1, val.bloc2, val.bloc3, this.signatairesPv]
+    let tab =[]
+    this.tabSignatairesPv.value?.forEach(element => tab.push([element.nom,element.fonction]));
+    const data1 = [val.bloc1, val.bloc2, val.bloc3, tab]
     let data2 = []
     this.tabDeliberation.value.forEach(del => {
       let titre = del.titre.trim()
@@ -761,9 +781,9 @@ export class InventaireComponent implements OnInit {
       [
         { text: "" + e.denomination, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
       ],
-      [
-        { text: "Capital: " + k, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
-      ],
+      // [
+      //   { text: "Capital: " + k, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
+      // ],
       [
         { text: "" + e.republique + "/" + e.ville, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
       ]
@@ -785,12 +805,12 @@ export class InventaireComponent implements OnInit {
   }
   getSignatairePdf(signataires) {
     if (!signataires || signataires.length == 0) return [{}]
-    if (signataires.length == 1) return this.getOneSignatairePdf(signataires)
-    if (signataires.length == 3) return this.get3SignatairePdf(signataires)//modif
+    if (signataires.length == 2) return this.getOneSignatairePdf(signataires)
+    if (signataires.length == 6) return this.get3SignatairePdf(signataires)//modif
     return this.getOtherSignatairePdf(signataires)
   }
   getOneSignatairePdf(signataires) {
-    return [{ text: signataires[0], margin: [0, 20, 0, 0], fontSize: 10, decoration: 'underline' }]
+    return [{ text: signataires[0] + ' ( '+signataires[1]+' )', margin: [0, 20, 0, 0], fontSize: 10, decoration: 'underline' }]
   }
   get3SignatairePdf(signataires) {
     return [
@@ -799,11 +819,11 @@ export class InventaireComponent implements OnInit {
           widths: ["*", "*"],
           body: [
             [
-              { text: signataires[0], fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false] },
-              { text: signataires[2], fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'right' }
+              { text: signataires[0] + ' ( '+signataires[1]+' )', fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false] },
+              { text: signataires[4] + ' ( '+signataires[5]+' )', fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'right' }
             ],
             [
-              { text: signataires[1], fontSize: 10, margin: [0, 0, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {}
+              { text: signataires[2] + ' ( '+signataires[3]+' )', fontSize: 10, margin: [0, 0, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {}
             ]
           ]
         }
@@ -823,11 +843,17 @@ export class InventaireComponent implements OnInit {
     ]
   }
   lignesSignataires(signataires) {
+    
     let tab = []
     let a = 0
-    for (let i = 0; i < signataires.length; i += 2) {
-      let nom1 = signataires[i]
-      let nom2 = signataires[i + 1] ? signataires[i + 1] : ""
+    for (let i = 0; i < signataires.length; i +=4 ) {
+      console.log('i est a => ',i);
+      
+      let nom1 = signataires[i] + ' ( '+signataires[i+1]+' )'
+      let nom2 = (signataires[i + 2] && signataires[i + 3])?(signataires[i + 2] + ' ( '+signataires[i+3]+' )' ): ""
+      console.log('nom=> ',nom1);
+      console.log('nom2=> ',nom2);
+
       tab.push(
         [
           { text: nom1, fontSize: 10, margin: [0, 20, 0, 70], decoration: 'underline', border: [false, false, false, false] },

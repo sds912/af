@@ -66,10 +66,11 @@
                                     <ngx-datatable-column name="Entité" sortable="false" prop="entreprises" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
-                                                <span *ngIf="value && value.length==1" [title]="value[0].denomination">{{longText(value[0].denomination,20)}}</span>
-                                                <select *ngIf="value && value.length>1" class="form-control no-border pl-0" style="border: none !important;">
+                                                <span *ngIf="value && value.length==1  && securityServ.admin" [title]="value[0].denomination">{{longText(value[0].denomination,20)}}</span>
+                                                <select *ngIf="value && value.length>1 && securityServ.admin" class="form-control no-border pl-0" style="border: none !important;">
                                                    <option *ngFor="let e of value">{{e.denomination}}</option> 
                                                 </select>
+                                                <span *ngIf="!securityServ.admin" [title]="value[0].denomination">{{getEntrepriseById()?.denomination}}</span>
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>

@@ -839,21 +839,29 @@
 
                                 <mat-step hidden>
                                     <ng-template matStepLabel>SIGNATAIRES</ng-template>
-                                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                                        <mat-form-field class="example-chip-list example-full-width">
-                                            <mat-chip-list #chipList1 aria-label="Fruit selection">
-                                                <mat-chip *ngFor="let signataire of signatairesInst" [selectable]="true"
-                                                    [removable]="true" (removed)="removeSignInst(signataire)">
-                                                    {{signataire}}
-                                                    <!-- <mat-icon class="ml-2 edit-sousZ pointer text-secondary" mat-raised-button (click)="openDialog()">create</mat-icon>  -->
-                                                    <mat-icon matChipRemove>cancel</mat-icon>
-                                                </mat-chip>
-                                                <input placeholder="Signataires" [formControl]="signInstCtrl"
-                                                    [matChipInputFor]="chipList1"
-                                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                                    (matChipInputTokenEnd)="addSignInst($event)">
-                                            </mat-chip-list>
-                                        </mat-form-field>
+                                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0"
+                                        *ngFor="let oneForm of tabSignataires.controls; index as i">
+
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                            <mat-form-field class="example-full-width" appearance="outline">
+                                                <mat-label>Nom du signataire</mat-label>
+                                                <input matInput [formControl]="oneForm.controls.nom">
+                                                <mat-icon matSuffix>text_format</mat-icon>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                            <mat-form-field class="example-full-width" appearance="outline">
+                                                <mat-label>Fonction</mat-label>
+                                                <input matInput type="text" [formControl]="oneForm.controls.fonction">
+                                            </mat-form-field>
+                                        </div>
+
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary"
+                                            [hidden]="i!=(tabSignataires.length-1)" (click)="addSignataire()">
+                                            add_circle_outline
+                                        </mat-icon>
+
                                     </div>
                                 </mat-step>
                             </mat-vertical-stepper>
@@ -871,47 +879,6 @@
     </div>
 </div>
 <!-- Instruction -->
-
-<!-- Modal Window Password-->
-<!-- <div class="modal fade" id="addFonctionSignModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog mt-5" role="document">
-        <form class="modal-content"  [formGroup]="addFuctionSign" (ngSubmit)="addFunctionSignSave(addFuctionSign)"  #formDirective="ngForm">
-            <div class="modal-header">
-                <div class="editRowModal">
-                    <div class="modal-header clearfix">
-                        <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17">Ajouter Focntion</div>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" #closePasswordModal
-                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                    aria-label="Close">
-                    <i class="material-icons">clear</i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                            <mat-form-field class="example-full-width"
-                                appearance="outline">
-                                <mat-label></mat-label>
-                                <input matInput type="text" formControlName="functionSign" >
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="modal-footer pr-0">
-                        <div class="button-demo">
-                            <button type="submit" class="btn btn-outline-success btn-border-radius" >Enregistrer</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" >Annuler</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div> -->
 
 <!-- PV -->
 <div class="modal fade inv" id="pvModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -977,18 +944,27 @@
                                 info_outline</mat-icon>
                         </div>
                     </div>
-                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                        <mat-form-field class="example-chip-list example-full-width">
-                            <mat-chip-list #chipList aria-label="Fruit selection">
-                                <mat-chip *ngFor="let signataire of signatairesPv" [selectable]="true"
-                                    [removable]="true" (removed)="removeSignPv(signataire)">
-                                    {{signataire}}<mat-icon matChipRemove>cancel</mat-icon>
-                                </mat-chip>
-                                <input placeholder="Signataires" [formControl]="signPvCtrl" [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="addSignPv($event)">
-                            </mat-chip-list>
-                        </mat-form-field>
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0"
+                        *ngFor="let oneForm of tabSignatairesPv.controls; index as i">
+
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Nom du signataire</mat-label>
+                                <input matInput [formControl]="oneForm.controls.nom">
+                                <mat-icon matSuffix>text_format</mat-icon>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Fonction</mat-label>
+                                <input matInput type="text" [formControl]="oneForm.controls.fonction">
+                            </mat-form-field>
+                        </div>
+
+                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary"
+                            [hidden]="i!=(tabSignatairesPv.length-1)" (click)="addSignatairePv()">add_circle_outline
+                        </mat-icon>
                     </div>
                 </div>
                 <div class="modal-footer pr-2">
