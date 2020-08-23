@@ -9,7 +9,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angula
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { LayoutService } from '../layout.service';
 const document: any = window.document;
-
+import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -41,6 +41,26 @@ export class HeaderComponent implements OnInit {
   countNotif=6
   paginateN=false
   news=0
+  jsonObject: object = {
+    City: [
+      {
+        id: 1,
+        name: 'Basel',
+        founded: -200,
+        beautiful: true,
+        data: 123,
+        keywords: ['Rhine', 'River']
+      },
+      {
+        id: 1,
+        name: 'Zurich',
+        founded: 0,
+        beautiful: false,
+        data: 'no',
+        keywords: ['Limmat', 'Lake']
+      }
+    ]
+  };
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -135,6 +155,8 @@ export class HeaderComponent implements OnInit {
           this.openEseModal.nativeElement.click()
         }
     },1000);
+    const blob = new Blob([JSON.stringify(this.jsonObject)], {type : 'application/json'});
+    saveAs(blob, 'abc.json');
   }
   showAllNotif(){
     this.paginateN=false
