@@ -10,6 +10,7 @@ import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { LayoutService } from '../layout.service';
 const document: any = window.document;
 import { saveAs } from 'file-saver';
+import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -41,26 +42,6 @@ export class HeaderComponent implements OnInit {
   countNotif=6
   paginateN=false
   news=0
-  jsonObject: object = {
-    City: [
-      {
-        id: 1,
-        name: 'Basel',
-        founded: -200,
-        beautiful: true,
-        data: 123,
-        keywords: ['Rhine', 'River']
-      },
-      {
-        id: 1,
-        name: 'Zurich',
-        founded: 0,
-        beautiful: false,
-        data: 'no',
-        keywords: ['Limmat', 'Lake']
-      }
-    ]
-  };
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -71,7 +52,8 @@ export class HeaderComponent implements OnInit {
     public securityServ:SecurityService,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
-    private layouteSev:LayoutService
+    private layouteSev:LayoutService,
+    private inventaireServ:InventaireService
     ){
       
   }
@@ -155,9 +137,22 @@ export class HeaderComponent implements OnInit {
           this.openEseModal.nativeElement.click()
         }
     },1000);
-    const blob = new Blob([JSON.stringify(this.jsonObject)], {type : 'application/json'});
-    saveAs(blob, 'abc.json');
   }
+
+  exportForMobile(){
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
+      rep=>{
+        const blob = new Blob([JSON.stringify(rep)], {type : 'application/json'});
+        saveAs(blob, 'mobile.json');
+        this.securityServ.showLoadingIndicatior.next(false)
+      },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
+  }
+
   showAllNotif(){
     this.paginateN=false
     this.getNotif()
