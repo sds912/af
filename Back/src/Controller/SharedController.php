@@ -11,6 +11,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
+use App\Repository\ImmobilisationRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
 use App\Repository\UserNotifRepository;
@@ -47,7 +48,17 @@ class SharedController extends AbstractController
     /** @var LocaliteRepository */
     private $repoLoc;
 
-    public function __construct(Security $security,EntityManagerInterface $manager,EntrepriseRepository $repoEse,AuthorizationCheckerInterface $checker,InventaireRepository $repoInv,UserRepository $repoUser,LocaliteRepository $repoLoc)
+    /** @var ImmobilisationRepository */
+    private $repoImmo;
+
+    public function __construct(Security $security,
+                                EntityManagerInterface $manager,
+                                EntrepriseRepository $repoEse,
+                                AuthorizationCheckerInterface $checker,
+                                InventaireRepository $repoInv,
+                                UserRepository $repoUser,
+                                ImmobilisationRepository $repoImmo,
+                                LocaliteRepository $repoLoc)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
@@ -56,6 +67,7 @@ class SharedController extends AbstractController
         $this->repoInv=$repoInv;
         $this->repoUser=$repoUser;
         $this->repoLoc=$repoLoc;
+        $this->repoImmo=$repoImmo;
     }
     /**
     * @Route("/update/pp", methods={"POST"})
@@ -111,12 +123,13 @@ class SharedController extends AbstractController
     */
     public function addInventaire(Request $request,$id=null){//si put tableau vide
         $data=Shared::getData($request);
-        $tatus=201;
+        $code=201;
         $inventaire=new Inventaire();
         if($id){
             $inventaire=$this->repoInv->find($id);
-            $tatus=200;
+            $code=200;
         }
+        $status=$inventaire->getStatus()?$inventaire->getStatus():Shared::OPEN;
         $requestFile=$request->files->all();
         $instructions=[];
         if(isset($data["countInstruction"])){
@@ -177,16 +190,62 @@ class SharedController extends AbstractController
                    ->setPvReunion($pvReunions)
                    ->setEntreprise($entreprise)
                    ->addAllLocalite($localites)
-                   ->setLocalInstructionPv($localInstructionPv);
-        
-        if($tatus==201){
+                   ->setLocalInstructionPv($localInstructionPv)
+                   ->setStatus($status);
+
+        if($code==201){
             $this->manager->persist($inventaire);
         }
         $this->manager->flush();
         return $this->json([
             Shared::MESSAGE => 'Enregistré',
-            Shared::STATUS => $tatus
+            Shared::STATUS => $code
         ]);
+    }
+
+    /**
+    * @Route("/mobile-locality/{id}", methods={"GET"})
+    */
+    public function getMobilLocality(SerializerInterface $serializer, $id=null){
+        $entreprise=$this->repoEse->find($id);
+        $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        $data=[
+            "libelles"=>$entreprise->getSubdivisions(),
+            "localites"=>$inventaire->getLocalites()
+        ];
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_loc_read']]);
+        return new Response($data,200);
+    }
+
+    /**
+    * @Route("/mobile-iventaire/{id}", methods={"GET"})
+    */
+    public function getMobilInventaire(SerializerInterface $serializer, $id=null){
+        $entreprise=$this->repoEse->find($id);
+        $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        $data=[
+            "immos"=>$this->repoImmo->findAll(),
+            "inventaire"=>$inventaire
+        ];
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);
+        return new Response($data,200);
+    }
+
+    /**
+    * @Route("/mobile/data/{id}", methods={"GET"})
+    */
+    public function getMobileData(SerializerInterface $serializer, $id=null){
+        $entreprise=$this->repoEse->find($id);
+        $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        $data=[
+            "immos"=>$this->repoImmo->findAll(),
+            "inventaire"=>$inventaire,
+            "libelles"=>$entreprise->getSubdivisions(),
+            "localites"=>$inventaire->getLocalites(),
+            "users"=>$entreprise->getUsers()
+        ];
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
+        return new Response($data,200);
     }
 
     public function getPvCreer($data){

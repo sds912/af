@@ -19,13 +19,13 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read","inv_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read","user_read","inv_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
      */
     private $nom;
 
@@ -57,7 +57,7 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="parent")
-     * @Groups({"entreprise_read","user_read","inv_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
      */
     private $subdivisions;
 

@@ -99,4 +99,7 @@ export class InventaireService {
     }
     return this.sharedService.postElement(formData,"/inventaires")
   }
+  getDataForMobile(id){
+    return this.sharedService.getElement("/mobile/data/"+id)
+  }
 }
