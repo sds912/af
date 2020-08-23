@@ -231,6 +231,23 @@ class SharedController extends AbstractController
         return new Response($data,200);
     }
 
+    /**
+    * @Route("/mobile/data/{id}", methods={"GET"})
+    */
+    public function getMobileData(SerializerInterface $serializer, $id=null){
+        $entreprise=$this->repoEse->find($id);
+        $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        $data=[
+            "immos"=>$this->repoImmo->findAll(),
+            "inventaire"=>$inventaire,
+            "libelles"=>$entreprise->getSubdivisions(),
+            "localites"=>$inventaire->getLocalites(),
+            "users"=>$entreprise->getUsers()
+        ];
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
+        return new Response($data,200);
+    }
+
     public function getPvCreer($data){
         $d=[
             [

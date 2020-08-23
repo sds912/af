@@ -89,7 +89,7 @@ class Inventaire
 
     /**
      * @ORM\ManyToMany(targetEntity=Localite::class, inversedBy="inventaires")
-     * @Groups({"inv_read","mobile_loc_read"})
+     * @Groups({"inv_read"})
      */
     private $localites;
 

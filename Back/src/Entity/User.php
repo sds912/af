@@ -75,19 +75,19 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user_read"})
+     * @Groups({"user_read","mobile_users_read"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","mobile_users_read"})
      */
     private $roles = [];
 
@@ -105,7 +105,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read"})
      */
     private $nom;
 
@@ -129,7 +129,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","mobile_users_read"})
      */
     private $status;
 
@@ -167,6 +167,21 @@ class User implements UserInterface
         $this->localites = new ArrayCollection();
         $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
+    }
+
+    /**
+     * @Groups({"mobile_users_read"})
+     */
+    public function getEntreprisess()
+    {
+        /** Only for mobile when we get user by entreprise we need all entreprises of user (circular ref) */
+        $eses=$this->entreprises;
+        $tab=[];
+        foreach($eses as $ese){
+            $obj=["id"=>$ese->getId(),"denomination"=>$ese->getDenomination()];
+            array_push($tab,$obj);
+        }
+        return $tab;
     }
 
     public function getId(): ?int

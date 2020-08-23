@@ -71,7 +71,7 @@ class Entreprise
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_users_read"})
      */
     private $users;
 
