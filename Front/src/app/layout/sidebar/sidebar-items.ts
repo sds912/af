@@ -83,4 +83,13 @@ export const ROUTES: RouteInfo[] = [
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
     submenu: []
   },
+  {
+    id:'IMMO',
+    path: '/immos',
+    title: 'Immobilisations',
+    icon: 'fas fa-cubes',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
+    submenu: []
+  },
 ];
