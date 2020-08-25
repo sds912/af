@@ -286,7 +286,7 @@ export class EquipeComponent implements OnInit {
     if (user.menu) this.tabMenu = user.menu
     user.entreprises.forEach(e => this.addEntreprise(e.id));
     this.tabLoc = []
-    user.localites.forEach(l => this.checkLoc(l));
+    user.localites.forEach(l => this.checkLoc(l,true));
     this.tabOpen = []
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
@@ -572,11 +572,11 @@ export class EquipeComponent implements OnInit {
   inTab(valeur, tab) {
     return tab?.find(id => id == valeur);
   }
-  checkLoc(loc) {
+  checkLoc(loc,addOnly=false) {
     var index = this.tabLoc.indexOf(loc.id);
-    if (index > -1) {
+    if(index > -1 && !addOnly) {
       this.tabLoc.splice(index, 1);
-    } else {
+    }else if(index <= -1) {
       this.tabLoc.push(loc.id)
       const idParent = loc.idParent
       if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOnById(idParent))//cocher les parents recursif

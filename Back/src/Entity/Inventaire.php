@@ -133,7 +133,12 @@ class Inventaire
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $status;/** status : open et close */
+    private $status;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="inventaire")
+     */
+    private $affectations;/** status : open et close */
 
     public function __construct()
     {
@@ -141,6 +146,7 @@ class Inventaire
         $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->lectures = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -430,6 +436,37 @@ class Inventaire
     public function setStatus(?string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setInventaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getInventaire() === $this) {
+                $affectation->setInventaire(null);
+            }
+        }
 
         return $this;
     }

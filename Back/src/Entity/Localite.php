@@ -63,7 +63,7 @@ class Localite
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $createur;
 
@@ -94,10 +94,11 @@ class Localite
     * @Groups({"entreprise_read"})
     */
     public function getLinkToUser(){
+        /** revoir car maintenant on doit chercher dans les affectations si l id est dans le json localites */
         return count($this->users)>0;
     }
     /**
-    * @Groups({"entreprise_read"})
+    * @Groups({"entreprise_read","inv_read"})
     */
     public function getIdParent(){//utilisé ne pas sup
         $p=$this->parent;

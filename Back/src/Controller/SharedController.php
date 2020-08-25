@@ -8,6 +8,7 @@ use App\Utils\Shared;
 use App\Entity\Entreprise;
 use App\Entity\Inventaire;
 use App\Entity\User;
+use App\Repository\AffectationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
@@ -245,6 +246,16 @@ class SharedController extends AbstractController
             "users"=>$entreprise->getUsers()
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
+        return new Response($data,200);
+    }
+
+    /**
+    * @Route("/affectations/localites/invemtaire/{id}", methods={"GET"})
+    */
+    public function getTabIdLoc(SerializerInterface $serializer,$id=null,AffectationRepository $affectationRepository){
+        $inventaire=$this->repoInv->find($id);
+        $affectations=$affectationRepository->findOneBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
+        $data = $serializer->serialize($affectations?$affectations->getLocalites():[], 'json');
         return new Response($data,200);
     }
 
