@@ -5,16 +5,19 @@
             <div class="row">
               <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <ul class="breadcrumb breadcrumb-style ">
-                  <li class="breadcrumb-item">
-                    <h4 class="page-title">Choisir un inventaire</h4>
-                  </li>
-                  <li class="breadcrumb-item">
+                    <li class="breadcrumb-item mr-4">
+                        <h4 class="page-title">Choisir un inventaire</h4>
+                    </li>
+                    <li class="breadcrumb-item mr-4">
                       <select [(ngModel)]="idCurrentInv" class="select-trie" style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
                           <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">
                               Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
                         </option>
                       </select>
-                  </li>
+                    </li>
+                    <li class="breadcrumb-item ml-5">
+                        <span>Période d'inventaire du <strong>{{currentInv.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv.fin|date:'dd/MM/yyyy'}}</strong> </span>
+                    </li>
                 </ul>
               </div>
             </div>
@@ -24,7 +27,14 @@
             <!-- one user -->
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="card body">
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            Période de comptage du <strong>{{currentInv.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv.fin|date:'dd/MM/yyyy'}}</strong>
+                        </li>
+                    </ul><hr class="mt-0 mb-0">
                     <div class="details-box" [perfectScrollbar]>
+                        
+                        
                         <div class="row">
                             <div class="contact-photo">
                                 <img *ngIf="!currentUser" src="assets/images/usrbig.jpg" class="img-responsive pick-img" alt=""> 
@@ -75,7 +85,9 @@
                                 <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="inTab(localite.id,tabLoc)">
                                     {{localite.nom}}
                                 </mat-checkbox>
-                                <mat-icon class="pull-right icone-affectation pointer text-info" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                                
+                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Afficher" (click)="openFirst(localite.id)">alarme</mat-icon>
+                                <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
                             </li>
                         </ul>
                         <!--1ere subdivision-->
@@ -88,7 +100,8 @@
                                 <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
                                     {{sub.nom}}
                                 </mat-checkbox>
-                                <mat-icon class="pull-right icone-affectation pointer text-info" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Afficher" (click)="openFirst(localite.id)">alarme</mat-icon>
+                                <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
                             </li>
                             <li *ngIf="getCurrentSubById(idParent).length==0" class="list-group-item italic">Cette subdivision est vide</li>
                         </ul>
@@ -148,8 +161,8 @@
 
                                     <ngx-datatable-column name="Roles" sortable="false" prop="roles" [width]="150">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="padding-0" [title]="value">
-                                                {{ getRole(value, true) }}
+                                            <td class="padding-0" [title]="getRole(value, true)">
+                                                {{ longText(getRole(value, true),20) }}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>

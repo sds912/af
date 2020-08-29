@@ -50,6 +50,11 @@ class Affectation
      */
     private $localites = [];
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="affectations")
+     */
+    private $localite;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,6 +116,18 @@ class Affectation
     public function setLocalites(?array $localites): self
     {
         $this->localites = $localites;
+
+        return $this;
+    }
+
+    public function getLocalite(): ?Localite
+    {
+        return $this->localite;
+    }
+
+    public function setLocalite(?Localite $localite): self
+    {
+        $this->localite = $localite;
 
         return $this;
     }

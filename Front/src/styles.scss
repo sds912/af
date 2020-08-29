@@ -54,3 +54,8 @@
 .pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
     background-color: #f15381 !important;
 }
+
+.pick-loc .mat-checkbox-disabled .mat-checkbox-background, 
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #979596ef !important;
+}

@@ -326,7 +326,7 @@ export class InventaireComponent implements OnInit {
     i++ // car commence par 0
     return "Commentaire :\n" + i + mot + " point à l'ordre du jour"
   }
-  addDeliberation(titre = 'DÉLIBERATION ' + (this.tabDeliberation.length + 1) + " :", content = '') {
+  addDeliberation(titre = 'DELIBERATION ' + (this.tabDeliberation.length + 1) + " :", content = '') {
     this.tabDeliberation.push(
       new FormGroup({
         titre: new FormControl(titre),
@@ -572,7 +572,7 @@ export class InventaireComponent implements OnInit {
     this.initPvForm([valPv[0], valPv[1], valPv[2], []])
     this.tabDeliberation = new FormArray([]);
     const content = "Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
-    const title = "DÉLIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
+    const title = "DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
     this.addDeliberation(title, content)
   }
   generatePdf(data, numero) {

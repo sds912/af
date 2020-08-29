@@ -118,7 +118,7 @@ export class SharedService {
   removeCharAtIndex(index, str) {//index commence par 1
     return str.substring(0, index - 1) + str.substring(index, str.length)
   }
-  postElement(data:any,url:string){//return une promise
+  postElement(data:any,url:string,refreshToken=true){//return une promise
     return new Promise<any>(
       (resolve,reject)=>{
       this.httpClient
@@ -129,6 +129,8 @@ export class SharedService {
               reject(err)
             }else
               resolve(rep);
+
+            //if(refreshToken && localStorage.getItem('refreshToken')) this.refreshToken()
           },
           error=>{
             console.log(error);
@@ -150,6 +152,7 @@ export class SharedService {
         .get<any>(this.urlBack+url).subscribe(
           rep=>{
             resolve(rep);
+            //if(localStorage.getItem('refreshToken')) this.refreshToken()
           },
           error=>{
             console.log(error);
@@ -160,6 +163,17 @@ export class SharedService {
           }
         );
       })
+  }
+  refreshToken(){
+    if(localStorage.getItem('refreshToken')){
+      const rt=localStorage.getItem('refreshToken')
+      const data={refresh_token:rt}
+      this.postElement(data,"/token/refresh",false).then(rep=>{
+        localStorage.setItem('token', rep.token);
+        localStorage.setItem('refreshToken', rep.refresh_token);
+        console.log(rep)
+      })
+    }
   }
   putElement(data:any,url:string){//return une promise
     return new Promise<any>(

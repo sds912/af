@@ -52,6 +52,8 @@ export class AffectationComponent implements OnInit {
     'Membre du comité'
   ]
   update=false
+  debutPeriode=null
+  finPeriode=null
   debut=null
   fin=null
   idAffectation=0
@@ -75,6 +77,7 @@ export class AffectationComponent implements OnInit {
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getInventaireByEse()
     this.getOneEntreprise(this.idCurrentEse)
+
   }
   getTabLocAffectation(){
     this.planingServ.getTabLocAffectation(this.idCurrentInv).then(
@@ -215,7 +218,7 @@ export class AffectationComponent implements OnInit {
       )
     )
     /** sup adjoint et sup voit chef equipe et membre inventaire */
-    const cas2=(service.superviseur || service.superviseurAdjoint && 
+    const cas2=(service.superviseur || service.superviseurAdjoint) && (
       (
         user.roles?.indexOf("ROLE_CE")>=0 || 
         user.roles?.indexOf("ROLE_MI")>=0
@@ -229,6 +232,21 @@ export class AffectationComponent implements OnInit {
     }
     return false
   }
+
+  styleGree(user){
+    const service=this.securityServ
+    const cas1=service.superviseurGene && user.roles?.indexOf("ROLE_SuperViseurAdjoint")<0
+
+    const cas2=(service.superviseur || service.superviseurAdjoint) && user.roles?.indexOf("ROLE_CE")<0
+
+    const cas3=service.chefEquipe &&  user.roles?.indexOf("ROLE_MI")<0
+
+    if(cas1 || cas2 || cas3){
+      return true
+    }
+    return false
+  }
+
   isEditable():boolean{
     const service=this.securityServ
     const user=this.currentUser
@@ -370,11 +388,11 @@ export class AffectationComponent implements OnInit {
     } else if (role && (role == 'Membre du comité' || role[0] == "ROLE_MC")) {
       r1 = 'Membre du comité'
       r2 = "ROLE_MC"
-    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE")) {
-      r1 = "Chef d'équipe"
+    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE" || role == "Chef d'équipe de comptage")) {
+      r1 = "Chef d'équipe de comptage"
       r2 = "ROLE_CE"
-    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI")) {
-      r1 = "Membre inventaire"
+    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI" || role == "Membre d'équipe de comptage")) {
+      r1 = "Membre d'équipe de comptage"
       r2 = "ROLE_MI"
     }
     if (show) return r1

@@ -210,9 +210,17 @@ class SharedController extends AbstractController
     public function getMobilLocality(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        /** seul les first localites */
+        $locs=$inventaire->getLocalites();
+        $localites=[];
+        foreach ($locs as $loc) {
+            if(!$loc->getParent()){
+                array_push($localites,$loc);
+            }
+        }
         $data=[
             "libelles"=>$entreprise->getSubdivisions(),
-            "localites"=>$inventaire->getLocalites()
+            "localites"=>$localites
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_loc_read']]);
         return new Response($data,200);
@@ -238,12 +246,29 @@ class SharedController extends AbstractController
     public function getMobileData(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        /** chef equipe et membre inventaire seulement */
+        $users=[];
+        $all=$entreprise->getUsers();
+        foreach ($all as $user) {
+            if( in_array('ROLE_CE',$user->getRoles()) || in_array('ROLE_MI',$user->getRoles())){
+                array_push($users,$user);
+            }
+        }
+        /** seul les first localites */
+        $locs=$inventaire->getLocalites();
+        $localites=[];
+        foreach ($locs as $loc) {
+            if(!$loc->getParent()){
+                array_push($localites,$loc);
+            }
+        }
+
         $data=[
             "immos"=>$this->repoImmo->findAll(),
             "inventaire"=>$inventaire,
             "libelles"=>$entreprise->getSubdivisions(),
-            "localites"=>$inventaire->getLocalites(),
-            "users"=>$entreprise->getUsers()
+            "localites"=>$localites,
+            "users"=>$users
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
         return new Response($data,200);

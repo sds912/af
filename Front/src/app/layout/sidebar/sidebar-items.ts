@@ -86,10 +86,10 @@ export const ROUTES: RouteInfo[] = [
   {
     id:'planing',
     path: '',
-    title: "Planing d'inventaire",
+    title: "Planning",
     icon: 'far fa-calendar-alt',
     class: 'menu-toggle',
-    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
     submenu: [
       {
         id:'planing1',
@@ -97,16 +97,16 @@ export const ROUTES: RouteInfo[] = [
         title: 'Affectation',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
         submenu: []
       },
       {
         id:'planing2',
-        path: "/planing",
+        path: "/planning",
         title: 'Calendrier',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
         submenu: []
       }
     ]

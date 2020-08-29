@@ -37,8 +37,8 @@ export class EquipeComponent implements OnInit {
     'Autre (à préciser)'
   ]
   roles = [//si modifier modifier la fonction getRole ET roleChange et hiddenSuperviseur
-    "Chef d'équipe",
-    "Membre inventaire",
+    "Chef d'équipe de comptage",
+    "Membre d'équipe de comptage",
     'Superviseur',
     'Superviseur général',
     'Superviseur adjoint',
@@ -164,7 +164,8 @@ export class EquipeComponent implements OnInit {
   roleChange(role) {
     this.isMembreEquipe = false
     this.isGuest = false
-    if (role == "Chef d'équipe" || role == "ROLE_CE" || role == "Membre inventaire" || role == "ROLE_MI") {
+    if (role == "Chef d'équipe" || role == "Chef d'équipe de comptage" ||
+        role == "ROLE_CE" || role == "Membre d'équipe de comptage" || role == "Membre inventaire" || role == "ROLE_MI") {
       this.isMembreEquipe = true
     } else if (role == "Guest" || role == "ROLE_Guest") {
       this.isGuest = true
@@ -450,11 +451,11 @@ export class EquipeComponent implements OnInit {
     } else if (role && (role == 'Membre du comité' || role[0] == "ROLE_MC")) {
       r1 = 'Membre du comité'
       r2 = "ROLE_MC"
-    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE")) {
-      r1 = "Chef d'équipe"
+    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE" || role == "Chef d'équipe de comptage")) {
+      r1 = "Chef d'équipe de comptage"
       r2 = "ROLE_CE"
-    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI")) {
-      r1 = "Membre inventaire"
+    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI" || role == "Membre d'équipe de comptage")) {
+      r1 = "Membre d'équipe de comptage"
       r2 = "ROLE_MI"
     }
     if (show) return r1
