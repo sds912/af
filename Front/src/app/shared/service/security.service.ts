@@ -57,8 +57,6 @@ export class SecurityService {
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refresh);
     const tokenDeco=this.jwtHelper.decodeToken(token);
-    console.log(tokenDeco);
-    
     localStorage.setItem('username', tokenDeco.username);
     localStorage.setItem('roles', tokenDeco.roles);
     
@@ -143,8 +141,6 @@ export class SecurityService {
   getUser(){
     this.securePwd=true
     return this.sharedService.getElement("/info").then(rep=>{
-      console.log(rep);
-      
       this.user=rep[0]
       if(this.user.entreprises?.length==1){
         localStorage.setItem("currentEse",this.user.entreprises[0].id)

@@ -46,16 +46,15 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
     submenu: []
+  },{
+    id:'INS',
+    path: '/instruction',
+    title: 'Instruction',
+    icon: 'fas fa-file-signature',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE','ROLE_MI'],
+    submenu: []
   },
-  // {
-  //   id:'USER',
-  //   path: '/admin/user',
-  //   title: 'Utilisateurs',
-  //   icon: 'fas fa-users',
-  //   class: '',
-  //   roles:['ROLE_Admin','ROLE_Guest'],
-  //   submenu: []
-  // },
   {
     id:'INV',
     path: '/inventaires',

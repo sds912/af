@@ -6,11 +6,13 @@ import { SuperviseurGuard } from 'src/app/core/guard/superviseur.guard';
 import { ZonageComponent } from './components/zonage/zonage.component';
 import { EquipeComponent } from './components/equipe/equipe.component';
 import { InventaireComponent } from './components/inventaire/inventaire.component';
+import { InstructionComponent } from './components/instruction/instruction.component';
 const routes: Routes = [
   {path: 'zonage',canActivate:[SuperviseurGuard],component: ZonageComponent},
   {path: 'zonage/:id',canActivate:[SuperviseurGuard],component: ZonageComponent},
   {path: 'users',canActivate:[SupervAdminGuard],component: EquipeComponent},
   {path: 'inventaires',canActivate:[SupervAdminGuard],component: InventaireComponent},
+  {path: 'instruction',component: InstructionComponent},
 ];
 
 @NgModule({

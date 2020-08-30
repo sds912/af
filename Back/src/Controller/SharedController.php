@@ -284,6 +284,8 @@ class SharedController extends AbstractController
         return new Response($data,200);
     }
 
+    
+
     public function getPvCreer($data){
         $d=[
             [
@@ -314,9 +316,12 @@ class SharedController extends AbstractController
             if($requestFile && isset($requestFile["{$name}{$i}"])){
                 $file=$requestFile["{$name}{$i}"];
                 $fileName=md5(uniqid()).'.'.$file->guessExtension();
+                
                 $file->move($this->getParameter(Shared::DOC_DIR),$fileName);
+                
                 $nom_fichier=$file->getClientOriginalName();
                 array_push($fichiers,[$nom_fichier,$fileName]);//["nom fichier","nom fichier hasher"]
+                
             }
         }
         return $fichiers;

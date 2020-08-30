@@ -560,6 +560,11 @@ export class InventaireComponent implements OnInit {
     this.initPvForm()
     this.tabDeliberation = new FormArray([]);
   }
+  off(){
+    this.showForm=false
+    /** revoir init seulement les choses impacter */
+    this.ngOnInit()
+  }
   createNewInv() {
     this.invCreer = true
     const valInstruction = this.getInstValDef()

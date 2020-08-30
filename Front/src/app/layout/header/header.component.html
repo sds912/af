@@ -96,16 +96,6 @@
                                         <mat-icon aria-hidden="false" class="mr-2">vpn_key</mat-icon>Mot de passe
                                     </a>
                                 </li>
-                                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene">
-                                    <a href="#" onClick="return false;" (click)="exportForMobile()">
-                                        <mat-icon aria-hidden="false" class="mr-2">file_upload</mat-icon>Exporter
-                                    </a>
-                                </li>
-                                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene">
-                                    <a href="#" onClick="return false;">
-                                        <mat-icon aria-hidden="false" class="mr-2">file_download</mat-icon>Importer
-                                    </a>
-                                </li>
                                 <li>
                                     <a routerLink="/login" (click)="logOut()">
                                         <mat-icon aria-hidden="false" class="mr-2">power_settings_new</mat-icon>Déconnexion
