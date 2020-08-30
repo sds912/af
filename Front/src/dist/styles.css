@@ -1,0 +1,78 @@
+/* You can add global styles to this file, and also import other style files */
+.pointer {
+  cursor: pointer;
+}
+
+.no-borde {
+  border: none !important;
+}
+
+.text-center .datatable-header-cell-template-wrap {
+  text-align: center !important;
+}
+
+.bolder {
+  font-weight: bolder !important;
+}
+
+.mat-input-element:disabled {
+  color: #000000c2 !important;
+}
+
+.select-trie {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: inherit;
+}
+
+.search-team:focus {
+  width: 220px !important;
+}
+
+.color-white {
+  color: white;
+}
+
+.all-height {
+  height: 100%;
+}
+
+.all-width {
+  width: 100% !important;
+}
+
+.hoverLoc:hover button {
+  background-color: #4fa745;
+}
+
+.hoverLoc:hover span {
+  display: initial !important;
+}
+
+.mat-form-field-outline-start,
+.mat-form-field-outline-gap,
+.mat-form-field-outline-end {
+  color: rgba(0, 0, 0, 0.459) !important;
+}
+
+.inv .mat-form-field-outline-start,
+.inv .mat-form-field-outline-gap,
+.inv .mat-form-field-outline-end {
+  color: #9933FF !important;
+  border-width: 2px !important;
+}
+
+.zonage .mat-chip-list-wrapper {
+  margin-bottom: 0.5%;
+}
+
+.pick-loc .mat-checkbox-disabled.mat-checkbox-checked .mat-checkbox-background,
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+  background-color: #f15381 !important;
+}
+
+.pick-loc .mat-checkbox-disabled .mat-checkbox-background,
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+  background-color: #979596ef !important;
+}
