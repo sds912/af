@@ -10,4 +10,8 @@ export class ImmobilisationService {
   getAllImmosByEntreprise(id){
     return this.sharedService.getElement("/immobilisations?entreprise.id="+id);
   }
+
+  getAllInventaire() {
+    return this.sharedService.getElement("/inventaires");
+  }
 }
