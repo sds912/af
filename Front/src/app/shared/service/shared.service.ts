@@ -148,7 +148,7 @@ export class SharedService {
       (resolve,reject)=>{
       this.httpClient
         .get<any>(this.urlBack+url).subscribe(
-          rep=>{
+          rep=>{  
             resolve(rep);
           },
           error=>{

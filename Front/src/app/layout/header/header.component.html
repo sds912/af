@@ -21,7 +21,7 @@
             </ul>
             <ul class="pull-left collapse-menu-icon" *ngIf="getEntite() && !securityServ.admin">
                 <li> 
-                    <span class="p-1 pl-5 pr-5" style="margin-left: 600px; font-size: xx-large;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
+                    <span class="p-1" style="font-size: x-large;"><strong>Entité : </strong>  {{getEntite()?.denomination}}</span>
                 </li>
             </ul>
             
@@ -37,7 +37,7 @@
                 <!-- #START# Notifications-->
                 <li class="dropdown">
                     <button mat-icon-button data-toggle="dropdown" #openNotif class="nav-notification-icons">
-                        <mat-icon style="color: blue;">notifications_none</mat-icon>
+                        <mat-icon style="color: blue;">notifications</mat-icon>
                         <span class="label-count bg-orange" *ngIf="news>0"></span>
                     </button>
                     <ul class="dropdown-menu pullDown">

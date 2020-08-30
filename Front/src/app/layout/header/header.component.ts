@@ -275,7 +275,7 @@ export class HeaderComponent implements OnInit {
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.securityServ.user.currentEse=rep.currentEse
-        this.showNotification('bg-success',"Enregistrer",'top','center')
+        //this.showNotification('bg-success',"Enregistrer",'top','center')
         this.closeEseModal.nativeElement.click();
         localStorage.setItem("currentEse",id)
         setTimeout(()=>{window.location.reload()},1000);

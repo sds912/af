@@ -11,9 +11,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
 /**
- * @ApiResource()
+ * @ApiResource(
+ * normalizationContext={
+ *      "groups"={"immo_read"}
+ *  })
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
- * @ApiFilter(SearchFilter::class, properties={"entreprise.id": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact"})
  */
 class Immobilisation
 {
@@ -21,79 +24,90 @@ class Immobilisation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"lecture_read","mobile_inv_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_read","mobile_inv_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read","mobile_inv_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $code;
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
     private $compteImmo;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
     private $compteAmort;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read","mobile_inv_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $emplacement;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateAcquisition;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateMiseServ;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateSortie;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dureeUtilite;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $taux;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $valOrigine;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dotation;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $cumulAmortiss;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $vnc;
 
@@ -104,12 +118,13 @@ class Immobilisation
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
     private $etat;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"mobile_inv_read"})
+     * @Groups({"mobile_inv_read","immo_read"})
      */
     private $description;
 
@@ -117,6 +132,18 @@ class Immobilisation
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="immobilisations")
      */
     private $entreprise;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $numeroOrdre;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $inventaire;
 
     public function __construct()
     {
@@ -359,6 +386,30 @@ class Immobilisation
     public function setEntreprise(?Entreprise $entreprise): self
     {
         $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getNumeroOrdre(): ?string
+    {
+        return $this->numeroOrdre;
+    }
+
+    public function setNumeroOrdre(?string $numeroOrdre): self
+    {
+        $this->numeroOrdre = $numeroOrdre;
+
+        return $this;
+    }
+
+    public function getInventaire(): ?Inventaire
+    {
+        return $this->inventaire;
+    }
+
+    public function setInventaire(?Inventaire $inventaire): self
+    {
+        $this->inventaire = $inventaire;
 
         return $this;
     }

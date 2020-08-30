@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild  , ElementRef} from '@angular/core';
 import { ImmobilisationService } from '../../services/immobilisation.service';
 import { AdminService } from 'src/app/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
@@ -11,6 +11,11 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 })
 export class ImmobilisationComponent implements OnInit {
 
+  data = [] ; 
+
+  @ViewChild('openFileUload', { static: false }) openFileUload;
+
+
   constructor(private immoService: ImmobilisationService,
     private adminServ: AdminService,
     private sharedService: SharedService,
@@ -18,9 +23,14 @@ export class ImmobilisationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.securityServ.showLoadingIndicatior.next(true); 
+    this.securityServ.showLoadingIndicatior.next(false); 
   }
 
+  getAllImmos() {
+   
+      
+    
+  }
 
 
 }

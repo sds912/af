@@ -16,17 +16,14 @@
                                     <ul class="header-buttons m-r-20">
                                         <li>
                                             <div class="icon-button-demo">
-                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal">
-                                                    <mat-icon class="col-white">add</mat-icon>
+                                                <button mat-mini-fab color="primary" (click)="openFileUload.click()">
+                                                    <mat-icon class="col-white">file_download</mat-icon>
                                                 </button>
+                                                <input type="file" hidden #openFileUload (change)="getAllImmos()">
                                             </div>
                                         </li>
                                     </ul>
                                 </div>
-                                
-                                
-                                <!-- <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp> -->
                             </div>
                         </div>
                     </div>

@@ -442,11 +442,18 @@
                                             [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS
                                             A LA RÉUNION</span>
                                         <span class="col-8 row">
-                                            <span *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0" class="pl-3">Membres présents à la réunion de lancement non définis</span>
-                                            
-                                            <img hidden *ngFor="let membre of inventaire.presentsReunion" class="img-circle user-img-circle img-membre pointer ml-2 mb-2" [src]="imgLink+membre.image" [title]="membre.nom">
-                                            <span *ngFor="let membre of inventaire.presentsReunion" class="p-0 pt-1 ml-3 mb-2 block-user">
-                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted" [src]="imgLink+membre.image"  [title]="membre.nom">
+                                            <span
+                                                *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0"
+                                                class="pl-3">Membres présents à la réunion de lancement non
+                                                définis</span>
+
+                                            <img hidden *ngFor="let membre of inventaire.presentsReunion"
+                                                class="img-circle user-img-circle img-membre pointer ml-2 mb-2"
+                                                [src]="imgLink+membre.image" [title]="membre.nom">
+                                            <span *ngFor="let membre of inventaire.presentsReunion"
+                                                class="p-0 pt-1 ml-3 mb-2 block-user">
+                                                <img class="img-circle user-img-circle img-membre pointer ng-star-inserted"
+                                                    [src]="imgLink+membre.image" [title]="membre.nom">
                                                 <small>{{longText(membre.nom,18)}}</small>
                                                 <small class="text-primary titre-membre"
                                                     [title]="membre.poste">{{longText(membre.poste,18)}}</small>
@@ -623,8 +630,9 @@
 </div>
 <!-- Modal Window Add comité -->
 
- <!-- Localité -->
- <div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Localité -->
+<div class="modal fade" id="localiteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <form class="modal-content">
             <div class="modal-header">
@@ -635,13 +643,12 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" #closeLocaliteModal
-                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                <button type="button" #closeLocaliteModal class="btn p-t-10 modal-close-button" data-dismiss="modal"
                     aria-label="Close">
                     <i class="material-icons">clear</i>
                 </button>
             </div>
-            <div class="modal-body pl-2 pr-2"  [perfectScrollbar]>
+            <div class="modal-body pl-2 pr-2" [perfectScrollbar]>
                 <!-- Localités -->
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                     <!--1ere subdivision-->
@@ -649,14 +656,18 @@
                         <p class="ml-2">{{subdivisions[0]}}</p>
                         <hr>
                         <mat-chip-list aria-label="Fish selection" class="mt-4">
-                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let localite of firstSub(localites); index as i">
+                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}"
+                                *ngFor="let localite of firstSub(localites); index as i">
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
-                                        <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">{{localite.nom}}</mat-checkbox>
+                                        <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
+                                            (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">
+                                            {{localite.nom}}</mat-checkbox>
                                     </section>
                                 </span>
                                 <span class="col-1">
-                                    <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                                    <mat-icon class="icone-affectation pointer text-info" title="Afficher"
+                                        (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
                                 </span>
                             </mat-chip>
                         </mat-chip-list>
@@ -664,23 +675,29 @@
                     <!--1ere subdivision-->
 
                     <!--Autres subdivisions-->
-                    <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4 box-loc" [hidden]="!openLocalite || !getOneLocById(idParent)">
+                    <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4 box-loc"
+                        [hidden]="!openLocalite || !getOneLocById(idParent)">
                         <p class="mt-3 ml-2">{{getOneLocById(idParent)?.nom}}</p>
                         <hr>
                         <mat-chip-list aria-label="Fish selection">
                             <small class="ml-3" style="font-style: italic;">{{subdivisions[i+1]}}</small>
-                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}" *ngFor="let sub of getCurrentSubById(idParent);">
+                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}"
+                                *ngFor="let sub of getCurrentSubById(idParent);">
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
-                                        <mat-checkbox [disabled]="!showForm" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}</mat-checkbox>
+                                        <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
+                                            (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}
+                                        </mat-checkbox>
                                     </section>
                                 </span>
                                 <span class="col-1">
-                                    <mat-icon class="icone-affectation pointer text-info" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                                    <mat-icon class="icone-affectation pointer text-info" title="Afficher"
+                                        (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
                                 </span>
                             </mat-chip>
                         </mat-chip-list>
-                        <p *ngIf="getCurrentSubById(idParent).length==0" class="ml-2 mt-2">Cette subdivision est vide</p>
+                        <p *ngIf="getCurrentSubById(idParent).length==0" class="ml-2 mt-2">Cette subdivision est vide
+                        </p>
                     </div>
                     <!--Autres subdivisions-->
                 </div>
@@ -688,11 +705,13 @@
                 <div class="row pl-4 pr-0 mt-4" *ngIf="showForm">
                     <div class="col-4">
                         <section class="example-section all-height row">
-                            <mat-checkbox class="example-margin" (change)="checkAllLoc()" [checked]="allLocIsChec()">Toutes les localités</mat-checkbox>
+                            <mat-checkbox class="example-margin" (change)="checkAllLoc()" [checked]="allLocIsChec()">
+                                Toutes les localités</mat-checkbox>
                         </section>
                     </div>
                     <div class="col-5"></div>
-                    <button type="submit" class="col-2 btn btn-outline-success btn-border-radius" (click)="closeLoc()">Fermer</button>
+                    <button type="submit" class="col-2 btn btn-outline-success btn-border-radius"
+                        (click)="closeLoc()">Fermer</button>
                 </div>
             </div>
         </form>
@@ -820,18 +839,16 @@
 
                                 <mat-step hidden>
                                     <ng-template matStepLabel>SIGNATAIRES</ng-template>
-                                    <div class="row"
-                                        *ngFor="let oneForm of tabSignataires.controls; index as i">
+                                    <div class="row" *ngFor="let oneForm of tabSignataires.controls; index as i">
 
-                                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 pr-0">
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                                             <mat-form-field class="example-full-width" appearance="outline">
                                                 <mat-label>Nom du signataire</mat-label>
                                                 <input matInput [formControl]="oneForm.controls.nom">
-                                                <mat-icon matSuffix>text_format</mat-icon>
                                             </mat-form-field>
                                         </div>
 
-                                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 pr-0">
+                                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
                                             <mat-form-field class="example-full-width" appearance="outline">
                                                 <mat-label>Fonction</mat-label>
                                                 <input matInput type="text" [formControl]="oneForm.controls.fonction">
@@ -851,7 +868,7 @@
                 </div>
                 <div class="modal-footer pr-2">
                     <div class="button-demo">
-                        <button type="submit" class="btn btn-outline-success btn-border-radius"
+                        <button type="submit" class="btn btn-outline-danger btn-border-radius"
                             (click)="closeInstrucModal.click()">Fermer</button>
                     </div>
                 </div>
@@ -916,8 +933,8 @@
                                 [hidden]="i!=(tabDeliberation.length-1)" (click)="addDeliberation()">add_circle_outline
                             </mat-icon>
                         </div>
-                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
-                            <mat-form-field class="example-full-width pr-0" appearance="outline">
+                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>DÉLIBERATION {{i+1}}</mat-label>
                                 <textarea matInput rows="3" [formControl]="oneForm.controls.content"></textarea>
                             </mat-form-field>
@@ -925,32 +942,33 @@
                                 info_outline</mat-icon>
                         </div>
                     </div>
-                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0"
+                    <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2"
                         *ngFor="let oneForm of tabSignatairesPv.controls; index as i">
 
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3">
                             <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>Nom du signataire</mat-label>
                                 <input matInput [formControl]="oneForm.controls.nom">
-                                <mat-icon matSuffix>text_format</mat-icon>
                             </mat-form-field>
                         </div>
-
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3">
                             <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>Fonction</mat-label>
                                 <input matInput type="text" [formControl]="oneForm.controls.fonction">
                             </mat-form-field>
                         </div>
 
-                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary"
+                        <mat-icon matSuffix class="pointer pt-3 text-primary mt-3 ml-5"
                             [hidden]="i!=(tabSignatairesPv.length-1)" (click)="addSignatairePv()">add_circle_outline
                         </mat-icon>
+
+
+
                     </div>
                 </div>
                 <div class="modal-footer pr-2">
                     <div class="button-demo">
-                        <button type="submit" class="btn btn-outline-success btn-border-radius"
+                        <button type="submit" class="btn btn-outline-danger btn-border-radius"
                             (click)="closePvModal.click()">Fermer</button>
                     </div>
                 </div>

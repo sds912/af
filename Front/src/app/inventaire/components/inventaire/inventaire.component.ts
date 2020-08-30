@@ -236,10 +236,10 @@ export class InventaireComponent implements OnInit {
       bloc3e4: [data[2][3]],
     })
     console.log(data[3])
-    const dataSignataire = data[3]?.length>0 ? data[3] : ["",""]
-    this.tabSignataires=new FormArray([])
-    for (let index = 0; index < dataSignataire.length; index +=2) {
-      this.addSignataire(dataSignataire[index],dataSignataire[index+1])
+    const dataSignataire = data[3]?.length > 0 ? data[3] : ["", ""]
+    this.tabSignataires = new FormArray([])
+    for (let index = 0; index < dataSignataire.length; index += 2) {
+      this.addSignataire(dataSignataire[index], dataSignataire[index + 1])
     }
   }
   detailsLoc(inventaire) {
@@ -254,10 +254,10 @@ export class InventaireComponent implements OnInit {
       bloc2: [data[1]],
       bloc3: [data[2]]
     })
-    this.tabSignatairesPv=new FormArray([])
-    const dataSignataire = data[3]?.length>0 ? data[3] : ["",""]
-    for (let index = 0; index < dataSignataire.length; index +=2) {
-      this.addSignatairePv(dataSignataire[index],dataSignataire[index+1])
+    this.tabSignatairesPv = new FormArray([])
+    const dataSignataire = data[3]?.length > 0 ? data[3] : ["", ""]
+    for (let index = 0; index < dataSignataire.length; index += 2) {
+      this.addSignatairePv(dataSignataire[index], dataSignataire[index + 1])
     }
     this.signatairesPv = this.getSignatairePv(data[3])
   }
@@ -334,7 +334,7 @@ export class InventaireComponent implements OnInit {
       })
     );
   }
-  addSignataire(nom="",fonction="") {
+  addSignataire(nom = "", fonction = "") {
     this.tabSignataires.push(
       new FormGroup({
         nom: new FormControl(nom),
@@ -342,7 +342,7 @@ export class InventaireComponent implements OnInit {
       })
     );
   }
-  addSignatairePv(nom="",fonction="") {
+  addSignatairePv(nom = "", fonction = "") {
     this.tabSignatairesPv.push(
       new FormGroup({
         nom: new FormControl(nom),
@@ -378,7 +378,7 @@ export class InventaireComponent implements OnInit {
     return this.users.find(u => u.id == id)
   }
   onEditSave(form: FormGroup) {
-    console.log('form.value => ',form.value);
+    console.log('form.value => ', form.value);
     this.securityServ.showLoadingIndicatior.next(true)
     let data = this.getAllDataToSend(form)
     this.inventaireServ.addInventaire(data).then(
@@ -419,15 +419,15 @@ export class InventaireComponent implements OnInit {
   }
   getDataInstCreer() {
     let d = this.instForm.value
-    let tab =[]
-    this.tabSignataires.value?.forEach(element => tab.push([element.nom,element.fonction]));
+    let tab = []
+    this.tabSignataires.value?.forEach(element => tab.push([element.nom, element.fonction]));
     d.signataire = tab//on y ajoute les signataires
     return d
   }
   getDataPvCreer() {
     let val = this.pvForm.value
-    let tab =[]
-    this.tabSignatairesPv.value?.forEach(element => tab.push([element.nom,element.fonction]));
+    let tab = []
+    this.tabSignatairesPv.value?.forEach(element => tab.push([element.nom, element.fonction]));
     const data1 = [val.bloc1, val.bloc2, val.bloc3, tab]
     let data2 = []
     this.tabDeliberation.value.forEach(del => {
@@ -761,7 +761,13 @@ export class InventaireComponent implements OnInit {
               { text: '', margin: [2, 7], border: [false, false, false, false] }
             ],
             [
-              { text: bloc1 + "\n\n" + bloc2 + "\n\n" + bloc3, margin: [2, 7], fontSize: 10 }
+              { text: bloc1, margin: [2, 7], fontSize: 10 }
+            ],
+            [
+              { text: bloc2, margin: [2, 7], fontSize: 10 }
+            ],
+            [
+              { text: bloc3, margin: [2, 7], fontSize: 10 }
             ],
             ...this.getPdfDel(data[1])
           ]
@@ -810,7 +816,10 @@ export class InventaireComponent implements OnInit {
     return this.getOtherSignatairePdf(signataires)
   }
   getOneSignatairePdf(signataires) {
-    return [{ text: signataires[0] + ' ( '+signataires[1]+' )', margin: [0, 20, 0, 0], fontSize: 10, decoration: 'underline' }]
+    return [
+      { text: signataires[0], margin: [0, 20, 0, 0], fontSize: 10, decoration: '' },
+      { text: signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
+    ]
   }
   get3SignatairePdf(signataires) {
     return [
@@ -819,11 +828,11 @@ export class InventaireComponent implements OnInit {
           widths: ["*", "*"],
           body: [
             [
-              { text: signataires[0] + ' ( '+signataires[1]+' )', fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false] },
-              { text: signataires[4] + ' ( '+signataires[5]+' )', fontSize: 10, margin: [0, 20, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'right' }
+              { text: signataires[0] + '\n'+signataires[1], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false] },
+              { text: signataires[4]+'\n'+signataires[5], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'right' },
             ],
             [
-              { text: signataires[2] + ' ( '+signataires[3]+' )', fontSize: 10, margin: [0, 0, 0, 0], decoration: 'underline', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {}
+              { text: signataires[2]+'\n'+signataires[3], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {},
             ]
           ]
         }
@@ -843,21 +852,21 @@ export class InventaireComponent implements OnInit {
     ]
   }
   lignesSignataires(signataires) {
-    
+
     let tab = []
     let a = 0
-    for (let i = 0; i < signataires.length; i +=4 ) {
-      console.log('i est a => ',i);
-      
-      let nom1 = signataires[i] + ' ( '+signataires[i+1]+' )'
-      let nom2 = (signataires[i + 2] && signataires[i + 3])?(signataires[i + 2] + ' ( '+signataires[i+3]+' )' ): ""
-      console.log('nom=> ',nom1);
-      console.log('nom2=> ',nom2);
+    for (let i = 0; i < signataires.length; i += 4) {
+      console.log('i est a => ', i);
+
+      let nom1 = signataires[i] + ' ( ' + signataires[i + 1] + ' )'
+      let nom2 = (signataires[i + 2] && signataires[i + 3]) ? (signataires[i + 2] + ' ( ' + signataires[i + 3] + ' )') : ""
+      console.log('nom=> ', nom1);
+      console.log('nom2=> ', nom2);
 
       tab.push(
         [
-          { text: nom1, fontSize: 10, margin: [0, 20, 0, 70], decoration: 'underline', border: [false, false, false, false] },
-          { text: nom2, fontSize: 10, margin: [0, 20, 0, 70], decoration: 'underline', alignment: 'right', border: [false, false, false, false] }
+          { text: signataires[i] + '\n' + signataires[i + 1], fontSize: 10, margin: [0, 20, 0, 70], border: [false, false, false, false] },
+          { text: signataires[i + 2] + '\n' + signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
         ]
       )
     }
