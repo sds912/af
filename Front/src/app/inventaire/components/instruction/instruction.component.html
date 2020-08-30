@@ -1,0 +1,53 @@
+<section class="content" *ngIf="show">
+    <div class="container-fluid">
+
+        <div class="block-header">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="breadcrumb breadcrumb-style ">
+                    <li class="breadcrumb-item mr-4">
+                        <h4 class="page-title">Choisir un inventaire</h4>
+                    </li>
+                    <li class="breadcrumb-item mr-4">
+                      <select [(ngModel)]="idCurrentInv" class="select-trie" style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
+                          <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">
+                              Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
+                        </option>
+                      </select>
+                    </li>
+                </ul>
+              </div>
+            </div>
+        </div>
+
+        <div class="row clearfix" *ngIf="creation">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row" *ngIf="urlInst">
+                            <iframe [src]="urlInst | safeUrl" style="width: 100%;height: 75vh;" allow="fullscreen" title="Instruction"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row clearfix" *ngIf="!creation">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" *ngFor="let instruction of instructions">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <iframe [src]="docLink + instruction[1] | safeUrl" style="width: 100%;height: 75vh;" allow="fullscreen" title="Instruction"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p *ngIf="currentInv">
+            <strong style="font-size: 15px;">Je confirme avoir lu les éléments relatifs à l'instruction d'inventaire.</strong> 
+            <mat-slide-toggle class="example-margin" [color]="color" [checked]="checked" [disabled]="disabled"> </mat-slide-toggle>
+        </p>
+        
+    </div>
+</section>

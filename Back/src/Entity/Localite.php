@@ -63,15 +63,21 @@ class Localite
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $createur;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="localite")
+     */
+    private $affectations;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
         $this->subdivisions = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
     /**
     * @Groups({"user_read"})
@@ -94,10 +100,11 @@ class Localite
     * @Groups({"entreprise_read"})
     */
     public function getLinkToUser(){
+        /** revoir car maintenant on doit chercher dans les affectations si l id est dans le json localites */
         return count($this->users)>0;
     }
     /**
-    * @Groups({"entreprise_read"})
+    * @Groups({"entreprise_read","inv_read"})
     */
     public function getIdParent(){//utilisé ne pas sup
         $p=$this->parent;
@@ -256,6 +263,37 @@ class Localite
     public function setCreateur(?User $createur): self
     {
         $this->createur = $createur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getLocalite() === $this) {
+                $affectation->setLocalite(null);
+            }
+        }
 
         return $this;
     }

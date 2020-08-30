@@ -82,6 +82,10 @@ const routes: Routes = [
     loadChildren: () => import('./immobilisation/immobilisation.module').then(m => m.ImmobilisationModule)
   },
   {
+    path: '',canActivate:[AuthGuard],
+    loadChildren: () => import('./planing/planing.module').then(m => m.PlaningModule)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

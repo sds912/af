@@ -28,6 +28,8 @@ export class SecurityService {
   superviseurGene=false
   superviseurAdjoint=false
   guest=false
+  chefEquipe=false
+  membreInv=false
   fonction=""
   securePwd=true
   sidebarItems: any[];
@@ -88,6 +90,14 @@ export class SecurityService {
         this.guest=true;
         this.fonction="Invité";
     }
+    else if(roles.search("ROLE_CE")>=0){
+      this.chefEquipe=true;
+      this.fonction="Chef d'équipe de comptage";
+    }
+    else if(roles.search("ROLE_MI")>=0){
+      this.membreInv=true;
+      this.fonction="Membre d'équipe de comptage";
+    }
   }
   logOut(){
     this.isAuth=false;
@@ -97,6 +107,8 @@ export class SecurityService {
     this.superviseurGene=false;
     this.superviseurAdjoint=false;
     this.guest=false;
+    this.chefEquipe=false;
+    this.membreInv=false;
     localStorage.clear();
     this.router.navigate(['/login']);
   }

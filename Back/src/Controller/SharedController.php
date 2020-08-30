@@ -8,6 +8,7 @@ use App\Utils\Shared;
 use App\Entity\Entreprise;
 use App\Entity\Inventaire;
 use App\Entity\User;
+use App\Repository\AffectationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
@@ -209,9 +210,17 @@ class SharedController extends AbstractController
     public function getMobilLocality(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        /** seul les first localites */
+        $locs=$inventaire->getLocalites();
+        $localites=[];
+        foreach ($locs as $loc) {
+            if(!$loc->getParent()){
+                array_push($localites,$loc);
+            }
+        }
         $data=[
             "libelles"=>$entreprise->getSubdivisions(),
-            "localites"=>$inventaire->getLocalites()
+            "localites"=>$localites
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_loc_read']]);
         return new Response($data,200);
@@ -237,16 +246,45 @@ class SharedController extends AbstractController
     public function getMobileData(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        /** chef equipe et membre inventaire seulement */
+        $users=[];
+        $all=$entreprise->getUsers();
+        foreach ($all as $user) {
+            if( in_array('ROLE_CE',$user->getRoles()) || in_array('ROLE_MI',$user->getRoles())){
+                array_push($users,$user);
+            }
+        }
+        /** seul les first localites */
+        $locs=$inventaire->getLocalites();
+        $localites=[];
+        foreach ($locs as $loc) {
+            if(!$loc->getParent()){
+                array_push($localites,$loc);
+            }
+        }
+
         $data=[
             "immos"=>$this->repoImmo->findAll(),
             "inventaire"=>$inventaire,
             "libelles"=>$entreprise->getSubdivisions(),
-            "localites"=>$inventaire->getLocalites(),
-            "users"=>$entreprise->getUsers()
+            "localites"=>$localites,
+            "users"=>$users
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
         return new Response($data,200);
     }
+
+    /**
+    * @Route("/affectations/localites/invemtaire/{id}", methods={"GET"})
+    */
+    public function getTabIdLoc(SerializerInterface $serializer,$id=null,AffectationRepository $affectationRepository){
+        $inventaire=$this->repoInv->find($id);
+        $affectations=$affectationRepository->findOneBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
+        $data = $serializer->serialize($affectations?$affectations->getLocalites():[], 'json');
+        return new Response($data,200);
+    }
+
+    
 
     public function getPvCreer($data){
         $d=[
@@ -278,9 +316,12 @@ class SharedController extends AbstractController
             if($requestFile && isset($requestFile["{$name}{$i}"])){
                 $file=$requestFile["{$name}{$i}"];
                 $fileName=md5(uniqid()).'.'.$file->guessExtension();
+                
                 $file->move($this->getParameter(Shared::DOC_DIR),$fileName);
+                
                 $nom_fichier=$file->getClientOriginalName();
                 array_push($fichiers,[$nom_fichier,$fileName]);//["nom fichier","nom fichier hasher"]
+                
             }
         }
         return $fichiers;

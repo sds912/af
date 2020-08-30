@@ -14,8 +14,7 @@ var d = new Date(),
   styleUrls: ['./calendar.component.scss']
 })
 export class CalendarComponent {
-  @ViewChild('calendar', { static: false })
-  calendarComponent: FullCalendarComponent; // the #calendar in the template
+  @ViewChild('calendar', { static: false }) calendarComponent: FullCalendarComponent; // the #calendar in the template
 
   calendarVisible = true;
   calendarPlugins = [dayGridPlugin];

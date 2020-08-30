@@ -37,8 +37,8 @@ export class EquipeComponent implements OnInit {
     'Autre (à préciser)'
   ]
   roles = [//si modifier modifier la fonction getRole ET roleChange et hiddenSuperviseur
-    "Chef d'équipe",
-    "Membre inventaire",
+    "Chef d'équipe de comptage",
+    "Membre d'équipe de comptage",
     'Superviseur',
     'Superviseur général',
     'Superviseur adjoint',
@@ -164,7 +164,8 @@ export class EquipeComponent implements OnInit {
   roleChange(role) {
     this.isMembreEquipe = false
     this.isGuest = false
-    if (role == "Chef d'équipe" || role == "ROLE_CE" || role == "Membre inventaire" || role == "ROLE_MI") {
+    if (role == "Chef d'équipe" || role == "Chef d'équipe de comptage" ||
+        role == "ROLE_CE" || role == "Membre d'équipe de comptage" || role == "Membre inventaire" || role == "ROLE_MI") {
       this.isMembreEquipe = true
     } else if (role == "Guest" || role == "ROLE_Guest") {
       this.isGuest = true
@@ -286,7 +287,7 @@ export class EquipeComponent implements OnInit {
     if (user.menu) this.tabMenu = user.menu
     user.entreprises.forEach(e => this.addEntreprise(e.id));
     this.tabLoc = []
-    user.localites.forEach(l => this.checkLoc(l));
+    user.localites.forEach(l => this.checkLoc(l,true));
     this.tabOpen = []
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
@@ -450,11 +451,11 @@ export class EquipeComponent implements OnInit {
     } else if (role && (role == 'Membre du comité' || role[0] == "ROLE_MC")) {
       r1 = 'Membre du comité'
       r2 = "ROLE_MC"
-    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE")) {
-      r1 = "Chef d'équipe"
+    } else if (role && (role == "Chef d'équipe" || role[0] == "ROLE_CE" || role == "Chef d'équipe de comptage")) {
+      r1 = "Chef d'équipe de comptage"
       r2 = "ROLE_CE"
-    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI")) {
-      r1 = "Membre inventaire"
+    } else if (role && (role == "Membre inventaire" || role[0] == "ROLE_MI" || role == "Membre d'équipe de comptage")) {
+      r1 = "Membre d'équipe de comptage"
       r2 = "ROLE_MI"
     }
     if (show) return r1
@@ -572,11 +573,11 @@ export class EquipeComponent implements OnInit {
   inTab(valeur, tab) {
     return tab?.find(id => id == valeur);
   }
-  checkLoc(loc) {
+  checkLoc(loc,addOnly=false) {
     var index = this.tabLoc.indexOf(loc.id);
-    if (index > -1) {
+    if(index > -1 && !addOnly) {
       this.tabLoc.splice(index, 1);
-    } else {
+    }else if(index <= -1) {
       this.tabLoc.push(loc.id)
       const idParent = loc.idParent
       if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOnById(idParent))//cocher les parents recursif

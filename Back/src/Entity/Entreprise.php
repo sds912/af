@@ -47,19 +47,19 @@ class Entreprise
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $republique;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $ville;
 

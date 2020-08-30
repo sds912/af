@@ -51,7 +51,7 @@
                                     </p>
                                     <hr>
                                     <p class="row">
-                                        <span class="col-4 bolder pt-3">PÉRIODE DE COMPTAGE</span>
+                                        <span class="col-4 bolder pt-3">PERIODE DE COMPTAGE</span>
                                         <span class="col-2">
                                             <mat-form-field class="example-full-width">
                                                 <mat-label>Début</mat-label>
@@ -74,7 +74,7 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">LOCALITÉS</span>
+                                        <span class="col-4 pt-3 bolder">LOCALITES</span>
                                         <span class="col-8">
                                             <button *ngFor="let loc of firstSub(noNull(tabLoc))" mat-mini-fab
                                                 [title]="loc.nom" color="primary"
@@ -149,7 +149,7 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">DÉCISION DE CRÉATION DU COMITÉ</span>
+                                        <span class="col-4 pt-3 bolder">DECISION DE CREATION DU COMITE</span>
                                         <span class="col-8" *ngIf="!docsDc||docsDc.length==0">
                                             <button mat-mini-fab color="primary" (click)="docDec.click()"
                                                 title="Importer la décision de création"
@@ -197,7 +197,7 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">RÉUNION DE LANCEMENT</span>
+                                        <span class="col-4 pt-3 bolder">REUNION DE LANCEMENT</span>
                                         <span class="col-2">
                                             <mat-form-field class="example-full-width">
                                                 <mat-label>Lieu</mat-label>
@@ -217,7 +217,7 @@
                                     </p>
                                     <hr>
                                     <div class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">PRÉSENTS A LA RÉUNION</span>
+                                        <span class="col-4 pt-3 bolder">PRESENTS A LA REUNION</span>
                                         <span class="col-8">
                                             <img *ngFor="let id of noNull(tabPresents.value)"
                                                 class="img-circle user-img-circle img-membre pointer mr-3 mb-2"
@@ -238,7 +238,7 @@
                                     </div>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 pt-3 bolder">PV DE LA RÉUNION</span>
+                                        <span class="col-4 pt-3 bolder">PV DE LA REUNION</span>
                                         <span class="col-8" *ngIf="!pvCreer && (!docsPv||docsPv.length==0)">
                                             <button mat-mini-fab title="Ajouter un pv" color="primary"
                                                 aria-label="Example icon-button with a heart icon" class="mr-2"
@@ -291,7 +291,7 @@
                                         [disabled]="editForm.invalid"
                                         (click)="onEditSave(editForm)">Enregistrer</button>
                                     <button type="button" class="btn btn-outline-danger btn-border-radius mr-0"
-                                        (click)="showForm=false">Annuler</button>
+                                        (click)="off()">Annuler</button>
                                 </mat-action-row>
                             </mat-expansion-panel>
                             <!--Add and Update-->
@@ -325,14 +325,14 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-3">
-                                        <span class="col-4 bolder">PÉRIODE DE COMPTAGE</span>
+                                        <span class="col-4 bolder">PERIODE DE COMPTAGE</span>
                                         <span class="col-4">Du : {{inventaire.debut|date:'dd/MM/yyyy'}} </span>
                                         <span class="col-4">Au : {{inventaire.fin|date:'dd/MM/yyyy'}}</span>
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
                                         <span class="col-4 bolder"
-                                            [ngClass]="{'pt-3': inventaire.localites && inventaire.localites.length>0}">LOCALITÉS</span>
+                                            [ngClass]="{'pt-3': inventaire.localites && inventaire.localites.length>0}">LOCALITES</span>
                                         <span class="col-8">
                                             <span
                                                 *ngIf="!inventaire.localites ||inventaire.localites && inventaire.localites.length==0">Aucune
@@ -378,8 +378,8 @@
                                     <hr>
                                     <p class="row mt-4">
                                         <span class="col-4 bolder"
-                                            [ngClass]="{'pt-3': inventaire.decisionCC && inventaire.decisionCC.length>0}">DÉCISION
-                                            DE CRÉATION DU COMITÉ</span>
+                                            [ngClass]="{'pt-3': inventaire.decisionCC && inventaire.decisionCC.length>0}">DECISION
+                                            DE CREATION DU COMITE</span>
                                         <span class="col-8"
                                             *ngIf="!inventaire.decisionCC||inventaire.decisionCC.length==0">Aucune
                                             décision n'a été ajoutée</span>
@@ -432,15 +432,15 @@
                                     </p>
                                     <hr>
                                     <p class="row mt-4">
-                                        <span class="col-4 bolder">RÉUNION DE LANCEMENT</span>
+                                        <span class="col-4 bolder">REUNION DE LANCEMENT</span>
                                         <span class="col-4">Lieu : {{inventaire.lieuReunion}}</span>
                                         <span class="col-4">Date : {{inventaire.dateReunion|date:'dd/MM/yyyy'}}</span>
                                     </p>
                                     <hr>
                                     <div class="row mt-4">
                                         <span class="col-4 bolder"
-                                            [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRÉSENTS
-                                            A LA RÉUNION</span>
+                                            [ngClass]="{'pt-5': inventaire.presentsReunionOut.length>0 || inventaire.presentsReunion.length>0,'pt-1':inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0}">PRESENTS
+                                            A LA REUNION</span>
                                         <span class="col-8 row">
                                             <span
                                                 *ngIf="inventaire.presentsReunionOut.length==0 && inventaire.presentsReunion.length==0"
@@ -476,7 +476,7 @@
                                     <p class="row mt-4">
                                         <span class="col-4 bolder"
                                             [ngClass]="{'pt-4': inventaire.pvReunion && inventaire.pvReunion.length>0}">PV
-                                            DE LA RÉUNION</span>
+                                            DE LA REUNION</span>
                                         <span class="col-8"
                                             *ngIf="!inventaire.pvReunion ||inventaire.pvReunion && inventaire.pvReunion.length==0">Aucun
                                             pv n'a été ajouté</span>

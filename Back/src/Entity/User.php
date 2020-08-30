@@ -161,12 +161,18 @@ class User implements UserInterface
      */
     private $localitesCrees;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="user")
+     */
+    private $affectations;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
 
     /**
@@ -467,6 +473,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($localitesCree->getCreateur() === $this) {
                 $localitesCree->setCreateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getUser() === $this) {
+                $affectation->setUser(null);
             }
         }
 

@@ -3,6 +3,9 @@ import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener } from '
 import { ROUTES } from './sidebar-items';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
+import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
+import { saveAs } from 'file-saver';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 declare const Waves: any;
 
@@ -29,7 +32,9 @@ export class SidebarComponent implements OnInit {
     private renderer: Renderer2,
     public elementRef: ElementRef,
     public sharedService:SharedService,//ici laisser à public à cause du html
-    public securityServ:SecurityService
+    public securityServ:SecurityService,
+    private _snackBar: MatSnackBar,
+    private inventaireServ:InventaireService
 
   ) {}
   @HostListener('window:resize', ['$event'])
@@ -196,5 +201,26 @@ export class SidebarComponent implements OnInit {
       this.renderer.removeClass(this.document.body, 'side-closed-hover');
       this.renderer.addClass(this.document.body, 'submenu-closed');
     }
+  }
+  showNotification(colorName, text, placementFrom, placementAlign) {
+    this._snackBar.open(text, '', {
+      duration: 2000,
+      verticalPosition: placementFrom,
+      horizontalPosition: placementAlign,
+      panelClass: [colorName,'color-white']
+    });
+  }
+  exportForMobile(){
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
+      rep=>{
+        const blob = new Blob([JSON.stringify(rep)], {type : 'application/json'});
+        saveAs(blob, 'mobile.json');
+        this.securityServ.showLoadingIndicatior.next(false)
+      },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
   }
 }

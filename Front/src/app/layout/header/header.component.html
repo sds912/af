@@ -83,7 +83,7 @@
                             <ul class="user_dw_menu">
                                 <li [hidden]="securityServ.user?.entreprises?.length==1||securityServ.admin">
                                     <a href="#" onClick="return false;"  data-toggle="modal" data-target="#eseModal" data-backdrop="static" data-keyboard="false" (click)="initForm3()" #openEseModal>
-                                        <mat-icon aria-hidden="false" class="mr-2">business</mat-icon>Entité actuelle
+                                        <mat-icon aria-hidden="false" class="mr-2">business</mat-icon>Changer d'entité
                                     </a>
                                 </li>
                                 <li>
@@ -94,16 +94,6 @@
                                 <li>
                                     <a href="#" onClick="return false;"  data-toggle="modal" data-target="#passwordModal" data-backdrop="static" data-keyboard="false" (click)="updatePwd()" #openPasswordModal>
                                         <mat-icon aria-hidden="false" class="mr-2">vpn_key</mat-icon>Mot de passe
-                                    </a>
-                                </li>
-                                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene">
-                                    <a href="#" onClick="return false;" (click)="exportForMobile()">
-                                        <mat-icon aria-hidden="false" class="mr-2">file_upload</mat-icon>Exporter
-                                    </a>
-                                </li>
-                                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene">
-                                    <a href="#" onClick="return false;">
-                                        <mat-icon aria-hidden="false" class="mr-2">file_download</mat-icon>Importer
                                     </a>
                                 </li>
                                 <li>

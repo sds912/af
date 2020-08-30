@@ -46,16 +46,15 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
     submenu: []
+  },{
+    id:'INS',
+    path: '/instruction',
+    title: 'Instruction',
+    icon: 'fas fa-file-signature',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE','ROLE_MI'],
+    submenu: []
   },
-  // {
-  //   id:'USER',
-  //   path: '/admin/user',
-  //   title: 'Utilisateurs',
-  //   icon: 'fas fa-users',
-  //   class: '',
-  //   roles:['ROLE_Admin','ROLE_Guest'],
-  //   submenu: []
-  // },
   {
     id:'INV',
     path: '/inventaires',
@@ -92,4 +91,32 @@ export const ROUTES: RouteInfo[] = [
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
     submenu: []
   },
+  {
+    id:'planing',
+    path: '',
+    title: "Planning",
+    icon: 'far fa-calendar-alt',
+    class: 'menu-toggle',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+    submenu: [
+      {
+        id:'planing1',
+        path: '/affectation',
+        title: 'Affectation',
+        icon: '',
+        class: 'ml-menu',
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        submenu: []
+      },
+      {
+        id:'planing2',
+        path: "/planning",
+        title: 'Calendrier',
+        icon: '',
+        class: 'ml-menu',
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        submenu: []
+      }
+    ]
+  }
 ];
