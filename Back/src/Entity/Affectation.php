@@ -7,9 +7,13 @@ use App\Repository\AffectationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={
+ *     "groups"={"affectation_read"}
+ *  }
+ * )
  * @ORM\Entity(repositoryClass=AffectationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={
  *     "user.id": "exact","inventaire.id": "exact"
@@ -21,37 +25,38 @@ class Affectation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"affectation_read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="affectations")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"affectation_read"})
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="affectations")
+     * @Groups({"affectation_read"})
      */
     private $inventaire;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"affectation_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"affectation_read"})
      */
     private $fin;
 
     /**
-     * @ORM\Column(type="json", nullable=true)
-     */
-    private $localites = [];
-
-    /**
      * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="affectations")
+     * @Groups({"affectation_read"})
      */
     private $localite;
 
@@ -104,18 +109,6 @@ class Affectation
     public function setFin(?\DateTimeInterface $fin): self
     {
         $this->fin = $fin;
-
-        return $this;
-    }
-
-    public function getLocalites(): ?array
-    {
-        return $this->localites;
-    }
-
-    public function setLocalites(?array $localites): self
-    {
-        $this->localites = $localites;
 
         return $this;
     }

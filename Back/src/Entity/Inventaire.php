@@ -28,7 +28,7 @@ class Inventaire
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"inv_read","mobile_inv_read"})
+     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
      */
     private $id;
 

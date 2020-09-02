@@ -19,7 +19,7 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","affectation_read"})
      */
     private $id;
 

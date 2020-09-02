@@ -40,6 +40,7 @@ class Shared{
     const ENTREPRISE="entreprise";
     const OPEN="open";
     const CLOSE="close";
+    const ENREGISTRER="Enregistré";
     public static function  getData(Request $request){
         $data=json_decode($request->getContent(),true);
         if(!$data){

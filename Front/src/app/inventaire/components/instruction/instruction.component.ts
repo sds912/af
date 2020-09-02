@@ -26,7 +26,6 @@ export class InstructionComponent implements OnInit {
 
   color: ThemePalette = 'accent';
   checked = false;
-  disabled = false;
   constructor(private sharedService: SharedService,public securityServ: SecurityService,private inventaireServ: InventaireService) { 
     this.docLink = this.sharedService.baseUrl + "/documents/"
   }
@@ -42,6 +41,7 @@ export class InstructionComponent implements OnInit {
         this.currentInv=rep?rep[0]:null
         this.traitementInst(this.currentInv)
         this.idCurrentInv=this.currentInv?.id
+        this.getStatusInstr(this.idCurrentInv)
         this.show=true
       },
       error => {
@@ -50,9 +50,22 @@ export class InstructionComponent implements OnInit {
       }
     )
   }
+
+  getStatusInstr(id){
+    if(id){
+      this.inventaireServ.getStatusInstr(id).then(rep=>this.checked=rep==0?false:true) 
+    }
+  }
+
+  approvInstr(){
+    if(this.idCurrentInv){
+      this.inventaireServ.approvInstr(this.idCurrentInv).then(rep=>this.checked=true) 
+    }
+  }
+
   traitementInst(inventaire){
     console.log(inventaire);
-    this.entreprise=inventaire.entreprise
+    this.entreprise=inventaire?.entreprise
     this.creation=inventaire?.localInstructionPv[0]=="creation"
     this.instructions=inventaire?.instruction
     if(this.creation){

@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Controller;
+
+use App\Entity\Affectation;
+use App\Entity\ApproveInst;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,6 +12,7 @@ use App\Entity\Entreprise;
 use App\Entity\Inventaire;
 use App\Entity\User;
 use App\Repository\AffectationRepository;
+use App\Repository\ApproveInstRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
@@ -199,7 +203,7 @@ class SharedController extends AbstractController
         }
         $this->manager->flush();
         return $this->json([
-            Shared::MESSAGE => 'Enregistré',
+            Shared::MESSAGE => Shared::ENREGISTRER,
             Shared::STATUS => $code
         ]);
     }
@@ -275,16 +279,83 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/affectations/localites/invemtaire/{id}", methods={"GET"})
+    * @Route("/affectations/localites/inventaire/{id}", methods={"GET"})
     */
-    public function getTabIdLoc(SerializerInterface $serializer,$id=null,AffectationRepository $affectationRepository){
+    public function getTabIdLoc(SerializerInterface $serializer,AffectationRepository $affectationRepository,$id=null){
         $inventaire=$this->repoInv->find($id);
-        $affectations=$affectationRepository->findOneBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
-        $data = $serializer->serialize($affectations?$affectations->getLocalites():[], 'json');
+        $affectations=$affectationRepository->findBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
+        $loc=[];
+        foreach($affectations as $affectation){
+            array_push($loc,
+                [
+                    'localite'=>$affectation->getLocalite(),
+                    'debut'=>$affectation->getDebut(),
+                    'fin'=>$affectation->getFin()
+                ]
+            );
+        }
+        $data = $serializer->serialize($affectations?$loc:[], 'json', ['groups' => ['entreprise_read']]);
         return new Response($data,200);
     }
 
-    
+    /**
+    * @Route("/approve_insts/inventaire/{id}", methods={"GET"})
+    */
+    public function approveInstruction(ApproveInstRepository $repo,$id=null){
+        $inv=$this->repoInv->find($id);
+        $approv=$repo->findOneBy(['inventaire'=>$inv,'user'=>$this->userCo]);
+        if(!$approv){
+            $approv=new ApproveInst();
+            $approv->setInventaire($inv)->setUser($this->userCo);
+        }
+        $approv->setStatus(true);
+        $this->manager->persist($approv);
+        $this->manager->flush();
+        return $this->json([
+            Shared::MESSAGE => 'Enregistré',
+            Shared::STATUS => 200
+        ]);
+    }
+
+    /**
+    * @Route("/approve_insts/status/inventaire/{id}", methods={"GET"})
+    */
+    public function getStatusAppr(ApproveInstRepository $repo,$id=null){
+        $inv=$this->repoInv->find($id);
+        $approv=$repo->findOneBy(['inventaire'=>$inv,'user'=>$this->userCo]);
+        $stat=0;
+        if($approv &&  $approv->getStatus()){
+            $stat=1;
+        }
+        return new Response($stat,200);
+    }
+
+    /**
+    * @Route("/affectations/user", methods={"POST"})
+    */
+    public function makeAffectation(Request $request,AffectationRepository $repo){
+        $data=Shared::getData($request);
+        $user=$this->repoUser->find($data['user']);
+        $inventaire=$this->repoInv->find($data['inventaire']);
+        $affectations=$repo->findBy(['user'=>$user,'inventaire'=>$inventaire]);
+        foreach ($affectations as $affectation) {
+            $this->manager->remove($affectation);
+        }
+        $affects=$data['affectations'];
+        foreach ($affects as $aff) {
+            $affectation=new Affectation();
+            $affectation->setUser($user)->setInventaire($inventaire)
+                        ->setDebut($aff['debut']?new DateTime($aff['debut']):null)
+                        ->setFin($aff['fin']?new DateTime($aff['fin']):null)
+                        ->setLocalite($this->repoLoc->find($aff['localite']['id']));
+            $this->manager->persist($affectation);
+        }
+        $this->manager->flush();
+        return $this->json([
+            Shared::MESSAGE => Shared::ENREGISTRER,
+            Shared::STATUS => 200
+        ]);
+    }
 
     public function getPvCreer($data){
         $d=[

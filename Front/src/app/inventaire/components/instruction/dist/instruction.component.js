@@ -35,7 +35,6 @@ var InstructionComponent = /** @class */ (function () {
         this.urlInst = null;
         this.color = 'accent';
         this.checked = false;
-        this.disabled = false;
         this.docLink = this.sharedService.baseUrl + "/documents/";
     }
     InstructionComponent.prototype.ngOnInit = function () {
@@ -50,15 +49,28 @@ var InstructionComponent = /** @class */ (function () {
             _this.currentInv = rep ? rep[0] : null;
             _this.traitementInst(_this.currentInv);
             _this.idCurrentInv = (_a = _this.currentInv) === null || _a === void 0 ? void 0 : _a.id;
+            _this.getStatusInstr(_this.idCurrentInv);
             _this.show = true;
         }, function (error) {
             _this.securityServ.showLoadingIndicatior.next(false);
             console.log(error);
         });
     };
+    InstructionComponent.prototype.getStatusInstr = function (id) {
+        var _this = this;
+        if (id) {
+            this.inventaireServ.getStatusInstr(id).then(function (rep) { return _this.checked = rep == 0 ? false : true; });
+        }
+    };
+    InstructionComponent.prototype.approvInstr = function () {
+        var _this = this;
+        if (this.idCurrentInv) {
+            this.inventaireServ.approvInstr(this.idCurrentInv).then(function (rep) { return _this.checked = true; });
+        }
+    };
     InstructionComponent.prototype.traitementInst = function (inventaire) {
         console.log(inventaire);
-        this.entreprise = inventaire.entreprise;
+        this.entreprise = inventaire === null || inventaire === void 0 ? void 0 : inventaire.entreprise;
         this.creation = (inventaire === null || inventaire === void 0 ? void 0 : inventaire.localInstructionPv[0]) == "creation";
         this.instructions = inventaire === null || inventaire === void 0 ? void 0 : inventaire.instruction;
         if (this.creation) {

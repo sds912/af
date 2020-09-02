@@ -8,16 +8,12 @@ export class PlaningService {
 
   constructor(private sharedService:SharedService) { }
   addAfectation(data){
-    if(data.id && data.id!=0){
-      return this.sharedService.putElement(data,"/affectations/"+data.id)
-    }
-    delete data.id;
-    return this.sharedService.postElement(data,"/affectations")
+    return this.sharedService.postElement(data,"/affectations/user")
   }
   getAffectations(params=""){
     return this.sharedService.getElement("/affectations"+params)
   }
   getTabLocAffectation(idInv){
-    return this.sharedService.getElement("/affectations/localites/invemtaire/"+idInv)
+    return this.sharedService.getElement("/affectations/localites/inventaire/"+idInv)
   }
 }

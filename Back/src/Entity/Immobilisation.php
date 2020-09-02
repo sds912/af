@@ -39,6 +39,7 @@ class Immobilisation
      * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $code;
+    
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"immo_read"})

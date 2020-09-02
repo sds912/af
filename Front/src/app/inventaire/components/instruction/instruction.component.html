@@ -45,8 +45,8 @@
             </div>
         </div>
         <p *ngIf="currentInv">
-            <strong style="font-size: 15px;">Je confirme avoir lu les éléments relatifs à l'instruction d'inventaire.</strong> 
-            <mat-slide-toggle class="example-margin" [color]="color" [checked]="checked" [disabled]="disabled"> </mat-slide-toggle>
+            <strong style="font-size: 15px;">Je confirme avoir lu les éléments relatifs à l'instruction d'inventaire</strong> 
+            <mat-slide-toggle class="example-margin" [color]="color" [checked]="checked" [disabled]="checked" (click)='approvInstr()'> </mat-slide-toggle>
         </p>
         
     </div>

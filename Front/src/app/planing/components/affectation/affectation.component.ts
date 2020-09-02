@@ -52,14 +52,15 @@ export class AffectationComponent implements OnInit {
     'Membre du comité'
   ]
   update=false
-  debutPeriode=null
-  finPeriode=null
+  debutPeriodeOctroyer=null
+  finPeriodeOctroyer=null
   debut=null
   fin=null
-  idAffectation=0
   myId=''
   curAffectation=null
   myTabLocAffecte=[]
+  tabPeriodeAffectation=[]
+  idLocCurrentAffectation=null
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar, 
               private adminServ: AdminService, 
@@ -79,18 +80,43 @@ export class AffectationComponent implements OnInit {
     this.getOneEntreprise(this.idCurrentEse)
 
   }
+  openAffectation(id){
+    this.idLocCurrentAffectation=id
+    let affect=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==id)
+    if(!affect){
+      /** Si n'existe pas l ajouter */
+      affect={localite:{id:id},debut:null,fin:null}
+      this.tabPeriodeAffectation.push(affect)
+    }
+    this.debut=affect?.debut
+    this.fin=affect?.fin
+    console.log(this.tabPeriodeAffectation);
+  }
+  dateChange(){
+    let affect=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==this.idLocCurrentAffectation)
+    var index = this.tabPeriodeAffectation.indexOf(affect);
+    if(index > -1) {
+      /** Sup et remplacer */
+      this.tabPeriodeAffectation.splice(index, 1);
+    }
+    affect.debut=this.debut
+    affect.fin=this.fin
+    this.tabPeriodeAffectation.push(affect)
+  }
   getTabLocAffectation(){
     this.planingServ.getTabLocAffectation(this.idCurrentInv).then(
       rep => {
         this.myTabLocAffecte=rep
         console.log(rep);
-        
       },
       error => {
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
       }
     )
+  }
+  getMyAffectation(){
+    return this.myTabLocAffecte.find(tab=>tab?.localite?.id==this.idLocCurrentAffectation)
   }
   getInventaireByEse() {
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
@@ -140,23 +166,21 @@ export class AffectationComponent implements OnInit {
     this.update=false
     this.currentUser=user
     this.tabOpen = []
+    this.idLocCurrentAffectation=null
+    this.debut=null
+    this.fin=null
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
     this.getAffectationOf(user)
   }
-
   getAffectationOf(user){
     /** L'affectation d'un utilisateur */
     this.planingServ.getAffectations(`?user.id=${user.id}&inventaire.id=${this.currentInv?.id}`).then(
       rep=>{
-        /** Je l ai modélisé ainsi au cas ou on doive faire une date pour chaque localité pour l instant on utilise juste localites qui est du json */
-        /** si change revoir hiddenLoc */
-        this.curAffectation=rep[0]
-        this.idAffectation=this.curAffectation?this.curAffectation.id:0
-        this.debut=this.curAffectation?.debut
-        this.fin=this.curAffectation?.debut
-        
-        /** utiliser le user de getAffectationOf(user) car ses infos sont plus nombres */
-        const hisLocalite=this.getLocOpenUser(user,this.curAffectation?.localites)
+        this.tabPeriodeAffectation=rep
+        /** Les id de toutes les localités de la personne */
+        const locIds=this.getAllLocId(this.tabPeriodeAffectation)
+        /** POur gerer a la fois les superviseurs adjoints et les autres */
+        const hisLocalite=this.getLocOpenUser(user,locIds)
         this.tabLoc = []
         hisLocalite?.forEach((l: any) => this.checkLoc(l,true));
       },error=>{
@@ -164,27 +188,77 @@ export class AffectationComponent implements OnInit {
       }
     )
   }
-    
+  getAllLocId(tab){
+    let t=[]
+    tab?.forEach(affectation => t.push(affectation?.localite?.id));
+    return t
+  }
   getLocOpenUser(user,tabIdLocalites){
     /** si on choisi un adjoint charger les localités qu'il a créé */
     if(user.roles?.indexOf("ROLE_SuperViseurAdjoint")>=0){
       return this.localites.filter(loc=>loc?.createur?.id==user.id)
     }
     /** Les autres charger les localités ou on les a affecté */
-    let tab=[]
-    tabIdLocalites?.forEach(id => tab.push(this.getOnById(id)));
-    return tab
+    let t=[]
+    tabIdLocalites?.forEach(id => t.push(this.getOneById(id)));
+    return t
+  }
+  getAffectationToSave(){
+    /** Si cocher mais non affecter */
+    this.tabLoc.forEach(id=>{
+      const existe=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==id)
+      if(!existe){
+        this.tabPeriodeAffectation.push({localite:{id:id},debut:null,fin:null})
+        /** ajouter si ajout les fils auront la meme duree d afectation que le first sub */
+      }
+    })
+    /** si decocher mais affecter avant */
+    this.tabPeriodeAffectation.forEach((affectation,index)=>{
+      const cocher=this.tabLoc.find(idL=>idL==affectation?.localite?.id)
+      if(!cocher){
+        this.tabPeriodeAffectation.splice(index, 1);
+      }
+    })
+    this.samePeriodeForSon()
+    return this.tabPeriodeAffectation
+  }
+  samePeriodeForSon(){
+    if(this.securityServ.superviseurGene){
+      /** Pour les superviseurs adjoints les fils auront la meme duree d afectation que la 1ere subdivision */
+      const parents=this.localites.filter(loc=>loc.idParent==null)
+
+      parents?.forEach(parent=>{
+        const affectation=this.tabPeriodeAffectation.find(aff=>aff.localite.id==parent.id)
+        const debut=affectation?.debut
+        const fin=affectation?.fin
+        const fils=this.localites.filter(loc=>loc.idParent==parent.id)
+        fils?.forEach(one=>{
+          const filsAffect=this.tabPeriodeAffectation.find(aff=>aff.localite.id==one.id)
+          
+          let index = this.tabPeriodeAffectation.indexOf(filsAffect);
+          if(index > -1) {
+            /** Sup et remplacer */
+            this.tabPeriodeAffectation.splice(index, 1);
+          }
+          if(filsAffect){
+            filsAffect.debut=debut
+            filsAffect.fin=fin
+            this.tabPeriodeAffectation.push(filsAffect)
+          }
+        })
+      })
+    }
   }
   save():void{
+    /** ajouter si ajout les fils auront la meme duree d afectation que le first sub */
     this.securityServ.showLoadingIndicatior.next(true)
     const data={
-      id:this.idAffectation,
-      user:`/api/users/${this.currentUser.id}`,
-      inventaire:`/api/inventaires/${this.currentInv.id}`,
-      localites:this.tabLoc,
-      debut:this.debut,
-      fin:this.fin
+      user:this.currentUser.id,
+      inventaire:this.currentInv.id,
+      affectations:this.getAffectationToSave()
     }
+    console.log(this.tabLoc,data);
+
     this.planingServ.addAfectation(data).then(
       rep=>{
         this.update=false
@@ -198,15 +272,7 @@ export class AffectationComponent implements OnInit {
   off(){
     this.openOn(this.currentUser)
   }
-  hiddenLoc(loc):boolean{
-    const cas1=this.securityServ.superviseurAdjoint && loc?.createur?.id!=this.myId
-    /** si chef d equipe et qu on nous y a pas affecter */
-    const cas2=this.securityServ.chefEquipe && this.myTabLocAffecte?.indexOf(loc.id)<=-1    
-    if(cas1 || cas2){
-      return true
-    }
-    return false
-  }
+  
   isShow(user):boolean{
     const service=this.securityServ
     /** superviseur general voit sup adjoint, chef equipe et membre inventaire */
@@ -232,9 +298,9 @@ export class AffectationComponent implements OnInit {
     }
     return false
   }
-
   styleGree(user){
     const service=this.securityServ
+
     const cas1=service.superviseurGene && user.roles?.indexOf("ROLE_SuperViseurAdjoint")<0
 
     const cas2=(service.superviseur || service.superviseurAdjoint) && user.roles?.indexOf("ROLE_CE")<0
@@ -246,9 +312,9 @@ export class AffectationComponent implements OnInit {
     }
     return false
   }
-
   isEditable():boolean{
     const service=this.securityServ
+
     const user=this.currentUser
     /** superviseur general edit sup adjoint */
     const cas1 = service.superviseurGene && user.roles?.indexOf("ROLE_SuperViseurAdjoint")>=0
@@ -265,10 +331,8 @@ export class AffectationComponent implements OnInit {
     return false
   }
   editOne(){
-    const user=this.currentUser
     this.update=true
   }
-  
   inventaireChange(id){
     this.currentInv=this.inventaires.find(inv=>inv.id==id)
     this.localites = this.currentInv?.localites
@@ -303,19 +367,8 @@ export class AffectationComponent implements OnInit {
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
-  
   firstSub(localites) {
     return localites?.filter(loc => loc.position?.length > 0)
-  }
-  checkLoc(loc,addOnly=false) {
-    var index = this.tabLoc.indexOf(loc.id);
-    if(index > -1 && !addOnly) {
-      this.tabLoc.splice(index, 1);
-    }else if(index <= -1) {
-      this.tabLoc.push(loc.id)
-      const idParent = loc.idParent
-      if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOnById(idParent))//cocher les parents recursif
-    }
   }
   inInvLoc(id):boolean {
     /** on ne peut pas utiliser inTab car l un sera chercher sur les localites et l autre sur les subdivisions d une localites */
@@ -324,7 +377,7 @@ export class AffectationComponent implements OnInit {
   inTab(valeur, tab) {
     return tab?.find(id => id == valeur);
   }
-  getOnById(id) {
+  getOneById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
@@ -339,32 +392,12 @@ export class AffectationComponent implements OnInit {
     }
   }
   getCurrentSubById(id) {
-    let l = this.getOnById(id)?.subdivisions
+    let l = this.getOneById(id)?.subdivisions
     return l ? l : []
   }
   openOther(i, id) {
     this.tabOpen[i] = id
     this.offUnderSub(i + 1)//les surdivisions en dessous
-  }
-  checkAllLoc() {
-    const allIsCheck = this.allLocIsChec()
-    if (allIsCheck) {
-      //ne pas mettre this.tabLoc=[] car si un superviseur adjout enleve tous il doit reste ceux des autres sup adjoints
-      this.localites.forEach(localite => {
-        if (this.inTab(localite.id, this.tabLoc)) this.checkLoc(localite)
-      })
-      return
-    }
-    this.localites.forEach(localite => {
-      if (!this.inTab(localite.id, this.tabLoc)) this.checkLoc(localite)
-    })
-  }
-  allLocIsChec() {
-    let bool = true
-    this.localites.forEach(localite => {
-      if (bool) bool = this.inTab(localite.id, this.tabLoc)
-    })
-    return bool
   }
   getRole(role, show = true):string {
     let r1 = '', r2 = ''
@@ -397,5 +430,46 @@ export class AffectationComponent implements OnInit {
     }
     if (show) return r1
     return r2
+  }
+  checkAllLoc() {
+    const allIsCheck = this.allLocIsChec()
+    if (allIsCheck) {
+      //ne pas mettre this.tabLoc=[] car si un superviseur adjout enleve tous il doit reste ceux des autres sup adjoints
+      this.localites.forEach(localite => {
+        if (this.inTab(localite.id, this.tabLoc)) this.checkLoc(localite)
+      })
+      return
+    }
+    this.localites.forEach(localite => {
+      if (!this.inTab(localite.id, this.tabLoc)) this.checkLoc(localite)
+    })
+  }
+  allLocIsChec() {
+    let bool = true
+    this.localites.forEach(localite => {
+      if (bool) bool = this.inTab(localite.id, this.tabLoc)
+    })
+    return bool
+  }
+  checkLoc(loc,addOnly=false) {
+    /** revoir car ca doit etre de la forme {localite,debut,fin} */
+    var index = this.tabLoc.indexOf(loc.id);
+    if(index > -1 && !addOnly) {
+      this.tabLoc.splice(index, 1);
+    }else if(index <= -1) {
+      this.tabLoc.push(loc.id)
+      const idParent = loc.idParent
+      if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOneById(idParent))//cocher les parents recursif
+    }
+  }
+  hiddenLoc(loc):boolean{
+    /**revoir */
+    const cas1=this.securityServ.superviseurAdjoint && loc?.createur?.id!=this.myId
+    /** si chef d equipe et qu on nous y a pas affecter */
+    const cas2=this.securityServ.chefEquipe && this.myTabLocAffecte.find(tab=>tab?.localite?.id==loc?.id)==null   
+    if(cas1 || cas2){
+      return true
+    }
+    return false
   }
 }

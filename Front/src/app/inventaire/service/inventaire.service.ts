@@ -102,4 +102,10 @@ export class InventaireService {
   getDataForMobile(id){
     return this.sharedService.getElement("/mobile/data/"+id)
   }
+  getStatusInstr(id){
+    return this.sharedService.getElement("/approve_insts/status/inventaire/"+id)
+  }
+  approvInstr(id){
+    return this.sharedService.getElement("/approve_insts/inventaire/"+id)
+  }
 }
