@@ -71,7 +71,8 @@ export class AffectationComponent implements OnInit {
   {
     this.imgLink = this.sharedService.baseUrl + "/images/"
   }
-
+  
+  //revoir periode de contage quand on click sur un nouveau
   ngOnInit() {
     this.myId = localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(false)
@@ -107,11 +108,52 @@ export class AffectationComponent implements OnInit {
     this.planingServ.getTabLocAffectation(this.idCurrentInv).then(
       rep => {
         this.myTabLocAffecte=rep
-        console.log(rep);
+        this.forCorrection()
       },
       error => {
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
+      }
+    )
+  }
+  forCorrection(){
+    /** Si le superviseur general affect un superviseur adjoint les loc filles 
+    * prennent la duree du parent mais si le superviseur general ajout une localité 
+    * a l inventaire apres affecation sa duree sera null 
+    */
+    console.log(this.myTabLocAffecte,this.localites);
+    if(this.securityServ.superviseurAdjoint){
+      const myLoc=this.localites.filter(loc=>loc?.createur?.id==this.myId)
+      const toCorrect=[]
+      myLoc.forEach(loc=>{
+        const locAffecte=this.myTabLocAffecte.find(aff=>aff.localite.id==loc.id)
+        if(!locAffecte){
+          const idParent=this.getOneById(loc.id)?.idParent
+          const parrentAff=this.myTabLocAffecte.find(aff=>aff.localite.id==idParent)
+          const debut=parrentAff?parrentAff.debut:null
+          const fin=parrentAff?parrentAff.fin:null
+          toCorrect.push({localite:{id:loc.id},debut:debut,fin:fin})
+        }
+      })
+      if(toCorrect.length>0){
+        this.saveCorrection(toCorrect)
+      }
+    }
+  }
+  saveCorrection(affectationToCorect){
+    const data={
+      user:this.myId,
+      inventaire:this.currentInv.id,
+      affectations:affectationToCorect,
+      remove:false
+    }
+    console.log(affectationToCorect,data);
+    
+    this.planingServ.addAfectation(data).then(
+      rep=>{
+        console.log(rep);
+      },error=>{
+        console.log(error);
       }
     )
   }
@@ -226,28 +268,33 @@ export class AffectationComponent implements OnInit {
     if(this.securityServ.superviseurGene){
       /** Pour les superviseurs adjoints les fils auront la meme duree d afectation que la 1ere subdivision */
       const parents=this.localites.filter(loc=>loc.idParent==null)
-
+      console.log(parents);
+      
       parents?.forEach(parent=>{
         const affectation=this.tabPeriodeAffectation.find(aff=>aff.localite.id==parent.id)
         const debut=affectation?.debut
         const fin=affectation?.fin
-        const fils=this.localites.filter(loc=>loc.idParent==parent.id)
-        fils?.forEach(one=>{
-          const filsAffect=this.tabPeriodeAffectation.find(aff=>aff.localite.id==one.id)
-          
-          let index = this.tabPeriodeAffectation.indexOf(filsAffect);
-          if(index > -1) {
-            /** Sup et remplacer */
-            this.tabPeriodeAffectation.splice(index, 1);
-          }
-          if(filsAffect){
-            filsAffect.debut=debut
-            filsAffect.fin=fin
-            this.tabPeriodeAffectation.push(filsAffect)
-          }
-        })
+        this.loopSone(parent,debut,fin)
       })
     }
+  }
+  loopSone(parent,debut,fin){
+    const fils=this.localites.filter(loc=>loc.idParent==parent.id)
+    fils?.forEach(one=>{
+      const filsAffect=this.tabPeriodeAffectation.find(aff=>aff.localite.id==one.id)
+      let index = this.tabPeriodeAffectation.indexOf(filsAffect);
+      if(index > -1) {
+        /** Sup et remplacer */
+        this.tabPeriodeAffectation.splice(index, 1);
+      }
+      if(filsAffect){
+        filsAffect.debut=debut
+        filsAffect.fin=fin
+        this.tabPeriodeAffectation.push(filsAffect)
+      }
+      /** Pour ces fils à lui */
+      this.loopSone(one,debut,fin)
+    })
   }
   save():void{
     /** ajouter si ajout les fils auront la meme duree d afectation que le first sub */
@@ -255,10 +302,9 @@ export class AffectationComponent implements OnInit {
     const data={
       user:this.currentUser.id,
       inventaire:this.currentInv.id,
-      affectations:this.getAffectationToSave()
+      affectations:this.getAffectationToSave(),
+      remove:true
     }
-    console.log(this.tabLoc,data);
-
     this.planingServ.addAfectation(data).then(
       rep=>{
         this.update=false
@@ -468,6 +514,61 @@ export class AffectationComponent implements OnInit {
     /** si chef d equipe et qu on nous y a pas affecter */
     const cas2=this.securityServ.chefEquipe && this.myTabLocAffecte.find(tab=>tab?.localite?.id==loc?.id)==null   
     if(cas1 || cas2){
+      return true
+    }
+    return false
+  }
+  disabledInput():boolean{
+    const service=this.securityServ
+    const inv=this.currentInv
+    const myPeriode=this.getDateComptage()
+    const cas1= !service.superviseurGene && !service.superviseur && (myPeriode && (new Date(this.debut)<new Date(myPeriode.debut)||new Date(this.fin)>new Date(myPeriode.fin)))
+    const cas2=(service.superviseurGene || service.superviseur) && (inv && (new Date(this.debut)<new Date(inv.debut)||new Date(this.fin)>new Date(inv.fin)))
+    const cas3=new Date(this.debut)>new Date(this.fin)
+
+    /** La durée du parent */
+    let cas4=false
+    for (let i=0; i<this.tabPeriodeAffectation.length;i++) {
+      const aff=this.tabPeriodeAffectation[i]
+      const localite=this.getOneById(aff.localite.id)
+      if(localite?.idParent){
+        const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
+        const checked=this.inTab(aff.localite.id,this.tabLoc)
+        if(affectParent && checked && (new Date(aff.debut)<new Date(affectParent.debut)||new Date(aff.fin)>new Date(affectParent.fin))){
+          cas4=true
+          break
+        }
+      }
+    }
+
+    if(cas1 || cas2 || cas3 || cas4){
+      return true
+    }
+    return false
+  }
+  getDateComptage(){
+    const service=this.securityServ
+    const idCurLoc=this.idLocCurrentAffectation
+    const localite=this.getOneById(idCurLoc)
+    if(!localite?.idParent && (service.superviseurGene || service.superviseur)){
+      return this.currentInv
+    }
+    else if(!localite?.idParent && !service.superviseurGene && !service.superviseur){
+      return this.getMyAffectation()
+    }
+    const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
+    return affectParent
+  }
+  isErrorDate(number):boolean{
+    if(number==0 && 
+      this.getDateComptage() && new Date(this.getDateComptage()?.debut)>new Date(this.debut) ||
+      new Date(this.debut)>new Date(this.getDateComptage()?.fin) || 
+      this.debut && this.fin && new Date(this.debut)>new Date(this.fin)){
+      return true
+    }
+    if(number==1 && this.getDateComptage() && new Date(this.getDateComptage()?.fin)<new Date(this.fin)||
+    new Date(this.getDateComptage()?.debut)>new Date(this.fin)
+    ){
       return true
     }
     return false

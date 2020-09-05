@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Shared;
 use App\Entity\Entreprise;
+use App\Entity\Immobilisation;
 use App\Entity\Inventaire;
 use App\Entity\User;
 use App\Repository\AffectationRepository;
@@ -168,7 +169,7 @@ class SharedController extends AbstractController
 
         $idLocalites=$this->toArray($data["localites"]);
         $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
-        
+        $inventaire->initLocalite();
         $localInstructionPv=$this->toArray($data["localInstructionPv"]);
         if($localInstructionPv[0]==Shared::CREATION && isset($data['bloc1e1'])){
             $instructions=[
@@ -338,21 +339,38 @@ class SharedController extends AbstractController
         $user=$this->repoUser->find($data['user']);
         $inventaire=$this->repoInv->find($data['inventaire']);
         $affectations=$repo->findBy(['user'=>$user,'inventaire'=>$inventaire]);
-        foreach ($affectations as $affectation) {
-            $this->manager->remove($affectation);
+        if($data['remove']){
+            foreach ($affectations as $affectation) {
+                $this->manager->remove($affectation);
+            }  
         }
+        
         $affects=$data['affectations'];
         foreach ($affects as $aff) {
             $affectation=new Affectation();
             $affectation->setUser($user)->setInventaire($inventaire)
-                        ->setDebut($aff['debut']?new DateTime($aff['debut']):null)
-                        ->setFin($aff['fin']?new DateTime($aff['fin']):null)
+                        ->setDebut(isset($aff['debut'])?new DateTime($aff['debut']):null)
+                        ->setFin(isset($aff['fin'])?new DateTime($aff['fin']):null)
                         ->setLocalite($this->repoLoc->find($aff['localite']['id']));
             $this->manager->persist($affectation);
         }
         $this->manager->flush();
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
+            Shared::STATUS => 200
+        ]);
+    }
+
+    /**
+    * @Route("/immobilisations/delete/{id}/invantaire", methods={"GET"})
+    */
+    public function deleteByinventaire($idImmo){
+        $all=$this->repoImmo->findBy(['inventaire'=>$this->repoImmo]);
+        foreach ($all as $immo) {
+            $this->manager->remove($immo);
+        }
+        return $this->json([
+            Shared::MESSAGE => "Supprimer",
             Shared::STATUS => 200
         ]);
     }

@@ -41,6 +41,8 @@ class Shared{
     const OPEN="open";
     const CLOSE="close";
     const ENREGISTRER="Enregistré";
+    const ALPHAB=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    const NUMB=['0','1','2','3','4','5','6','7','8','9'];
     public static function  getData(Request $request){
         $data=json_decode($request->getContent(),true);
         if(!$data){
@@ -71,5 +73,17 @@ class Shared{
             $tab[$i]=trim($tab[$i]);
         }
         return $tab;
+    }
+    public static function getIndexAZ($caract){
+        return array_search(strtoupper($caract), self::ALPHAB);
+    }
+    public static function getEquivOf($chiffre){
+        return array_search(strtoupper($chiffre), self::NUMB);
+    }
+    public static function hashMdp($text){
+        $t = str_replace($text, "0", "Z");
+        for ($i=0; $i <=9; $i++) { 
+            $t = str_replace($t, $i, "Z");
+        }
     }
 }

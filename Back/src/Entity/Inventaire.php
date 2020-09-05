@@ -508,4 +508,8 @@ class Inventaire
 
         return $this;
     }
+
+    public function initLocalite(){
+        $this->localites = new ArrayCollection();
+    }
 }

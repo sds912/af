@@ -14,7 +14,20 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  * @ApiResource(
  * normalizationContext={
  *      "groups"={"immo_read"}
- *  })
+ *  },
+ * itemOperations={
+ *      "GET",
+ *      "PUT",
+ *      "DELETE_BY_INV"={
+ *          "method"="get",
+ *          "path"="/immobilisations/delete/{id}/invantaire",
+ *           "openapi_context"={
+ *              "summary"="Supprimer les immos d'un inventaire",
+ *              "description"="Supprime l'ensemble des immobilisations d'un inventaire"
+ *           }
+ *      }
+ *  }
+ * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact"})
  */
@@ -77,7 +90,7 @@ class Immobilisation
     private $dateSortie;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      * @Groups({"immo_read"})
      */
     private $dureeUtilite;
@@ -252,12 +265,12 @@ class Immobilisation
         return $this;
     }
 
-    public function getDureeUtilite(): ?\DateTimeInterface
+    public function getDureeUtilite(): ?string
     {
         return $this->dureeUtilite;
     }
 
-    public function setDureeUtilite(?\DateTimeInterface $dureeUtilite): self
+    public function setDureeUtilite(?string $dureeUtilite): self
     {
         $this->dureeUtilite = $dureeUtilite;
 

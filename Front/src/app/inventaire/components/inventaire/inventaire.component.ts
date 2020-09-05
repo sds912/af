@@ -966,14 +966,15 @@ export class InventaireComponent implements OnInit {
     return localites?.filter(loc => loc.position?.length > 0)
   }
   checkLoc(loc) {
-    var index = this.tabLoc.indexOf(loc);
-    if (index > -1) {
-      this.tabLoc.splice(index, 1);
+    //** proble avec indexOf qui ne marchait pas */
+    let index=this.tabLoc.find(localite=>localite.id==loc.id)
+    if (index) {
+      this.tabLoc=this.tabLoc.filter(localite=>localite.id!=loc.id)
     } else {
       this.tabLoc.push(loc)
       const idParent = loc.idParent
       if (idParent && !this.isChecked(idParent)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
-    }
+    }    
   }
   checkAllLoc() {
     const allIsCheck = this.allLocIsChec()

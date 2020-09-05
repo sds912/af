@@ -839,16 +839,16 @@
 
                                 <mat-step hidden>
                                     <ng-template matStepLabel>SIGNATAIRES</ng-template>
-                                    <div class="row" *ngFor="let oneForm of tabSignataires.controls; index as i">
+                                    <div class="row" *ngFor="let oneForm of tabSignataires.controls; index as i" style="position: relative;">
 
-                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pl-0">
                                             <mat-form-field class="example-full-width" appearance="outline">
                                                 <mat-label>Nom du signataire</mat-label>
                                                 <input matInput [formControl]="oneForm.controls.nom">
                                             </mat-form-field>
                                         </div>
 
-                                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pl-0">
                                             <mat-form-field class="example-full-width" appearance="outline">
                                                 <mat-label>Fonction</mat-label>
                                                 <input matInput type="text" [formControl]="oneForm.controls.fonction">
@@ -856,7 +856,7 @@
                                         </div>
 
                                         <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary"
-                                            [hidden]="i!=(tabSignataires.length-1)" (click)="addSignataire()">
+                                            [hidden]="i!=(tabSignataires.length-1)" (click)="addSignataire()" style="position: absolute;right:-2px;">
                                             add_circle_outline
                                         </mat-icon>
 
@@ -933,7 +933,7 @@
                                 [hidden]="i!=(tabDeliberation.length-1)" (click)="addDeliberation()">add_circle_outline
                             </mat-icon>
                         </div>
-                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                        <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 pr-0">
                             <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>DÉLIBERATION {{i+1}}</mat-label>
                                 <textarea matInput rows="3" [formControl]="oneForm.controls.content"></textarea>
@@ -943,15 +943,15 @@
                         </div>
                     </div>
                     <div class="row col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2"
-                        *ngFor="let oneForm of tabSignatairesPv.controls; index as i">
+                        *ngFor="let oneForm of tabSignatairesPv.controls; index as i" style="position: relative;">
 
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3 pl-0 pr-0">
                             <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>Nom du signataire</mat-label>
                                 <input matInput [formControl]="oneForm.controls.nom">
                             </mat-form-field>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3 pl-0 pr-2">
                             <mat-form-field class="example-full-width" appearance="outline">
                                 <mat-label>Fonction</mat-label>
                                 <input matInput type="text" [formControl]="oneForm.controls.fonction">
@@ -959,14 +959,11 @@
                         </div>
 
                         <mat-icon matSuffix class="pointer pt-3 text-primary mt-3 ml-5"
-                            [hidden]="i!=(tabSignatairesPv.length-1)" (click)="addSignatairePv()">add_circle_outline
+                            [hidden]="i!=(tabSignatairesPv.length-1)" (click)="addSignatairePv()" style="position: absolute;right: 12px;">add_circle_outline
                         </mat-icon>
-
-
-
                     </div>
                 </div>
-                <div class="modal-footer pr-2">
+                <div class="modal-footer" style="padding-right: 2.2rem;">
                     <div class="button-demo">
                         <button type="submit" class="btn btn-outline-danger btn-border-radius"
                             (click)="closePvModal.click()">Fermer</button>

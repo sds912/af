@@ -166,6 +166,11 @@ class User implements UserInterface
      */
     private $affectations;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $matricule;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -506,6 +511,18 @@ class User implements UserInterface
                 $affectation->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(?string $matricule): self
+    {
+        $this->matricule = $matricule;
 
         return $this;
     }

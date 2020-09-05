@@ -28,7 +28,7 @@
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="card body">
                     <hr class="mt-0 mb-0">
-                    <div class="details-box" [perfectScrollbar]>
+                    <div class="">
                         
                         <div class="row">
                             <div class="contact-photo">
@@ -43,13 +43,13 @@
                         <ul class="list-group list-group-unbordered mb-3 mt-2" *ngIf="idLocCurrentAffectation">
                             <li class="list-group-item entete">
                                 <strong style="text-align: center;display: inherit;">{{getOneById(idLocCurrentAffectation)?.nom}}</strong>
-                                <span  *ngIf="!securityServ.superviseurGene && !securityServ.superviseur && getMyAffectation()?.debut">
+                                <span  *ngIf="!securityServ.superviseurGene && !securityServ.superviseur && getDateComptage()?.debut">
                                     Période de comptage du 
-                                    <strong *ngIf="getMyAffectation()?.debut">{{getMyAffectation()?.debut|date:'dd/MM/yyyy'}}</strong>
-                                    <strong *ngIf="!getMyAffectation()?.debut"> - </strong>
+                                    <strong *ngIf="getDateComptage()?.debut">{{getDateComptage()?.debut|date:'dd/MM/yyyy'}}</strong>
+                                    <strong *ngIf="!getDateComptage()?.debut"> - </strong>
                                       au 
-                                    <strong *ngIf="getMyAffectation()?.fin">{{getMyAffectation()?.fin|date:'dd/MM/yyyy'}}</strong>
-                                    <strong *ngIf="!getMyAffectation()?.fin"> - </strong>
+                                    <strong *ngIf="getDateComptage()?.fin">{{getDateComptage()?.fin|date:'dd/MM/yyyy'}}</strong>
+                                    <strong *ngIf="!getDateComptage()?.fin"> - </strong>
                                 </span>
                             </li>
                             <li class="list-group-item">
@@ -59,7 +59,7 @@
                                     <span *ngIf="!debut">-</span>
                                 </a>
                                 <a class="pull-right" *ngIf="update">
-                                    <mat-form-field class="example-full-width">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(0)}">
                                         <mat-label>Début</mat-label>
                                         <input matInput [matDatepicker]="dbut" [(ngModel)]="debut" (ngModelChange)='dateChange()'>
                                         <mat-datepicker-toggle matSuffix [for]="dbut"></mat-datepicker-toggle>
@@ -74,7 +74,7 @@
                                     <span *ngIf="!fin">-</span>
                                 </a>
                                 <a class="pull-right" *ngIf="update">
-                                    <mat-form-field class="example-full-width">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(1)}">
                                         <mat-label>Fin</mat-label>
                                         <input matInput [matDatepicker]="Inputfin" [(ngModel)]="fin" (ngModelChange)='dateChange()'>
                                         <mat-datepicker-toggle matSuffix [for]="Inputfin"></mat-datepicker-toggle>
@@ -83,44 +83,48 @@
                                 </a>
                             </li>
                         </ul>
-                        <!--1ere subdivision-->
                         <ul class="list-group list-group-unbordered">
                             <li class="list-group-item bolder entete">Emplacements</li>
-                            <li class="list-group-item italic">{{subdivisions[0]}} :</li>
-                            <li class="list-group-item pl-2 pick-loc" *ngFor="let localite of firstSub(localites); index as i" [hidden]="hiddenLoc(localite)">
-                                <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="inTab(localite.id,tabLoc)">
-                                    {{localite.nom}}
-                                </mat-checkbox>
-                                
-                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(localite.id)" *ngIf="inTab(localite.id,tabLoc)">alarme</mat-icon>
-                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(localite.id,tabLoc)">alarme</mat-icon>
-                                <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
-                            </li>
                         </ul>
-                        <!--1ere subdivision-->
+                        <div class="details-box">
+                            <!--1ere subdivision-->
+                            <ul class="list-group list-group-unbordered">
+                                <li class="list-group-item italic">{{subdivisions[0]}} :</li>
+                                <li class="list-group-item pl-2 pick-loc" *ngFor="let localite of firstSub(localites); index as i" [hidden]="hiddenLoc(localite)">
+                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="inTab(localite.id,tabLoc)">
+                                        {{localite.nom}}
+                                    </mat-checkbox>
+                                    
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(localite.id)" *ngIf="inTab(localite.id,tabLoc)">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(localite.id,tabLoc)">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                                </li>
+                            </ul>
+                            <!--1ere subdivision-->
 
-                        <!--Autres subdivisions-->
-                        <ul class="list-group list-group-unbordered"  *ngFor="let idParent of tabOpen;let i=index" [hidden]="!openLocalite || !getOneById(idParent)">
-                            <li class="list-group-item bolder entete">{{getOneById(idParent)?.nom}}</li>
-                            <li class="list-group-item italic">{{subdivisions[i+1]}} :</li>
-                            <li class="list-group-item pl-2 pick-loc" *ngFor="let sub of getCurrentSubById(idParent);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)">
-                                <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
-                                    {{sub.nom}}
-                                </mat-checkbox>
-                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(sub.id)" *ngIf="inTab(sub.id,tabLoc) && !securityServ.superviseurGene">alarme</mat-icon>
-                                <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(sub.id,tabLoc) || securityServ.superviseurGene">alarme</mat-icon>
-                                <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
-                            </li>
-                            <li *ngIf="getCurrentSubById(idParent).length==0" class="list-group-item italic">Cette subdivision est vide</li>
-                        </ul>
-                        <!--Autres subdivisions-->
+                            <!--Autres subdivisions-->
+                            <ul class="list-group list-group-unbordered"  *ngFor="let idParent of tabOpen;let i=index" [hidden]="!openLocalite || !getOneById(idParent)">
+                                <li class="list-group-item bolder entete">{{getOneById(idParent)?.nom}}</li>
+                                <li class="list-group-item italic">{{subdivisions[i+1]}} :</li>
+                                <li class="list-group-item pl-2 pick-loc" *ngFor="let sub of getCurrentSubById(idParent);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)">
+                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
+                                        {{sub.nom}}
+                                    </mat-checkbox>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(sub.id)" *ngIf="inTab(sub.id,tabLoc) && !securityServ.superviseurGene">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(sub.id,tabLoc) || securityServ.superviseurGene">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                                </li>
+                                <li *ngIf="getCurrentSubById(idParent).length==0" class="list-group-item italic">Cette subdivision est vide</li>
+                            </ul>
+                            <!--Autres subdivisions-->
+                        </div>
                     </div>
-                    <hr>
+                    <hr class="mt-0">
                     <div class="newLabelBtn pt-1">
                         <button mat-flat-button color="primary" *ngIf="!isEditable() && !update" disabled>Editer</button>
                         <button mat-flat-button color="primary" *ngIf="isEditable() && !update" (click)="editOne()">Editer</button>
 
-                        <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()">Enregistrer</button>
+                        <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()" [disabled]="disabledInput()">Enregistrer</button>
                         <button class="btn btn-danger" *ngIf="update" (click)="off()">Annuler</button>
                     </div>
                 </div>
