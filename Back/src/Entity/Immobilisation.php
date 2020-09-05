@@ -155,9 +155,8 @@ class Immobilisation
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
-     * @ORM\JoinColumn(nullable=false)
      */
-    private $inventaire;
+    private $inventaitre;
 
     public function __construct()
     {
@@ -416,14 +415,14 @@ class Immobilisation
         return $this;
     }
 
-    public function getInventaire(): ?Inventaire
+    public function getInventaitre(): ?Inventaire
     {
-        return $this->inventaire;
+        return $this->inventaitre;
     }
 
-    public function setInventaire(?Inventaire $inventaire): self
+    public function setInventaitre(?Inventaire $inventaitre): self
     {
-        $this->inventaire = $inventaire;
+        $this->inventaitre = $inventaitre;
 
         return $this;
     }
