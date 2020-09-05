@@ -114,6 +114,8 @@ export class EntrepriseComponent implements OnInit {
       adresse: [{value: row.adresse, disabled: lock}]
     });
     this.selectedRowData = row;
+    console.log(this.selectedRowData);
+    
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
