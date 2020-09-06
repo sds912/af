@@ -41,7 +41,7 @@
                             <div class="contact-usertitle-job"> {{ getRole(currentUser?.roles, true) }} </div>
                         </div>
                         <ul class="list-group list-group-unbordered mb-3 mt-2" *ngIf="idLocCurrentAffectation">
-                            <li class="list-group-item entete">
+                            <li class="list-group-item entete" style="background-color: #ebebeead;">
                                 <strong style="text-align: center;display: inherit;">{{getOneById(idLocCurrentAffectation)?.nom}}</strong>
                                 <span  *ngIf="!securityServ.superviseurGene && !securityServ.superviseur && getDateComptage()?.debut">
                                     Période de comptage du 

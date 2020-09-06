@@ -20,7 +20,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *      "PUT",
  *      "DELETE_BY_INV"={
  *          "method"="get",
- *          "path"="/immobilisations/delete/{id}/invantaire",
+ *          "path"="/immobilisations/delete/{id}/inventaire",
  *           "openapi_context"={
  *              "summary"="Supprimer les immos d'un inventaire",
  *              "description"="Supprime l'ensemble des immobilisations d'un inventaire"
@@ -156,7 +156,7 @@ class Immobilisation
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
      */
-    private $inventaitre;
+    private $inventaire;
 
     public function __construct()
     {
@@ -415,14 +415,14 @@ class Immobilisation
         return $this;
     }
 
-    public function getInventaitre(): ?Inventaire
+    public function getInventaire(): ?Inventaire
     {
-        return $this->inventaitre;
+        return $this->inventaire;
     }
 
-    public function setInventaitre(?Inventaire $inventaitre): self
+    public function setInventaire(?Inventaire $inventaire): self
     {
-        $this->inventaitre = $inventaitre;
+        $this->inventaire = $inventaire;
 
         return $this;
     }

@@ -141,10 +141,9 @@ class Inventaire
     private $affectations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaitre")
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaire")
      */
     private $immobilisations;
-
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
@@ -493,7 +492,7 @@ class Inventaire
     {
         if (!$this->immobilisations->contains($immobilisation)) {
             $this->immobilisations[] = $immobilisation;
-            $immobilisation->setInventaitre($this);
+            $immobilisation->setInventaire($this);
         }
 
         return $this;
@@ -504,8 +503,8 @@ class Inventaire
         if ($this->immobilisations->contains($immobilisation)) {
             $this->immobilisations->removeElement($immobilisation);
             // set the owning side to null (unless already changed)
-            if ($immobilisation->getInventaitre() === $this) {
-                $immobilisation->setInventaitre(null);
+            if ($immobilisation->getInventaire() === $this) {
+                $immobilisation->setInventaire(null);
             }
         }
 

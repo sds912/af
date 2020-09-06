@@ -362,13 +362,14 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/immobilisations/delete/{id}/invantaire", methods={"GET"})
+    * @Route("/immobilisations/delete/{id}/inventaire", methods={"GET"})
     */
-    public function deleteByinventaire($idImmo){
-        $all=$this->repoImmo->findBy(['inventaire'=>$this->repoImmo]);
+    public function deleteByinventaire($id){
+        $all=$this->repoImmo->findBy(['inventaire'=>$this->repoInv->find($id)]);
         foreach ($all as $immo) {
             $this->manager->remove($immo);
         }
+        $this->manager->flush();
         return $this->json([
             Shared::MESSAGE => "Supprimer",
             Shared::STATUS => 200
@@ -376,7 +377,7 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/test", methods={"GET"})
+    * @Route("/approuve/instruction/off/{id}", methods={"GET"})
     */
     public function test(){
         $password="azerty";
