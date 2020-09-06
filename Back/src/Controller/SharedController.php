@@ -362,7 +362,7 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/immobilisations/delete/{id}/invantaire", methods={"GET"})
+    * @Route("/immobilisations/delete/{id}/inventaire", methods={"GET"})
     */
     public function deleteByinventaire($idImmo){
         $all=$this->repoImmo->findBy(['inventaire'=>$this->repoImmo]);

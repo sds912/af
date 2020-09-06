@@ -20,7 +20,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *      "PUT",
  *      "DELETE_BY_INV"={
  *          "method"="get",
- *          "path"="/immobilisations/delete/{id}/invantaire",
+ *          "path"="/immobilisations/delete/{id}/inventaire",
  *           "openapi_context"={
  *              "summary"="Supprimer les immos d'un inventaire",
  *              "description"="Supprime l'ensemble des immobilisations d'un inventaire"

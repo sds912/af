@@ -800,6 +800,13 @@ export class InventaireComponent implements OnInit {
       ]
     ]
   }
+  doEspace(nom ,fnc) {
+    if (nom.length > fnc.length) {
+      
+    } else {
+      
+    }
+  }
   getPdfDel(table) {
     let element: any = []
     table.forEach(cel => {
