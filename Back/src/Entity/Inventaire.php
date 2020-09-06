@@ -134,16 +134,16 @@ class Inventaire
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $status;/** status : open et close */
-
-    /**
-     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaire")
-     */
-    private $immobilisations;
     
     /**
      * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="inventaire")
     */
     private $affectations;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaitre")
+     */
+    private $immobilisations;
 
     public function __construct()
     {
@@ -151,8 +151,8 @@ class Inventaire
         $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->lectures = new ArrayCollection();
-        $this->immobilisations = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -447,38 +447,6 @@ class Inventaire
     }
 
     /**
-     * @return Collection|Immobilisation[]
-     */
-    public function getImmobilisations(): Collection
-    {
-        return $this->immobilisations;
-    }
-
-    public function addImmobilisation(Immobilisation $immobilisation): self
-    {
-        if (!$this->immobilisations->contains($immobilisation)) {
-            $this->immobilisations[] = $immobilisation;
-            $immobilisation->setInventaire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImmobilisation(Immobilisation $immobilisation): self
-    {
-        if ($this->immobilisations->contains($immobilisation)) {
-            $this->immobilisations->removeElement($immobilisation);
-            // set the owning side to null (unless already changed)
-            if ($immobilisation->getInventaire() === $this) {
-                $immobilisation->setInventaire(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-    /**
     * @return Collection|Affectation[]
      */
     public function getAffectations(): Collection
@@ -511,5 +479,36 @@ class Inventaire
 
     public function initLocalite(){
         $this->localites = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(Immobilisation $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setInventaitre($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(Immobilisation $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getInventaitre() === $this) {
+                $immobilisation->setInventaitre(null);
+            }
+        }
+
+        return $this;
     }
 }
