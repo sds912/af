@@ -275,7 +275,7 @@ class SharedController extends AbstractController
             "localites"=>$localites,
             "users"=>$users
         ];
-        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read']]);
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read']]);
         return new Response($data,200);
     }
 
@@ -372,6 +372,17 @@ class SharedController extends AbstractController
         return $this->json([
             Shared::MESSAGE => "Supprimer",
             Shared::STATUS => 200
+        ]);
+    }
+
+    /**
+    * @Route("/test", methods={"GET"})
+    */
+    public function test(){
+        $password="azerty";
+        return $this->json([
+            "password" => $password,
+            "hash" => Shared::hashMdp($password)
         ]);
     }
 

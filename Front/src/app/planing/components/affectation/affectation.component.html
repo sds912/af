@@ -148,46 +148,34 @@
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
                                     <ngx-datatable-column name="" sortable="false" prop="image" [width]="10">
-                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="table-img padding-0">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0 pointer" (click)='openOn(row)'>
                                                 <img [src]="imgLink + value" />
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
                                   
                                     <ngx-datatable-column name="Prénom et nom" sortable="false" prop="nom" [width]="150">
-                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="padding-0" [title]="value">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="value" (click)='openOn(row)'>
                                                 {{longText(value,20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Département" sortable="false" prop="departement" [width]="150">
-                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="padding-0" [title]="value">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="value" (click)='openOn(row)'>
                                                 {{longText(value,20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Roles" sortable="false" prop="roles" [width]="150">
-                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="padding-0" [title]="getRole(value, true)">
+                                        <ng-template let-row="row" let-value="value" let-i="index"  ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="getRole(value, true)" (click)='openOn(row)'>
                                                 {{ longText(getRole(value, true),20) }}
                                             </td>
-                                        </ng-template>
-                                    </ngx-datatable-column>
-                                    
-                                    <!-- action buttons -->
-                                    <ngx-datatable-column name="Actions" sortable="false" [width]="40" class="text-center">
-                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
-                                            ngx-datatable-cell-template>
-                                            <span>
-                                                <button class="btn tblActnBtn pointer h-auto text-info" (click)='openOn(row)'>
-                                                    <i class="material-icons">remove_red_eye</i>
-                                                </button>
-                                            </span>
                                         </ng-template>
                                     </ngx-datatable-column>
                                     

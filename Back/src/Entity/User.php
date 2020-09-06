@@ -168,6 +168,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"matricule_read"})
      */
     private $matricule;
 

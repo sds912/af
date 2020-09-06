@@ -34,7 +34,8 @@ class PasswordEncoderSubscriber implements EventSubscriberInterface{
         $method=$event->getRequest()->getMethod();
         if($user instanceof User && $method=="POST"){
             $hash=$this->encoder->encodePassword($user,Shared::DEFAULTPWD);
-            $user->setPassword($hash);
+            $user->setPassword($hash)
+                ->setMatricule(Shared::hashMdp(Shared::DEFAULTPWD));
             if(!$user->getStatus()){
                 $user->setStatus(Shared::ACTIF);
             }

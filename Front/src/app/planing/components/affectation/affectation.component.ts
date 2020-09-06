@@ -363,13 +363,13 @@ export class AffectationComponent implements OnInit {
 
     const user=this.currentUser
     /** superviseur general edit sup adjoint */
-    const cas1 = service.superviseurGene && user.roles?.indexOf("ROLE_SuperViseurAdjoint")>=0
+    const cas1 = service.superviseurGene && user?.roles?.indexOf("ROLE_SuperViseurAdjoint")>=0
 
     /** sup adjoint et sup edit chef equipe */
-    const cas2=(service.superviseur || service.superviseurAdjoint && user.roles?.indexOf("ROLE_CE")>=0)
+    const cas2=(service.superviseur || service.superviseurAdjoint && user?.roles?.indexOf("ROLE_CE")>=0)
     
     /** chef equipe edit membre inventaire */
-    const cas3=service.chefEquipe &&  user.roles?.indexOf("ROLE_MI")>=0
+    const cas3=service.chefEquipe &&  user?.roles?.indexOf("ROLE_MI")>=0
     
     if(cas1 || cas2 || cas3){
       return true
@@ -534,13 +534,13 @@ export class AffectationComponent implements OnInit {
       if(localite?.idParent){
         const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
         const checked=this.inTab(aff.localite.id,this.tabLoc)
-        if(affectParent && checked && (new Date(aff.debut)<new Date(affectParent.debut)||new Date(aff.fin)>new Date(affectParent.fin))){
+        if(!service.superviseurGene && affectParent && checked && (new Date(aff.debut)<new Date(affectParent.debut)||new Date(aff.fin)>new Date(affectParent.fin))){
           cas4=true
           break
         }
       }
     }
-
+    
     if(cas1 || cas2 || cas3 || cas4){
       return true
     }

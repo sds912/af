@@ -78,12 +78,24 @@ class Shared{
         return array_search(strtoupper($caract), self::ALPHAB);
     }
     public static function getEquivOf($chiffre){
-        return array_search(strtoupper($chiffre), self::NUMB);
+        $equiv=array_search(strtoupper($chiffre), self::NUMB);
+        return array_reverse(self::ALPHAB)[$equiv];
     }
     public static function hashMdp($text){
-        $t = str_replace($text, "0", "Z");
-        for ($i=0; $i <=9; $i++) { 
-            $t = str_replace($t, $i, "Z");
+        $text = strtoupper($text);
+        $hash="";
+        for ($i=0; $i <count(str_split($text)); $i++) { 
+            $char=str_split($text)[$i];
+            if(in_array($char,self::ALPHAB)){
+                $zero=intval(self::getIndexAZ($char))<10?"0":"";
+                $hash.=$zero.self::getIndexAZ($char);
+            }
+            elseif(in_array($char,self::NUMB)){
+                $hash.=self::getEquivOf($char).self::getEquivOf($char);
+            }else{
+              $hash.=$char.$char;  
+            }
         }
+        return "MAT-".$hash;
     }
 }
