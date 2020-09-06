@@ -1,0 +1,12 @@
+./mercure --jwt-key='asma' --addr='localhost:3000' --allow-anonymous --cors-allowed-origins='*'
+
+video grafiKart : https://www.youtube.com/watch?v=pV4jXfDECjU
+demo : https://demo.mercure.rocks/
+github: https://github.com/dunglas/mercure
+apiplatform: https://api-platform.com/docs/core/mercure/
+jwt: https://jwt.io/
+
+
+
+En prod mieux vaut enlever le --allow-anonymous et mettre
+./mercure --jwt-key='asma' --addr='localhost:3000' --cors-allowed-origins='*'
