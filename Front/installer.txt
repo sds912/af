@@ -7,3 +7,6 @@ npm install --save-dev sass-loader@7.1.0
 npm install --save pdfmake
 npm install file-saver --save
 npm install xlsx
+ng add angular-calendar
+ng add @ng-bootstrap/ng-bootstrap
+ng add flatpickr angularx-flatpickr

@@ -6,7 +6,7 @@ import { PlaningComponent } from './components/planing/planing.component';
 
 const routes: Routes = [
   {path: 'affectation',component: AffectationComponent},
-  {path: 'planing',component: PlaningComponent}
+  {path: 'planning',component: PlaningComponent}
 ];
 
 @NgModule({
