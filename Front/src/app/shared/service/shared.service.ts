@@ -34,7 +34,7 @@ export class SharedService {
       return 0;
     })
   }
-  trierData(tab,param,ordre=1){//trie objet, si decroissant ordre=-1 ex: this.trier(clients,'nombre',-1)
+  trierDate(tab,param,ordre=1){//trie objet, si decroissant ordre=-1 ex: this.trier(clients,'nombre',-1)
     return tab.sort((a,b)=>{
       if (new Date(a[param]) > new Date(b[param])) return 1*ordre;
       else if (new Date(b[param]) > new Date(a[param])) return -1*ordre;

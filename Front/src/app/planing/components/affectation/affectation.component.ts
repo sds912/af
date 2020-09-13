@@ -9,6 +9,7 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { PlaningService } from '../../services/planing.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 export interface User {
   image: string;
@@ -42,14 +43,11 @@ export class AffectationComponent implements OnInit {
   idCurrentInv=null
   currentInv=null
   roles = [
-    "Chef d'équipe",
-    "Membre inventaire",
-    'Superviseur',
-    'Superviseur général',
-    'Superviseur adjoint',
-    'Guest',
-    'Président du comité',
-    'Membre du comité'
+    {role:"ROLE_MI",level:1},
+    {role:"ROLE_CE",level:2},
+    {role:"ROLE_SuperViseurAdjoint",level:3},
+    {role:"ROLE_SuperViseurGene",level:4},
+    {role:"ROLE_Superviseur",level:5}
   ]
   update=false
   debutPeriodeOctroyer=null
@@ -61,6 +59,9 @@ export class AffectationComponent implements OnInit {
   myTabLocAffecte=[]
   tabPeriodeAffectation=[]
   idLocCurrentAffectation=null
+  dateProposition=false
+  idLocError=null
+  infoTextError=''
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar, 
               private adminServ: AdminService, 
@@ -91,9 +92,18 @@ export class AffectationComponent implements OnInit {
     }
     this.debut=affect?.debut
     this.fin=affect?.fin
-    console.log(this.tabPeriodeAffectation);
+    this.dateProposition=false
+    if(!this.debut && !this.fin){
+      /** Pour lui proposer de garder la même date que la date qu on lui a accorder */
+      this.debut=affect?.debut?affect?.debut:this.getDateComptage()?.debut
+      this.fin=affect?.fin?affect?.fin:this.getDateComptage()?.fin
+      this.dateChange()
+      this.dateProposition=true
+    }
   }
   dateChange(){
+    console.log('dateChange');
+    
     let affect=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==this.idLocCurrentAffectation)
     var index = this.tabPeriodeAffectation.indexOf(affect);
     if(index > -1) {
@@ -163,7 +173,7 @@ export class AffectationComponent implements OnInit {
   getInventaireByEse() {
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
       rep => {
-        this.inventaires = rep
+        this.inventaires = rep?.reverse()
         this.currentInv=rep?rep[0]:null
         this.idCurrentInv=this.currentInv?.id
         this.localites = this.currentInv?.localites
@@ -192,7 +202,8 @@ export class AffectationComponent implements OnInit {
     this.adminServ.getUsers().then(
       rep => {
         this.securityServ.showLoadingIndicatior.next(false)
-        this.data = rep?.filter(u=>this.isShow(u))
+        const users=this.trierByRole(rep,-1)
+        this.data = users?.filter(u=>this.isShow(u))
         this.filteredData=this.data
         const currentUser=this.data && this.data.length> 0 ? this.data[0] : null
         this.openOn(currentUser)
@@ -382,6 +393,7 @@ export class AffectationComponent implements OnInit {
   inventaireChange(id){
     this.currentInv=this.inventaires.find(inv=>inv.id==id)
     this.localites = this.currentInv?.localites
+    this.getTabLocAffectation()
   }
   longText(text, limit) {
     return this.sharedService.longText(text, limit)
@@ -519,6 +531,8 @@ export class AffectationComponent implements OnInit {
     return false
   }
   disabledInput():boolean{
+    this.idLocError=null
+    this.infoTextError=''
     const service=this.securityServ
     const inv=this.currentInv
     const myPeriode=this.getDateComptage()
@@ -535,16 +549,31 @@ export class AffectationComponent implements OnInit {
         const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
         const checked=this.inTab(aff.localite.id,this.tabLoc)
         if(!service.superviseurGene && affectParent && checked && (new Date(aff.debut)<new Date(affectParent.debut)||new Date(aff.fin)>new Date(affectParent.fin))){
+          //console.log(affectParent,this.getOneById(affectParent.localite.id),new Date(aff.fin),new Date(affectParent.fin));
+          this.idLocError=affectParent.localite.id
+          const nom1=this.getOneById(this.idLocError).nom
+          const p1_1=this.formattedDate(new Date(affectParent.debut))
+          const p1_2=this.formattedDate(new Date(affectParent.fin))
+          const nom2=this.getOneById(aff.localite.id).nom
+          const p2_1=this.formattedDate(new Date(aff.debut))
+          const p2_2=this.formattedDate(new Date(aff.fin))
+          this.infoTextError="Revoir la période car celle de '"+nom1+"' est du "+p1_1+' au '+p1_2+
+                             ", tandis que celui de '"+nom2+"' est du "+p2_1+' au '+p2_2
           cas4=true
           break
         }
       }
     }
+    //console.log(cas1, cas2, cas3, cas4);
     
     if(cas1 || cas2 || cas3 || cas4){
       return true
     }
     return false
+  }
+  formattedDate(d = new Date) {
+    d = new Date(d)
+    return [d.getDate(), d.getMonth() + 1, d.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('-');
   }
   getDateComptage(){
     const service=this.securityServ
@@ -553,11 +582,12 @@ export class AffectationComponent implements OnInit {
     if(!localite?.idParent && (service.superviseurGene || service.superviseur)){
       return this.currentInv
     }
-    else if(!localite?.idParent && !service.superviseurGene && !service.superviseur){
-      return this.getMyAffectation()
+    else if(localite?.idParent && service.superviseurAdjoint){
+      const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
+      return affectParent
     }
-    const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
-    return affectParent
+    /** si celui donné par son n+1 */
+    return this.getMyAffectation()
   }
   isErrorDate(number):boolean{
     if(number==0 && 
@@ -567,10 +597,23 @@ export class AffectationComponent implements OnInit {
       return true
     }
     if(number==1 && this.getDateComptage() && new Date(this.getDateComptage()?.fin)<new Date(this.fin)||
-    new Date(this.getDateComptage()?.debut)>new Date(this.fin)
+      new Date(this.getDateComptage()?.debut)>new Date(this.fin)
     ){
       return true
     }
     return false
+  }
+  trierByRole(tab,ordre=1){//trie objet, si decroissant ordre=-1 ex: this.trier(clients,'nombre',-1)
+    return tab.sort((a,b)=>{
+      const arole=this.getRoleLevel(a?.roles)
+      const brole=this.getRoleLevel(b?.roles)
+      if (arole > brole) return 1*ordre;
+      else if (brole > arole) return -1*ordre;
+      return 0;
+    })
+  }
+
+  getRoleLevel(roles):number{
+    return this.roles?.find(r=>r.role==roles[0])?this.roles.find(r=>r.role==roles[0]).level:0
   }
 }

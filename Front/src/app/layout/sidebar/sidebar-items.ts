@@ -7,7 +7,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Home',
     icon: 'fas fa-tachometer-alt',
     class: 'menu-toggle',
-    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],//ne pas oublier les guards en fonction des roles
+    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],//ne pas oublier les guards en fonction des roles
     submenu: [
       {
         id:'DASH1',
@@ -15,7 +15,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 1',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       },
       {
@@ -24,7 +24,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 2',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       },
       {
@@ -33,7 +33,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Dashboard 3',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+        roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       }
     ]
@@ -44,7 +44,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Entités',
     icon: 'fas fa-building',
     class: '',
-    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+    roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
   },{
     id:'INS',
@@ -52,7 +52,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Instruction',
     icon: 'fas fa-file-signature',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE','ROLE_MI'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE','ROLE_MI'],
     submenu: []
   },
   {
@@ -61,7 +61,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Inventaires',
     icon: 'fas fa-barcode',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
   },
   {
@@ -70,7 +70,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Localités',
     icon: 'fas fa-map-marked-alt',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
   },
   {
@@ -79,7 +79,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Utilisateurs',
     icon: 'fas fa-users',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin'],
     submenu: []
   },
   {
@@ -88,7 +88,16 @@ export const ROUTES: RouteInfo[] = [
     title: 'Immobilisations',
     icon: 'fas fa-cubes',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin','ROLE_Guest'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin'],
+    submenu: []
+  },
+  {
+    id:'planing2',
+    path: "/planning",
+    title: 'Calendrier',
+    icon: '',
+    class: '',
+    roles:['ROLE_MI'],
     submenu: []
   },
   {
@@ -97,7 +106,7 @@ export const ROUTES: RouteInfo[] = [
     title: "Planning",
     icon: 'far fa-calendar-alt',
     class: 'menu-toggle',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
     submenu: [
       {
         id:'planing1',
@@ -105,7 +114,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Affectation',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
         submenu: []
       },
       {
@@ -114,7 +123,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Calendrier',
         icon: '',
         class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Guest','ROLE_CE'],
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
         submenu: []
       }
     ]

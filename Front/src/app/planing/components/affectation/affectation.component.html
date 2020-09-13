@@ -59,9 +59,9 @@
                                     <span *ngIf="!debut">-</span>
                                 </a>
                                 <a class="pull-right" *ngIf="update">
-                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(0)}">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(0) && fin ,'proposition-date':dateProposition}">
                                         <mat-label>Début</mat-label>
-                                        <input matInput [matDatepicker]="dbut" [(ngModel)]="debut" (ngModelChange)='dateChange()'>
+                                        <input matInput [matDatepicker]="dbut" [(ngModel)]="debut" (ngModelChange)='dateChange()' (ngModelChange)="dateProposition=false">
                                         <mat-datepicker-toggle matSuffix [for]="dbut"></mat-datepicker-toggle>
                                         <mat-datepicker #dbut></mat-datepicker>
                                     </mat-form-field>
@@ -74,9 +74,9 @@
                                     <span *ngIf="!fin">-</span>
                                 </a>
                                 <a class="pull-right" *ngIf="update">
-                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(1)}">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(1) , 'proposition-date':dateProposition}">
                                         <mat-label>Fin</mat-label>
-                                        <input matInput [matDatepicker]="Inputfin" [(ngModel)]="fin" (ngModelChange)='dateChange()'>
+                                        <input matInput [matDatepicker]="Inputfin" [(ngModel)]="fin" (ngModelChange)='dateChange()' (ngModelChange)="dateProposition=false">
                                         <mat-datepicker-toggle matSuffix [for]="Inputfin"></mat-datepicker-toggle>
                                         <mat-datepicker #Inputfin></mat-datepicker>
                                     </mat-form-field>
@@ -90,7 +90,7 @@
                             <!--1ere subdivision-->
                             <ul class="list-group list-group-unbordered">
                                 <li class="list-group-item italic">{{subdivisions[0]}} :</li>
-                                <li class="list-group-item pl-2 pick-loc" *ngFor="let localite of firstSub(localites); index as i" [hidden]="hiddenLoc(localite)">
+                                <li class="list-group-item pl-2 pick-loc" *ngFor="let localite of firstSub(localites); index as i" [hidden]="hiddenLoc(localite)"  [ngClass]="{'error-row': idLocError==localite.id}">
                                     <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="inTab(localite.id,tabLoc)">
                                         {{localite.nom}}
                                     </mat-checkbox>
@@ -105,8 +105,8 @@
                             <!--Autres subdivisions-->
                             <ul class="list-group list-group-unbordered"  *ngFor="let idParent of tabOpen;let i=index" [hidden]="!openLocalite || !getOneById(idParent)">
                                 <li class="list-group-item bolder entete">{{getOneById(idParent)?.nom}}</li>
-                                <li class="list-group-item italic">{{subdivisions[i+1]}} :</li>
-                                <li class="list-group-item pl-2 pick-loc" *ngFor="let sub of getCurrentSubById(idParent);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)">
+                                <li class="list-group-item italic" *ngIf="subdivisions[i+1]">{{subdivisions[i+1]}} :</li>
+                                <li class="list-group-item pl-2 pick-loc" *ngFor="let sub of getCurrentSubById(idParent);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)" [ngClass]="{'error-row': idLocError==sub.id}">
                                     <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
                                         {{sub.nom}}
                                     </mat-checkbox>
@@ -124,7 +124,10 @@
                         <button mat-flat-button color="primary" *ngIf="!isEditable() && !update" disabled>Editer</button>
                         <button mat-flat-button color="primary" *ngIf="isEditable() && !update" (click)="editOne()">Editer</button>
 
-                        <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()" [disabled]="disabledInput()">Enregistrer</button>
+                        <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()" [disabled]="disabledInput()">
+                            <span *ngIf="!idLocError">Enregistrer</span> 
+                            <mat-icon class="icone-affectation pointer text-danger" [title]="infoTextError" *ngIf="idLocError">info</mat-icon>
+                        </button>
                         <button class="btn btn-danger" *ngIf="update" (click)="off()">Annuler</button>
                     </div>
                 </div>

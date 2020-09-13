@@ -42,7 +42,6 @@ export class EquipeComponent implements OnInit {
     'Superviseur',
     'Superviseur général',
     'Superviseur adjoint',
-    'Guest',
     'Président du comité',
     'Membre du comité'
   ]
