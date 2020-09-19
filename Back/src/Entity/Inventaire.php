@@ -126,12 +126,8 @@ class Inventaire
     private $dateInv;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="inventaire")
-     */
-    private $lectures;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
      */
     private $status;/** status : open et close */
     
@@ -149,7 +145,6 @@ class Inventaire
         $this->membresCom = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
-        $this->lectures = new ArrayCollection();
         $this->affectations = new ArrayCollection();
         $this->immobilisations = new ArrayCollection();
     }
@@ -398,37 +393,6 @@ class Inventaire
     public function setDateInv(?\DateTimeInterface $dateInv): self
     {
         $this->dateInv = $dateInv;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
-    {
-        return $this->lectures;
-    }
-
-    public function addLecture(Lecture $lecture): self
-    {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setInventaire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLecture(Lecture $lecture): self
-    {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
-            // set the owning side to null (unless already changed)
-            if ($lecture->getInventaire() === $this) {
-                $lecture->setInventaire(null);
-            }
-        }
 
         return $this;
     }

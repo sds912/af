@@ -59,11 +59,12 @@
                     </a>
                 </li>
                 <li *ngIf="securityServ.superviseur||securityServ.superviseurGene">
-                    <a [routerLink]="null" (click)="exportForMobile()">
+                    <a [routerLink]="null" (click)="fileMo.click()">
                         <i class="fas fa-cloud-download-alt"></i>
                         <span class="hide-menu">Importer</span>
                     </a>
                 </li>
+                <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>
         </div>
         <!-- #Menu -->

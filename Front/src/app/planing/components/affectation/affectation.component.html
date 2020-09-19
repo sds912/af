@@ -121,8 +121,8 @@
                     </div>
                     <hr class="mt-0">
                     <div class="newLabelBtn pt-1">
-                        <button mat-flat-button color="primary" *ngIf="!isEditable() && !update" disabled>Editer</button>
-                        <button mat-flat-button color="primary" *ngIf="isEditable() && !update" (click)="editOne()">Editer</button>
+                        <button mat-flat-button color="primary" *ngIf="!isEditable() && !update || invIsClose" disabled>Editer</button>
+                        <button mat-flat-button color="primary" *ngIf="isEditable() && !update && !invIsClose" (click)="editOne()">Editer</button>
 
                         <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()" [disabled]="disabledInput()">
                             <span *ngIf="!idLocError">Enregistrer</span> 

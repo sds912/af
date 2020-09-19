@@ -136,7 +136,7 @@
 
                                   <div class="row">
                                     <div class="col-4 row pb-4">
-                                        <div class="col-5 pr-0" [title]="subdivision">{{longText(subdivisions[0],17)}}</div>
+                                        <div class="col-5 pr-0" [title]="subdivisions[0]">{{longText(subdivisions[0],17)}}</div>
                                         <div class="col-7">
                                             <select class="select-trie" style="width: 100%;" (change)="openFirst($event.target.value)" [(ngModel)]="firstSearchLoc">
                                                 <option value="0"></option>
@@ -207,7 +207,7 @@
 
 <ng-template #modalContent let-close="close">
     <div class="modal-header">
-      <h5 class="modal-title">Planing</h5>
+      <h5 class="modal-title">Planning</h5>
       <button type="button" class="close" (click)="close()">
         <span aria-hidden="true">&times;</span>
       </button>

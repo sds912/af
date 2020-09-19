@@ -152,7 +152,7 @@ export class ImmobilisationComponent implements OnInit {
       this.securityServ.showLoadingIndicatior.next(true);
       this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
-      this.inventaires = rep;
+      this.inventaires = rep?.reverse();
       this.idCurrentInv = this.inventaires[0].id;
       this.getImmos();
       this.securityServ.showLoadingIndicatior.next(false);

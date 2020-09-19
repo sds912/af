@@ -75,7 +75,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read","affectation_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $id;
 
@@ -87,7 +87,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user_read","entreprise_read","mobile_users_read"})
+     * @Groups({"user_read","entreprise_read","mobile_users_read","affectation_read"})
      */
     private $roles = [];
 
@@ -105,7 +105,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $nom;
 
@@ -123,7 +123,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","affectation_read"})
      */
     private $image;
 
@@ -144,11 +144,6 @@ class User implements UserInterface
      * @Groups({"user_read"})
      */
     private $menu = [];
-
-    /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="lecteur")
-     */
-    private $lectures;
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class)
@@ -172,6 +167,11 @@ class User implements UserInterface
      */
     private $matricule;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="lecteur")
+     */
+    private $scanImmos;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -179,6 +179,7 @@ class User implements UserInterface
         $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->scanImmos = new ArrayCollection();
     }
 
     /**
@@ -411,37 +412,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
-    {
-        return $this->lectures;
-    }
-
-    public function addLecture(Lecture $lecture): self
-    {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setLecteur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLecture(Lecture $lecture): self
-    {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
-            // set the owning side to null (unless already changed)
-            if ($lecture->getLecteur() === $this) {
-                $lecture->setLecteur(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCurrentEse(): ?Entreprise
     {
         return $this->currentEse;
@@ -524,6 +494,37 @@ class User implements UserInterface
     public function setMatricule(?string $matricule): self
     {
         $this->matricule = $matricule;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getScanImmos(): Collection
+    {
+        return $this->scanImmos;
+    }
+
+    public function addScanImmo(Immobilisation $scanImmo): self
+    {
+        if (!$this->scanImmos->contains($scanImmo)) {
+            $this->scanImmos[] = $scanImmo;
+            $scanImmo->setLecteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScanImmo(Immobilisation $scanImmo): self
+    {
+        if ($this->scanImmos->contains($scanImmo)) {
+            $this->scanImmos->removeElement($scanImmo);
+            // set the owning side to null (unless already changed)
+            if ($scanImmo->getLecteur() === $this) {
+                $scanImmo->setLecteur(null);
+            }
+        }
 
         return $this;
     }

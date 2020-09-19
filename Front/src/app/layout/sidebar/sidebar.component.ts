@@ -6,6 +6,7 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 declare const Waves: any;
 
@@ -27,6 +28,9 @@ export class SidebarComponent implements OnInit {
   imagePP=""
   fileToUploadPp:File=null;
   myRole=''
+  dateInv=null
+  inputMobilFile=null
+  idCurrentEse=null
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
@@ -34,7 +38,8 @@ export class SidebarComponent implements OnInit {
     public sharedService:SharedService,//ici laisser à public à cause du html
     public securityServ:SecurityService,
     private _snackBar: MatSnackBar,
-    private inventaireServ:InventaireService
+    private inventaireServ:InventaireService,
+    private router:Router
 
   ) {}
   @HostListener('window:resize', ['$event'])
@@ -54,6 +59,7 @@ export class SidebarComponent implements OnInit {
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
     this.myRole=localStorage.getItem("roles")
+    this.idCurrentEse = localStorage.getItem("currentEse")
   }
   isGranted(menu){
     let roles=menu.roles
@@ -202,9 +208,9 @@ export class SidebarComponent implements OnInit {
       this.renderer.addClass(this.document.body, 'submenu-closed');
     }
   }
-  showNotification(colorName, text, placementFrom, placementAlign) {
+  showNotification(colorName, text, placementFrom, placementAlign,time=2000) {
     this._snackBar.open(text, '', {
-      duration: 2000,
+      duration: time,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: [colorName,'color-white']
@@ -222,5 +228,54 @@ export class SidebarComponent implements OnInit {
         this.showNotification('bg-red',message,'top','right')
       }
     )
+  }
+  importMobileFile(event){
+    this.dateInv=null
+    let selectedFile = event.target.files[0];
+    this.inputMobilFile=null
+    const fileReader = new FileReader();
+    fileReader.readAsText(selectedFile, "UTF-8");
+    fileReader.onload = () => {
+      const obj:string=typeof fileReader.result=="string"?fileReader.result:""
+      this.saveData(JSON.parse(obj))
+    }
+    fileReader.onerror = (error) => {
+      console.log(error);
+    }
+  }
+  saveData(data){
+    console.log(data);
+    this.getInventaireById(data.inventaire.id,data)
+  }
+  getInventaireById(id,data){
+    if(id){
+      this.inventaireServ.getInventaireById(id).then(
+        rep=>{
+          this.thraitement(rep,data)
+        },
+        error=>{
+          console.log(error);  
+          this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+        }
+      )
+      return ''
+    }
+    this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+  }
+  thraitement(rep,data){
+    this.dateInv=rep.dateInv
+    console.log(rep,this.idCurrentEse);
+    if(rep.entreprise.id!=this.idCurrentEse){
+      this.showNotification('bg-red',"Cet inventaire n'est pas rattaché à l'entité dans lequel vous êtes connecté.",'top','center',7000)
+    }else if(rep.status=='close'){
+      this.showNotification('bg-red',"Cet inventaire est déja cloturé.",'top','center',7000)
+    }else{
+      this.inventaireServ.sendMobileData(data).then(
+        ()=>{
+          this.showNotification('bg-success',"Enregistré",'top','center',5000)
+          this.router.navigate(['traitement/reload'])
+        },error=>this.showNotification('bg-red',error,'top','center',5000)
+      )
+    }
   }
 }

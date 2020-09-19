@@ -19,13 +19,13 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","affectation_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","affectation_read","immo_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
+     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","immo_read"})
      */
     private $nom;
 
@@ -72,12 +72,23 @@ class Localite
      */
     private $affectations;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="localite")
+     */
+    private $immobilisations;
+
+    /**
+     * @ORM\Column(type="json", length=255, nullable=true)
+     */
+    private $idTampon;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
         $this->subdivisions = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
     }
     /**
     * @Groups({"user_read"})
@@ -294,6 +305,49 @@ class Localite
                 $affectation->setLocalite(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(Immobilisation $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(Immobilisation $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getLocalite() === $this) {
+                $immobilisation->setLocalite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getIdTampon(): ?array
+    {
+        return $this->idTampon;
+    }
+
+    public function setIdTampon(?array $idTampon): self
+    {
+        $this->idTampon = $idTampon;
 
         return $this;
     }

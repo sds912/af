@@ -12,7 +12,7 @@ const routes: Routes = [
   {path: 'zonage/:id',canActivate:[SuperviseurGuard],component: ZonageComponent},
   {path: 'users',canActivate:[SupervAdminGuard],component: EquipeComponent},
   {path: 'inventaires',canActivate:[SupervAdminGuard],component: InventaireComponent},
-  {path: 'instruction',component: InstructionComponent},
+  {path: 'instruction',component: InstructionComponent}
 ];
 
 @NgModule({

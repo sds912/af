@@ -11,7 +11,11 @@ use App\Utils\Shared;
 use App\Entity\Entreprise;
 use App\Entity\Immobilisation;
 use App\Entity\Inventaire;
+use App\Entity\Localite;
+use App\Entity\MobileToken;
+use App\Entity\Notification;
 use App\Entity\User;
+use App\Entity\UserNotif;
 use App\Repository\AffectationRepository;
 use App\Repository\ApproveInstRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +24,7 @@ use App\Repository\EntrepriseRepository;
 use App\Repository\ImmobilisationRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\LocaliteRepository;
+use App\Repository\MobileTokenRepository;
 use App\Repository\UserNotifRepository;
 use App\Repository\UserRepository;
 use App\Service\MercureCookieGenerator;
@@ -377,14 +382,128 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/approuve/instruction/off/{id}", methods={"GET"})
+    * @Route("/mobile/data", methods={"POST"})
     */
-    public function test(){
-        $password="azerty";
+    public function sendMobileData(Request $request,MobileTokenRepository $tokenRepo){
+        $data=Shared::getData($request)['inventaire'];
+        $inventaire=$this->repoInv->find($data['id']);
+        $this->treatmentNewLoc($data,$inventaire,$tokenRepo);
+        $this->treatmentImmo($data,$inventaire);
+        $this->manager->flush();
         return $this->json([
-            "password" => $password,
-            "hash" => Shared::hashMdp($password)
+            Shared::MESSAGE => Shared::ENREGISTRER,
+            "code" => 200
         ]);
+    }
+    public function treatmentNewLoc($data,$inventaire,MobileTokenRepository $tokenRepo){
+        $idEse=$inventaire->getEntreprise()->getId();
+        $localites=$data['localites'];
+        $profondeur=0;
+        $newLoc=[];
+        if(!$tokenRepo->findOneByToken($data["token"])){
+            /** only one problem if we have new localities in the next file with same token */
+            foreach($localites as $loc) {
+                if(!$this->repoLoc->findOneInIdTampon($loc["id"])){  
+                    $profondeur=(count(explode("-",$loc["id"]))-1)>=$profondeur?(count(explode("-",$loc["id"]))-1):$profondeur;     
+                    $id=$loc["id"];
+                    $idParent=$loc["idParent"];
+                    $parent=$this->repoLoc->find($idParent);
+                    $localite=new Localite();
+                    if($parent){//1ere sous couche
+                        $localite->setParent($parent)->setCreateur($parent->getCreateur())
+                            ->setEntreprise($parent->getEntreprise());
+                    }
+                    $localite->setNom($loc['nom'])->setIdTampon([$id,$idParent]);
+                    $this->manager->persist($localite);
+                }
+            }
+            if($profondeur>0){
+                $entreprise=$this->repoEse->find($idEse);
+                $subdivs=$entreprise->getSubdivisions();
+                $last=!empty($subdivs)?$subdivs[count($subdivs)-1]:null;
+                for($i=0;$i<$profondeur;$i++){
+                    array_push($subdivs,"Sous-".$last." ".($i+1)); //sous-zone 1
+                }
+                $entreprise->setSubdivisions($subdivs);
+            }
+            $this->manager->flush();//it s for locality
+            foreach($localites as $loc) {
+                $localite=$this->repoLoc->findOneInIdTampon($loc["id"]);
+                array_push($newLoc,$loc);
+                if($localite && !$localite->getParent()){
+                    //2em sous couche
+                    $parent=$this->repoLoc->findOneInIdTampon($loc["idParent"]);
+                    $localite->setParent($parent);
+                    if($parent->getCreateur() && !$localite->getCreateur()){//egalement pour ne pas ecraser 
+                        $localite->setCreateur($parent->getCreateur())->setEntreprise($parent->getEntreprise());
+                    }
+                }
+            }
+            $token =new MobileToken();
+            $token->setToken($data["token"]);
+            $this->manager->persist($token);
+            $this->notiSG($newLoc,$data);
+            $this->manager->flush();
+        }
+    }
+    public function treatmentImmo($data,$inventaire){
+        $immos=$data['immos'];
+        foreach($immos as $immo){
+            $immobilisation=new Immobilisation();
+            
+            if($immo['status']=='1'){
+                $immobilisation=$this->repoImmo->find($immo["id"]);
+                if($immobilisation->getInventaire()->getId()!=$data['id']){
+                    throw new HttpException(403,"Une des immobilisations n'appartient pas à cette inventaire.");
+                }
+            }
+            else{
+                if($this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"]])){
+                    $immobilisation=$this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"]]);
+                }
+                $immobilisation->setLibelle($immo["libelle"])->setCode($immo["code"])
+                    ->setDescription($immo["description"])->setInventaire($inventaire);
+            }
+            $immobilisation->setLecteur($this->repoUser->find($immo["lecteur"]))
+                ->setEndEtat($immo["etat"])->setStatus($immo["status"])
+                ->setImage($immo["image"])
+                ->setDateLecture(new DateTime($immo["date"]));
+            $loc=$this->repoLoc->find($immo["emplacement"]);
+            if(!$loc){
+                /** For the new locality */
+                $loc=$this->repoLoc->findOneInIdTampon($immo["emplacement"]);
+            }
+            if($loc){
+                /** two il and not one and else because we need the second $loc here too */
+              $loc->setIdTampon(null);/** init because other phone can take the same */ 
+              $immobilisation->setLocalite($loc);
+            }
+            $this->manager->persist($immobilisation);
+        }
+    }
+    public function notiSG($newLoc,$data){
+        $user=$this->repoUser->find($data["idCE"]);
+        foreach ($newLoc as $localite => $value) {
+            $nomNew=$localite->getNom();
+            $message=$user->getNom()." vient d'ajouter $nomNew dans la liste des localités.";
+            $notif=new Notification();
+            $id=$localite->getId();
+            $idHash= $id?Shared::hashId($id):null;
+            $lien=$idHash?"/zonage/$idHash":"/zonage";
+            $notif->setLien($lien)
+                ->setEmetteur($user)
+                ->setMessage($message)
+                ->setType(Shared::NOTIFICATION)
+                ->setDate(new \DateTime());
+            $this->manager->persist($notif);
+            $supervGens=$this->repoUser->findAllSuperViseurGene($user->getId());
+            foreach($supervGens as $supervGen){
+                $userNotif=new UserNotif($this->bus);
+                $userNotif->setRecepteur($supervGen)->setNotification($notif)->setStatus(0);
+                $this->manager->persist($userNotif); 
+            }
+        }
+        
     }
 
     public function getPvCreer($data){

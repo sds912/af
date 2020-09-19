@@ -23,6 +23,9 @@ export class InventaireService {
   getInventaire(){
     return this.sharedService.getElement("/inventaires")
   }
+  getInventaireById(id){
+    return this.sharedService.getElement("/inventaires/"+id)
+  }
   getInventaireByEse(id){
     return this.sharedService.getElement("/inventaires?entreprise.id="+id)
   }
@@ -107,5 +110,8 @@ export class InventaireService {
   }
   approvInstr(id){
     return this.sharedService.getElement("/approve_insts/inventaire/"+id)
+  }
+  sendMobileData(data){
+    return this.sharedService.postElement(data,"/mobile/data")
   }
 }

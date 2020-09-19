@@ -126,11 +126,6 @@ class Immobilisation
     private $vnc;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="immobilisation")
-     */
-    private $lectures;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"immo_read"})
      */
@@ -158,10 +153,41 @@ class Immobilisation
      */
     private $inventaire;
 
-    public function __construct()
-    {
-        $this->lectures = new ArrayCollection();
-    }
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="scanImmos")
+     * @Groups({"immo_read"})
+     */
+    private $lecteur;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
+     */
+    private $localite;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endEtat;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $image;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $dateLecture;
 
     public function getId(): ?int
     {
@@ -336,37 +362,6 @@ class Immobilisation
         return $this;
     }
 
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
-    {
-        return $this->lectures;
-    }
-
-    public function addLecture(Lecture $lecture): self
-    {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setImmobilisation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLecture(Lecture $lecture): self
-    {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
-            // set the owning side to null (unless already changed)
-            if ($lecture->getImmobilisation() === $this) {
-                $lecture->setImmobilisation(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getEtat(): ?string
     {
         return $this->etat;
@@ -423,6 +418,78 @@ class Immobilisation
     public function setInventaire(?Inventaire $inventaire): self
     {
         $this->inventaire = $inventaire;
+
+        return $this;
+    }
+
+    public function getLecteur(): ?User
+    {
+        return $this->lecteur;
+    }
+
+    public function setLecteur(?User $lecteur): self
+    {
+        $this->lecteur = $lecteur;
+
+        return $this;
+    }
+
+    public function getLocalite(): ?Localite
+    {
+        return $this->localite;
+    }
+
+    public function setLocalite(?Localite $localite): self
+    {
+        $this->localite = $localite;
+
+        return $this;
+    }
+
+    public function getEndEtat(): ?string
+    {
+        return $this->endEtat;
+    }
+
+    public function setEndEtat(?string $endEtat): self
+    {
+        $this->endEtat = $endEtat;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDateLecture(): ?\DateTimeInterface
+    {
+        return $this->dateLecture;
+    }
+
+    public function setDateLecture(?\DateTimeInterface $dateLecture): self
+    {
+        $this->dateLecture = $dateLecture;
 
         return $this;
     }

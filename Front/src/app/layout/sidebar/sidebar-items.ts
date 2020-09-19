@@ -95,7 +95,7 @@ export const ROUTES: RouteInfo[] = [
     id:'planing2',
     path: "/planning",
     title: 'Calendrier',
-    icon: '',
+    icon: 'far fa-calendar-alt',
     class: '',
     roles:['ROLE_MI'],
     submenu: []
@@ -121,11 +121,20 @@ export const ROUTES: RouteInfo[] = [
         id:'planing2',
         path: "/planning",
         title: 'Calendrier',
-        icon: '',
+        icon: 'far fa-calendar-alt',
         class: 'ml-menu',
         roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
         submenu: []
       }
     ]
+  },
+  {
+    id:'planing2',
+    path: "/traitement",
+    title: 'Traitement',
+    icon: 'far fa-calendar-alt',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene'],
+    submenu: []
   }
 ];

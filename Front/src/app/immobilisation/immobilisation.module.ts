@@ -41,13 +41,14 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { SafeUrlPipe } from '../shared/pipe/safe-url.pipe';
 import { MatStepperModule } from '@angular/material/stepper';
+import { TraitementComponent } from './components/traitement/traitement.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 
 @NgModule({
-  declarations: [ImmobilisationComponent],
+  declarations: [ImmobilisationComponent, TraitementComponent],
   imports: [
     CommonModule,
     ImmobilisationRoutingModule,

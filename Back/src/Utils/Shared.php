@@ -92,8 +92,12 @@ class Shared{
             }
             elseif(in_array($char,self::NUMB)){
                 $hash.=self::getEquivOf($char).self::getEquivOf($char);
-            }else{
-              $hash.=$char.$char;  
+            }elseif($char=="\\"){
+              $hash.="\\\\\\\\";  
+            }elseif($char=="\""){
+                $hash.="\\\"\\\"";  
+              }else{
+                $hash.=$char.$char;
             }
         }
         return "MAT-".$hash;

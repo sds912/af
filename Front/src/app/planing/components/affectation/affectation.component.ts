@@ -62,6 +62,7 @@ export class AffectationComponent implements OnInit {
   dateProposition=false
   idLocError=null
   infoTextError=''
+  invIsClose=false
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar, 
               private adminServ: AdminService, 
@@ -175,6 +176,7 @@ export class AffectationComponent implements OnInit {
       rep => {
         this.inventaires = rep?.reverse()
         this.currentInv=rep?rep[0]:null
+        this.invIsClose=this.currentInv?.status=="close"?true:false
         this.idCurrentInv=this.currentInv?.id
         this.localites = this.currentInv?.localites
         this.getUsers()
@@ -392,6 +394,7 @@ export class AffectationComponent implements OnInit {
   }
   inventaireChange(id){
     this.currentInv=this.inventaires.find(inv=>inv.id==id)
+    this.invIsClose=this.currentInv?.status=="close"?true:false    
     this.localites = this.currentInv?.localites
     this.getTabLocAffectation()
   }
