@@ -111,7 +111,7 @@ export class ImmobilisationComponent implements OnInit {
 
   getImmos() {
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e;
+      this.allImmos = e.filter(immo=>immo.status==null);
       //console.log(this.allImmos);
 
     });
@@ -152,7 +152,7 @@ export class ImmobilisationComponent implements OnInit {
       this.securityServ.showLoadingIndicatior.next(true);
       this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
-      this.inventaires = rep;
+      this.inventaires = rep?.reverse();
       this.idCurrentInv = this.inventaires[0].id;
       this.getImmos();
       this.securityServ.showLoadingIndicatior.next(false);
