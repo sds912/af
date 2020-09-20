@@ -14,6 +14,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
+import { reverse } from 'dns';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-inventaire',
@@ -560,8 +561,8 @@ export class InventaireComponent implements OnInit {
     this.initPvForm()
     this.tabDeliberation = new FormArray([]);
   }
-  off(){
-    this.showForm=false
+  off() {
+    this.showForm = false
     /** revoir init seulement les choses impacter */
     this.ngOnInit()
   }
@@ -800,12 +801,25 @@ export class InventaireComponent implements OnInit {
       ]
     ]
   }
-  doEspace(nom ,fnc) {
+  doEspace(nom, fnc) {
+    let i = 0;
+    let espace = '';
     if (nom.length > fnc.length) {
-      
+      i = nom.length - fnc.length;
+      for (let index = 0; index < 2*i; index++) {
+        espace += '  ';
+      }
+      fnc = fnc + espace ;
     } else {
-      
+      i = fnc.length - nom.length;
+
+      for (let index = 0; index < i; index++) {
+        espace += '  ';
+      }
+      nom = nom + espace;
     }
+
+    return espace;
   }
   getPdfDel(table) {
     let element: any = []
@@ -830,7 +844,7 @@ export class InventaireComponent implements OnInit {
   getOneSignatairePdf(signataires) {
     return [
       { text: signataires[0], margin: [0, 20, 0, 0], fontSize: 10, decoration: '' },
-      { text: signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
+      { text: this.doEspace(signataires[0], signataires[1])+signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
     ]
   }
   get3SignatairePdf(signataires) {
@@ -840,11 +854,11 @@ export class InventaireComponent implements OnInit {
           widths: ["*", "*"],
           body: [
             [
-              { text: signataires[0] + '\n'+signataires[1], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false] },
-              { text: signataires[4]+'\n'+signataires[5], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'right' },
+              { text: this.doEspace(signataires[0], signataires[1])[0] + '\n' + this.doEspace(signataires[0], signataires[1])[1], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false] },
+              { text: this.doEspace(signataires[4], signataires[5])[0] + '\n' + this.doEspace(signataires[4], signataires[5])[1], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'right' },
             ],
             [
-              { text: signataires[2]+'\n'+signataires[3], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {},
+              { text: this.doEspace(signataires[2], signataires[3])[0] + '\n' + this.doEspace(signataires[2], signataires[3])[1], fontSize: 10, margin: [0, 20, 0, 0], decoration: '', border: [false, false, false, false], alignment: 'center', colSpan: 2 }, {},
             ]
           ]
         }
@@ -868,17 +882,14 @@ export class InventaireComponent implements OnInit {
     let tab = []
     let a = 0
     for (let i = 0; i < signataires.length; i += 4) {
-      console.log('i est a => ', i);
+      console.log('this.doEspace => ',this.doEspace(signataires[i + 0], signataires[i + 1]).length);
+      console.log('this.doEspace => ',this.doEspace(signataires[i + 2], signataires[i + 3]).length);
 
-      let nom1 = signataires[i] + ' ( ' + signataires[i + 1] + ' )'
-      let nom2 = (signataires[i + 2] && signataires[i + 3]) ? (signataires[i + 2] + ' ( ' + signataires[i + 3] + ' )') : ""
-      console.log('nom=> ', nom1);
-      console.log('nom2=> ', nom2);
 
       tab.push(
         [
           { text: signataires[i] + '\n' + signataires[i + 1], fontSize: 10, margin: [0, 20, 0, 70], border: [false, false, false, false] },
-          { text: signataires[i + 2] + '\n' + signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
+          { text: this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 2] + '\n' + this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
         ]
       )
     }
@@ -974,14 +985,14 @@ export class InventaireComponent implements OnInit {
   }
   checkLoc(loc) {
     //** proble avec indexOf qui ne marchait pas */
-    let index=this.tabLoc.find(localite=>localite.id==loc.id)
+    let index = this.tabLoc.find(localite => localite.id == loc.id)
     if (index) {
-      this.tabLoc=this.tabLoc.filter(localite=>localite.id!=loc.id)
+      this.tabLoc = this.tabLoc.filter(localite => localite.id != loc.id)
     } else {
       this.tabLoc.push(loc)
       const idParent = loc.idParent
       if (idParent && !this.isChecked(idParent)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
-    }    
+    }
   }
   checkAllLoc() {
     const allIsCheck = this.allLocIsChec()

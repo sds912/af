@@ -111,7 +111,7 @@ export class ImmobilisationComponent implements OnInit {
 
   getImmos() {
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e;
+      this.allImmos = e.filter(immo=>immo.status==null);
       //console.log(this.allImmos);
 
     });
