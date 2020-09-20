@@ -55,6 +55,7 @@ export class TraitementComponent implements OnInit {
     { element: 'compte_dimmobilisation', name: 'Compte d\Immobilisation', width: 100 }//ninea,adresse
   ];
   colNmbre = 5
+  notEnd=false
   constructor(private immoService: ImmobilisationService,
     private adminServ: AdminService,
     private sharedService: SharedService,
@@ -212,4 +213,9 @@ export interface selectRowInterface {
   taux : number,
   valOrigine :number,
   vnc :number
+  localite:any
+  endEtat:number;
+  status:number;
+  lecteur:any
+  dateLecture:any
 }
