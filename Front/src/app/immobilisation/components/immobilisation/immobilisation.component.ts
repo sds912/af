@@ -133,7 +133,6 @@ export class ImmobilisationComponent implements OnInit {
   deleteImmoInventaire() {
     if (this.idCurrentInv == undefined) {
       this.showNotification('bg-red', 'Selectionner un Inventaire', 'top', 'center')
-
     } else {
       for (let index = 0; index < this.allImmos.length; index++) {
         const element = this.allImmos[index];
@@ -144,8 +143,6 @@ export class ImmobilisationComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(false);
       }
     }
-
-
   }
 
   getInventaireByEse() {

@@ -76,7 +76,7 @@ export class TraitementComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {//faire le get status pour les details
     this.getInventaireByEse();
   }
 
@@ -112,6 +112,7 @@ export class TraitementComponent implements OnInit {
       console.log(error)
     });
   }
+
   setData(data){
     this.data=data?.filter(immo=>this.statusImmo!='-1' && immo.status==this.statusImmo ||this.statusImmo=='-1' && immo.status==null)
     this.filteredData = data;

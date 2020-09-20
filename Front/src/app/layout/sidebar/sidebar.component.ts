@@ -264,6 +264,7 @@ export class SidebarComponent implements OnInit {
   }
   thraitement(rep,data){
     this.dateInv=rep.dateInv
+    this.idCurrentEse = localStorage.getItem("currentEse")//laisser ici
     console.log(rep,this.idCurrentEse);
     if(rep.entreprise.id!=this.idCurrentEse){
       this.showNotification('bg-red',"Cet inventaire n'est pas rattaché à l'entité dans lequel vous êtes connecté.",'top','center',7000)

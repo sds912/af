@@ -132,7 +132,7 @@ export const ROUTES: RouteInfo[] = [
     id:'planing2',
     path: "/traitement",
     title: 'Traitement',
-    icon: 'far fa-calendar-alt',
+    icon: 'fas fa-arrows-alt-h',
     class: '',
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene'],
     submenu: []

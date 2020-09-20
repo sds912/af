@@ -18,6 +18,7 @@ use App\Entity\User;
 use App\Entity\UserNotif;
 use App\Repository\AffectationRepository;
 use App\Repository\ApproveInstRepository;
+use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\EntrepriseRepository;
@@ -33,6 +34,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 
@@ -62,6 +64,9 @@ class SharedController extends AbstractController
     /** @var ImmobilisationRepository */
     private $repoImmo;
 
+    /** @var MessageBusInterface */
+    private $bus;
+
     public function __construct(Security $security,
                                 EntityManagerInterface $manager,
                                 EntrepriseRepository $repoEse,
@@ -69,7 +74,8 @@ class SharedController extends AbstractController
                                 InventaireRepository $repoInv,
                                 UserRepository $repoUser,
                                 ImmobilisationRepository $repoImmo,
-                                LocaliteRepository $repoLoc)
+                                LocaliteRepository $repoLoc,
+                                MessageBusInterface $bus)
     {
         $this->userCo=$security->getUser();
         $this->manager=$manager;
@@ -79,6 +85,7 @@ class SharedController extends AbstractController
         $this->repoUser=$repoUser;
         $this->repoLoc=$repoLoc;
         $this->repoImmo=$repoImmo;
+        $this->bus=$bus;
     }
     /**
     * @Route("/update/pp", methods={"POST"})
@@ -253,7 +260,7 @@ class SharedController extends AbstractController
     /**
     * @Route("/mobile/data/{id}", methods={"GET"})
     */
-    public function getMobileData(SerializerInterface $serializer, $id=null){
+    public function getMobileData(SerializerInterface $serializer,DeviceRepository $repoDevice, $id){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** chef equipe et membre inventaire seulement */
@@ -273,14 +280,20 @@ class SharedController extends AbstractController
             }
         }
 
+        $devices=[];
+        foreach ($repoDevice->findAll() as $dev) {
+                array_push($devices,$dev->getImei());
+        }
+
         $data=[
             "immos"=>$this->repoImmo->findAll(),
             "inventaire"=>$inventaire,
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
-            "users"=>$users
+            "users"=>$users,
+            "devices"=>$devices
         ];
-        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read']]);
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read']]);
         return new Response($data,200);
     }
 
@@ -384,7 +397,7 @@ class SharedController extends AbstractController
     /**
     * @Route("/mobile/data", methods={"POST"})
     */
-    public function sendMobileData(Request $request,MobileTokenRepository $tokenRepo){
+    public function treatmentMobileFile(Request $request,MobileTokenRepository $tokenRepo){
         $data=Shared::getData($request)['inventaire'];
         $inventaire=$this->repoInv->find($data['id']);
         $this->treatmentNewLoc($data,$inventaire,$tokenRepo);
@@ -429,7 +442,7 @@ class SharedController extends AbstractController
             $this->manager->flush();//it s for locality
             foreach($localites as $loc) {
                 $localite=$this->repoLoc->findOneInIdTampon($loc["id"]);
-                array_push($newLoc,$loc);
+                array_push($newLoc,$localite);
                 if($localite && !$localite->getParent()){
                     //2em sous couche
                     $parent=$this->repoLoc->findOneInIdTampon($loc["idParent"]);
@@ -458,8 +471,9 @@ class SharedController extends AbstractController
                 }
             }
             else{
-                if($this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"]])){
-                    $immobilisation=$this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"]]);
+                $im=$this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"],'inventaire'=>$inventaire]);
+                if($im){
+                    $immobilisation=$im;
                 }
                 $immobilisation->setLibelle($immo["libelle"])->setCode($immo["code"])
                     ->setDescription($immo["description"])->setInventaire($inventaire);
@@ -483,7 +497,8 @@ class SharedController extends AbstractController
     }
     public function notiSG($newLoc,$data){
         $user=$this->repoUser->find($data["idCE"]);
-        foreach ($newLoc as $localite => $value) {
+        foreach ($newLoc as $localite) {
+            //dd($localite);
             $nomNew=$localite->getNom();
             $message=$user->getNom()." vient d'ajouter $nomNew dans la liste des localités.";
             $notif=new Notification();
