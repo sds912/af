@@ -63,7 +63,7 @@ class Localite
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
-     * @Groups({"entreprise_read","inv_read"})
+     * @Groups({"entreprise_read","inv_read","immo_read"})
      */
     private $createur;
 

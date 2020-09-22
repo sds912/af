@@ -46,7 +46,7 @@ export class TraitementComponent implements OnInit {
   details=false
   idCurrentEse;
   inventaires = [];
-  statusImmo="-1"
+  statusImmo=-1
   typeImmo=""
   filteredData = [];
   columns = [
@@ -56,6 +56,9 @@ export class TraitementComponent implements OnInit {
   ];
   colNmbre = 5
   notEnd=false
+  showPhoto=false
+  defaultImg="assets/images/image-gallery/1.jpg"
+  myId=""
   constructor(private immoService: ImmobilisationService,
     private adminServ: AdminService,
     private sharedService: SharedService,
@@ -78,7 +81,21 @@ export class TraitementComponent implements OnInit {
   }
 
   ngOnInit(): void {//faire le get status pour les details
+    this.myId=localStorage.getItem("idUser")
     this.getInventaireByEse();
+  }
+  getStatus(status):string{
+    let text=""
+    if(status==0){
+      text="Immobilisations avec code barre non réconciliées"
+    }else if(status==1){
+      text="Immobilisations scannées"
+    }else if(status==2){
+      text="Immobilisations rajoutées"
+    }else if(status==3){
+      text="Immobilisations avec un code barre défectueux"
+    }
+    return text
   }
 
   editRow(row,lock=false) {
@@ -99,6 +116,7 @@ export class TraitementComponent implements OnInit {
 
   showDetails(row){
     this.details=true
+    this.showPhoto=false
     this.editRow(row, true)
   }
 
@@ -115,7 +133,7 @@ export class TraitementComponent implements OnInit {
   }
 
   setData(data){
-    this.data=data?.filter(immo=>this.statusImmo!='-1' && immo.status==this.statusImmo ||this.statusImmo=='-1' && immo.status==null)
+    this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
     this.filteredData = data;
     console.log(this.data)
   }
@@ -156,34 +174,20 @@ export class TraitementComponent implements OnInit {
   }
 
   filtreImmoChange(){
-    this.data=this.filteredData?.filter(immo=>(this.statusImmo!='-1' && immo.status==this.statusImmo ||this.statusImmo=='-1' && immo.status==null) && (immo.endEtat==this.typeImmo || this.typeImmo==""))
+    this.data=this.filteredData?.filter(immo=>(this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null) && (immo.endEtat==this.typeImmo || this.typeImmo==""))
     
     console.log(this.data);
   }
   filterDatatable(value) {
     // get the value of the key pressed and make it lowercase
     const val = value.toLowerCase();
-    // get the amount of columns in the table
-    const colsAmt = this.colNmbre//this.columns.length;
-    // get the key names of each column in the dataset
-    const keys = Object.keys(this.filteredData[0]);
-    // assign filtered matches to the active datatable
-    this.data = this.filteredData.filter(function (item) {
-      // iterate through each row's column data
-      for (let i = 0; i < colsAmt; i++) {
-        // check for a match
-        if (
-          item[keys[i]]
-            .toString()
-            .toLowerCase()
-            .indexOf(val) !== -1 ||
-          !val
-        ) {
-          // found match, return true to add to result set
-          return true;
-        }
-      }
-    });
+    this.data = this.filteredData.filter(immo=>
+      (immo.libelle?.toLowerCase().search(val)>=0 ||
+      immo.lecteur?.nom.toLowerCase().search(val)>=0 ||
+      immo.localite?.nom.toLowerCase().search(val)>=0 ||
+      immo.code?.toLowerCase().search(val)>=0) &&
+      (this.statusImmo!=-1 && immo.status==this.statusImmo || this.statusImmo==-1 && immo.status==null) && (immo.endEtat==this.typeImmo || this.typeImmo=="")
+    );
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
@@ -197,19 +201,19 @@ export class TraitementComponent implements OnInit {
   }
 }
 export interface selectRowInterface {
-  code: String;
-  libelle: String;
-  description: String;
-  compteAmort:String,
-  compteImmo : String ,
+  code: string;
+  libelle: string;
+  description: string;
+  compteAmort:string,
+  compteImmo : string ,
   cumulAmortiss : number,
-  dateAcquisition :String,
-  dureeUtilite:String,
-  dateMiseServ : String,
+  dateAcquisition :string,
+  dureeUtilite:string,
+  dateMiseServ : string,
   dotation : number,
-  emplacement : String ,
-  etat :String ,
-  numeroOrdre :String ,
+  emplacement : string ,
+  etat :string ,
+  numeroOrdre :string ,
   taux : number,
   valOrigine :number,
   vnc :number
@@ -218,4 +222,5 @@ export interface selectRowInterface {
   status:number;
   lecteur:any
   dateLecture:any
+  image:string
 }

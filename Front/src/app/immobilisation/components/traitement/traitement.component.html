@@ -1,4 +1,4 @@
-<section class="content" *ngIf="notEnd">
+<section class="content">
     <div class="container-fluid">
         <div class="block-header">
             <div class="row">
@@ -28,7 +28,7 @@
                                     <ul class="header-buttons-left ml-0">
                                         <li class="dropdown m-l-20">
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
-                                            <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box">
+                                            <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
                                         <li class="dropdown m-l-20 ml-5">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
@@ -39,7 +39,7 @@
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
                                             </select>
                                         </li>
-                                        <li class="dropdown m-l-20 ml-4">
+                                        <li class="dropdown m-l-20 ml-4" *ngIf="statusImmo!=-1">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
                                                 <option value="">
                                                     <span *ngIf="typeImmo==''">Etat de l'immobilisation</span>
@@ -75,22 +75,22 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Compte d'Immobilisations" sortable="false"
-                                        prop="compteImmo" [width]="110">
+                                    <ngx-datatable-column name="Valeur d'origine" sortable="false"
+                                        prop="valOrigine" [width]="110">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
-                                                {{longText(value,20)}}
+                                                {{value}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Compte d'armortissement" sortable="false"
-                                        prop="compteAmort" [width]="110">
+                                    <ngx-datatable-column name="Valeur nette comptable" sortable="false"
+                                        prop="vnc" [width]="110">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
-                                                {{longText(value,20)}}
+                                                {{value}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -171,7 +171,14 @@
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
                                     [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo!=-1 && statusImmo<2">
-                                    <!-- user image -->
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0">
+                                                <img width="40" height="40" [src]="value" *ngIf="value" alt="image"/>
+                                                <img width="40" height="40" [src]="defaultImg" *ngIf="!value" alt="image"/>
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Code" sortable="false" prop="code" [width]="70">
                                         <ng-template let-row="data" let-value="value" let-i="index"
@@ -205,7 +212,8 @@
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value?.nom">
-                                               <a [routerLink]="['/zonage',getHashId(value?.id)]">{{longText(value?.nom,20)}}</a> 
+                                               <a [routerLink]="['/zonage',getHashId(value?.id)]" target="_blank" *ngIf="securityServ.superviseur || securityServ.superviseurGene || value?.createur.id==myId">{{longText(value?.nom,20)}}</a>
+                                               <span *ngIf="!securityServ.superviseur && !securityServ.superviseurGene && value?.createur.id!=myId">{{longText(value?.nom,20)}}</span> 
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -276,6 +284,15 @@
                                     [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo>=2">
                                     <!-- user image -->
 
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0">
+                                                <img width="40" height="40" [src]="value" *ngIf="value" alt="image"/>
+                                                <img width="40" height="40" [src]="defaultImg" *ngIf="!value" alt="image"/>
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
                                     <ngx-datatable-column name="Libelle" sortable="false" prop="libelle" [width]="70">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
@@ -364,7 +381,6 @@
                                 </ngx-datatable>
                                 <!-- other -->
 
-                                <!-- Modal Window -->
                             </div>
                         </div>
                     </div>
@@ -380,12 +396,12 @@
     <div class="modal-dialog immobilisation-modal" role="document">
         <form class="modal-content" [formGroup]="editForm" #formDirective="ngForm">
             <div class="modal-header">
-                <div class="editRowModal">
-                    <div class="modal-header clearfix">
+                <div class="editRowModal ml-2">
+                    <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
+                        <img *ngIf="selectedRowData?.image" width="45" height="45" [src]="selectedRowData?.image" alt="Logo" class="pointer" (click)="showPhoto=true">
+                        <img *ngIf="!selectedRowData?.image" width="45" height="45" [src]="defaultImg" alt="avatar" class="pointer" (click)="showPhoto=true">
                         <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17"
-                                *ngIf="selectedRowData?.libelle">
-                                {{selectedRowData?.libelle}}</div>
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.libelle">{{selectedRowData?.libelle}}</div>
                         </div>
                     </div>
                 </div>
@@ -395,8 +411,8 @@
                     <i class="material-icons">clear</i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="row scroll-box" [perfectScrollbar]>
+            <div class="modal-body scroll-box" [perfectScrollbar]>
+                <div class="row" *ngIf="!showPhoto">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.description">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Description :
@@ -424,20 +440,6 @@
                             <mat-label style="color: black;"> Compte
                                 d'amortissement
                                 : {{selectedRowData?.compteAmort}}</mat-label>
-                            <input matInput formControlName="denomination">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.emplacement">
-                        <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Emplacement théorique
-                                : {{selectedRowData?.emplacement}}</mat-label>
-                            <input matInput formControlName="denomination">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite">
-                        <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Emplacement réel
-                                : {{selectedRowData?.localite.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
@@ -492,6 +494,20 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dureeUtilite">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: black;"> Durée d'utilité
+                                : {{selectedRowData?.dureeUtilite}} ans</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.status">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: black;"> Status du bien 
+                                : {{getStatus(selectedRowData?.status)}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.etat">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Etat du bien
@@ -507,22 +523,21 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dureeUtilite">
+
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.emplacement">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Durée d'utilité
-                                : {{selectedRowData?.dureeUtilite}} ans</mat-label>
+                            <mat-label style="color: black;"> Emplacement théorique
+                                : {{selectedRowData?.emplacement}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.status">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Status du bien 
-                                : {{selectedRowData?.status}}</mat-label>
+                            <mat-label style="color: black;"> Emplacement réel
+                                : {{selectedRowData?.localite.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.lecteur">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Lecteur 
@@ -530,7 +545,6 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dateLecture">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Date inventoriée 
@@ -538,6 +552,13 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
+                </div>
+                <div class="div" *ngIf="showPhoto" style="position: relative;">
+                    <button type="button" class="btn p-t-10 modal-close-button" (click)="showPhoto=false" style="position: absolute;right: 0px;">
+                        <i class="material-icons">clear</i>
+                    </button>
+                    <img *ngIf="selectedRowData?.image" [src]="selectedRowData?.image" alt="Logo">
+                    <img *ngIf="!selectedRowData?.image" [src]="defaultImg" alt="avatar">
                 </div>
                 <div class="modal-footer pr-0">
                     <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" aria-label="Close">Fermer</button>
