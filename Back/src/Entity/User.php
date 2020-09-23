@@ -172,6 +172,18 @@ class User implements UserInterface
      */
     private $scanImmos;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $cle;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $nombre;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -525,6 +537,30 @@ class User implements UserInterface
                 $scanImmo->setLecteur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCle(): ?string
+    {
+        return $this->cle;
+    }
+
+    public function setCle(?string $cle): self
+    {
+        $this->cle = $cle;
+
+        return $this;
+    }
+
+    public function getNombre(): ?int
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?int $nombre): self
+    {
+        $this->nombre = $nombre;
 
         return $this;
     }

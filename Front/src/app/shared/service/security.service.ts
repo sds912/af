@@ -10,6 +10,9 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
+  public base="ASM-5009" //l'identifiant de l'application heberger chez le client
+  ne=null
+  activCle=false
   loading=false
   showLoadingIndicatior: Subject<boolean> = new Subject<boolean>();
   constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) {
@@ -150,7 +153,7 @@ export class SecurityService {
       if(rep[2]==1){
         this.securePwd=false
       }
-      //console.log(rep)
+      this.getNE()//this.securePwd=false
     })
   }
   refreshToken(){
@@ -201,5 +204,20 @@ export class SecurityService {
   }
   updateCurentEse(data){
     return this.sharedService.putElement(data,"/users/"+localStorage.getItem("idUser"))
+  }
+  getNE(){
+    let cree=0
+    this.activCle=false
+    if(this.user.entreprises){
+      cree=this.user.entreprises.length
+    }
+    if(this.user?.cle){
+      this.ne=this.sharedService.decok(this.base,this.user.cle)
+    }
+    //this.entiteRest=this.ne-cree
+    if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
+      this.securePwd=false//car l 'activation predomine sur le changement de mdp
+      this.activCle=true
+    }
   }
 }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './core/guard/auth.guard';
 import { AdminGuard } from './core/guard/admin.guard';
+import { SuperAdminGuard } from './core/guard/super-admin.guard';
 const routes: Routes = [
   {
     path: 'dashboard',canActivate:[AuthGuard],
@@ -84,6 +85,10 @@ const routes: Routes = [
   {
     path: '',canActivate:[AuthGuard],
     loadChildren: () => import('./planing/planing.module').then(m => m.PlaningModule)
+  },
+  {
+    path: '',canActivate:[AuthGuard,SuperAdminGuard],
+    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
   },
   {
     path: '',

@@ -60,7 +60,7 @@ export class SharedService {
     const snd=this.tabAZ(rdm+2)
     const th=this.tabAZ(rdm+5)
     const n=(parseInt(k.split("-")[1])-parseInt(base.split("-")[1])-9999)/5
-    const isValid=(parseInt(k.split("-")[3])-9)/3==parseInt(k.split("-")[1])
+    const isValid=(parseInt(k.split("-")[3])-17)/4==parseInt(k.split("-")[1])
     if(frst+snd+th==k.split("-")[0] && Number.isInteger(n) && n>0 && isValid){
       return n
     }

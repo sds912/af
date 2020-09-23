@@ -1,0 +1,255 @@
+<section class="content" *ngIf="show">
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="ngxTableHeader pl-0 pb-0">
+                                    <ul class="header-buttons-left ml-0">
+                                        <li class="dropdown m-l-20">
+                                            <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                                            <input placeholder="Rechercher une entité" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20" *ngIf="securityServ.admin">
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" (click)='addRow()'>
+                                                    <mat-icon class="col-white">add</mat-icon>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
+                                    <!-- user image -->
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0">
+                                                <img width="40" height="40" src="{{ value }}" />
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Sigle usuel" sortable="false" prop="sigleUsuel" [width]="80">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Dénomination" sortable="false" prop="denomination" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Pays" sortable="false" prop="republique" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Ville" sortable="false" prop="ville" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                  
+                                    <!-- action buttons -->
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span>
+                                                <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" (click)='showDetails(row)'>
+                                                    <i class="material-icons">remove_red_eye</i>
+                                                </button>
+                                                <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" (click)='update(row)'>
+                                                    <i class="material-icons">mode_edit</i>
+                                                </button>
+                                            </span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    
+                                    <ngx-datatable-footer>
+                                        <ng-template 
+                                          ngx-datatable-footer-template
+                                          let-rowCount="rowCount"
+                                          let-pageSize="pageSize"
+                                          let-selectedCount="selectedCount"
+                                          let-curPage="curPage"
+                                          let-offset="offset"
+                                          let-isVisible="isVisible">
+                                            <div class="page-count">
+                                              <span *ngIf="selectedMessage">
+                                                {{selectedCount.toLocaleString()}} {{selectedMessage}} / 
+                                              </span>
+                                               {{totalMessage}} {{rowCount.toLocaleString()}}
+                                            </div>
+                                            <datatable-pager
+                                                [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                                [pagerPreviousIcon]="'datatable-icon-prev'"
+                                                [pagerNextIcon]="'datatable-icon-skip'"
+                                                [page]="curPage"
+                                                [size]="pageSize"
+                                                [count]="rowCount"
+                                                [hidden]="!((rowCount / pageSize) > 1)"
+                                                (change)="table.onFooterPage($event)"
+                                                (change)="look($event)"
+                                            >
+                                            </datatable-pager>
+                                        </ng-template>
+                                    </ngx-datatable-footer>
+                                </ngx-datatable>
+                                <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Modal Window -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content"  [formGroup]="editForm" (ngSubmit)="onEditSave(editForm)" #formDirective="ngForm">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix" *ngIf="selectedRowData?.image||image">
+                        <img *ngIf="!image" width="45" height="45" [src]='selectedRowData?.image' alt="avatar">
+                        <img *ngIf="image" width="45" height="45" [src]="image" alt="Logo">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="!selectedRowData?.denomination">Nouvelle entité</div>
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.denomination">{{selectedRowData?.denomination}}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closeEditModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body"  [perfectScrollbar]>
+                <div>
+                    <div class="input-field col s12 d-none">
+                        <input formControlName="id" class="form-control" type="hidden">
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4"></div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-4" *ngIf="selectedRowData?.image||image">
+                            <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" (click)="pp.click()" [hidden]="details">
+                            <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" [hidden]="details">
+                            <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" class="img-pp img-circle user-img-circle" [hidden]="!details">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Dénomination</mat-label>
+                                <input matInput formControlName="denomination">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                                <mat-error
+                                    *ngIf="editForm.get('denomination').hasError('required')">
+                                    La dénomination est requise
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Adresse</mat-label>
+                                <input matInput formControlName="adresse">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Téléphone</mat-label>
+                                <input matInput formControlName="telephone">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Contact</mat-label>
+                                <input matInput formControlName="nomContact">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Téléphone</mat-label>
+                                <input matInput formControlName="telContact">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Nombre d'entité</mat-label>
+                                <input matInput formControlName="nombre">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Identifiant</mat-label>
+                                <input matInput formControlName="identifiant">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Clé d'activation</mat-label>
+                                <input matInput formControlName="cle">
+                                <mat-icon matSuffix>font_download</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    
+                    <div class="modal-footer pr-0" [hidden]="details">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="editForm.invalid">Enregistrer</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Window -->

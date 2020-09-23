@@ -43,6 +43,7 @@ export class HeaderComponent implements OnInit {
   countNotif=6
   paginateN=false
   news=0
+  errorKey
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -407,5 +408,27 @@ export class HeaderComponent implements OnInit {
         console.log(message)
       }
     )
+  }
+  onSubmitCle(value){
+    this.errorKey=true
+    const deco=this.sharedService.decok(this.securityServ.base,value.cle)
+    if(deco){
+      this.errorKey=false
+      this.securityServ.showLoadingIndicatior.next(true);
+      value.nombre=deco
+      this.securityServ.activKey(value).then(
+        rep=>{
+          //this.closeModal()
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-success',rep.message,'top','center')
+          setTimeout(()=>window.location.reload(),5000)
+          window.location.reload()
+        },
+        message=>{
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-danger',message,'top','center')
+        }
+      )    
+    }
   }
 }

@@ -127,6 +127,31 @@ class SharedController extends AbstractController
         $data = $serializer->serialize([$user,$mercureToken,$updatePwd], 'json', ['groups' => ['user_read']]);
         return new Response($data,200);
     }
+
+
+    /**
+    * @Route("/activeKey", methods={"POST"})
+    */
+    public function activeKey(Request $request,EntityManagerInterface $manager){
+        $data=Shared::getData($request);
+        $user=$this->getUser();
+        
+        $nmbre=$data['nombre'];
+        $user->setCle($data['cle'])->setNombre($nmbre);
+        $txt="une entité";
+        if($nmbre>1){
+            $txt=$nmbre." entités";
+        }
+        $manager->flush();
+        $afficher = [
+            Shared::STATUS => 200,
+            Shared::MESSAGE => "Licence pour {$txt} activée"
+        ];
+        return $this->json($afficher);
+    }
+
+
+
     /**
     * @Route("/user_notis/count/new", methods={"GET"})
     */
