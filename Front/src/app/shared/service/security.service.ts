@@ -12,6 +12,7 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
 export class SecurityService {
   public base="FA-8552" //l'identifiant de l'application heberger chez le client
   ne=null
+  entiteRest=0
   activCle=false
   loading=false
   showLoadingIndicatior: Subject<boolean> = new Subject<boolean>();
@@ -214,7 +215,7 @@ export class SecurityService {
     if(this.user?.cle){
       this.ne=this.sharedService.decok(this.base,this.user.cle)
     }
-    //this.entiteRest=this.ne-cree
+    this.entiteRest=this.ne-cree
     if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
       this.securePwd=true//car l 'activation predomine sur le changement de mdp
       this.activCle=true  
