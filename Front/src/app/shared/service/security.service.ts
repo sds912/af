@@ -10,7 +10,7 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
-  public base="ASM-5009" //l'identifiant de l'application heberger chez le client
+  public base="FA-8552" //l'identifiant de l'application heberger chez le client
   ne=null
   activCle=false
   loading=false
@@ -152,7 +152,7 @@ export class SecurityService {
       localStorage.setItem('mercureAuthorization',rep[1])
       if(rep[2]==1){
         this.securePwd=false
-      }
+      }      
       this.getNE()//this.securePwd=false
     })
   }
@@ -216,8 +216,8 @@ export class SecurityService {
     }
     //this.entiteRest=this.ne-cree
     if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
-      this.securePwd=false//car l 'activation predomine sur le changement de mdp
-      this.activCle=true
+      this.securePwd=true//car l 'activation predomine sur le changement de mdp
+      this.activCle=true  
     }
   }
 }

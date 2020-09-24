@@ -45,26 +45,30 @@ export class ClientComponent implements OnInit {
       id: [0],
       image: [''],
       denomination: ['', [Validators.required]],
-      republique: [''],
-      sigleUsuel: [''],
-      capital: [''],
-      ville: [''],
-      ninea: [''],
-      adresse: ['']
+      telephone: [''],
+      nomContact: [''],
+      telContact: [''],
+      nombre: [0],
+      cle: [''],
+      baseHash: [''],
+      adresse: [''],
+      dateCreation: ['']
     });
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
-  ngOnInit() {
+  ngOnInit() {    
     this.securityServ.showLoadingIndicatior.next(true)
     this.getClients()
   }
   getClients(){
     this.adminServ.getClients().then(
       rep=>{
+        console.log(rep);
+        
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
-        if(e && e.length>0)e=rep.reverse()
+        if(e?.length>0)e=rep.reverse()
         this.data = e;
         this.filteredData = rep;
         this.show=true
@@ -90,16 +94,15 @@ export class ClientComponent implements OnInit {
       image: [{value: row.image, disabled: lock}],
       denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
       telephone: [{value: row.telephone, disabled: lock}, [Validators.required]],
-      nomConctact: [{value: row.nomConctact, disabled: lock}],
+      nomContact: [{value: row.nomContact, disabled: lock}],
       telContact: [{value: row.telContact, disabled: lock}],
       nombre: [{value: row.nombre, disabled: lock}],
-      cle: [{value: row.cle, disabled: true}],
-      identifiant: [{value: row.identifiant, disabled: true}],
-      adresse: [{value: row.adresse, disabled: lock}]
+      cle: [{value: row.cle, disabled: lock}],
+      baseHash: [{value: row.baseHash, disabled: lock}],
+      adresse: [{value: row.adresse, disabled: lock}],
+      dateCreation: [{value: row.dateCreation, disabled: lock}]
     });
     this.selectedRowData = row;
-    console.log(this.selectedRowData);
-    
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
@@ -116,18 +119,22 @@ export class ClientComponent implements OnInit {
   addRow() {
     this.image=""
     this.details=false
-    let entreprise:any={id:0,denomination:'',telephone:'',nomConctact:'',telContact:'',nombre:'',adresse:'',cle:'',identifiant:'',image:this.defaultImag}
+    const rdm=Math.floor(Math.random()*10001)
+    const base="FA-"+rdm.toString();
+    let entreprise:any={id:0,denomination:'',telephone:'',nomContact:'',telContact:'',nombre:0,adresse:'',cle:'',baseHash:base,image:this.defaultImag,dateCreation: new Date().toISOString()}
     this.editRow(entreprise)
   }
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
     data.image=this.image!=""?this.image:IMAGE64
+    console.log(data);
     this.adminServ.addClient(data).then(
       ()=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','top','center')
         this.closeEditModal.nativeElement.click();
+        this.getClients()
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
@@ -178,13 +185,10 @@ export class ClientComponent implements OnInit {
       panelClass: [colorName,'color-white']
     });
   }
-  getCleAndBase(nombre,keyChange=false){
-    if(!this.selectedRowData.baseHash){
-      const rdm=Math.floor(Math.random()*10001)
-      const base="FA-"+rdm.toString();
-      this.selectedRowData.baseHash=base
-    }
-    if(!this.selectedRowData.cle||keyChange)this.selectedRowData.cle=this.codeK(this.selectedRowData.baseHash,nombre);
+  changeNombreEntit(nombre){
+    this.editForm.get('cle').setValue(
+      this.codeK(this.selectedRowData.baseHash,nombre)
+    )
   }
   codeK(base,nmbr){//ne pas mettre dans shared car il ne doit pas faire partie des modules lors d'un deploiement
     const n=(parseInt(nmbr)*5+9999)+parseInt(base.split("-")[1])

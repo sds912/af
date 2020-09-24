@@ -13,7 +13,7 @@
                                             <input placeholder="Rechercher une entité" type="text" class="browser-default search-field" (keyup)='filterDatatable($event)' aria-label="Search box">
                                         </li>
                                     </ul>
-                                    <ul class="header-buttons m-r-20" *ngIf="securityServ.admin">
+                                    <ul class="header-buttons m-r-20">
                                         <li>
                                             <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" (click)='addRow()'>
@@ -33,14 +33,6 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Sigle usuel" sortable="false" prop="sigleUsuel" [width]="80">
-                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="value">
-                                                {{longText(value,20)}}
-                                            </td>
-                                        </ng-template>
-                                    </ngx-datatable-column>
-
                                     <ngx-datatable-column name="Dénomination" sortable="false" prop="denomination" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
@@ -49,7 +41,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Pays" sortable="false" prop="republique" [width]="130">
+                                    <ngx-datatable-column name="Adresse" sortable="false" prop="adresse" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
                                                 {{longText(value,20)}}
@@ -57,10 +49,27 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Ville" sortable="false" prop="ville" [width]="130">
+                                    <ngx-datatable-column name="Téléphone" sortable="false" prop="telephone" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
                                                 {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Nombre" sortable="false" prop="nombre" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                <span *ngIf="value==1">{{value}} entité</span>
+                                                <span *ngIf="value>1">{{value}} entités</span>
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Date" sortable="false" prop="dateCreation" [width]="130">
+                                        <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{value|date:'dd/MM/yyyy'}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -113,7 +122,6 @@
                                         </ng-template>
                                     </ngx-datatable-footer>
                                 </ngx-datatable>
-                                <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
                             </div>
                         </div>
                     </div>
@@ -147,7 +155,7 @@
                     <i class="material-icons">clear</i>
                 </button>
             </div>
-            <div class="modal-body"  [perfectScrollbar]>
+            <div class="modal-body" [perfectScrollbar]>
                 <div>
                     <div class="input-field col s12 d-none">
                         <input formControlName="id" class="form-control" type="hidden">
@@ -158,6 +166,16 @@
                             <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" (click)="pp.click()" [hidden]="details">
                             <img *ngIf="image" [src]="image" alt="Logo" (click)="pp.click()" title="Changer le logo de l'entité" class="img-pp img-circle user-img-circle pointer" [hidden]="details">
                             <img *ngIf="!image" [src]='selectedRowData?.image' alt="avatar" class="img-pp img-circle user-img-circle" [hidden]="!details">
+                            <input type="file" id="image" accept="image/*" (change)="handleFileInputPP($event.target.files)" hidden #pp>
+                        </div>
+                    </div>
+                    <div class="row" hidden>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                            <mat-form-field class="example-full-width"
+                                appearance="outline">
+                                <mat-label>Id</mat-label>
+                                <input matInput formControlName="id">
+                            </mat-form-field>
                         </div>
                     </div>
                     <div class="row">
@@ -175,7 +193,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Adresse</mat-label>
@@ -183,7 +201,7 @@
                                 <mat-icon matSuffix>font_download</mat-icon>
                             </mat-form-field>
                         </div>
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Téléphone</mat-label>
@@ -193,7 +211,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Contact</mat-label>
@@ -201,7 +219,7 @@
                                 <mat-icon matSuffix>font_download</mat-icon>
                             </mat-form-field>
                         </div>
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Téléphone</mat-label>
@@ -212,19 +230,19 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Nombre d'entité</mat-label>
-                                <input matInput formControlName="nombre">
+                                <input type="number" matInput formControlName="nombre" (change)="changeNombreEntit($event.target.value)">
                                 <mat-icon matSuffix>font_download</mat-icon>
                             </mat-form-field>
                         </div>
-                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-6 mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Identifiant</mat-label>
-                                <input matInput formControlName="identifiant">
+                                <input matInput [value]="editForm.get('baseHash').value" disabled>
                                 <mat-icon matSuffix>font_download</mat-icon>
                             </mat-form-field>
                         </div>
@@ -234,7 +252,7 @@
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Clé d'activation</mat-label>
-                                <input matInput formControlName="cle">
+                                <input matInput [value]="editForm.get('cle').value" disabled>
                                 <mat-icon matSuffix>font_download</mat-icon>
                             </mat-form-field>
                         </div>

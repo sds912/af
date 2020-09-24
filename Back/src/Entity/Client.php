@@ -64,6 +64,11 @@ class Client
      */
     private $image;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nombre;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -173,6 +178,18 @@ class Client
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getNombre(): ?int
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(int $nombre): self
+    {
+        $this->nombre = $nombre;
 
         return $this;
     }

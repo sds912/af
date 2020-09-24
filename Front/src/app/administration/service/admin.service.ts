@@ -26,6 +26,7 @@ export class AdminService {
     return this.sharedService.getElement("/clients")
   }
   addClient(data){
+    console.log(data,data.id==0);
     if(data.id==0){
       delete data.id;
       return this.sharedService.postElement(data,"/clients")
