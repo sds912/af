@@ -315,7 +315,10 @@ export class PlaningComponent implements OnInit {
   getAffectationByInv(id:number){
     this.planingServ.getAffectations("?inventaire.id="+id).then(
       rep=>{
+        console.log(rep);
         this.affectations=this.lastAffectationLoc(rep)
+        console.log(this.affectations);
+        
         this.affectationsTampo=this.affectations
         this.mapToEvent(this.affectations);
       },
@@ -352,7 +355,7 @@ export class PlaningComponent implements OnInit {
     affectations.forEach(affectation => {
       if(this.iCanSeeUser(affectation)){
         const idLoc=affectation.localite.id
-        const sonHere=already.find(affect=>this.getOneById(affect.localite.id).idParent==idLoc)!=null
+        const sonHere=already.find(affect=>this.getOneById(affect.localite.id).idParent==idLoc && affect.user.id==affectation.user.id)!=null
         if(!sonHere){
           lastSubdAffect.push(affectation)
         }
