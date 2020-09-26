@@ -17,6 +17,9 @@ export class InventaireService {
   getLocalite(id){
     return this.sharedService.getElement("/localites/"+id)
   }
+  getLocalitesOfEse(id){
+    return this.sharedService.getElement("/localites?entreprise.id="+id)
+  }
   deleteLoc(id){
     return this.sharedService.deleteElement("/localites/"+id)
   }

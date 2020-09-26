@@ -30,23 +30,23 @@
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
-                                        <li class="dropdown m-l-20 ml-5">
+                                        <li class="dropdown m-l-20 ml-5 mr-3">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
                                                 <option value="-1">Immobilisations non scannées</option>
-                                                <option value="1">Immobilisations scannées</option>
+                                                <option value="1">Immobilisations scannées réconciliées</option>
                                                 <option value="0">Immobilisations avec code barre non réconciliées</option>
                                                 <option value="2">Immobilisations rajoutées</option>
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
+                                                <option value="4">Emplacement non concordant</option>
                                             </select>
                                         </li>
-                                        <li class="dropdown m-l-20 ml-4" *ngIf="statusImmo!=-1">
+                                        <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="">
-                                                    <span *ngIf="typeImmo==''">Etat de l'immobilisation</span>
-                                                    <span *ngIf="typeImmo!=''">Tous</span>
-                                                </option>
-                                                <option value="1">Immobilisations en bon état</option>
-                                                <option value="0">Immobilisations en mauvais état</option>
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo!=''">Tous</option>
+
+                                                <option value="1">Bon état</option>
+                                                <option value="0">Mauvais état</option>
                                             </select>
                                         </li>
                                     </ul>
@@ -211,7 +211,7 @@
                                         [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="value?.nom">
+                                            <td class="table-img padding-0" [title]="locName(value?.id)">
                                                <a [routerLink]="['/zonage',getHashId(value?.id)]" target="_blank" *ngIf="securityServ.superviseur || securityServ.superviseurGene || value?.createur.id==myId">{{longText(value?.nom,20)}}</a>
                                                <span *ngIf="!securityServ.superviseur && !securityServ.superviseurGene && value?.createur.id!=myId">{{longText(value?.nom,20)}}</span> 
                                             </td>
@@ -315,7 +315,7 @@
                                         [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="value?.nom">
+                                            <td class="table-img padding-0"  [title]="locName(value?.id)">
                                                <a [routerLink]="['/zonage',getHashId(value?.id)]">{{longText(value?.nom,20)}}</a> 
                                             </td>
                                         </ng-template>
@@ -497,7 +497,7 @@
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dureeUtilite">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Durée d'utilité
-                                : {{selectedRowData?.dureeUtilite}} ans</mat-label>
+                                : {{selectedRowData?.dureeUtilite}} </mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
@@ -531,7 +531,7 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite" [title]="locName(selectedRowData?.localite?.id)">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Emplacement réel
                                 : {{selectedRowData?.localite.nom}}</mat-label>

@@ -549,7 +549,7 @@
                             <mat-label>Membre {{i+1}}</mat-label>
                             <mat-select [formControl]="control">
                                 <mat-option value=""></mat-option>
-                                <mat-option *ngFor="let membre of membresComite" [value]="membre.id"
+                                <mat-option *ngFor="let membre of users" [value]="membre.id"
                                     [hidden]="inTab(membre.id,tabComite.value)">{{membre.nom}}</mat-option>
                             </mat-select>
                         </mat-form-field>

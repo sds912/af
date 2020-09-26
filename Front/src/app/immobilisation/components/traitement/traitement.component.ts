@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 type AOA = any[][];
 @Component({
   selector: 'app-traitement',
@@ -59,6 +60,7 @@ export class TraitementComponent implements OnInit {
   showPhoto=false
   defaultImg="assets/images/image-gallery/1.jpg"
   myId=""
+  localites = [];
   constructor(private immoService: ImmobilisationService,
     private adminServ: AdminService,
     private sharedService: SharedService,
@@ -66,6 +68,8 @@ export class TraitementComponent implements OnInit {
     private inventaireServ: InventaireService,
     private fb: FormBuilder, 
     private _snackBar: MatSnackBar,
+    public router: Router,
+    public route:ActivatedRoute,
   ) { 
     this.editForm = this.fb.group({
       id: [0],
@@ -82,14 +86,24 @@ export class TraitementComponent implements OnInit {
 
   ngOnInit(): void {//faire le get status pour les details
     this.myId=localStorage.getItem("idUser")
+    this.idCurrentEse=localStorage.getItem("currentEse")
+    this.getAllLoc()
     this.getInventaireByEse();
+    this.sameComponent()
+  }
+  sameComponent(){
+    this.router.events.subscribe((event) => {
+      if(event instanceof NavigationEnd && event.url=='/traitement/reload') {//apres changement de la route
+        this.router.navigateByUrl('/traitement')//si import fichier, le ngOnInit se charge du reste
+      }
+    });
   }
   getStatus(status):string{
     let text=""
     if(status==0){
       text="Immobilisations avec code barre non réconciliées"
     }else if(status==1){
-      text="Immobilisations scannées"
+      text="Immobilisations scannées réconciliées"
     }else if(status==2){
       text="Immobilisations rajoutées"
     }else if(status==3){
@@ -164,8 +178,12 @@ export class TraitementComponent implements OnInit {
         console.log(error)
       })
   }
+  getAllLoc(){
+    this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites=>this.localites=localites)
+  }
 
-  inventaireChange(event: any) {
+  inventaireChange(id) {
+    this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id    
     this.getImmos();
   }
 
@@ -174,7 +192,10 @@ export class TraitementComponent implements OnInit {
   }
 
   filtreImmoChange(){
-    this.data=this.filteredData?.filter(immo=>(this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null) && (immo.endEtat==this.typeImmo || this.typeImmo==""))
+    this.data=this.filteredData?.filter(immo=>
+      (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
+      this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
+      && (immo.endEtat==this.typeImmo || this.typeImmo==""))
     
     console.log(this.data);
   }
@@ -195,9 +216,26 @@ export class TraitementComponent implements OnInit {
     return this.sharedService.hashId(id)
   }
   getEtat(endEtat){
-    console.log(endEtat);
-    
-    return endEtat==0?"En mauvais état":"En bon état";
+    return endEtat==0?"Mauvais état":"Bon état";
+  }
+  locName(id){
+    const localite=this.getOneById(id)
+    let idParent=localite?.idParent
+    let nom=" - "+localite?.nom
+    if(idParent){
+      this.localites.forEach(loc=>{
+        if(idParent){
+          let parent=this.getOneById(idParent)
+          nom=" - "+parent?.nom+nom
+          idParent=parent?.idParent
+        }
+      })
+    }
+    return nom.substr(3)
+  }
+  getOneById(id) {
+    let l = this.localites?.find(loc => loc.id == id)
+    return l ? l : null
   }
 }
 export interface selectRowInterface {

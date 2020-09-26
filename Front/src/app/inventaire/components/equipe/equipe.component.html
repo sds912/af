@@ -83,13 +83,6 @@
                                                 <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <button 
-                                                    [disabled]="securityServ.superviseurAdjoint && (row.roles[0]=='ROLE_SuperViseurGene' || row.roles[0]=='ROLE_SuperViseurAdjoint') || 
-                                                                securityServ.superviseur && row.roles[0]=='ROLE_Superviseur'" 
-                                                    class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
-                                                    <i class="material-icons">mode_edit</i>
-                                                </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary ml-4" title="Rattacher à une localité" *ngIf="row.localites?.length>0">
                                                     <i class="material-icons">room</i>
                                                 </button>

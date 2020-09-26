@@ -8,10 +8,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
 
 /**
  * @ORM\Entity(repositoryClass=LocaliteRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ * normalizationContext={
+ *      "groups"={"loc_read"}
+ *  }
+ * )
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "entreprise.id": "exact"
+ * })
  */
 class Localite
 {
@@ -19,13 +28,13 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","affectation_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","affectation_read","immo_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read"})
      */
     private $nom;
 
@@ -41,7 +50,7 @@ class Localite
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read","inv_read"})
+     * @Groups({"entreprise_read","loc_read","inv_read"})
      */
     private $position = [];
 
@@ -57,13 +66,13 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="parent")
-     * @Groups({"entreprise_read","user_read","inv_read","mobile_loc_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read"})
      */
     private $subdivisions;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
-     * @Groups({"entreprise_read","inv_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","inv_read","immo_read"})
      */
     private $createur;
 
@@ -115,7 +124,7 @@ class Localite
         return count($this->users)>0;
     }
     /**
-    * @Groups({"entreprise_read","inv_read"})
+    * @Groups({"entreprise_read","loc_read","inv_read"})
     */
     public function getIdParent(){//utilisé ne pas sup
         $p=$this->parent;

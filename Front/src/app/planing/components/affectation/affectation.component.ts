@@ -168,6 +168,14 @@ export class AffectationComponent implements OnInit {
       }
     )
   }
+  showNotification(colorName, text, placementFrom, placementAlign) {
+    this._snackBar.open(text, '', {
+      duration: 2000,
+      verticalPosition: placementFrom,
+      horizontalPosition: placementAlign,
+      panelClass: [colorName,'color-white']
+    });
+  }
   getMyAffectation(){
     return this.myTabLocAffecte.find(tab=>tab?.localite?.id==this.idLocCurrentAffectation)
   }
@@ -322,6 +330,7 @@ export class AffectationComponent implements OnInit {
       rep=>{
         this.update=false
         this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-success','Enregistré','top','center')
       },error=>{
         console.log(error);
         this.securityServ.showLoadingIndicatior.next(false)
