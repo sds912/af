@@ -1,18 +1,17 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators,NgForm } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { Entreprise } from '../../model/entreprise';
-import { IMAGE64 } from './image';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
+import { AdminService } from 'src/app/administration/service/admin.service';
 @Component({
-  selector: 'app-entreprise',
-  templateUrl: './entreprise.component.html',
-  styleUrls: ['./entreprise.component.sass']
+  selector: 'app-client',
+  templateUrl: './client.component.html',
+  styleUrls: ['./client.component.sass']
 })
-export class EntrepriseComponent implements OnInit {
+export class ClientComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('closeAddModal', { static: false }) closeAddModal;
@@ -37,8 +36,6 @@ export class EntrepriseComponent implements OnInit {
   fileToUploadPp:File=null;
   defaultImag=IMAGE64
   details=false
-  ne=0
-  entiteRest=0
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -48,47 +45,30 @@ export class EntrepriseComponent implements OnInit {
       id: [0],
       image: [''],
       denomination: ['', [Validators.required]],
-      republique: [''],
-      sigleUsuel: [''],
-      capital: [''],
-      ville: [''],
-      ninea: [''],
-      adresse: ['']
+      telephone: [''],
+      nomContact: [''],
+      telContact: [''],
+      nombre: [0],
+      cle: [''],
+      baseHash: [''],
+      adresse: [''],
+      dateCreation: ['']
     });
     this.imgLink=this.sharedService.baseUrl +"/images/"
     this.newUserImg = this.imgLink+this.defaultImag;
   }
-  ngOnInit() {
-    this.ne=this.securityServ.ne
-    this.entiteRest=this.securityServ.entiteRest
+  ngOnInit() {    
     this.securityServ.showLoadingIndicatior.next(true)
-    this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
+    this.getClients()
   }
-  getEntreprise(){
-    this.adminServ.getEntreprise().then(
+  getClients(){
+    this.adminServ.getClients().then(
       rep=>{
+        console.log(rep);
+        
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
-        if(e && e.length>0){
-          e=rep.reverse()
-          this.entiteRest=this.ne-rep.length
-        }
-        this.data = e;
-        this.filteredData = rep;
-        this.show=true
-      },
-      error=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
-  getOneEntreprise(){
-    const id=localStorage.getItem("currentEse")
-    this.adminServ.getOneEntreprise(id).then(
-      rep=>{
-        this.securityServ.showLoadingIndicatior.next(false)
-        let e=[rep]
+        if(e?.length>0)e=rep.reverse()
         this.data = e;
         this.filteredData = rep;
         this.show=true
@@ -113,16 +93,16 @@ export class EntrepriseComponent implements OnInit {
       id: [{value: row.id, disabled: lock}],
       image: [{value: row.image, disabled: lock}],
       denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
-      republique: [{value: row.republique, disabled: lock}],
-      sigleUsuel: [{value: row.sigleUsuel, disabled: lock}],
-      capital: [{value: row.capital, disabled: lock}],
-      ville: [{value: row.ville, disabled: lock}],
-      ninea: [{value: row.ninea, disabled: lock}],
-      adresse: [{value: row.adresse, disabled: lock}]
+      telephone: [{value: row.telephone, disabled: lock}, [Validators.required]],
+      nomContact: [{value: row.nomContact, disabled: lock}],
+      telContact: [{value: row.telContact, disabled: lock}],
+      nombre: [{value: row.nombre, disabled: lock}],
+      cle: [{value: row.cle, disabled: lock}],
+      baseHash: [{value: row.baseHash, disabled: lock}],
+      adresse: [{value: row.adresse, disabled: lock}],
+      dateCreation: [{value: row.dateCreation, disabled: lock}]
     });
     this.selectedRowData = row;
-    console.log(this.selectedRowData);
-    
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
@@ -139,20 +119,22 @@ export class EntrepriseComponent implements OnInit {
   addRow() {
     this.image=""
     this.details=false
-    let entreprise:Entreprise={id:0,denomination:'',sigleUsuel:'',republique:'',ville:'',ninea:'',adresse:'',image:this.defaultImag}
+    const rdm=Math.floor(Math.random()*10001)
+    const base="FA-"+rdm.toString();
+    let entreprise:any={id:0,denomination:'',telephone:'',nomContact:'',telContact:'',nombre:0,adresse:'',cle:'',baseHash:base,image:this.defaultImag,dateCreation: new Date().toISOString()}
     this.editRow(entreprise)
   }
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
     data.image=this.image!=""?this.image:IMAGE64
-    if(data.id==0)data.users=["/api/users/"+localStorage.getItem("idUser")]
-    this.adminServ.addEntreprise(data).then(
-      rep=>{
+    console.log(data);
+    this.adminServ.addClient(data).then(
+      ()=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.showNotification('bg-success','Enregistré','top','center')
         this.closeEditModal.nativeElement.click();
-        this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
+        this.getClients()
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(message)
@@ -203,9 +185,24 @@ export class EntrepriseComponent implements OnInit {
       panelClass: [colorName,'color-white']
     });
   }
+  changeNombreEntit(nombre){
+    this.editForm.get('cle').setValue(
+      this.codeK(this.selectedRowData.baseHash,nombre)
+    )
+  }
+  codeK(base,nmbr){//ne pas mettre dans shared car il ne doit pas faire partie des modules lors d'un deploiement
+    const n=(parseInt(nmbr)*5+9999)+parseInt(base.split("-")[1])
+    const rdm=Math.floor(Math.random()*20)
+    const frst=this.sharedService.tabAZ(rdm)
+    const snd=this.sharedService.tabAZ(rdm+2)
+    const th=this.sharedService.tabAZ(rdm+5)
+    return frst+snd+th+"-"+n+"-"+rdm+"-"+(n*4+17)
+  }
 }
 export interface selectRowInterface {
   image: String;
   denomination: String;
   republique: String;
+  baseHash: String;
+  cle: String;
 }

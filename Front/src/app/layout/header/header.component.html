@@ -96,6 +96,11 @@
                                         <mat-icon aria-hidden="false" class="mr-2">vpn_key</mat-icon>Mot de passe
                                     </a>
                                 </li>
+                                <li [hidden]="!securityServ.admin">
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#keyModal" data-backdrop="static" data-keyboard="false" (click)="activNewKey()" #openKeyModal>
+                                        <mat-icon aria-hidden="false" class="mr-2">domain</mat-icon>Licence
+                                    </a>
+                                </li>
                                 <li>
                                     <a routerLink="/login" (click)="logOut()">
                                         <mat-icon aria-hidden="false" class="mr-2">power_settings_new</mat-icon>Déconnexion
@@ -269,14 +274,6 @@
                 <div>
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                            
-                            <!--<mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Entité</mat-label>
-                                <mat-select formControlName="entreprise" name="ese">
-                                    <mat-option  value=""></mat-option>
-                                    <mat-option *ngFor="let e of securityServ.user?.entreprises" [value]="e.id">{{e.denomination}}</mat-option>
-                                </mat-select>
-                            </mat-form-field>-->
                             <select name="" id="" formControlName="entreprise" class="form-control">
                                 <option value=""></option>
                                 <option *ngFor="let e of securityServ.user?.entreprises" [value]="e.id">{{e.denomination}}</option>
@@ -295,3 +292,44 @@
     </div>
 </div>
 <!-- Modal entreprise-->
+
+<!-- Modal key-->
+<div class="modal fade" id="keyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" *ngIf="securityServ.activCle||activCle">
+    <div class="modal-dialog mt-5" role="document">
+        <form class="modal-content" (ngSubmit)="onSubmitCle()">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Activation licence</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" #closeKeyModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close" hidden>
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 p-0">
+                        <mat-form-field class="example-full-width"
+                            appearance="outline">
+                            <mat-label>Clé d'activation</mat-label>
+                            <input matInput [(ngModel)]="cle" [ngModelOptions]="{standalone: true}">
+                            <mat-icon matSuffix >key</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="modal-footer pr-0 pt-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="!cle">Valider</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]='securityServ.activCle'>Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal key-->

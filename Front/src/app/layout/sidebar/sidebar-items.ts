@@ -46,10 +46,20 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     roles:['ROLE_Admin','ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
-  },{
+  },
+  {
+    id:'CLI',
+    path: '/clients',
+    title: 'Clients',
+    icon: 'fas fa-building',
+    class: '',
+    roles:['ROLE_SuperAdmin'],
+    submenu: []
+  },
+  {
     id:'INS',
     path: '/instruction',
-    title: 'Instruction',
+    title: 'Instructions',
     icon: 'fas fa-file-signature',
     class: '',
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE','ROLE_MI'],

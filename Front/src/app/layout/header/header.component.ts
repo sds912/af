@@ -20,11 +20,13 @@ export class HeaderComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
+  @ViewChild('openKeyModal', { static: true }) openKeyModal;
   @ViewChild('openEseModal', { static: true }) openEseModal;
   @ViewChild('openNotif' , {static:true}) openNotif;
 
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
   @ViewChild('closeEseModal', { static: false }) closeEseModal;
+  @ViewChild('closeKeyModal', { static: false }) closeKeyModal;
   @ViewChild('formDirective') private formDirective: NgForm;
   isNavbarShow: boolean;
   imagePP=""
@@ -43,6 +45,9 @@ export class HeaderComponent implements OnInit {
   countNotif=6
   paginateN=false
   news=0
+  errorKey
+  cle=null
+  activCle=false
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -136,10 +141,13 @@ export class HeaderComponent implements OnInit {
     }
     setTimeout(()=>{
         if(!this.securityServ.securePwd){
-          this.openPasswordModal.nativeElement.click()
+          this.openPasswordModal?.nativeElement.click()
         }
         if(!localStorage.getItem("currentEse") && !this.securityServ.admin){
-          this.openEseModal.nativeElement.click()
+          this.openEseModal?.nativeElement.click()
+        }
+        if(this.securityServ.activCle){
+          this.openKeyModal?.nativeElement.click()
         }
     },1000);
   }
@@ -283,9 +291,9 @@ export class HeaderComponent implements OnInit {
     )
   }
 
-  showNotification(colorName, text, placementFrom, placementAlign) {
+  showNotification(colorName, text, placementFrom, placementAlign,duration=2000) {
     this._snackBar.open(text, '', {
-      duration: 2000,
+      duration: duration,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: [colorName,'color-white']
@@ -407,5 +415,34 @@ export class HeaderComponent implements OnInit {
         console.log(message)
       }
     )
+  }
+  onSubmitCle(){
+    this.errorKey=true
+    const deco=this.sharedService.decok(this.securityServ.base,this.cle)
+    if(deco){
+      this.errorKey=false
+      this.securityServ.showLoadingIndicatior.next(true);
+      const data={nombre:deco,cle:this.cle}
+      this.securityServ.activKey(data).then(
+        rep=>{
+          //this.closeModal()
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-success',rep.message,'top','center',5000)
+          this.closeKeyModal.nativeElement.click();
+          setTimeout(()=>window.location.reload(),6000)
+        },
+        message=>{
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-danger',message,'top','center')
+        }
+      )    
+    }
+    else{
+      this.showNotification('bg-danger','Clé non valide','bottom','center')
+    }
+  }
+  activNewKey(){
+    this.activCle=true
+    this.cle=null
   }
 }
