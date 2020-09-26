@@ -69,7 +69,10 @@ export class EntrepriseComponent implements OnInit {
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
-        if(e && e.length>0)e=rep.reverse()
+        if(e && e.length>0){
+          e=rep.reverse()
+          this.entiteRest=this.ne-rep.length
+        }
         this.data = e;
         this.filteredData = rep;
         this.show=true
