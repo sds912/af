@@ -34,20 +34,13 @@
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
                                                 <option value="-1">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
-                                                <option value="0">Immobilisations avec code barre non réconciliées</option>
+                                                <option value="0">Immobilisations scannées non réconciliées</option>
                                                 <option value="2">Immobilisations rajoutées</option>
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
-                                                <option value="4">Emplacement non concordant</option>
                                             </select>
                                         </li>
-                                        <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
-                                                <option value="" *ngIf="typeImmo!=''">Tous</option>
-
-                                                <option value="1">Bon état</option>
-                                                <option value="0">Mauvais état</option>
-                                            </select>
+                                        <li>
+                                            <button (click)="generatePdf('', '')">test</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -198,11 +191,11 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Lecteur"  sortable="false" prop="lecteur" [width]="100">
+                                    <ngx-datatable-column name="Etat du bien"  sortable="false" prop="endEtat" [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="value?.nom">
-                                                {{longText(value?.nom,20)}}
+                                            <td class="table-img padding-0" [title]="getEtat(value)">
+                                                {{longText(getEtat(value),20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -218,11 +211,11 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Etat du bien"  sortable="false" prop="endEtat" [width]="100">
+                                    <ngx-datatable-column name="Lecteur"  sortable="false" prop="lecteur" [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="getEtat(value)">
-                                                {{longText(getEtat(value),20)}}
+                                            <td class="table-img padding-0" [title]="value?.nom">
+                                                {{longText(value?.nom,20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -437,8 +430,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.compteAmort">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Compte
-                                d'amortissement
+                            <mat-label style="color: black;"> Compte d'amortissement
                                 : {{selectedRowData?.compteAmort}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -510,8 +502,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.etat">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Etat du bien
-                                théorique
+                            <mat-label style="color: black;"> Etat du bien théorique
                                 : {{selectedRowData?.etat}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -549,6 +540,20 @@
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Date inventoriée 
                                 : {{selectedRowData?.dateLecture|date:'dd/MM/yyyy'}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite?.createur?.nom && (securityServ.superviseurGene||securityServ.superviseurAdjoint)">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: black;"> Superviseur adjoint
+                                : {{selectedRowData?.localite?.createur?.nom}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite?.id ">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: black;"> Chef d'équipe
+                                : {{getChefEquipOf(selectedRowData?.localite?.id)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>

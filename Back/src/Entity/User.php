@@ -75,7 +75,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $id;
 
@@ -105,7 +105,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $nom;
 

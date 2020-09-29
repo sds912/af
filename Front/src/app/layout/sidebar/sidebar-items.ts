@@ -144,7 +144,44 @@ export const ROUTES: RouteInfo[] = [
     title: 'Traitement',
     icon: 'fas fa-arrows-alt-h',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
+  },
+  {
+    id:'AJU',
+    path: '',
+    title: "Ajustement",
+    icon: 'fas fa-check-double',
+    class: 'menu-toggle',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+    submenu: [
+      {
+        id:'AJU1',
+        path: '/feuille/comptage',
+        title: 'Feuille de comptage',
+        icon: '',
+        class: 'ml-menu',
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+        submenu: []
+      },
+      {
+        id:'AJU2',
+        path: "/code/defectueux",
+        title: 'Codes déféctueux',
+        icon: '',
+        class: 'ml-menu',
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+        submenu: []
+      },
+      {
+        id:'AJU3',
+        path: "/ajuster/fi",
+        title: 'Ajuster FI',
+        icon: '',
+        class: 'ml-menu',
+        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+        submenu: []
+      }
+    ]
   }
 ];

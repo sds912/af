@@ -132,7 +132,6 @@ export class AffectationComponent implements OnInit {
     * prennent la duree du parent mais si le superviseur general ajout une localité 
     * a l inventaire apres affecation sa duree sera null 
     */
-    console.log(this.myTabLocAffecte,this.localites);
     if(this.securityServ.superviseurAdjoint){
       const myLoc=this.localites.filter(loc=>loc?.createur?.id==this.myId)
       const toCorrect=[]
@@ -245,7 +244,13 @@ export class AffectationComponent implements OnInit {
         /** POur gerer a la fois les superviseurs adjoints et les autres */
         const hisLocalite=this.getLocOpenUser(user,locIds)
         this.tabLoc = []
-        hisLocalite?.forEach((l: any) => this.checkLoc(l,true));
+        console.log(hisLocalite);
+        
+        hisLocalite?.forEach((l: any,i) => {
+          console.log(l,i);
+          this.checkLoc(l,true)
+        });
+        console.log(this.tabLoc);
       },error=>{
         console.log(error)
       }
@@ -523,13 +528,16 @@ export class AffectationComponent implements OnInit {
   }
   checkLoc(loc,addOnly=false) {
     /** revoir car ca doit etre de la forme {localite,debut,fin} */
-    var index = this.tabLoc.indexOf(loc.id);
-    if(index > -1 && !addOnly) {
-      this.tabLoc.splice(index, 1);
-    }else if(index <= -1) {
-      this.tabLoc.push(loc.id)
-      const idParent = loc.idParent
-      if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOneById(idParent))//cocher les parents recursif
+    console.log(loc);
+    if(loc){
+      var index = this.tabLoc.indexOf(loc.id);
+      if(index > -1 && !addOnly) {
+        this.tabLoc.splice(index, 1);
+      }else if(index <= -1) {
+        this.tabLoc.push(loc.id)
+        const idParent = loc.idParent
+        if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOneById(idParent))//cocher les parents recursif
+      }
     }
   }
   hiddenLoc(loc):boolean{
