@@ -249,7 +249,7 @@ class SharedController extends AbstractController
     /**
     * @Route("/mobile-locality/{id}", methods={"GET"})
     */
-    public function getMobilLocality(SerializerInterface $serializer, $id=null){
+    public function getMobilLocality(SerializerInterface $serializer,AffectationRepository $repo, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** seul les first localites */
@@ -262,7 +262,8 @@ class SharedController extends AbstractController
         }
         $data=[
             "libelles"=>$entreprise->getSubdivisions(),
-            "localites"=>$localites
+            "localites"=>$localites,
+            "idOfMyLoAffectes"=>$this->getAffectLocOf($this->userCo, $inventaire, $repo)[1]
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_loc_read']]);
         return new Response($data,200);
@@ -285,7 +286,7 @@ class SharedController extends AbstractController
     /**
     * @Route("/mobile/data/{id}", methods={"GET"})
     */
-    public function getMobileData(SerializerInterface $serializer,DeviceRepository $repoDevice, $id){
+    public function getMobileData(SerializerInterface $serializer,DeviceRepository $repoDevice,AffectationRepository $repoAff, $id){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** chef equipe et membre inventaire seulement */
@@ -293,6 +294,8 @@ class SharedController extends AbstractController
         $all=$entreprise->getUsers();
         foreach ($all as $user) {
             if( in_array('ROLE_CE',$user->getRoles()) || in_array('ROLE_MI',$user->getRoles())){
+                $t=$this->getAffectLocOf($user,$inventaire,$repoAff);
+                $user->setMyLoAffectes($t[0])->setIdOfMyLoAffectes($t[1]);
                 array_push($users,$user);
             }
         }
@@ -311,15 +314,26 @@ class SharedController extends AbstractController
         }
 
         $data=[
-            "immos"=>$this->repoImmo->findAll(),
+            "immos"=>$this->repoImmo->findBy(['inventaire'=>$inventaire,'status'=>null]),
             "inventaire"=>$inventaire,
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
             "users"=>$users,
             "devices"=>$devices
         ];
-        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read']]);
+        $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read','user_idLoc']]);
         return new Response($data,200);
+    }
+    public function getAffectLocOf(User $user,Inventaire $inventaire,AffectationRepository $repo){
+        {
+            $tabLoc=[];
+            $tabId=[];
+            $affectations=$repo->findBy(['user'=>$user,'inventaire'=>$inventaire]);
+            foreach ($affectations as $affectation) {
+                array_push($tabId,$affectation->getLocalite()->getId());
+            }
+            return [$tabLoc,$tabId];
+        }
     }
 
     /**
@@ -523,7 +537,6 @@ class SharedController extends AbstractController
     public function notiSG($newLoc,$data){
         $user=$this->repoUser->find($data["idCE"]);
         foreach ($newLoc as $localite) {
-            //dd($localite);
             $nomNew=$localite->getNom();
             $message=$user->getNom()." vient d'ajouter $nomNew dans la liste des localités.";
             $notif=new Notification();

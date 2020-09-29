@@ -184,6 +184,13 @@ class User implements UserInterface
      */
     private $nombre;
 
+    private $myLoAffectes;//for mobile file before add groups user_idLoc look in SharedController getAffectLocOf
+
+    /**
+    * @Groups({"user_idLoc"})
+    */
+    private $idOfMyLoAffectes;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -562,6 +569,24 @@ class User implements UserInterface
     {
         $this->nombre = $nombre;
 
+        return $this;
+    }
+
+    public function getMyLoAffectes(){
+        return $this->myLoAffectes;
+    }
+
+    public function setMyLoAffectes($myLoAffectes){
+        $this->myLoAffectes=$myLoAffectes;
+        return $this;
+    }
+
+    public function getIdOfMyLoAffectes(){
+        return $this->idOfMyLoAffectes;
+    }
+    
+    public function setIdOfMyLoAffectes($idOfMyLoAffectes){
+        $this->idOfMyLoAffectes=$idOfMyLoAffectes;
         return $this;
     }
 }
