@@ -139,10 +139,10 @@ export const ROUTES: RouteInfo[] = [
     ]
   },
   {
-    id:'planing2',
-    path: "/traitement",
-    title: 'Traitement',
-    icon: 'fas fa-arrows-alt-h',
+    id:'FC',
+    path: "/feuille/comptage",
+    title: 'Feuille de comptage',
+    icon: 'fas fa-book-open',
     class: '',
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
@@ -156,18 +156,9 @@ export const ROUTES: RouteInfo[] = [
     roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: [
       {
-        id:'AJU1',
-        path: '/feuille/comptage',
-        title: 'Feuille de comptage',
-        icon: '',
-        class: 'ml-menu',
-        roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
-        submenu: []
-      },
-      {
         id:'AJU2',
         path: "/code/defectueux",
-        title: 'Codes déféctueux',
+        title: 'Ajout de codes barres',
         icon: '',
         class: 'ml-menu',
         roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],

@@ -62,6 +62,7 @@ export class FeuilleComptageComponent implements OnInit {
   localites = [];
   affectations = [];
   entreprise=null
+  users= [];
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
@@ -95,8 +96,8 @@ export class FeuilleComptageComponent implements OnInit {
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
-      if(event instanceof NavigationEnd && event.url=='/traitement/reload') {//apres changement de la route
-        this.router.navigateByUrl('/traitement')//si import fichier, le ngOnInit se charge du reste
+      if(event instanceof NavigationEnd && event.url=='/feuille/comptage/reload') {//apres changement de la route
+        this.router.navigateByUrl('/feuille/comptage')//si import fichier, le ngOnInit se charge du reste
       }
     });
   }
@@ -105,6 +106,7 @@ export class FeuilleComptageComponent implements OnInit {
       rep => {
         this.localites = rep?.localites ?? []
         this.entreprise = rep
+        this.users= rep?.users        
       },
       error => {
         this.securityServ.showLoadingIndicatior.next(false)
@@ -202,10 +204,12 @@ export class FeuilleComptageComponent implements OnInit {
       error=>console.log(error)
     )
   }
+
   getChefEquipOf(idLoc):string{
     const aff= this.affectations.find(aff=>aff.localite.id==idLoc && aff.user.roles[0]=='ROLE_CE')       
-    return aff?.user?.nom ?? ""
+    return aff?.user?.nom ?? "À préciser"
   }
+
   getSupadjoint(localite){
     return localite?.createur?.nom ?? ''
   }
@@ -228,6 +232,7 @@ export class FeuilleComptageComponent implements OnInit {
     
     console.log(this.data);
   }
+
   filterDatatable(value) {
     // get the value of the key pressed and make it lowercase
     const val = value.toLowerCase();
@@ -241,12 +246,15 @@ export class FeuilleComptageComponent implements OnInit {
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
+
   getHashId(id){
     return this.sharedService.hashId(id)
   }
+
   getEtat(endEtat){
     return endEtat==0?"Mauvais état":"Bon état";
   }
+
   locName(id){
     const localite=this.getOneById(id)
     let idParent=localite?.idParent
@@ -262,38 +270,49 @@ export class FeuilleComptageComponent implements OnInit {
     }
     return nom.substr(3)
   }
+
   getOneById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
 
-  generatePdf(data, type) {
-    let content = []
-    if (this.securityServ.superviseurGene || this.securityServ.superviseurAdjoint)
-      content = [this.pdfFeuille(true)]
-    else 
-      content = [this.onlySup(data)]
+  generatePdf() {
     const documentDefinition = {
-      content: content, styles: this.getStyle(), pageMargins: [40, 40], pageOrientation: 'landscape',
+      content: [this.pdfFeuille(true)], styles: this.getStyle(), pageMargins: [40, 40], pageOrientation: 'landscape',
     };
     pdfMake.createPdf(documentDefinition).open();
   }
+
   getImage() {
     if (this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
     return [{}]
   }
+
   getEntete() {
     const e = this.entreprise
     let k = e.capital ? this.sharedService.numStr(e.capital, ' ') + " FCFA" : ""
+    const inv=this.inventaires.find(inventaire=>inventaire.id==this.idCurrentInv)
+    const superviseur=this.users.find(user=>user.roles[0]==='ROLE_SuperViseurGene' ||user.roles[0]==='ROLE_Superviseur')
+    const general=superviseur?.roles[0]==='ROLE_SuperViseurGene'?"Général":""
+    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+
     return [
       [
-        { text: "" + e.denomination, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
+        { text: e.denomination, border: [false, false, false, false], margin: [-5, 0, 0, 0], colSpan:2 },{}
       ],
       [
-        { text: "" + e.republique + "/" + e.ville, border: [false, false, false, false], margin: [-5, 0, 0, 0] }
-      ]
+        { text: e.republique + "/" + e.ville, border: [false, false, false, false], margin: [-5, 0, 0, 5], colSpan:2 },{}
+      ],
+      [
+        { text: `Période d'inventaire :  Du ${this.formattedDate(inv.debut)} au ${this.formattedDate(inv.fin)}`, border: [false, false, false, false], margin: [-5, 0, 0, 0] },
+        { text: `Superviseur ${general} : ${superviseur?.nom ?? ''}`,alignment:"right", border: [false, false, false, false]}
+      ],
+      [
+        { text: title,decoration: 'underline',style:'gras', margin: [0,20,0, 0],alignment: 'center',colSpan:2, border: [false, false, false, false]},{}
+      ],
     ]
   }
+
   getStyle() {
     return {
       fsize: {
@@ -332,6 +351,7 @@ export class FeuilleComptageComponent implements OnInit {
       }
     }
   }
+
   pdfFeuille(supervAdjoint) {
     let content=null
     if(this.statusImmo==-1){
@@ -339,16 +359,16 @@ export class FeuilleComptageComponent implements OnInit {
     }else{
       content=supervAdjoint?this.getContentSupAdjointExist(this.data):this.getContentOnLySup(this.data)
     }
-    
+
     return [
       ...this.getImage(),
       {
         table: {
-          width: ['*'],
+          widths: ['*','*'],
           body: [
             ...this.getEntete(),
             [
-              { text: '', margin: [2, 7], border: [false, false, false, false] }
+              { text: '', margin: [2, 7], border: [false, false, false, false], colSpan:2 },{}
             ]
           ]
         }, margin: [0, 10, 0, 0]
@@ -362,55 +382,48 @@ export class FeuilleComptageComponent implements OnInit {
     ]
   }
   getContentSupAdjointExist(data){//0 - 1 - 2
-    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    let entete=[
+      { text: 'Libellé' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Etat' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Emplacement' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Lecteur' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Date' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: "Chef d'équipe" ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Superviseur Adjoint' ,fontSize:10, alignment: 'center', style:"grasGris"}
+    ]
+    let widths=[100,50,230,85,45,90,95]
+    if(this.statusImmo!=3){
+      entete=[{ text: 'Code' ,fontSize:10, alignment: 'center', style:"grasGris"},...entete]
+      widths=[100,100,50,150,85,45,85,95]
+    }
     return {
-      widths: [100,100,50,150,90,42,90,95],
-      body: [
-        [
-          { text: title,decoration: 'underline', margin: [0,0,0, 20],alignment: 'center',colSpan:8, border: [false, false, false, false]},
-          {},{},{},{},{},{},{}
-        ],
-        [
-          { text: 'Code' ,fontSize:10},
-          { text: 'Libellé' ,fontSize:10},
-          { text: 'Etat' ,fontSize:10},
-          { text: 'Emplacement' ,fontSize:10},
-          { text: 'Lecteur' ,fontSize:10},
-          { text: 'Date' ,fontSize:10},
-          { text: "Chef d'équipe" ,fontSize:10},
-          { text: 'Superviseur Adjoint' ,fontSize:10}
-        ],
-        ...this.rows(data)
-      ]
+      widths: widths,
+      body: [entete,...this.rows(data)]
     }
   }
   getContentOnLySup(data){//0 - 1 - 2
-    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    let entete=[
+      { text: 'Libellé' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Etat' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Emplacement' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Lecteur' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: 'Date' ,fontSize:10, alignment: 'center', style:"grasGris"},
+      { text: "Chef d'équipe" ,fontSize:10, alignment: 'center', style:"grasGris"},
+    ]
+    let widths=[100,55,250,120,55,120]
+    if(this.statusImmo!=3){
+      entete=[{ text: 'Code' ,fontSize:10, alignment: 'center', style:"grasGris"},...entete]
+      widths=[110,100,55,200,90,55,90]
+    }
     return {
-      widths: [110,100,55,200,90,55,90],
-      body: [
-        [
-          { text: title,decoration: 'underline', margin: [0,0,0, 20],alignment: 'center',colSpan:8, border: [false, false, false, false]},
-          {},{},{},{},{},{},{}
-        ],
-        [
-          { text: 'Code' ,fontSize:10},
-          { text: 'Libellé' ,fontSize:10},
-          { text: 'Etat' ,fontSize:10},
-          { text: 'Emplacement' ,fontSize:10},
-          { text: 'Lecteur' ,fontSize:10},
-          { text: 'Date' ,fontSize:10},
-          { text: "Chef d'équipe" ,fontSize:10}
-        ],
-        ...this.rows(data,false)
-      ]
+      widths: widths,
+      body: [entete,...this.rows(data,false)]
     }
   }
   rows(data,supAdjoint=true){
     let tab=[]
     data.forEach(immo => {
       let d=[
-        { text: immo.code ,fontSize:8},
         { text: immo.libelle ,fontSize:8},
         { text: this.getEtat(immo.endEtat) ,fontSize:8},
         { text: this.locName(immo.localite.id) ,fontSize:8},
@@ -418,6 +431,7 @@ export class FeuilleComptageComponent implements OnInit {
         { text: this.formattedDate(immo.dateLecture) ,fontSize:8},
         { text: this.getChefEquipOf(immo.localite.id) ,fontSize:8}
       ]
+      if(this.statusImmo!=3)d=[{ text: immo.code?immo.code:"-" ,fontSize:8},...d]
       if(supAdjoint){d.push({ text: this.getSupadjoint(immo.localite) ,fontSize:8})}
       tab.push(d)
     }
@@ -425,22 +439,17 @@ export class FeuilleComptageComponent implements OnInit {
     return tab
   }
   getContentNonScanne(data){//- 1
-    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
     return {
       widths: [110,200,88,88,75,100,50],
       body: [
         [
-          { text: title,decoration: 'underline', margin: [0,0,0, 20],alignment: 'center',colSpan:7, border: [false, false, false, false]},
-          {},{},{},{},{},{}
-        ],
-        [
-          { text: 'Code' ,fontSize:10,alignment: 'center'},
-          { text: 'Libellé' ,fontSize:10,alignment: 'center'},
-          { text: "Valeur d'origine" ,fontSize:10,alignment: 'center'},
-          { text: 'VNC' ,fontSize:10,alignment: 'center'},
-          { text: 'Date acquisition' ,fontSize:10,alignment: 'center'},
-          { text: 'Emplacement' ,fontSize:10,alignment: 'center'},
-          { text: "Etat" ,fontSize:10,alignment: 'center'}
+          { text: 'Code' ,fontSize:10, alignment: 'center', style:"grasGris"},
+          { text: 'Libellé' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: "Valeur d'origine" ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: 'VNC' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: 'Date acquisition' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: 'Empl. théorique' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: "Etat" ,fontSize:10,alignment: 'center', style:"grasGris"}
         ],
         ...this.rowsNonScanne(data)
       ]
@@ -449,39 +458,25 @@ export class FeuilleComptageComponent implements OnInit {
   rowsNonScanne(data){
     let tab=[]
     data.forEach(immo => {
-      let d=[
+      tab.push([
         { text: immo.code ,fontSize:8},
         { text: immo.libelle ,fontSize:8},
-        { text: immo.valOrigine ,fontSize:8},
-        { text: immo.vnc ,fontSize:8},
+        { text: immo.valOrigine?this.numbStr(immo.valOrigine):"-" , fontSize:8, alignment:'right'},
+        { text: immo.vnc?this.numbStr(immo.vnc):"-" ,fontSize:8, alignment:'right'},
         { text: this.formattedDate(immo.dateAcquisition) ,fontSize:8},
         { text: immo.emplacement ,fontSize:8},
         { text: immo.etat ,fontSize:8}
-      ]
-      tab.push(d)
+      ])
     }
     );
     return tab
   }
   formattedDate(d = new Date) {
     d = new Date(d)
-    return [d.getDate() , d.getMonth() + 1, d.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('-');
+    return [d.getDate() , d.getMonth() + 1, d.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
   }
-  onlySup(data) {
-    return [
-      ...this.getImage(),
-      {
-        table: {
-          width: ['*'],
-          body: [
-            ...this.getEntete(),
-            [
-              { text: '', margin: [2, 7], border: [false, false, false, false] }
-            ],
-          ]
-        }, margin: [0, 10, 0, 0]
-      }
-    ]
+  numbStr(number){
+    return this.sharedService.numStr(number," ")
   }
 }
 export interface selectRowInterface {

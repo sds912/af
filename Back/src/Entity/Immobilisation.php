@@ -29,7 +29,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *  }
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
- * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
  */
 class Immobilisation
 {

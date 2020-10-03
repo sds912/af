@@ -415,14 +415,14 @@
                 <div class="row" *ngIf="!showPhoto">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.description">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Description :
+                            <mat-label  [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Description :
                                 {{selectedRowData?.description}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.code">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Code :
+                            <mat-label *ngIf="selectedRowData?.code"  [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Code :
                                 {{selectedRowData?.code}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -501,9 +501,9 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.status">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.status">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Status du bien 
+                            <mat-label style="color: #28a745;"> Status du bien 
                                 : {{getStatus(selectedRowData?.status)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -516,9 +516,9 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.endEtat">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.endEtat">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Etat réel du bien 
+                            <mat-label style="color: #28a745;"> Etat réel du bien 
                                 : {{getEtat(selectedRowData?.endEtat)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -531,23 +531,23 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite" [title]="locName(selectedRowData?.localite?.id)">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite" [title]="locName(selectedRowData?.localite?.id)">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Emplacement réel
+                            <mat-label style="color: #28a745;"> Emplacement réel
                                 : {{selectedRowData?.localite.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.lecteur">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.lecteur">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Lecteur 
+                            <mat-label style="color: #28a745;"> Lecteur 
                                 : {{selectedRowData?.lecteur?.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dateLecture">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.dateLecture">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Date inventoriée 
+                            <mat-label style="color: #28a745;"> Date inventoriée 
                                 : {{selectedRowData?.dateLecture|date:'dd/MM/yyyy'}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>

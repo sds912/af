@@ -19,8 +19,8 @@ export class ImmobilisationService {
     return this.sharedService.postElement(data , "/immobilisations");
   }
 
-  getImmobilisationByInventaire(id) {
-    return this.sharedService.getElement("/immobilisations?inventaire.id="+id);
+  getImmobilisationByInventaire(id,params='') {
+    return this.sharedService.getElement(`/immobilisations?inventaire.id=${id}&${params}`);
   }
 
   deleteImmoByInventaire(id) {

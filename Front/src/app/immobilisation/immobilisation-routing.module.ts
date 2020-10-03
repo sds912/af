@@ -10,9 +10,8 @@ import { TraitementComponent } from './components/traitement/traitement.componen
 
 const routes: Routes = [
   {path: 'immos',canActivate:[SuperviseurGuard],component: ImmobilisationComponent},
-  {path: 'traitement',canActivate:[SuperviseurGuard],component: TraitementComponent},
-  {path: 'traitement/reload',canActivate:[SuperviseurGuard],component: TraitementComponent},
   {path: 'feuille/comptage',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
+  {path: 'feuille/comptage/reload',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'code/defectueux',canActivate:[SuperviseurGuard],component: CodeDefectueuxComponent},
   {path: 'ajuster/fi',canActivate:[SuperviseurGuard],component: AjusterFiComponent},
 ];

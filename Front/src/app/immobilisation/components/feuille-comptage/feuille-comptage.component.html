@@ -31,7 +31,7 @@
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
                                         <li class="dropdown m-l-20 ml-5 mr-3">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
                                                 <option value="-1">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
                                                 <option value="0">Immobilisations scannées non réconciliées</option>
@@ -39,8 +39,23 @@
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
                                             </select>
                                         </li>
+                                        <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo!=''">Tous</option>
+
+                                                <option value="1">Bon état</option>
+                                                <option value="0">Mauvais état</option>
+                                            </select>
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20">
                                         <li>
-                                            <button (click)="generatePdf('', '')">test</button>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="generatePdf()" title="Exporter PDF">
+                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                </button>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
@@ -408,14 +423,14 @@
                 <div class="row" *ngIf="!showPhoto">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.description">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Description :
+                            <mat-label [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Description :
                                 {{selectedRowData?.description}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.code">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Code :
+                            <mat-label *ngIf="selectedRowData?.code" [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Code :
                                 {{selectedRowData?.code}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -493,9 +508,9 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.status">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.status">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Status du bien 
+                            <mat-label style="color: #28a745;"> Status du bien 
                                 : {{getStatus(selectedRowData?.status)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -507,9 +522,9 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.endEtat">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.endEtat">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Etat réel du bien 
+                            <mat-label style="color: #28a745;"> Etat réel du bien 
                                 : {{getEtat(selectedRowData?.endEtat)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -522,37 +537,37 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite" [title]="locName(selectedRowData?.localite?.id)">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite" [title]="locName(selectedRowData?.localite?.id)">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Emplacement réel
+                            <mat-label style="color: #28a745;"> Emplacement réel
                                 : {{selectedRowData?.localite.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.lecteur">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.lecteur">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Lecteur 
+                            <mat-label style="color: #28a745;"> Lecteur 
                                 : {{selectedRowData?.lecteur?.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dateLecture">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.dateLecture">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Date inventoriée 
+                            <mat-label style="color: #28a745;"> Date inventoriée 
                                 : {{selectedRowData?.dateLecture|date:'dd/MM/yyyy'}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite?.createur?.nom && (securityServ.superviseurGene||securityServ.superviseurAdjoint)">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite?.createur?.nom && (securityServ.superviseurGene||securityServ.superviseurAdjoint)">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Superviseur adjoint
+                            <mat-label style="color: #28a745;"> Superviseur adjoint
                                 : {{selectedRowData?.localite?.createur?.nom}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.localite?.id ">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite?.id ">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Chef d'équipe
+                            <mat-label style="color: #28a745;"> Chef d'équipe
                                 : {{getChefEquipOf(selectedRowData?.localite?.id)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
