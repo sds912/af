@@ -191,6 +191,11 @@ class User implements UserInterface
     */
     private $idOfMyLoAffectes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="ajusteur")
+     */
+    private $mesAjustements;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
@@ -199,6 +204,7 @@ class User implements UserInterface
         $this->localitesCrees = new ArrayCollection();
         $this->affectations = new ArrayCollection();
         $this->scanImmos = new ArrayCollection();
+        $this->mesAjustements = new ArrayCollection();
     }
 
     /**
@@ -587,6 +593,37 @@ class User implements UserInterface
     
     public function setIdOfMyLoAffectes($idOfMyLoAffectes){
         $this->idOfMyLoAffectes=$idOfMyLoAffectes;
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getMesAjustements(): Collection
+    {
+        return $this->mesAjustements;
+    }
+
+    public function addMesAjustement(Immobilisation $mesAjustement): self
+    {
+        if (!$this->mesAjustements->contains($mesAjustement)) {
+            $this->mesAjustements[] = $mesAjustement;
+            $mesAjustement->setAjusteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMesAjustement(Immobilisation $mesAjustement): self
+    {
+        if ($this->mesAjustements->contains($mesAjustement)) {
+            $this->mesAjustements->removeElement($mesAjustement);
+            // set the owning side to null (unless already changed)
+            if ($mesAjustement->getAjusteur() === $this) {
+                $mesAjustement->setAjusteur(null);
+            }
+        }
+
         return $this;
     }
 }
