@@ -128,7 +128,6 @@ class SharedController extends AbstractController
         return new Response($data,200);
     }
 
-
     /**
     * @Route("/activeKey", methods={"POST"})
     */
@@ -270,7 +269,7 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/mobile-iventaire/{id}", methods={"GET"})
+    * @Route("/mobile-inventaire/{id}", methods={"GET"})
     */
     public function getMobilInventaire(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
