@@ -427,6 +427,13 @@
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6mb-2" *ngIf="selectedRowData?.numeroOrdre">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: black;"> Numéro d'ordre
+                                : {{selectedRowData?.numeroOrdre}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.compteImmo">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: black;"> Compte

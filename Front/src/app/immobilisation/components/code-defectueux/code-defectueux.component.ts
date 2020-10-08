@@ -21,6 +21,8 @@ export class CodeDefectueuxComponent implements OnInit {
   @ViewChild('formDirective') private formDirective: NgForm;
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
   @ViewChild('closeMatchModal', { static: false }) closeMatchModal;
+  @ViewChild('openConfirm', { static: false }) openConfirm;
+  @ViewChild('openImmo', { static: false }) openImmo;
 
   data = [];
 
@@ -171,6 +173,7 @@ export class CodeDefectueuxComponent implements OnInit {
         console.log(error)
       })
   }
+
   getAffectationByInv(id:number){
     this.planingServ.getAffectations("?inventaire.id="+id).then(
       rep=>{
@@ -201,6 +204,7 @@ export class CodeDefectueuxComponent implements OnInit {
       this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
       && (immo.endEtat==this.typeImmo || this.typeImmo==""))
   }
+
   filterDatatable(value) {
     // get the value of the key pressed and make it lowercase
     const val = value.toLowerCase();
@@ -214,12 +218,15 @@ export class CodeDefectueuxComponent implements OnInit {
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
+
   getHashId(id){
     return this.sharedService.hashId(id)
   }
+
   getEtat(endEtat){
     return endEtat==0?"Mauvais état":"Bon état";
   }
+
   locName(id){
     const localite=this.getOneById(id)
     let idParent=localite?.idParent
@@ -235,10 +242,12 @@ export class CodeDefectueuxComponent implements OnInit {
     }
     return nom.substr(3)
   }
+
   getOneById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
+
   getChefEquipOf(idLoc):string{
     const aff= this.affectations.find(aff=>aff.localite.id==idLoc && aff.user.roles[0]=='ROLE_CE')       
     return aff?.user?.nom ?? "À préciser"
@@ -247,8 +256,22 @@ export class CodeDefectueuxComponent implements OnInit {
   save(match=false){
     const code=this.editForm.value.code
     const id=this.editForm.value.id
-    const data={id:id,code:code,match:match}
+    this.securityServ.showLoadingIndicatior.next(true);
+    this.inventaireServ.addCode({id:id,code:code,match:match}).then(
+      ()=>{
+        this.showNotification('bg-success','Enregistré','top','center')
+        this.getImmos()
+        this.securityServ.showLoadingIndicatior.next(false);
+        this.closeEditModal.nativeElement.click();
+        this.closeMatchModal.nativeElement.click();
+      },
+      error=>{
+        this.showNotification('bg-danger',error,'top','center');
+        this.securityServ.showLoadingIndicatior.next(false);
+      }
+    )
   }
+
   async saveTreatment(){
     this.matchLibelle=""
     const code=this.editForm.value.code
@@ -257,16 +280,17 @@ export class CodeDefectueuxComponent implements OnInit {
     const immo=match[0] ?? null
     if(immo && immo.id!=id){
       this.matchLibelle=immo.libelle
-      // hidde this modal open other
-      //this.closeEditModal.nativeElement.click();
-      alert(`Ce code correspont à l'immobilisation ${this.matchLibelle}, voulez-vous confirmer qu'il s'agit bien de cette immobilisation ?`)
+      this.closeEditModal.nativeElement.click();
+      this.openConfirm.nativeElement.click();
       return ''
     }
     this.save()
   }
+
   offMatchedImmo(){
-    // open the first modal
+    this.selectedRowData.code=this.editForm.value.code
     this.update(this.selectedRowData)
+    this.openImmo.nativeElement.click();
   }
 }
 export interface selectRowInterface {
@@ -292,4 +316,5 @@ export interface selectRowInterface {
   lecteur:any
   dateLecture:any
   image:string
+  matchedImmo:any
 }

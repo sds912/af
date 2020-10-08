@@ -275,7 +275,7 @@ class SharedController extends AbstractController
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
-            "immos"=>$this->repoImmo->findAll(),
+            "immos"=>$this->repoImmo->findBy(['inventaire' => $inventaire]),
             "inventaire"=>$inventaire
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);

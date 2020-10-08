@@ -502,4 +502,5 @@ export interface selectRowInterface {
   lecteur:any
   dateLecture:any
   image:string
+  isMatched:boolean
 }

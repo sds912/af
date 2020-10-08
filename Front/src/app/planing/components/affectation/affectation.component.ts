@@ -96,15 +96,13 @@ export class AffectationComponent implements OnInit {
     this.dateProposition=false
     if(!this.debut && !this.fin){
       /** Pour lui proposer de garder la même date que la date qu on lui a accorder */
-      this.debut=affect?.debut?affect?.debut:this.getDateComptage()?.debut
-      this.fin=affect?.fin?affect?.fin:this.getDateComptage()?.fin
+      this.debut=affect?.debut ? affect?.debut : this.getDateComptage()?.debut
+      this.fin=affect?.fin ? affect?.fin :this.getDateComptage()?.fin
       this.dateChange()
       this.dateProposition=true
     }
   }
-  dateChange(){
-    console.log('dateChange');
-    
+  dateChange(){    
     let affect=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==this.idLocCurrentAffectation)
     var index = this.tabPeriodeAffectation.indexOf(affect);
     if(index > -1) {
@@ -156,16 +154,8 @@ export class AffectationComponent implements OnInit {
       inventaire:this.currentInv.id,
       affectations:affectationToCorect,
       remove:false
-    }
-    console.log(affectationToCorect,data);
-    
-    this.planingServ.addAfectation(data).then(
-      rep=>{
-        console.log(rep);
-      },error=>{
-        console.log(error);
-      }
-    )
+    }    
+    this.planingServ.addAfectation(data)
   }
   showNotification(colorName, text, placementFrom, placementAlign) {
     this._snackBar.open(text, '', {
@@ -243,14 +233,10 @@ export class AffectationComponent implements OnInit {
         const locIds=this.getAllLocId(this.tabPeriodeAffectation)
         /** POur gerer a la fois les superviseurs adjoints et les autres */
         const hisLocalite=this.getLocOpenUser(user,locIds)
-        this.tabLoc = []
-        console.log(hisLocalite);
-        
+        this.tabLoc = []        
         hisLocalite?.forEach((l: any,i) => {
-          console.log(l,i);
           this.checkLoc(l,true)
         });
-        console.log(this.tabLoc);
       },error=>{
         console.log(error)
       }
@@ -294,7 +280,6 @@ export class AffectationComponent implements OnInit {
     if(this.securityServ.superviseurGene){
       /** Pour les superviseurs adjoints les fils auront la meme duree d afectation que la 1ere subdivision */
       const parents=this.localites.filter(loc=>loc.idParent==null)
-      console.log(parents);
       
       parents?.forEach(parent=>{
         const affectation=this.tabPeriodeAffectation.find(aff=>aff.localite.id==parent.id)
@@ -393,7 +378,7 @@ export class AffectationComponent implements OnInit {
     const cas1 = service.superviseurGene && user?.roles?.indexOf("ROLE_SuperViseurAdjoint")>=0
 
     /** sup adjoint et sup edit chef equipe */
-    const cas2=(service.superviseur || service.superviseurAdjoint && user?.roles?.indexOf("ROLE_CE")>=0)
+    const cas2=(service.superviseur || service.superviseurAdjoint) && user?.roles?.indexOf("ROLE_CE")>=0
     
     /** chef equipe edit membre inventaire */
     const cas3=service.chefEquipe &&  user?.roles?.indexOf("ROLE_MI")>=0
@@ -528,7 +513,6 @@ export class AffectationComponent implements OnInit {
   }
   checkLoc(loc,addOnly=false) {
     /** revoir car ca doit etre de la forme {localite,debut,fin} */
-    console.log(loc);
     if(loc){
       var index = this.tabLoc.indexOf(loc.id);
       if(index > -1 && !addOnly) {
@@ -584,7 +568,6 @@ export class AffectationComponent implements OnInit {
         }
       }
     }
-    //console.log(cas1, cas2, cas3, cas4);
     
     if(cas1 || cas2 || cas3 || cas4){
       return true
@@ -599,10 +582,11 @@ export class AffectationComponent implements OnInit {
     const service=this.securityServ
     const idCurLoc=this.idLocCurrentAffectation
     const localite=this.getOneById(idCurLoc)
+    
     if(!localite?.idParent && (service.superviseurGene || service.superviseur)){
       return this.currentInv
     }
-    else if(localite?.idParent && service.superviseurAdjoint){
+    else if(localite?.idParent && (service.superviseurAdjoint||service.superviseur)){
       const affectParent=this.tabPeriodeAffectation.find(affectation=>affectation?.localite?.id==localite?.idParent)
       return affectParent
     }

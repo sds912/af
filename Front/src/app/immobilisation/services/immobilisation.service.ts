@@ -16,7 +16,15 @@ export class ImmobilisationService {
   }
 
   postImmobilisation(data : any) {  
-    return this.sharedService.postElement(data , "/immobilisations");
+    if(data.id && data.id!=0){
+      return this.sharedService.putElement(data,"/immobilisations/"+data.id)
+    }
+    delete data.id;
+    return this.sharedService.postElement(data,"/immobilisations")
+  }
+
+  approveAjustement(id,value){
+    return this.sharedService.getElement(`/approuve/ajustement/${id}/${value}`);
   }
 
   getImmobilisationByInventaire(id,params='') {

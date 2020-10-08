@@ -126,6 +126,11 @@
                                                     data-target="#showImmo" (click)="update(row)">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
+
+
+                                                <button class="btn tblActnBtn pointer h-auto text-success ml-3" *ngIf="row.matchedImmo" title="Correspond à l'immobilisation {{row.matchedImmo.libelle}}">
+                                                    <i class="material-icons">link</i>
+                                                </button>
                                             </span>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -160,6 +165,11 @@
         </div>
     </div>
 </section>
+
+<button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" 
+    data-backdrop="static" data-keyboard="false" data-target="#showImmo" #openImmo hidden>
+    <i class="material-icons">mode_edit</i>
+</button>
 
 <!-- Modal Window -->
 <div class="modal fade" id="showImmo" tabindex="-1" role="dialog"
@@ -240,6 +250,13 @@
                             <input matInput formControlName="oneInput">
                         </mat-form-field>
                     </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.matchedImmo" [title]="selectedRowData?.matchedImmo?.libelle">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label class="color-black"> Immobilisation correspondante
+                                : {{selectedRowData?.matchedImmo?.libelle}}</mat-label>
+                            <input matInput formControlName="oneInput">
+                        </mat-form-field>
+                    </div>
                 </div>
                 <div class="div" *ngIf="showPhoto" style="position: relative;">
                     <button type="button" class="btn p-t-10 modal-close-button" (click)="showPhoto=false" style="position: absolute;right: 0px;">
@@ -263,32 +280,39 @@
 </div>
 <!-- Modal Window -->
 
+<button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" 
+    data-backdrop="static" data-keyboard="false" data-target="#confirmMatch" #openConfirm hidden>
+    <i class="material-icons">mode_edit</i>
+</button>
 
 <!-- Modal Window -->
 <div class="modal fade" id="confirmMatch" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog immobilisation-modal" role="document">
-        <div class="modal-header">
-            <div class="editRowModal ml-2">
-                <div class="modal-header clearfix">
-                    <div class="modal-about">
-                        <div class="font-weight-bold p-t-10 font-17">Confirmation</div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="editRowModal ml-2">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Confirmation</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button type="button" #closeMatchModal
-                class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                aria-label="Close">
-                <i class="material-icons">clear</i>
-            </button>
-        </div>
-        <div class="modal-body scroll-box">
-            <p>Ce code correspont à l'immobilisation {{matchLibelle}}, voulez-vous confirmer qu'il s'agit bien de cette immobilisation ?</p>
-            <div class="modal-footer pr-0">
-                <button type="button" class="btn btn-outline-success btn-border-radius mr-0" *ngIf="!details" (click)="saveTreatment(true)">
-                    Confirmer
+                <button type="button" #closeMatchModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
                 </button>
-                <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" aria-label="Close">Annuler</button>
+            </div>
+            <div class="modal-body scroll-box">
+                <p>Ce code correspont à l'immobilisation {{matchLibelle}}, voulez-vous confirmer qu'il s'agit bien de cette immobilisation ?</p>
+                <hr>
+                <div class="modal-footer pr-0">
+                    <button type="button" class="btn btn-outline-success btn-border-radius mr-0" (click)="save(true)">
+                        Confirmer
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" aria-label="Close" (click)="offMatchedImmo()">Annuler</button>
+                </div>
             </div>
         </div>
     </div>
