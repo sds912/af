@@ -186,7 +186,7 @@ export class InventaireComponent implements OnInit {
     if (this.tabOtherPresent.length == 0) this.addOtherPres()
 
     this.tabLoc = []
-    inventaire.localites.forEach(loc => this.checkLoc(this.getOneLocById(loc.id)));//this.getOneLocById a cause de la serialisation
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));    
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
       this.invCreer = true
@@ -246,6 +246,7 @@ export class InventaireComponent implements OnInit {
     this.tabLoc = [];
     this.tabOpen == [];
     inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));//this.getOneLocById car serialisation fait que l objet n est pas complet
+    console.log(inventaire.localites);
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
   initPvForm(data = ["", "", "", []]) {

@@ -128,7 +128,6 @@ class SharedController extends AbstractController
         return new Response($data,200);
     }
 
-
     /**
     * @Route("/activeKey", methods={"POST"})
     */
@@ -270,13 +269,13 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/mobile-iventaire/{id}", methods={"GET"})
+    * @Route("/mobile-inventaire/{id}", methods={"GET"})
     */
     public function getMobilInventaire(SerializerInterface $serializer, $id=null){
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
-            "immos"=>$this->repoImmo->findAll(),
+            "immos"=>$this->repoImmo->findBy(['inventaire' => $inventaire]),
             "inventaire"=>$inventaire
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);
@@ -444,7 +443,7 @@ class SharedController extends AbstractController
         $this->manager->flush();
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
-            "code" => 200
+            Shared::CODE => 200
         ]);
     }
     public function treatmentNewLoc($data,$inventaire,MobileTokenRepository $tokenRepo){
@@ -557,6 +556,64 @@ class SharedController extends AbstractController
             }
         }
         
+    }
+    /**
+    * @Route("/code/defectueux", methods={"POST"})
+    */
+    public function ajoutCodeBarre(Request $request){
+        $data=Shared::getData($request);
+        $immo=$this->repoImmo->find($data["id"]);
+        $codeBefore=$immo->getCode();
+        $matchedBefore=$immo->getIsMatched();
+        Shared::isExiste($immo);
+        $code=$data["code"];
+        $immo->setCode($code);
+        if($matchedBefore){
+            $immo->setIsMatched(false)->setMatchedImmo(null);
+            $matchedImmoBefore=$this->repoImmo->findOneByCode($codeBefore);
+            $matchedImmoBefore->setIsMatched(null)->setLecteur(null)->setLocalite(null)
+                        ->setEndEtat(null)->setStatus(null)->setImage(null)->setDateLecture(null);
+        }
+        if($data["match"]){
+            $matchedImmo=$this->repoImmo->findOneByCode($code);
+            $matchedImmo->setIsMatched(true)->setLecteur($immo->getLecteur())
+                        ->setLocalite($immo->getLocalite())->setEndEtat($immo->getEndEtat())->setImage($immo->getImage())
+                        ->setDateLecture($immo->getDateLecture())->setStatus(1);
+            $immo->setIsMatched(true)->setMatchedImmo($matchedImmo);
+        }
+        
+        $this->manager->flush();
+        return $this->json([
+            Shared::MESSAGE => Shared::ENREGISTRER,
+            Shared::CODE => 200
+        ]);
+    }
+
+    /**
+    * @Route("/approuve/ajustement/{id}/{value}", methods={"GET"})
+    */
+    public function approuveAjustement($id,$value){
+        $immo=$this->repoImmo->find($id);
+        $immo->setApprovStatus($value);
+        $message=$value=="1"?"L'ajustement d'une immobilisation a été approuvé.":"L'ajustement d'une immobilisation a été rejeté.";
+        $notif=new Notification();
+        $id=$immo->getId();
+        $idHash= $id?Shared::hashId($id):null;
+        $lien=$idHash?"/ajuster/fi/$idHash":"/ajuster/fi";
+        $notif->setLien($lien)
+              ->setEmetteur($this->userCo)
+              ->setMessage($message)
+              ->setType(Shared::NOTIFICATION)
+              ->setDate(new \DateTime());
+        $this->manager->persist($notif);
+        $userNotif=new UserNotif($this->bus);
+        $userNotif->setRecepteur($immo->getAjusteur())->setNotification($notif)->setStatus(0);
+        $this->manager->persist($userNotif); 
+        $this->manager->flush();
+        return $this->json([
+            Shared::MESSAGE => Shared::ENREGISTRER,
+            Shared::CODE => 200
+        ]);
     }
 
     public function getPvCreer($data){

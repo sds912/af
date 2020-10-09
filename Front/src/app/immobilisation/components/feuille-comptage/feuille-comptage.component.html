@@ -31,13 +31,12 @@
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
                                         <li class="dropdown m-l-20 ml-5 mr-3">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
                                                 <option value="-1">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
-                                                <option value="0">Immobilisations avec code barre non réconciliées</option>
+                                                <option value="0">Immobilisations scannées non réconciliées</option>
                                                 <option value="2">Immobilisations rajoutées</option>
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
-                                                <option value="4">Emplacement non concordant</option>
                                             </select>
                                         </li>
                                         <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
@@ -48,6 +47,15 @@
                                                 <option value="1">Bon état</option>
                                                 <option value="0">Mauvais état</option>
                                             </select>
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20">
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="generatePdf()" title="Exporter PDF">
+                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                </button>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
@@ -198,11 +206,11 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Lecteur"  sortable="false" prop="lecteur" [width]="100">
+                                    <ngx-datatable-column name="Etat du bien"  sortable="false" prop="endEtat" [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="value?.nom">
-                                                {{longText(value?.nom,20)}}
+                                            <td class="table-img padding-0" [title]="getEtat(value)">
+                                                {{longText(getEtat(value),20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -218,11 +226,11 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Etat du bien"  sortable="false" prop="endEtat" [width]="100">
+                                    <ngx-datatable-column name="Lecteur"  sortable="false" prop="lecteur" [width]="100">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
-                                            <td class="table-img padding-0" [title]="getEtat(value)">
-                                                {{longText(getEtat(value),20)}}
+                                            <td class="table-img padding-0" [title]="value?.nom">
+                                                {{longText(value?.nom,20)}}
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -247,10 +255,9 @@
                                                     data-target="#showImmo" (click)="showDetails(row)">
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <!-- <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" >
-                                                    <i class="material-icons">mode_edit</i>
-                                                </button> -->
+                                                <button class="btn tblActnBtn pointer h-auto text-danger" *ngIf="row.isMatched" title="Code barre déféctueux">
+                                                    <i class="material-icons">blur_off</i>
+                                                </button>
                                             </span>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -350,10 +357,6 @@
                                                     data-target="#showImmo" (click)="showDetails(row)">
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
-                                                <!-- <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" >
-                                                    <i class="material-icons">mode_edit</i>
-                                                </button> -->
                                             </span>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -415,22 +418,15 @@
                 <div class="row" *ngIf="!showPhoto">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.description">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label  [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Description :
+                            <mat-label [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Description :
                                 {{selectedRowData?.description}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.code">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label *ngIf="selectedRowData?.code"  [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Code :
+                            <mat-label *ngIf="selectedRowData?.code" [ngClass]="{'color-black': statusImmo==1 || statusImmo==-1,'color-new': (statusImmo!=1 && statusImmo!=-1)}"> Code :
                                 {{selectedRowData?.code}}</mat-label>
-                            <input matInput formControlName="denomination">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6mb-2" *ngIf="selectedRowData?.numeroOrdre">
-                        <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Numéro d'ordre
-                                : {{selectedRowData?.numeroOrdre}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>
@@ -444,8 +440,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.compteAmort">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Compte
-                                d'amortissement
+                            <mat-label style="color: black;"> Compte d'amortissement
                                 : {{selectedRowData?.compteAmort}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -517,8 +512,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.etat">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: black;"> Etat du bien
-                                théorique
+                            <mat-label style="color: black;"> Etat du bien théorique
                                 : {{selectedRowData?.etat}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -556,6 +550,26 @@
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label style="color: #28a745;"> Date inventoriée 
                                 : {{selectedRowData?.dateLecture|date:'dd/MM/yyyy'}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite?.createur?.nom && (securityServ.superviseurGene||securityServ.superviseurAdjoint)">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: #28a745;"> Superviseur adjoint
+                                : {{selectedRowData?.localite?.createur?.nom}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.localite?.id ">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: #28a745;"> Chef d'équipe
+                                : {{getChefEquipOf(selectedRowData?.localite?.id)}}</mat-label>
+                            <input matInput formControlName="denomination">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.status!=3 && selectedRowData?.isMatched">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label style="color: #28a745;"> Etat du code barre : Défectueux</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
                     </div>

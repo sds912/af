@@ -11,15 +11,18 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PlaningService } from 'src/app/planing/services/planing.service';
 @Component({
-  selector: 'app-traitement',
-  templateUrl: './traitement.component.html',
-  styleUrls: ['./traitement.component.sass']
+  selector: 'app-code-defectueux',
+  templateUrl: './code-defectueux.component.html',
+  styleUrls: ['./code-defectueux.component.sass']
 })
-export class TraitementComponent implements OnInit {
+export class CodeDefectueuxComponent implements OnInit {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
-
+  @ViewChild('closeEditModal', { static: false }) closeEditModal;
+  @ViewChild('closeMatchModal', { static: false }) closeMatchModal;
+  @ViewChild('openConfirm', { static: false }) openConfirm;
+  @ViewChild('openImmo', { static: false }) openImmo;
 
   data = [];
 
@@ -43,7 +46,7 @@ export class TraitementComponent implements OnInit {
   details=false
   idCurrentEse;
   inventaires = [];
-  statusImmo=-1
+  statusImmo=3
   typeImmo=""
   filteredData = [];
   columns = [
@@ -58,6 +61,7 @@ export class TraitementComponent implements OnInit {
   myId=""
   localites = [];
   affectations = [];
+  matchLibelle=""
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
@@ -70,14 +74,8 @@ export class TraitementComponent implements OnInit {
   ) { 
     this.editForm = this.fb.group({
       id: [0],
-      image: [''],
-      denomination: ['', [Validators.required]],
-      republique: [''],
-      sigleUsuel: [''],
-      capital: [''],
-      ville: [''],
-      ninea: [''],
-      adresse: ['']
+      code: [''],
+      oneInput: ['', [Validators.required]]
     });
   }
 
@@ -113,14 +111,8 @@ export class TraitementComponent implements OnInit {
     if(this.formDirective)this.formDirective.resetForm()
     this.editForm = this.fb.group({
       id: [{value: row.id, disabled: lock}],
-      image: [{value: row.image, disabled: lock}],
-      denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
-      republique: [{value: row.republique, disabled: lock}],
-      sigleUsuel: [{value: row.sigleUsuel, disabled: lock}],
-      capital: [{value: row.capital, disabled: lock}],
-      ville: [{value: row.ville, disabled: lock}],
-      ninea: [{value: row.ninea, disabled: lock}],
-      adresse: [{value: row.adresse, disabled: lock}]
+      code: [{value: row.code, disabled: lock}],
+      oneInput: [{value: "", disabled: true}]
     });
     this.selectedRowData = row;
   }
@@ -131,9 +123,15 @@ export class TraitementComponent implements OnInit {
     this.editRow(row, true)
   }
 
+  update(row){
+    this.details=false
+    this.showPhoto=false
+    this.editRow(row, false)
+  }
+
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
-    this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
+    this.immoService.getImmobilisationByInventaire(this.idCurrentInv,'status=3').then((e) => {
       this.allImmos = e;
       this.setData(e)
       this.securityServ.showLoadingIndicatior.next(false);
@@ -146,7 +144,6 @@ export class TraitementComponent implements OnInit {
   setData(data){
     this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
     this.filteredData = data;
-    console.log(this.data)
   }
 
   showNotification(colorName, text, placementFrom, placementAlign, duree = 2000) {
@@ -169,13 +166,14 @@ export class TraitementComponent implements OnInit {
         this.inventaires = rep?.reverse();
         this.idCurrentInv = this.inventaires[0]?.id;
         this.getImmos();
-        //this.getAffectationByInv(this.idCurrentInv);
+        this.getAffectationByInv(this.idCurrentInv);
         this.securityServ.showLoadingIndicatior.next(false);
       }, error => {
         this.securityServ.showLoadingIndicatior.next(false);
         console.log(error)
       })
   }
+
   getAffectationByInv(id:number){
     this.planingServ.getAffectations("?inventaire.id="+id).then(
       rep=>{
@@ -192,7 +190,7 @@ export class TraitementComponent implements OnInit {
 
   inventaireChange(id) {
     this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id   
-    //this.getAffectationByInv(this.idCurrentInv); 
+    this.getAffectationByInv(this.idCurrentInv); 
     this.getImmos();
   }
 
@@ -205,9 +203,8 @@ export class TraitementComponent implements OnInit {
       (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
       this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
       && (immo.endEtat==this.typeImmo || this.typeImmo==""))
-    
-    console.log(this.data);
   }
+
   filterDatatable(value) {
     // get the value of the key pressed and make it lowercase
     const val = value.toLowerCase();
@@ -221,12 +218,15 @@ export class TraitementComponent implements OnInit {
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
   }
+
   getHashId(id){
     return this.sharedService.hashId(id)
   }
+
   getEtat(endEtat){
     return endEtat==0?"Mauvais état":"Bon état";
   }
+
   locName(id){
     const localite=this.getOneById(id)
     let idParent=localite?.idParent
@@ -242,9 +242,55 @@ export class TraitementComponent implements OnInit {
     }
     return nom.substr(3)
   }
+
   getOneById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
+  }
+
+  getChefEquipOf(idLoc):string{
+    const aff= this.affectations.find(aff=>aff.localite.id==idLoc && aff.user.roles[0]=='ROLE_CE')       
+    return aff?.user?.nom ?? "À préciser"
+  }
+
+  save(match=false){
+    const code=this.editForm.value.code
+    const id=this.editForm.value.id
+    this.securityServ.showLoadingIndicatior.next(true);
+    this.inventaireServ.addCode({id:id,code:code,match:match}).then(
+      ()=>{
+        this.showNotification('bg-success','Enregistré','top','center')
+        this.getImmos()
+        this.securityServ.showLoadingIndicatior.next(false);
+        this.closeEditModal.nativeElement.click();
+        this.closeMatchModal.nativeElement.click();
+      },
+      error=>{
+        this.showNotification('bg-danger',error,'top','center');
+        this.securityServ.showLoadingIndicatior.next(false);
+      }
+    )
+  }
+
+  async saveTreatment(){
+    this.matchLibelle=""
+    const code=this.editForm.value.code
+    const id=this.editForm.value.id
+    const match=await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}`)
+    const immo=match[0] ?? null
+    if(immo && immo.id!=id){
+      this.matchLibelle=immo.libelle
+      this.closeEditModal.nativeElement.click();
+      this.openConfirm.nativeElement.click();
+      return ''
+    }
+    this.save()
+  }
+
+  offMatchedImmo(){
+    this.selectedRowData.code=this.editForm.value.code
+    this.update(this.selectedRowData)
+    this.openImmo.nativeElement.click();
   }
 }
 export interface selectRowInterface {
@@ -270,4 +316,5 @@ export interface selectRowInterface {
   lecteur:any
   dateLecture:any
   image:string
+  matchedImmo:any
 }

@@ -42,13 +42,16 @@ import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfi
 import { SafeUrlPipe } from '../shared/pipe/safe-url.pipe';
 import { MatStepperModule } from '@angular/material/stepper';
 import { TraitementComponent } from './components/traitement/traitement.component';
+import { FeuilleComptageComponent } from './components/feuille-comptage/feuille-comptage.component';
+import { CodeDefectueuxComponent } from './components/code-defectueux/code-defectueux.component';
+import { AjusterFiComponent } from './components/ajuster-fi/ajuster-fi.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 
 @NgModule({
-  declarations: [ImmobilisationComponent, TraitementComponent],
+  declarations: [ImmobilisationComponent, TraitementComponent, FeuilleComptageComponent, CodeDefectueuxComponent, AjusterFiComponent],
   imports: [
     CommonModule,
     ImmobilisationRoutingModule,

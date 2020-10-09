@@ -41,7 +41,7 @@ class UpdateUserSubscriber implements EventSubscriberInterface{
         $route=$request->attributes->get('_route');
         if($user instanceof User && $method=="PUT"){
             if($route=="api_users_PUT_item"){//les gens qui peuvent modifier les infos des users
-                $this->onlyFor();//seul les admins, les superviseurs et le super admin peuvent y accèder )
+                $this->onlyFor($user);//seul les admins, les superviseurs et le super admin peuvent y accèder )
                 $this->sameEntité($user);
             }
             elseif($route=="api_users_INFO_item"){//j ai dégagé une route speciale pour modifier ses infos personnelles dans l entité user
@@ -54,12 +54,13 @@ class UpdateUserSubscriber implements EventSubscriberInterface{
             throw new HttpException(403,"Vous ne pouvez pas modifier les informations d'un autre utilisateur via cette route");
         }
     }
-    public function onlyFor(){//les gens qui peuvent modifier les infos des users
+    public function onlyFor($user){//les gens qui peuvent modifier les infos des users
         if(!$this->droit->isGranted('ROLE_SuperAdmin') && 
            !$this->droit->isGranted('ROLE_Admin') && 
            !$this->droit->isGranted('ROLE_Superviseur') && 
            !$this->droit->isGranted('ROLE_SuperViseurGene') && 
-           !$this->droit->isGranted('ROLE_SuperViseurAdjoint') 
+           !$this->droit->isGranted('ROLE_SuperViseurAdjoint') && 
+           $this->userCo->getId()!=$user->getId()
         ){
             throw new HttpException(403,"Vous n'êtes pas autoriser à modifier les informations d'un utilisateur !");
         }

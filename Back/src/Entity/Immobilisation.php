@@ -29,7 +29,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *  }
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
- * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
  */
 class Immobilisation
 {
@@ -188,6 +188,40 @@ class Immobilisation
      * @Groups({"immo_read"})
      */
     private $dateLecture;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $isMatched;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Immobilisation::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
+     */
+    private $matchedImmo;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="matchedImmo")
+     */
+    private $immobilisations;//matched
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="mesAjustements")
+     * @Groups({"immo_read"})
+     */
+    private $ajusteur;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $approvStatus;//0 - pending, 1 - approve
+
+    public function __construct()
+    {
+        $this->immobilisations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -490,6 +524,85 @@ class Immobilisation
     public function setDateLecture(?\DateTimeInterface $dateLecture): self
     {
         $this->dateLecture = $dateLecture;
+
+        return $this;
+    }
+
+    public function getIsMatched(): ?bool
+    {
+        return $this->isMatched;
+    }
+
+    public function setIsMatched(?bool $isMatched): self
+    {
+        $this->isMatched = $isMatched;
+
+        return $this;
+    }
+
+    public function getMatchedImmo(): ?self
+    {
+        return $this->matchedImmo;
+    }
+
+    public function setMatchedImmo(?self $matchedImmo): self
+    {
+        $this->matchedImmo = $matchedImmo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(self $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setMatchedImmo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(self $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getMatchedImmo() === $this) {
+                $immobilisation->setMatchedImmo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAjusteur(): ?User
+    {
+        return $this->ajusteur;
+    }
+
+    public function setAjusteur(?User $ajusteur): self
+    {
+        $this->ajusteur = $ajusteur;
+
+        return $this;
+    }
+
+    public function getApprovStatus(): ?int
+    {
+        return $this->approvStatus;
+    }
+
+    public function setApprovStatus(?int $approvStatus): self
+    {
+        $this->approvStatus = $approvStatus;
 
         return $this;
     }

@@ -274,7 +274,7 @@ export class SidebarComponent implements OnInit {
       this.inventaireServ.sendMobileData(data).then(
         ()=>{
           this.showNotification('bg-success',"Enregistré",'top','center',5000)
-          this.router.navigate(['traitement/reload'])
+          this.router.navigate(['/feuille/comptage/reload'])
         },error=>this.showNotification('bg-red',error,'top','center',5000)
       )
     }

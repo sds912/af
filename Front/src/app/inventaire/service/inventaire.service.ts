@@ -117,4 +117,7 @@ export class InventaireService {
   sendMobileData(data){
     return this.sharedService.postElement(data,"/mobile/data")
   }
+  addCode(data){
+    return this.sharedService.postElement(data,"/code/defectueux")
+  }
 }

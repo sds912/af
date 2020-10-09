@@ -11,6 +11,7 @@ class Shared{
     const APPLICATION_TYPE='application/json';
     const STATUS="status";
     const MESSAGE="message";
+    const CODE="code";
     const NOTFOUND="Ressource non trouvée !!";
     const ACTIF="actif";
     const BLOQUE="bloque"; 
