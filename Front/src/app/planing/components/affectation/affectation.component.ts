@@ -94,7 +94,7 @@ export class AffectationComponent implements OnInit {
     this.debut=affect?.debut
     this.fin=affect?.fin
     this.dateProposition=false
-    if(!this.debut && !this.fin){
+    if(!this.debut && !this.fin && this.update){
       /** Pour lui proposer de garder la même date que la date qu on lui a accorder */
       this.debut=affect?.debut ? affect?.debut : this.getDateComptage()?.debut
       this.fin=affect?.fin ? affect?.fin :this.getDateComptage()?.fin
