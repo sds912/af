@@ -13,6 +13,10 @@ import { PlaningService } from 'src/app/planing/services/planing.service';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+import * as Excel from "exceljs/dist/exceljs.min.js";
+import * as ExcelProper from "exceljs";
+import * as fs from 'file-saver';
+let workbook: ExcelProper.Workbook = new Excel.Workbook();
 @Component({
   selector: 'app-feuille-comptage',
   templateUrl: './feuille-comptage.component.html',
@@ -22,7 +26,7 @@ export class FeuilleComptageComponent implements OnInit {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
-
+  workbook=workbook
 
   data = [];
 
@@ -278,7 +282,7 @@ export class FeuilleComptageComponent implements OnInit {
 
   generatePdf() {
     const documentDefinition = {
-      content: [this.pdfFeuille(true)], styles: this.getStyle(), pageMargins: [40, 40], pageOrientation: 'landscape',
+      content: [this.pdfFeuille(this.securityServ.superviseur?false:true)], styles: this.getStyle(), pageMargins: [40, 40], pageOrientation: 'landscape',
     };
     pdfMake.createPdf(documentDefinition).open();
   }
@@ -478,6 +482,83 @@ export class FeuilleComptageComponent implements OnInit {
   numbStr(number){
     return this.sharedService.numStr(number," ")
   }
+  generateExcel(){
+    const data:selectRowInterface[]=this.allImmos
+    //https://www.ngdevelop.tech/export-to-excel-in-angular-6/
+    let workbook = new Excel.Workbook();
+    let worksheet = workbook.addWorksheet('Immobilisations'); //nouvelle feuille
+    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date inventoriée"]);//une ligne et les colonnes
+    worksheet.getColumn('A').width = 20;
+    worksheet.getColumn('C').width = 30;
+    worksheet.getColumn('B').width = 30;
+    worksheet.getColumn('D').width = 30;
+    worksheet.getColumn('E').width = 30;
+    worksheet.getColumn('F').width = 40;
+    worksheet.getColumn('G').width = 20;
+    worksheet.getColumn('H').width = 27;
+    worksheet.getColumn('I').width = 15;
+    worksheet.getColumn('J').width = 15;
+    worksheet.getColumn('K').width = 20;
+    worksheet.getColumn('L').width = 30;
+    worksheet.getColumn('M').width = 30;
+    worksheet.getColumn('N').width = 20;
+    worksheet.getColumn('O').width = 27;
+    worksheet.getColumn('P').width = 50;
+    worksheet.getColumn('Q').width = 20;
+    worksheet.getColumn('R').width = 50;
+    worksheet.getColumn('S').width = 15;
+    worksheet.getColumn('T').width = 25;
+    worksheet.getColumn('U').width = 20;
+    headerRow.eachCell((cell, number) => {//pour chaque cellules de l'entete
+       cell.fill = {
+         type: 'pattern',
+         pattern: 'solid',
+         fgColor: { argb: 'eeeeee' },
+         bgColor: { argb: 'eeeeee' }
+         //https://www.colorhexa.com/d5d5cf
+       }
+       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }//pour la bordure
+       cell.font = {size: 13, bold: true };
+    });
+    data.forEach(d => {
+      if(!d.status || d.status!=3 || d.status==3 && !d.isMatched){
+        let status=this.getStatus(d.status)//si match avec immo code def changer
+        if(d.status==1 && d.isMatched){
+          status=this.getStatus(3)
+          //le colorier
+        }
+        let row = worksheet.addRow([
+          d.numeroOrdre??" ",d.code??" ",d.compteImmo??" ",d.compteAmort??" ",d.emplacement??" ",d.libelle??" ",this.formattedDate(d.dateAcquisition)??" ",this.formattedDate(d.dateMiseServ)??" ",d.dureeUtilite??" ",d.taux??0,
+          d.valOrigine??0,d.dotation??0,d.cumulAmortiss??0,d.vnc??0,d.etat??" ",d.status?status:"Immobilisations non scannées",d.status?this.getEtat(d.endEtat):" ",d.localite?this.locName(d.localite?.id):" ",
+          d.localite?.id??" ",d.lecteur?.nom??" ",d.dateLecture?this.formattedDate(d.dateLecture):" "]
+        );
+        row.eachCell((cell, number) =>cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } })
+        const cas0=d.status==0
+        const cas1=d.status==1 && d.isMatched
+        const cas2=d.status==2
+        const cas3=d.status==3
+        if(cas0 || cas1 || cas2 || cas3){
+          row.eachCell((cell, number) => {//pour chaque cellules de l'entete
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFFFFF00' },
+              bgColor: { argb: 'FF0000FF' }
+            }
+          });
+        }
+      
+      }
+    });
+    
+    workbook.xlsx.writeBuffer().then((data) => {
+       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });       
+       fs.saveAs(blob, `Fichier des immobilisations au ${this.getExcelDate()}.xlsx`);
+    });    
+  }
+  getExcelDate():string{
+    return this.formattedDate(this.inventaires.find(inv=>inv.id==this.idCurrentInv)?.dateInv)
+  }
 }
 export interface selectRowInterface {
   code: string;
@@ -486,9 +567,9 @@ export interface selectRowInterface {
   compteAmort:string,
   compteImmo : string ,
   cumulAmortiss : number,
-  dateAcquisition :string,
+  dateAcquisition :any,
   dureeUtilite:string,
-  dateMiseServ : string,
+  dateMiseServ : any,
   dotation : number,
   emplacement : string ,
   etat :string ,

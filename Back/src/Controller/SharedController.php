@@ -616,6 +616,17 @@ class SharedController extends AbstractController
         ]);
     }
 
+    /**
+    * @Route("/approuve/waitting/{id}", methods={"GET"})
+    */
+    public function approuveWaittingByEse($id){
+        $entreprise=$this->repoEse->find($id);
+        $inv=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
+        $immos=$this->repoImmo->findBy(["inventaire"=>$inv,"approvStatus"=>0]);
+        return $this->json(count($immos));
+    }
+
+
     public function getPvCreer($data){
         $d=[
             [

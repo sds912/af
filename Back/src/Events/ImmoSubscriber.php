@@ -46,7 +46,12 @@ class ImmoSubscriber implements EventSubscriberInterface{
     public function ajusteImmo(ViewEvent $event){//on peut changer le user par une autre classe et mettre l algo du traitement à faire juste avant que l on ecrive dans la base de donnée
         $immo=$event->getControllerResult();//on option le resultat du controller de api plateform
         $method=$event->getRequest()->getMethod();
-        if($immo instanceof Immobilisation && $method=="PUT" && $immo->getApprovStatus()==0 && $this->droit->isGranted('ROLE_SuperViseurAdjoint')){
+        $request=$event->getRequest();
+        $data=json_decode($request->getContent(),true);
+        if($this->droit->isGranted('ROLE_Superviseur')){
+            $immo->setApprovStatus(1);
+        }
+        elseif($immo instanceof Immobilisation && $method=="PUT" && $immo->getApprovStatus()==0 && $this->droit->isGranted('ROLE_SuperViseurAdjoint') && isset($data["soumettre"]) && $data["soumettre"]){
             $user=$this->userCo;
             $message="L'ajustement d'une immobilisation est en attente d'approbation.";
             $notif=new Notification();

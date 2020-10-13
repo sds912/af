@@ -65,7 +65,7 @@ export class AjusterFiComponent implements OnInit {
   confirmationValue=false
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
-    private securityServ: SecurityService,
+    public securityServ: SecurityService,
     private inventaireServ: InventaireService,
     private fb: FormBuilder, 
     private _snackBar: MatSnackBar,
@@ -157,19 +157,6 @@ export class AjusterFiComponent implements OnInit {
       image: [{value: row.image, disabled: lock}]
     });
     this.selectedRowData = row;
-  }
-
-  clearData(data){
-    /** because they are disabled */
-    data.localite="/api/localites/"+this.selectedRowData.localite?.id
-    data.endEtat=this.selectedRowData.endEtat
-    data.lecteur="/api/users/"+this.selectedRowData.lecteur?.id
-    data.dateLecture=this.selectedRowData.dateLecture
-    if(this.securityServ.superviseurAdjoint){
-      data.ajusteur="/api/users/"+this.myId
-      data.approvStatus=0
-    }
-    return data
   }
 
   showDetails(row){
@@ -315,12 +302,14 @@ export class AjusterFiComponent implements OnInit {
     return aff?.user?.nom ?? "À préciser"
   }
 
-  save(){
+  save(soumettre){
     const data=this.clearData(this.editForm.value)
+    data.soumettre=soumettre
+    data.approvStatus=soumettre?0:-1
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.postImmobilisation(data).then(
       ()=>{
-        this.showNotification('bg-success','Enregistré','top','center')
+        this.showNotification('bg-success',soumettre?'Ajustement soumis pour approbation':'Enregistré','top','center')
         this.getImmos()
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeEditModal.nativeElement.click();
@@ -332,9 +321,24 @@ export class AjusterFiComponent implements OnInit {
     )
   }
 
+
+
+  clearData(data){
+    /** because they are disabled */
+    data.localite="/api/localites/"+this.selectedRowData.localite?.id
+    data.endEtat=this.selectedRowData.endEtat
+    data.lecteur="/api/users/"+this.selectedRowData.lecteur?.id
+    data.dateLecture=this.selectedRowData.dateLecture
+    if(this.securityServ.superviseurAdjoint){
+      data.ajusteur="/api/users/"+this.myId
+      data.approvStatus=0
+    }
+    return data
+  }
+
   approve(value){
     this.confirmationValue=value
-    this.approuvText=value?"Voulez-vous approuver cette ajustement ?":"Voulez-vous rejeter cette ajustement ?"
+    this.approuvText=value?"Voulez-vous approuver cet ajustement ?":"Voulez-vous rejeter cet ajustement ?"
     this.closeEditModal.nativeElement.click();
     this.openConfirm.nativeElement.click();
   }
@@ -343,6 +347,7 @@ export class AjusterFiComponent implements OnInit {
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.approveAjustement(this.selectedRowData.id,approvStatus).then(
       ()=>{
+        this.immoService.approvChange.next(true);
         this.showNotification('bg-success','Enregistré','top','center')
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeConfirmModal.nativeElement.click();

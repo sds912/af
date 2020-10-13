@@ -216,7 +216,7 @@ class Immobilisation
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"immo_read"})
      */
-    private $approvStatus;//0 - pending, 1 - approve
+    private $approvStatus;//0 - pending, 1 - approve, -1 save
 
     public function __construct()
     {

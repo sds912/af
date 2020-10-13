@@ -7,6 +7,7 @@ import { InventaireService } from 'src/app/inventaire/service/inventaire.service
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ImmobilisationService } from 'src/app/immobilisation/services/immobilisation.service';
 
 declare const Waves: any;
 
@@ -31,6 +32,7 @@ export class SidebarComponent implements OnInit {
   dateInv=null
   inputMobilFile=null
   idCurrentEse=null
+  countApprov=0
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
@@ -39,8 +41,8 @@ export class SidebarComponent implements OnInit {
     public securityServ:SecurityService,
     private _snackBar: MatSnackBar,
     private inventaireServ:InventaireService,
+    private immoServ:ImmobilisationService,
     private router:Router
-
   ) {}
   @HostListener('window:resize', ['$event'])
   windowResizecall(event) {
@@ -60,6 +62,8 @@ export class SidebarComponent implements OnInit {
     this.bodyTag = this.document.body;
     this.myRole=localStorage.getItem("roles")
     this.idCurrentEse = localStorage.getItem("currentEse")
+    this.getCountImmoToApprovByEse()
+    this.immoServ.approvChange.subscribe(rep=>this.getCountImmoToApprovByEse())
   }
   isGranted(menu){
     let roles=menu.roles
@@ -278,5 +282,8 @@ export class SidebarComponent implements OnInit {
         },error=>this.showNotification('bg-red',error,'top','center',5000)
       )
     }
+  }
+  async getCountImmoToApprovByEse(){
+    this.countApprov = await this.immoServ.getCountImmoToApprovByEse(localStorage.getItem("currentEse"))    
   }
 }

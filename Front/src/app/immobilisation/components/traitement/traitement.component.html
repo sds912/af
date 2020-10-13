@@ -510,7 +510,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.status">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: #28a745;"> Status du bien 
+                            <mat-label style="color: #28a745;"> Statut du bien 
                                 : {{getStatus(selectedRowData?.status)}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
@@ -554,7 +554,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2 new-immo" *ngIf="selectedRowData?.dateLecture">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label style="color: #28a745;"> Date inventoriée 
+                            <mat-label style="color: #28a745;"> Date de comptage 
                                 : {{selectedRowData?.dateLecture|date:'dd/MM/yyyy'}}</mat-label>
                             <input matInput formControlName="denomination">
                         </mat-form-field>
