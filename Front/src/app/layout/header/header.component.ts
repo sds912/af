@@ -134,9 +134,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.setStartupStyles();
     this.initForm()
-    this.initForm3()
-    this.getInv()
-    
+    this.initForm3()    
     if(this.securityServ.isAuth){
       this.getCountNew()
       this.imgLink=this.sharedService.baseUrl +"/images/"
@@ -176,8 +174,9 @@ export class HeaderComponent implements OnInit {
   }
 
   getInv(){
-    if(this.securityServ.superviseur || this.securityServ.superviseurGene){
-      this.inventaireServ.getInventaireByEse(localStorage.getItem("currentEse")).then(rep=>{
+    const id=localStorage.getItem("currentEse")
+    if(id && (this.securityServ.superviseur || this.securityServ.superviseurGene)){
+      this.inventaireServ.getInventaireByEse(id).then(rep=>{
         this.inventaires=rep?.reverse()
         this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
         this.inv=this.inventaires?.length>0?this.inventaires[0].id:null
