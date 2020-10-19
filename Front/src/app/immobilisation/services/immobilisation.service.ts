@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { SharedService } from 'src/app/shared/service/shared.service';
 @Injectable({
   providedIn: 'root'
 })
 export class ImmobilisationService {
-
+  approvChange: Subject<boolean> = new Subject<boolean>();
   constructor(private sharedService:SharedService) { }
 
   getAllImmosByEntreprise(id){
@@ -29,6 +30,10 @@ export class ImmobilisationService {
 
   getImmobilisationByInventaire(id,params='') {
     return this.sharedService.getElement(`/immobilisations?inventaire.id=${id}&${params}`);
+  }
+
+  getCountImmoToApprovByEse(id) {
+    return this.sharedService.getElement(`/approuve/waitting/${id}`);
   }
 
   deleteImmoByInventaire(id) {

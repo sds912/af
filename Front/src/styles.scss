@@ -65,3 +65,5 @@
 .new-immo .mat-form-field-outline-end{
     color: #28a745 !important;
 }
+
+.breadcrumb > li + li:before{display: none;}

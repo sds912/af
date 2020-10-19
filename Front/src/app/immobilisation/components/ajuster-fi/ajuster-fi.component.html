@@ -123,7 +123,12 @@
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#showImmo" (click)="update(row)" *ngIf="securityServ.superviseurGene && row?.approvStatus==0 || securityServ.superviseurAdjoint && row?.approvStatus!=0">
+                                                    data-target="#showImmo" (click)="update(row)" *ngIf="securityServ.superviseurGene && row?.approvStatus==0 || securityServ.superviseurAdjoint && row?.approvStatus!=0 || securityServ.superviseur">
+                                                    <i class="material-icons">mode_edit</i>
+                                                </button>
+
+                                                <button class="btn tblActnBtn pointer h-auto text-danger"
+                                                    *ngIf="securityServ.superviseurGene && row?.approvStatus!=0 || securityServ.superviseurAdjoint && row?.approvStatus==0" title="Vous n'avez plus la main sur ce document">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
 
@@ -329,7 +334,7 @@
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.dateLecture">
                         <mat-form-field class="example-full-width" appearance="outline">
-                            <mat-label class="color-black"> Date inventoriée :</mat-label>
+                            <mat-label class="color-black"> Date de comptage :</mat-label>
                             <input matInput [matDatepicker]="dateLec"  class="color-black" formControlName="dateLecture">
                             <mat-datepicker-toggle matSuffix [for]="dateLec"></mat-datepicker-toggle>
                             <mat-datepicker #dateLec></mat-datepicker>
@@ -358,9 +363,12 @@
                     <img *ngIf="!selectedRowData?.image" [src]="defaultImg" alt="avatar">
                 </div>
                 <div class="modal-footer pr-0">
-                    <button type="button" class="btn btn-outline-success btn-border-radius mr-0" *ngIf="!details && (securityServ.superviseur || securityServ.superviseurAdjoint)" (click)="save()">
-                        <span *ngIf="securityServ.superviseur">Enregistrer</span>
-                        <span *ngIf="securityServ.superviseurAdjoint">Soumettre</span> 
+                    <button type="button" class="btn btn-outline-info btn-border-radius mr-0" *ngIf="!details && securityServ.superviseurAdjoint" (click)="save(true)">
+                        Soumettre
+                    </button>
+
+                    <button type="button" class="btn btn-outline-success btn-border-radius mr-0" *ngIf="!details && (securityServ.superviseur || securityServ.superviseurAdjoint)" (click)="save(false)">
+                        Enregistrer
                     </button>
 
                     <button type="button" class="btn btn-outline-success btn-border-radius mr-0" *ngIf="!details && securityServ.superviseurGene && selectedRowData?.approvStatus==0" (click)="approve(true)">

@@ -36,7 +36,7 @@
                             [hidden]="!isGrantedSubM(sidebarItem,i)">
                             <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
                                 (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
-                                {{sidebarSubItem.title}}
+                                {{sidebarSubItem.title}} <span *ngIf="sidebarSubItem.title=='Ajuster FI' && securityServ.superviseurGene && countApprov>0" class="pl-2 pr-2" style="border-radius: 50%;border: 1px solid red;font-size: 11px;background-color: red;color: white;">{{countApprov}}</span>
                             </a>
                             <!-- Third level menu -->
                             <ul class="collapse" *ngIf="sidebarSubItem.submenu.length > 0"

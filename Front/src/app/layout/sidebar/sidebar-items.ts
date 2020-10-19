@@ -167,7 +167,7 @@ export const ROUTES: RouteInfo[] = [
       {
         id:'AJU3',
         path: "/ajuster/fi",
-        title: 'Ajuster FI',
+        title: 'Ajuster FI',//si change modifier le html count approuve
         icon: '',
         class: 'ml-menu',
         roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
