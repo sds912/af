@@ -30,9 +30,15 @@
                                             <label for="search-input"><i class="material-icons search-icon">search</i></label>
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
+                                        <li class="dropdown m-l-20 ml-5 mr-3">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
+                                                <option value="0">Immobilisations scannées non réconciliées</option>
+                                                <option value="2">Immobilisations rajoutées</option>
+                                            </select>
+                                        </li>
                                         <li class="dropdown m-l-20 ml-5">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 200px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
                                                 <option value="" *ngIf="typeImmo!=''">Tous</option>
 
                                                 <option value="1">Bon état</option>
@@ -43,7 +49,7 @@
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo>=2">
+                                    [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
@@ -102,7 +108,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column  name="Date de lecture" sortable="false" prop="dateLecture"
+                                    <ngx-datatable-column  name="Date de comptage" sortable="false" prop="dateLecture"
                                         [width]="140">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
@@ -128,7 +134,7 @@
                                                 </button>
 
                                                 <button class="btn tblActnBtn pointer h-auto text-danger"
-                                                    *ngIf="securityServ.superviseurGene && row?.approvStatus!=0 || securityServ.superviseurAdjoint && row?.approvStatus==0" title="Vous n'avez plus la main sur ce document">
+                                                    *ngIf="securityServ.superviseurGene && row?.approvStatus!=0 || securityServ.superviseurAdjoint && row?.approvStatus==0" title="Vous n'avez pas la main sur ce document">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
 

@@ -32,7 +32,7 @@
                                         </li>
                                         <li class="dropdown m-l-20 ml-5">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 200px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
                                                 <option value="" *ngIf="typeImmo!=''">Tous</option>
 
                                                 <option value="1">Bon état</option>
@@ -102,7 +102,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column  name="Date de lecture" sortable="false" prop="dateLecture"
+                                    <ngx-datatable-column  name="Date de comptage" sortable="false" prop="dateLecture"
                                         [width]="140">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>

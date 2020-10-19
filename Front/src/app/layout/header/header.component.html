@@ -86,6 +86,11 @@
                                         <mat-icon aria-hidden="false" class="mr-2">business</mat-icon>Changer d'entité
                                     </a>
                                 </li>
+                                <li *ngIf="securityServ.superviseurGene||securityServ.superviseur">
+                                    <a href="#" onClick="return false;"  data-toggle="modal" data-target="#unLockModal" data-backdrop="static" data-keyboard="false" (click)="initForm3()" #openEseModal>
+                                        <mat-icon aria-hidden="false" class="mr-2">person</mat-icon>Code déverrouillage
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="#" onClick="return false;"  data-toggle="modal" data-target="#infoModal" data-backdrop="static" data-keyboard="false" (click)="updateInfos()">
                                         <mat-icon aria-hidden="false" class="mr-2">person</mat-icon>Infos personnelles
@@ -333,3 +338,63 @@
     </div>
 </div>
 <!-- Modal key-->
+
+<!-- Modal deverrouillage loc -->
+<div class="modal fade" id="unLockModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog mt-5" role="document">
+        <form class="modal-content" (ngSubmit)="getCode()">
+            <div class="modal-header">
+                <div class="editRowModal">
+                    <div class="modal-header clearfix">
+                        <div class="modal-about">
+                            <div class="font-weight-bold p-t-10 font-17">Déverrouillage localité</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button"  (click)="showCode=false" #closeUnLockModal
+                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="!showCode">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 p-0">
+                        <select name="" id="" [(ngModel)]="inv" [ngModelOptions]="{standalone: true}" class="form-control" (change)="invChange($event.target.value)">
+                            <option value=""></option>
+                            <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">Inventaire au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 p-0 mt-4">
+                        <select name="" id="" [(ngModel)]="loc" [ngModelOptions]="{standalone: true}" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let localite of getLastLoc(localites)" [value]="localite.id">{{localite.nom}}</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer pr-0 pt-0">
+                        <div class="button-demo">
+                            <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="!loc || !inv">Valider</button>
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="" *ngIf="showCode">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 p-0">
+                        <mat-form-field class="example-full-width"
+                            appearance="outline">
+                            <mat-label>Code déverouillage</mat-label>
+                            <input matInput [(ngModel)]="unLockCode" [ngModelOptions]="{standalone: true}" disabled>
+                            <mat-icon matSuffix >key</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="modal-footer pr-0 pt-0">
+                        <div class="button-demo">
+                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" (click)="showCode=false">Retour</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal deverrouillage loc -->
