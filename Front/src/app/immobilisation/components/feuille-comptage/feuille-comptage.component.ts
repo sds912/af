@@ -161,8 +161,8 @@ export class FeuilleComptageComponent implements OnInit {
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e;
-      this.setData(e)
+      this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
+      this.setData(this.allImmos)
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
