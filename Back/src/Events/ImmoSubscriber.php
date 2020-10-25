@@ -48,7 +48,7 @@ class ImmoSubscriber implements EventSubscriberInterface{
         $method=$event->getRequest()->getMethod();
         $request=$event->getRequest();
         $data=json_decode($request->getContent(),true);
-        if($this->droit->isGranted('ROLE_Superviseur')){
+        if($this->droit->isGranted('ROLE_Superviseur') && $immo instanceof Immobilisation){
             $immo->setApprovStatus(1);
         }
         elseif($immo instanceof Immobilisation && $method=="PUT" && $immo->getApprovStatus()==0 && $this->droit->isGranted('ROLE_SuperViseurAdjoint') && isset($data["soumettre"]) && $data["soumettre"]){
@@ -71,6 +71,9 @@ class ImmoSubscriber implements EventSubscriberInterface{
                 $this->manager->persist($userNotif); 
             }
             $this->manager->flush();//vu k POST_WRITE il faut flush
+        }
+        if($method=="POST" && $immo instanceof Immobilisation){
+            $immo->setEndLibelle($immo->getLibelle())->setEndDescription($immo->getEndDescription());
         }
     }
 }

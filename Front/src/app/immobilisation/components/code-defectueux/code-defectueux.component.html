@@ -34,7 +34,6 @@
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 200px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
                                                 <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
                                                 <option value="" *ngIf="typeImmo!=''">Tous</option>
-
                                                 <option value="1">Bon état</option>
                                                 <option value="0">Mauvais état</option>
                                             </select>
@@ -151,7 +150,7 @@
                                                 [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage"
                                                 [size]="pageSize" [count]="rowCount"
                                                 [hidden]="!((rowCount / pageSize) > 1)"
-                                                (change)="table.onFooterPage($event)" (change)="look($event)">
+                                                (change)="table.onFooterPage($event)">
                                             </datatable-pager>
                                         </ng-template>
                                     </ngx-datatable-footer>

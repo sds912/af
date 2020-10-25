@@ -10,6 +10,7 @@ const routes: Routes = [
   {path: 'immos',canActivate:[SuperviseurGuard],component: ImmobilisationComponent},
   {path: 'feuille/comptage',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'feuille/comptage/reload',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
+  {path: 'immobilisations/:type',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'code/defectueux',canActivate:[SuperviseurGuard],component: CodeDefectueuxComponent},
   {path: 'ajuster/fi',canActivate:[SuperviseurGuard],component: AjusterFiComponent},
   {path: 'ajuster/fi/:id',canActivate:[SuperviseurGuard],component: AjusterFiComponent},
