@@ -123,7 +123,7 @@
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#showImmo" (click)="update(row)">
+                                                    data-target="#showImmo" (click)="update(row)" *ngIf="!this.securityServ.superviseurGene">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
 
