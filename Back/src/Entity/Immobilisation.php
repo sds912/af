@@ -218,6 +218,18 @@ class Immobilisation
      */
     private $approvStatus;//0 - pending, 1 - approve, -1 save
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endDescription;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endLibelle;
+
     public function __construct()
     {
         $this->immobilisations = new ArrayCollection();
@@ -603,6 +615,30 @@ class Immobilisation
     public function setApprovStatus(?int $approvStatus): self
     {
         $this->approvStatus = $approvStatus;
+
+        return $this;
+    }
+
+    public function getEndDescription(): ?string
+    {
+        return $this->endDescription;
+    }
+
+    public function setEndDescription(?string $endDescription): self
+    {
+        $this->endDescription = $endDescription;
+
+        return $this;
+    }
+
+    public function getEndLibelle(): ?string
+    {
+        return $this->endLibelle;
+    }
+
+    public function setEndLibelle(?string $endLibelle): self
+    {
+        $this->endLibelle = $endLibelle;
 
         return $this;
     }

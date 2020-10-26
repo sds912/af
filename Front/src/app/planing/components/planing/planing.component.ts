@@ -10,6 +10,10 @@ import { PlaningService } from '../../services/planing.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { AdminService } from 'src/app/administration/service/admin.service';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const colors: any = {
   red: {
     primary: '#ad2121',
@@ -88,6 +92,9 @@ export class PlaningComponent implements OnInit {
   idCurrentLocal=null
   firstSearchLoc=null
   searchValue=""
+  entreprise=null
+  users=[]
+  showTab=false
   constructor(private modal: NgbModal,
     private inventaireServ: InventaireService,
     private planingServ: PlaningService,
@@ -490,6 +497,8 @@ export class PlaningComponent implements OnInit {
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep => {
         this.subdivisions=rep.subdivisions
+        this.entreprise = rep
+        this.users= rep?.users
       },
       error => {
         console.log(error)
@@ -580,5 +589,139 @@ export class PlaningComponent implements OnInit {
       parent=this.getOneById(parent.idParent)
     }
     return bool
+  }
+  generatePdf() {
+    const documentDefinition = {
+      content: [this.pdfFeuille()], styles: this.getStyle(), pageMargins: [40, 40], pageOrientation: 'landscape',
+    };
+    pdfMake.createPdf(documentDefinition).open();
+  }
+  getStyle() {
+    return {
+      fsize: {
+        fontSize: 6.5,
+      },
+      enTete: {
+        fontSize: 6.5,
+        fillColor: '#eeeeee',
+      },
+      enTete2: {
+        fontSize: 6.5,
+        bold: true,
+        fillColor: '#bcbdbc',
+      },
+      gris: {
+        fillColor: '#bcbdbc'
+      },
+      grasGris: {
+        bold: true,
+        fillColor: '#e6e6e6'
+      },
+      grasGrisF: {
+        bold: true,
+        fillColor: '#b5b3b3'
+      },
+      gras: {
+        bold: true
+      },
+      centerGG: {
+        bold: true,
+        fillColor: '#e6e6e6',
+        alignment: 'center'
+      },
+      no_border: {
+        border: false
+      }
+    }
+  }
+  pdfFeuille() {
+    let content=this.getContent(this.affectations)
+    return [
+      ...this.getImage(),
+      {
+        table: {
+          widths: ['*','*'],
+          body: [
+            ...this.getEntete(),
+            [
+              { text: '', margin: [2, 7], border: [false, false, false, false], colSpan:2 },{}
+            ]
+          ]
+        }, margin: [0, 10, 0, 0]
+      },
+      {
+        table: {
+          widths: content.widths,
+          body: content.body
+        }, margin: [0, 0, 0, 0]
+      }
+    ]
+  }
+  getImage() {
+    if (this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
+    return [{}]
+  }
+  getEntete() {
+    const e = this.entreprise
+    let k = e.capital ? this.sharedService.numStr(e.capital, ' ') + " FCFA" : ""
+    const inv=this.inventaires.find(inventaire=>inventaire.id==this.idCurrentInv)
+    const superviseur=this.users.find(user=>user.roles[0]==='ROLE_SuperViseurGene' ||user.roles[0]==='ROLE_Superviseur')
+    const general=superviseur?.roles[0]==='ROLE_SuperViseurGene'?"Général":""
+    const title="Planning d'inventaire" 
+
+    return [
+      [
+        { text: e.denomination, border: [false, false, false, false], margin: [-5, 0, 0, 0], colSpan:2 },{}
+      ],
+      [
+        { text: e.republique + "/" + e.ville, border: [false, false, false, false], margin: [-5, 0, 0, 5], colSpan:2 },{}
+      ],
+      [
+        { text: `Période d'inventaire :  Du ${this.formattedDate(inv.debut)} au ${this.formattedDate(inv.fin)}`, border: [false, false, false, false], margin: [-5, 0, 0, 0] },
+        { text: `Superviseur ${general} : ${superviseur?.nom ?? ''}`,alignment:"right", border: [false, false, false, false]}
+      ],
+      [
+        { text: title,decoration: 'underline',style:'gras', margin: [0,20,0, 0],alignment: 'center',colSpan:2, border: [false, false, false, false]},{}
+      ],
+    ]
+  }
+  formattedDate(d = new Date) {
+    d = new Date(d)
+    return [d.getDate() , d.getMonth() + 1, d.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
+  }
+  getContent(data){//- 1
+    return {
+      widths: [110,120,380,50,50],
+      body: [
+        [
+          { text: 'Prénom et nom' ,fontSize:10, alignment: 'center', style:"grasGris"},
+          { text: 'Rôle' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: "Emplacement" ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: 'Début' ,fontSize:10,alignment: 'center', style:"grasGris"},
+          { text: 'Fin' ,fontSize:10,alignment: 'center', style:"grasGris"}
+        ],
+        ...this.rows(data)
+      ]
+    }
+  }
+  rows(data){
+    let tab=[]
+    data.forEach(affectation => {
+      tab.push([
+        { text: affectation?.user?.nom ,fontSize:8},
+        { text: this.getRole(affectation?.user?.roles) ,fontSize:8},
+        { text: this.locName(affectation?.localite?.id) ,fontSize:8},
+        { text: this.formattedDate(affectation.debut) ,fontSize:8},
+        { text: this.formattedDate(affectation.fin),fontSize:8}
+      ])
+    }
+    );
+    return tab
+  }
+  showTabPlanning(){
+    this.showTab=true
+  }
+  toggleView(){
+    this.showTab=!this.showTab
   }
 }

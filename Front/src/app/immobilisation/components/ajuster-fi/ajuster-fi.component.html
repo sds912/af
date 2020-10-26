@@ -71,7 +71,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Libelle" sortable="false" prop="libelle" [width]="70">
+                                    <ngx-datatable-column name="Libelle" sortable="false" prop="endLibelle" [width]="70">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="value">
@@ -164,7 +164,7 @@
                                                 [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage"
                                                 [size]="pageSize" [count]="rowCount"
                                                 [hidden]="!((rowCount / pageSize) > 1)"
-                                                (change)="table.onFooterPage($event)" (change)="look($event)">
+                                                (change)="table.onFooterPage($event)">
                                             </datatable-pager>
                                         </ng-template>
                                     </ngx-datatable-footer>
@@ -195,13 +195,13 @@
                         <img *ngIf="selectedRowData?.image" width="45" height="45" [src]="selectedRowData?.image" alt="Logo" class="pointer" (click)="showPhoto=true">
                         <img *ngIf="!selectedRowData?.image" width="45" height="45" [src]="defaultImg" alt="avatar" class="pointer" (click)="showPhoto=true">
                         <div class="modal-about">
-                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.libelle">{{editForm?.value?.libelle}}</div>
+                            <div class="font-weight-bold p-t-10 font-17" *ngIf="selectedRowData?.endLibelle">{{editForm?.value?.endLibelle}}</div>
                         </div>
                     </div>
                 </div>
                 <button type="button" #closeEditModal
                     class="btn p-t-10 modal-close-button" data-dismiss="modal"
-                    aria-label="Close">
+                    aria-label="Close" (click)="close()">
                     <i class="material-icons">clear</i>
                 </button>
             </div>
@@ -220,16 +220,16 @@
                             <input matInput  class="color-black" formControlName="numeroOrdre">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.libelle || isUpdate">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.endLibelle || isUpdate">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label class="color-black"> Libelle : </mat-label>
-                            <input matInput  class="color-black" formControlName="libelle">
+                            <input matInput  class="color-black" formControlName="endLibelle">
                         </mat-form-field>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.description || isUpdate">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.endDescription || isUpdate">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label class="color-black"> Description :</mat-label>
-                            <input matInput  class="color-black" formControlName="description">
+                            <input matInput  class="color-black" formControlName="endDescription">
                         </mat-form-field>
                     </div>
 
@@ -368,7 +368,7 @@
                     <img *ngIf="selectedRowData?.image" [src]="selectedRowData?.image" alt="Logo">
                     <img *ngIf="!selectedRowData?.image" [src]="defaultImg" alt="avatar">
                 </div>
-                <div class="modal-footer pr-0">
+                <div class="modal-footer pr-0" *ngIf="securityServ.superviseurGene && selectedRowData?.approvStatus==0 || securityServ.superviseurAdjoint && selectedRowData?.approvStatus!=0 || securityServ.superviseur || details">
                     <button type="button" class="btn btn-outline-info btn-border-radius mr-0" *ngIf="!details && securityServ.superviseurAdjoint" (click)="save(true)">
                         Soumettre
                     </button>
