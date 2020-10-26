@@ -9,6 +9,8 @@ import { async } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
+import Swal from 'sweetalert2';
+import { el } from 'date-fns/locale';
 type AOA = any[][];
 
 @Component({
@@ -30,6 +32,8 @@ export class ImmobilisationComponent implements OnInit {
 
   verifIfCorrect: boolean = true;
 
+  is21: boolean = true;
+
   idCurrentInv;
 
   isAllcorrect: boolean = false;
@@ -38,12 +42,12 @@ export class ImmobilisationComponent implements OnInit {
 
   selectedRowData: selectRowInterface;
 
-  show=false
-  imgLink=""
-  image:string=IMAGE64;
-  fileToUploadPp:File=null;
-  defaultImag=IMAGE64
-  details=false
+  show = false
+  imgLink = ""
+  image: string = IMAGE64;
+  fileToUploadPp: File = null;
+  defaultImag = IMAGE64
+  details = false
 
 
 
@@ -62,9 +66,9 @@ export class ImmobilisationComponent implements OnInit {
     private sharedService: SharedService,
     private securityServ: SecurityService,
     private inventaireServ: InventaireService,
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private _snackBar: MatSnackBar,
-  ) { 
+  ) {
     this.editForm = this.fb.group({
       id: [0],
       image: [''],
@@ -83,35 +87,35 @@ export class ImmobilisationComponent implements OnInit {
     this.securityServ.showLoadingIndicatior.next(false);
   }
 
-  editRow(row,lock=false) {
-    if(this.formDirective)this.formDirective.resetForm()
+  editRow(row, lock = false) {
+    if (this.formDirective) this.formDirective.resetForm()
     this.editForm = this.fb.group({
-      id: [{value: row.id, disabled: lock}],
-      image: [{value: row.image, disabled: lock}],
-      denomination: [{value: row.denomination, disabled: lock}, [Validators.required]],
-      republique: [{value: row.republique, disabled: lock}],
-      sigleUsuel: [{value: row.sigleUsuel, disabled: lock}],
-      capital: [{value: row.capital, disabled: lock}],
-      ville: [{value: row.ville, disabled: lock}],
-      ninea: [{value: row.ninea, disabled: lock}],
-      adresse: [{value: row.adresse, disabled: lock}]
+      id: [{ value: row.id, disabled: lock }],
+      image: [{ value: row.image, disabled: lock }],
+      denomination: [{ value: row.denomination, disabled: lock }, [Validators.required]],
+      republique: [{ value: row.republique, disabled: lock }],
+      sigleUsuel: [{ value: row.sigleUsuel, disabled: lock }],
+      capital: [{ value: row.capital, disabled: lock }],
+      ville: [{ value: row.ville, disabled: lock }],
+      ninea: [{ value: row.ninea, disabled: lock }],
+      adresse: [{ value: row.adresse, disabled: lock }]
     });
     this.selectedRowData = row;
   }
-  update(row){
-    this.details=false
-    this.image=""
+  update(row) {
+    this.details = false
+    this.image = ""
     this.editRow(row)
   }
-  showDetails(row){
+  showDetails(row) {
     console.log(row);
-    this.details=true
+    this.details = true
     this.editRow(row, true)
   }
 
   getImmos() {
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e.filter(immo=>immo.status==null || immo.status==1);//Seydina je l'ai corrigé
+      this.allImmos = e.filter(immo => immo.status == null || immo.status == 1);//Seydina je l'ai corrigé
       //console.log(this.allImmos);
 
     });
@@ -134,20 +138,46 @@ export class ImmobilisationComponent implements OnInit {
     if (this.idCurrentInv == undefined) {
       this.showNotification('bg-red', 'Selectionner un Inventaire', 'top', 'center')
     } else {
-      for (let index = 0; index < this.allImmos.length; index++) {
-        const element = this.allImmos[index];
-        this.securityServ.showLoadingIndicatior.next(true);
-        this.immoService.deleteImmoByInventaire(element.id).then(e => {});
-        this.showNotification('bg-success', 'Supréssion ', 'top', 'center');
-        this.getImmos();
-        this.securityServ.showLoadingIndicatior.next(false);
-      }
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger',
+
+        },
+        buttonsStyling: true
+      })
+
+      swalWithBootstrapButtons.fire({
+        title: 'Ê' + 'TES-VOUS SURE ?'.toLowerCase(),
+        text: "de vouloir supprimer le fichier des immobilisations.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, je le veux!',
+        cancelButtonText: 'Non, annuler!',
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.securityServ.showLoadingIndicatior.next(true);
+          this.immoService.deleteImmoByInventaire(this.idCurrentInv).then(e => {
+            this.showNotification('bg-success', 'Supréssion ', 'top', 'center');
+            this.getInventaireByEse();
+            this.securityServ.showLoadingIndicatior.next(false);
+          });
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+
+        }
+      })
+
+
     }
   }
 
   getInventaireByEse() {
-      this.securityServ.showLoadingIndicatior.next(true);
-      this.idCurrentEse = localStorage.getItem("currentEse")
+    this.securityServ.showLoadingIndicatior.next(true);
+    this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
       this.inventaires = rep?.reverse();
       this.idCurrentInv = this.inventaires[0].id;
@@ -188,21 +218,56 @@ export class ImmobilisationComponent implements OnInit {
 
       for (let index = 1; index < this.data.length - 1; index++) {
         const element = this.data[index];
+
         if (element.length != 15) {
           this.verifIfCorrect = false;
         }
 
+        if (element.length == 21) {
+          this.verifIfCorrect = true;
+          this.is21 = true;
+        }
+
       }
 
+
+
+      console.log(this.verifIfCorrect);
+      
+
       if (this.verifIfCorrect && this.idCurrentInv != undefined) {
-        for (let index = 1; index < this.data.length-1; index++) {
+        for (let index = 1; index < this.data.length - 1; index++) {
           const element = this.data[index];
-          
+
 
           const dA = element[6].split('/')[2] + '-' + element[6].split('/')[1] + '-' + element[6].split('/')[0];
           const dM = element[7].split('/')[2] + '-' + element[7].split('/')[1] + '-' + element[7].split('/')[0];
-          const dU = (parseInt(element[6].split('/')[2]) + parseInt(element[8])) + '-' + element[6].split('/')[1] + '-' + element[6].split('/')[0];
-          
+          const dU = element[8];if (element.length == 16) {
+            this.verifIfCorrect = true;
+            this.is21 = true;
+          }
+          if (element.length == 16) {
+            this.verifIfCorrect = true;
+            this.is21 = true;
+          }
+          if (element[18] == " " || element[18]==undefined) {
+            element[18] = "";
+          } else {
+            element[18] = "/api/localites/" + element[18];
+          }
+
+          // if (!this.is21) {
+
+          //   if (element[18] == " ") {
+          //     element[18] = "hdhd";
+          //   } else {
+          //     element[18] = "/api/localites/" + element[18];
+          //   }
+          // }
+          // console.log('this.is21 =>', this.is21);
+          console.log('element[18] =>', element[18]);
+          // console.log('element[18] bool => ', element[18].trim()=='');
+
 
           if (element[6] == undefined) {
             const dA = new Date();
@@ -218,41 +283,79 @@ export class ImmobilisationComponent implements OnInit {
 
           }
 
-          const obj = {
-            "libelle": element[5],
-            "numeroOrdre": element[0],
-            "code": element[1],
-            "compteImmo": element[2],
-            "compteAmort": element[3],
-            "emplacement": element[4],
-            "description": null,
-            "dateAcquisition": dA,
-            "dateMiseServ": dM,
-            "dureeUtilite": dU,
-            "taux": parseFloat(element[9]),
-            "valOrigine": parseFloat(element[10]),
-            "dotation": parseFloat(element[11]),
-            "cumulAmortiss": parseFloat(element[12]),
-            "vnc": parseFloat(element[13]),
-            "etat": element[14],
-            "inventaire": "/api/inventaires/" + this.idCurrentInv,
-            "entreprise": "/api/entreprises/" + this.idCurrentEse,
+          if (element[18] == '') {
+            const obj = {
+              "libelle": element[5],
+              "numeroOrdre": element[0],
+              "code": element[1],
+              "compteImmo": element[2],
+              "compteAmort": element[3],
+              "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
+              "description": null,
+              "dateAcquisition": dA,
+              "dateMiseServ": dM,
+              "dureeUtilite": dU,
+              "taux": parseFloat(element[9].trim()),
+              "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
+              "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
+              "cumulAmortiss": parseFloat(element[12].split(',')[0] + element[12].split(',')[1]),
+              "vnc": parseFloat(element[13].split(',')[0] + element[13].split(',')[1]),
+              "etat": this.is21 ? element[16] : element[14],
+              "inventaire": "/api/inventaires/" + this.idCurrentInv,
+              "entreprise": "/api/entreprises/" + this.idCurrentEse,
 
+            }
+            this.immoService.postImmobilisation(obj).then((e) => {
+              if (e.id != null) {
+                if (index == this.data.length - 2) {
+                  this.showNotification('bg-success', 'Enregistré', 'top', 'center')
+                  this.getImmos();
+                }
+              } else {
+                this.showNotification('bg-red', 'Veuillez entrez un fichier des immobilisation compatible avec notre template', 'top', 'center')
+              }
+            });
+          } else {
+            const obj = {
+              "libelle": element[5],
+              "numeroOrdre": element[0],
+              "code": element[1],
+              "compteImmo": element[2],
+              "compteAmort": element[3],
+              "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
+              "description": null,
+              "dateAcquisition": dA,
+              "dateMiseServ": dM,
+              "dureeUtilite": dU,
+              "taux": parseFloat(element[9].trim()),
+              "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
+              "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
+              "cumulAmortiss": parseFloat(element[12].split(',')[0] + element[12].split(',')[1]),
+              "vnc": parseFloat(element[13].split(',')[0] + element[13].split(',')[1]),
+              "etat": this.is21 ? element[16] : element[14],
+              "inventaire": "/api/inventaires/" + this.idCurrentInv,
+              "entreprise": "/api/entreprises/" + this.idCurrentEse,
+              "localite": element[18]
+
+            }
+            this.immoService.postImmobilisation(obj).then((e) => {
+              if (e.id != null) {
+                if (index == this.data.length - 2) {
+                  this.showNotification('bg-success', 'Enregistré', 'top', 'center')
+                  this.getImmos();
+                }
+              } else {
+                this.showNotification('bg-red', 'Veuillez entrez un fichier des immobilisation compatible avec notre template', 'top', 'center')
+              }
+            });
           }
 
-          console.log(obj);
-          
 
-          this.immoService.postImmobilisation(obj).then((e) => {
-            if (e.id != null) {
-              if(index==this.data.length-2) {
-                this.showNotification('bg-success', 'Enregistré', 'top', 'center')
-                this.getImmos();
-              }
-            } else {
-              this.showNotification('bg-red', 'Veuillez entrez un fichier des immobilisation compatible avec notre template', 'top', 'center')
-            }
-          });
+
+          // console.log(obj);
+
+
+
 
         }
       } else {
@@ -269,17 +372,17 @@ export interface selectRowInterface {
   code: String;
   libelle: String;
   description: String;
-  compteAmort:String,
-  compteImmo : String ,
-  cumulAmortiss : number,
-  dateAcquisition :String,
-  dureeUtilite:String,
-  dateMiseServ : String,
-  dotation : number,
-  emplacement : String ,
-  etat :String ,
-  numeroOrdre :String ,
-  taux : number,
-  valOrigine :number,
-  vnc :number
+  compteAmort: String,
+  compteImmo: String,
+  cumulAmortiss: number,
+  dateAcquisition: String,
+  dureeUtilite: String,
+  dateMiseServ: String,
+  dotation: number,
+  emplacement: String,
+  etat: String,
+  numeroOrdre: String,
+  taux: number,
+  valOrigine: number,
+  vnc: number
 }

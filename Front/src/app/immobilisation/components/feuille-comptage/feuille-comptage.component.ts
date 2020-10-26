@@ -232,9 +232,7 @@ export class FeuilleComptageComponent implements OnInit {
     this.data=this.filteredData?.filter(immo=>
       (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
       this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
-      && (immo.endEtat==this.typeImmo || this.typeImmo==""))
-    
-    console.log(this.data);
+      && (immo.endEtat==this.typeImmo || this.typeImmo==""))    
   }
 
   filterDatatable(value) {
@@ -487,7 +485,7 @@ export class FeuilleComptageComponent implements OnInit {
     //https://www.ngdevelop.tech/export-to-excel-in-angular-6/
     let workbook = new Excel.Workbook();
     let worksheet = workbook.addWorksheet('Immobilisations'); //nouvelle feuille
-    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date inventoriée"]);//une ligne et les colonnes
+    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date de comptage"]);//une ligne et les colonnes
     worksheet.getColumn('A').width = 20;
     worksheet.getColumn('C').width = 30;
     worksheet.getColumn('B').width = 30;
@@ -553,7 +551,7 @@ export class FeuilleComptageComponent implements OnInit {
     
     workbook.xlsx.writeBuffer().then((data) => {
        let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });       
-       fs.saveAs(blob, `Fichier des immobilisations au ${this.getExcelDate()}.xlsx`);
+       fs.saveAs(blob, `Fichier des immobilisations ajustées au ${this.getExcelDate()}.xlsx`);
     });    
   }
   getExcelDate():string{

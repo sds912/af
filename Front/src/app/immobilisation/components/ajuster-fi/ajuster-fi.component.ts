@@ -175,7 +175,7 @@ export class AjusterFiComponent implements OnInit {
 
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
-    this.immoService.getImmobilisationByInventaire(this.idCurrentInv,'status=2').then((e) => {
+    this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
       this.allImmos = e?.filter(immo=>this.securityServ.superviseurAdjoint && immo.localite?.createur.id==this.myId || !this.securityServ.superviseurAdjoint);
       this.setData(this.allImmos)
       this.securityServ.showLoadingIndicatior.next(false);
@@ -191,7 +191,7 @@ export class AjusterFiComponent implements OnInit {
   }
 
   setData(data){
-    this.data=data
+    this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
     this.filteredData = data;
   }
 
@@ -252,6 +252,7 @@ export class AjusterFiComponent implements OnInit {
       (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
       this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
       && (immo.endEtat==this.typeImmo || this.typeImmo==""))
+      console.table(this.data);
   }
 
   filterDatatable(value) {
@@ -307,6 +308,7 @@ export class AjusterFiComponent implements OnInit {
     data.soumettre=soumettre
     data.approvStatus=soumettre?0:-1
     this.securityServ.showLoadingIndicatior.next(true);
+    data.valOrigine=data.valOrigine?data.valOrigine:0
     this.immoService.postImmobilisation(data).then(
       ()=>{
         this.showNotification('bg-success',soumettre?'Ajustement soumis pour approbation':'Enregistré','top','center')

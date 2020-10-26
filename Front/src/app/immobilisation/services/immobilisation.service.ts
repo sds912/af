@@ -37,7 +37,7 @@ export class ImmobilisationService {
   }
 
   deleteImmoByInventaire(id) {
-    return this.sharedService.deleteElement('/immobilisations/'+id);
+    return this.sharedService.getElement(`/immobilisations/delete/${id}/inventaire`);
   }
 }
  

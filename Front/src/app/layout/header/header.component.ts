@@ -28,6 +28,8 @@ export class HeaderComponent implements OnInit {
   @ViewChild('closeEseModal', { static: false }) closeEseModal;
   @ViewChild('closeKeyModal', { static: false }) closeKeyModal;
   @ViewChild('formDirective') private formDirective: NgForm;
+  @ViewChild('closeUnLockModal', { static: false }) closeUnLockModal;
+  
   isNavbarShow: boolean;
   imagePP=""
   editForm: FormGroup;
@@ -48,6 +50,12 @@ export class HeaderComponent implements OnInit {
   errorKey
   cle=null
   activCle=false
+  localites=[]
+  inventaires=[]
+  loc= null
+  inv= null
+  showCode=false
+  unLockCode=""
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -126,13 +134,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.setStartupStyles();
     this.initForm()
-    this.initForm3()
-
-    setTimeout(()=> {
-        /** Revoir il ne doit s afficher qu apres la connexion */
-        // this.openNotif?._elementRef?.nativeElement?.click();
-    },500);
-    
+    this.initForm3()    
     if(this.securityServ.isAuth){
       this.getCountNew()
       this.imgLink=this.sharedService.baseUrl +"/images/"
@@ -150,6 +152,41 @@ export class HeaderComponent implements OnInit {
           this.openKeyModal?.nativeElement.click()
         }
     },1000);
+  }
+
+  getCode(){
+    this.showCode=true
+    this.unLockCode=this.codeK(this.inv+"-"+this.loc,1)
+  }
+
+  getLastLoc(localites){
+    localites=localites.filter(loc=>loc.subdivisions.length==0)
+    return localites
+  }
+
+  codeK(base,nmbr){//ne pas mettre dans shared car il ne doit pas faire partie des modules lors d'un deploiement
+    const n=(parseInt(nmbr)*5+9999)+parseInt(base.split("-")[1])
+    const rdm=Math.floor(Math.random()*20)
+    const frst=this.sharedService.tabAZ(rdm)
+    const snd=this.sharedService.tabAZ(rdm+2)
+    const th=this.sharedService.tabAZ(rdm+5)
+    return frst+snd+th+"-"+n+"-"+rdm+"-"+(n*4+17)
+  }
+
+  getInv(){
+    const id=localStorage.getItem("currentEse")
+    if(id && (this.securityServ.superviseur || this.securityServ.superviseurGene)){
+      this.inventaireServ.getInventaireByEse(id).then(rep=>{
+        this.inventaires=rep?.reverse()
+        this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
+        this.inv=this.inventaires?.length>0?this.inventaires[0].id:null
+      })
+    }
+  }
+
+  invChange(idInv){
+    const inventaire=this.inventaires.find(inv=>inv.id==idInv)
+    this.localites=inventaire?inventaire.localites:[]
   }
 
   exportForMobile(){

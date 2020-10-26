@@ -294,7 +294,7 @@
                                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                         <mat-form-field class="example-full-width" appearance="outline">
                                                             <mat-label *ngIf="selectedRowData?.code" style="color: black;"> Durée d'utilité
-                                                                : {{(selectedRowData?.dureeUtilite.split('-')[0]-selectedRowData?.dateAcquisition.split('-')[0])}} ans</mat-label>
+                                                                : {{(selectedRowData?.dureeUtilite)}}</mat-label>
                                                             <input matInput formControlName="denomination">
                                                         </mat-form-field>
                                                     </div>

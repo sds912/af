@@ -15,7 +15,7 @@
                             </select>
                         </li>
                         <li class="ml-5">
-                            <button class="btn btn-success pt-0 pb-0" (click)="generateExcel()" title="Exporter le fichier des immobilisations au {{getExcelDate()}}">
+                            <button class="btn btn-success pt-0 pb-0" (click)="generateExcel()" title="Exporter le fichier des immobilisations ajustées au {{getExcelDate()}}">
                                 <mat-icon class="col-white">file_upload</mat-icon>
                             </button>
                         </li>
@@ -46,7 +46,7 @@
                                         </li>
                                         <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
                                                 <option value="" *ngIf="typeImmo!=''">Tous</option>
 
                                                 <option value="1">Bon état</option>
@@ -240,7 +240,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column  name="Date inventoriée" sortable="false" prop="dateLecture"
+                                    <ngx-datatable-column  name="Date de comptage" sortable="false" prop="dateLecture"
                                         [width]="140">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
@@ -342,7 +342,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column  name="Date de lecture" sortable="false" prop="dateLecture"
+                                    <ngx-datatable-column  name="Date de comptage" sortable="false" prop="dateLecture"
                                         [width]="140">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
