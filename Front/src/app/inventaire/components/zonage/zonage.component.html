@@ -15,11 +15,17 @@
                                         <mat-icon>add</mat-icon>
                                     </button>
                                     <button class="addInv" *ngIf="!subdivisions || subdivisions.length==0" mat-mini-fab disabled [title]="titleAdd" color="primary" aria-label="Example icon-button with a heart icon">
-                                            <mat-icon>add</mat-icon>
-                                        </button>
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                        
                                     <button class="addInv" data-toggle="modal" data-target="#Subdivision" data-backdrop="static" data-keyboard="false" [ngClass]="{'btn-add-sub': !securityServ.superviseurGene}"
                                         #subd mat-mini-fab title="Ajouter une subdivision" color="primary" aria-label="Example icon-button with a heart icon" (click)="initSub()" *ngIf="securityServ.superviseur || securityServ.superviseurGene">
                                         <mat-icon>reorder</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab  class="addLocaliteExcel" style="color: brown;" *ngIf="securityServ.superviseur || securityServ.superviseurGene" > 
+                                        <mat-icon style="color: white;">
+                                            cloud_upload
+                                        </mat-icon>
                                     </button>
                                 </li>
                             </ul>
