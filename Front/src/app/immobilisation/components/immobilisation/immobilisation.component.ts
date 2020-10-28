@@ -215,6 +215,7 @@ export class ImmobilisationComponent implements OnInit {
 
       console.log(this.data);
 
+      // Verification
 
       for (let index = 1; index < this.data.length - 1; index++) {
         const element = this.data[index];
@@ -231,8 +232,6 @@ export class ImmobilisationComponent implements OnInit {
       }
 
 
-
-      console.log(this.verifIfCorrect);
       
 
       if (this.verifIfCorrect && this.idCurrentInv != undefined) {
@@ -246,6 +245,7 @@ export class ImmobilisationComponent implements OnInit {
             this.verifIfCorrect = true;
             this.is21 = true;
           }
+
           if (element.length == 16) {
             this.verifIfCorrect = true;
             this.is21 = true;
@@ -255,19 +255,6 @@ export class ImmobilisationComponent implements OnInit {
           } else {
             element[18] = "/api/localites/" + element[18];
           }
-
-          // if (!this.is21) {
-
-          //   if (element[18] == " ") {
-          //     element[18] = "hdhd";
-          //   } else {
-          //     element[18] = "/api/localites/" + element[18];
-          //   }
-          // }
-          // console.log('this.is21 =>', this.is21);
-          console.log('element[18] =>', element[18]);
-          // console.log('element[18] bool => ', element[18].trim()=='');
-
 
           if (element[6] == undefined) {
             const dA = new Date();
@@ -352,7 +339,6 @@ export class ImmobilisationComponent implements OnInit {
 
 
 
-          // console.log(obj);
 
 
 
