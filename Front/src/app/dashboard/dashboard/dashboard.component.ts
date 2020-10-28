@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { trigger, transition, useAnimation } from '@angular/animations';
+import { SecurityService } from 'src/app/shared/service/security.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,18 +9,23 @@ import { trigger, transition, useAnimation } from '@angular/animations';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  role: string;
   dataEtat: any;
   dataEtatOptions: any;
   plannings: any[];
+  superviseur:boolean
+  superviseurGene:boolean
+  superviseurAdjoint:boolean
+  chefEquipe:boolean
+  membreInv:boolean
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,public securityServ:SecurityService) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe((res: any) => {
-      this.role = res.role;
-    });
-
+    this.superviseur=this.securityServ.superviseur
+    this.superviseurGene=this.securityServ.superviseurGene
+    this.superviseurAdjoint=this.securityServ.superviseurAdjoint
+    this.chefEquipe=this.securityServ.chefEquipe
+    this.membreInv=this.securityServ.membreInv
     this.dataEtat = {
       labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
       datasets: [

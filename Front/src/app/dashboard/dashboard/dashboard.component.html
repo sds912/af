@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="page-container">
             <div class="p-grid p-mb-3">
-                <div [ngClass]="{'p-col-12 p-col-md-12 p-col-lg-12': role != 'superviseur-general', 'p-col-9 p-col-md-9 p-col-lg-9': role == 'superviseur-general'}">
+                <div [ngClass]="{'p-col-12 p-col-md-12 p-col-lg-12': !superviseurGene && !superviseur, 'p-col-9 p-col-md-9 p-col-lg-9':superviseurGene || superviseur}">
                     <div class="p-grid">
                         <div class="p-col-12 p-col-md-12">
                             <div class="p-grid data-zone">
@@ -32,7 +32,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="p-col-12 p-col-md-12" *ngIf="role == 'superviseur-general'">
+                        <div class="p-col-12 p-col-md-12" *ngIf="superviseurGene || superviseur">
                             <p-card styleClass="bg-gray card-instructions">
                                 <div class="p-grid">
                                 <div class="p-col-12 p-md-5 p-lg-5 p-my-auto">
@@ -89,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="role == 'superviseur-general'" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
+                <div *ngIf="superviseurGene || superviseur" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
                     <p-card header="Le nombre d'inventaire clôturé" styleClass="card-inventaire">
                         <circle-progress
                             [percent]="65"
@@ -113,10 +113,10 @@
             </div>
         
             <div class="p-grid p-mb-5">
-                <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6': role != 'superviseur-general', 'p-col-12 p-col-md-12 p-col-lg-12': role == 'superviseur-general'}">
-                    <p-card styleClass="bg-gray card-bar-chart " *ngIf="role == 'superviseur-general' || role == 'superviseur-adjoint' || role == 'chef-equipe'">
+                <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6': !superviseurGene && !superviseur, 'p-col-12 p-col-md-12 p-col-lg-12':superviseurGene || superviseur}">
+                    <p-card styleClass="bg-gray card-bar-chart " *ngIf="superviseurGene || superviseur || superviseurAdjoint || chefEquipe">
                         <div class="p-grid">
-                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6 p-mt-5': role == 'superviseur-general', 'p-col-12 p-col-md-12 p-col-lg-12 p-mt-6': role != 'superviseur-general'}">
+                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6 p-mt-5':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12 p-mt-6': !superviseurGene && !superviseur}">
                                 <div class="progress-bar p-mb-4">
                                     <p-progressBar class="customProgress bg-orange" [value]="40" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations scannées (IS)</small>
@@ -137,7 +137,7 @@
                                     <small>Les immobilisations non retrouvées (ISNR)</small>
                                 </div>
                             </div>
-                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6': role == 'superviseur-general', 'p-col-12 p-col-md-12 p-col-lg-12': role != 'superviseur-general'}">
+                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12': !superviseurGene && !superviseur}">
                                 <div class="p-grid bar-chart">
                                     <div class="p-col-8 p-col-md-8">
                                         <p-chart type="bar" [data]="dataEtat" [options]="dataEtatOptions"></p-chart>
@@ -153,12 +153,12 @@
                         </div>
                     </p-card>
         
-                    <div class="card-img" *ngIf="role == 'membre-equipe'">
+                    <div class="card-img" *ngIf="membreInv">
                         <img src="assets/images/point-de-vente.png" class="p-img-responsive" alt="Point de vente">
                     </div>
                 </div>
                 <div class="p-col-6 p-col-md-6 p-col-lg-6">
-                    <p-card header="Planning de comptage du jour" styleClass="bg-gray card-plannings" *ngIf="role != 'superviseur-general'">
+                    <p-card header="Planning de comptage du jour" styleClass="bg-gray card-plannings" *ngIf="!superviseurGene && !superviseur">
                         <p-table [value]="plannings" styleClass="p-datatable-striped">
                             <ng-template pTemplate="header">
                                 <tr>
