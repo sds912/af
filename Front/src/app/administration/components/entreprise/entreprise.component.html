@@ -16,8 +16,10 @@
                                     <ul class="header-buttons m-r-20" *ngIf="securityServ.admin">
                                         <li>
                                             <div class="icon-button-demo">
-                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" (click)='addRow()'>
+                                                <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" (click)='addRow()' *ngIf="entiteRest>0">
+                                                    <mat-icon class="col-white">add</mat-icon>
+                                                </button>
+                                                <button mat-mini-fab color="primary" title="Maximum atteint" disabled *ngIf="entiteRest<=0">
                                                     <mat-icon class="col-white">add</mat-icon>
                                                 </button>
                                             </div>
@@ -76,7 +78,7 @@
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" (click)='update(row)'>
+                                                    data-target="#editModal" (click)='update(row)' *ngIf="securityServ.admin">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
                                             </span>
@@ -165,7 +167,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                                                             <mat-form-field class="example-full-width"
                                                                 appearance="outline">
                                                                 <mat-label>Sigle usuel</mat-label>
@@ -173,17 +175,11 @@
                                                                 <mat-icon matSuffix>text_format</mat-icon>
                                                                 <mat-error
                                                                     *ngIf="editForm.get('sigleUsuel').hasError('required')">
-                                                                    La dénomination est requise
+                                                                    Le sigle usuel est requise
                                                                 </mat-error>
                                                             </mat-form-field>
                                                         </div>
-                                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-                                                            <mat-form-field class="example-full-width"
-                                                                appearance="outline">
-                                                                <mat-label>Capital</mat-label>
-                                                                <input matInput type="number" formControlName="capital">
-                                                            </mat-form-field>
-                                                        </div>
+                                                        
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">

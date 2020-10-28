@@ -34,7 +34,7 @@ export class SharedService {
       return 0;
     })
   }
-  trierData(tab,param,ordre=1){//trie objet, si decroissant ordre=-1 ex: this.trier(clients,'nombre',-1)
+  trierDate(tab,param,ordre=1){//trie objet, si decroissant ordre=-1 ex: this.trier(clients,'nombre',-1)
     return tab.sort((a,b)=>{
       if (new Date(a[param]) > new Date(b[param])) return 1*ordre;
       else if (new Date(b[param]) > new Date(a[param])) return -1*ordre;
@@ -60,7 +60,7 @@ export class SharedService {
     const snd=this.tabAZ(rdm+2)
     const th=this.tabAZ(rdm+5)
     const n=(parseInt(k.split("-")[1])-parseInt(base.split("-")[1])-9999)/5
-    const isValid=(parseInt(k.split("-")[3])-9)/3==parseInt(k.split("-")[1])
+    const isValid=(parseInt(k.split("-")[3])-17)/4==parseInt(k.split("-")[1])
     if(frst+snd+th==k.split("-")[0] && Number.isInteger(n) && n>0 && isValid){
       return n
     }
@@ -118,7 +118,7 @@ export class SharedService {
   removeCharAtIndex(index, str) {//index commence par 1
     return str.substring(0, index - 1) + str.substring(index, str.length)
   }
-  postElement(data:any,url:string){//return une promise
+  postElement(data:any,url:string,refreshToken=true){//return une promise
     return new Promise<any>(
       (resolve,reject)=>{
       this.httpClient
@@ -129,6 +129,8 @@ export class SharedService {
               reject(err)
             }else
               resolve(rep);
+
+            //if(refreshToken && localStorage.getItem('refreshToken')) this.refreshToken()
           },
           error=>{
             console.log(error);
@@ -148,8 +150,9 @@ export class SharedService {
       (resolve,reject)=>{
       this.httpClient
         .get<any>(this.urlBack+url).subscribe(
-          rep=>{
+          rep=>{  
             resolve(rep);
+            //if(localStorage.getItem('refreshToken')) this.refreshToken()
           },
           error=>{
             console.log(error);
@@ -160,6 +163,17 @@ export class SharedService {
           }
         );
       })
+  }
+  refreshToken(){
+    if(localStorage.getItem('refreshToken')){
+      const rt=localStorage.getItem('refreshToken')
+      const data={refresh_token:rt}
+      this.postElement(data,"/token/refresh",false).then(rep=>{
+        localStorage.setItem('token', rep.token);
+        localStorage.setItem('refreshToken', rep.refresh_token);
+        console.log(rep)
+      })
+    }
   }
   putElement(data:any,url:string){//return une promise
     return new Promise<any>(

@@ -28,19 +28,19 @@ class Inventaire
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read","mobile_inv_read"})
      */
     private $fin;
 
@@ -126,16 +126,27 @@ class Inventaire
     private $dateInv;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="inventaire")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
      */
-    private $lectures;
+    private $status;/** status : open et close */
+    
+    /**
+     * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="inventaire")
+    */
+    private $affectations;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaire")
+     */
+    private $immobilisations;
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
-        $this->lectures = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -354,20 +365,6 @@ class Inventaire
         }
         return $this;
     }
-    public function addAllZones($zones){
-        $this->zones = new ArrayCollection();
-        for($i=0;$i<count($zones);$i++){
-            $this->addZone($zones[$i]);
-        }
-        return $this;
-    }
-    public function addAllSousZones($sousZones){
-        $this->sousZones = new ArrayCollection();
-        for($i=0;$i<count($sousZones);$i++){
-            $this->addSousZone($sousZones[$i]);
-        }
-        return $this;
-    }
     public function addAllPresentR($membres){
         $this->presentsReunion = new ArrayCollection();
         for($i=0;$i<count($membres);$i++){
@@ -400,31 +397,78 @@ class Inventaire
         return $this;
     }
 
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
+    public function getStatus(): ?string
     {
-        return $this->lectures;
+        return $this->status;
     }
 
-    public function addLecture(Lecture $lecture): self
+    public function setStatus(?string $status): self
     {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setInventaire($this);
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+    * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setInventaire($this);
         }
 
         return $this;
     }
 
-    public function removeLecture(Lecture $lecture): self
+    public function removeAffectation(Affectation $affectation): self
     {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
             // set the owning side to null (unless already changed)
-            if ($lecture->getInventaire() === $this) {
-                $lecture->setInventaire(null);
+            if ($affectation->getInventaire() === $this) {
+                $affectation->setInventaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function initLocalite(){
+        $this->localites = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(Immobilisation $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setInventaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(Immobilisation $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getInventaire() === $this) {
+                $immobilisation->setInventaire(null);
             }
         }
 

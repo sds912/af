@@ -3,6 +3,11 @@ import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener } from '
 import { ROUTES } from './sidebar-items';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
+import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
+import { saveAs } from 'file-saver';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { ImmobilisationService } from 'src/app/immobilisation/services/immobilisation.service';
 
 declare const Waves: any;
 
@@ -24,13 +29,20 @@ export class SidebarComponent implements OnInit {
   imagePP=""
   fileToUploadPp:File=null;
   myRole=''
+  dateInv=null
+  inputMobilFile=null
+  idCurrentEse=null
+  countApprov=0
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
     public elementRef: ElementRef,
     public sharedService:SharedService,//ici laisser à public à cause du html
-    public securityServ:SecurityService
-
+    public securityServ:SecurityService,
+    private _snackBar: MatSnackBar,
+    private inventaireServ:InventaireService,
+    private immoServ:ImmobilisationService,
+    private router:Router
   ) {}
   @HostListener('window:resize', ['$event'])
   windowResizecall(event) {
@@ -49,6 +61,9 @@ export class SidebarComponent implements OnInit {
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
     this.myRole=localStorage.getItem("roles")
+    this.idCurrentEse = localStorage.getItem("currentEse")
+    this.getCountImmoToApprovByEse()
+    this.immoServ.approvChange.subscribe(rep=>this.getCountImmoToApprovByEse())
   }
   isGranted(menu){
     let roles=menu.roles
@@ -196,5 +211,79 @@ export class SidebarComponent implements OnInit {
       this.renderer.removeClass(this.document.body, 'side-closed-hover');
       this.renderer.addClass(this.document.body, 'submenu-closed');
     }
+  }
+  showNotification(colorName, text, placementFrom, placementAlign,time=2000) {
+    this._snackBar.open(text, '', {
+      duration: time,
+      verticalPosition: placementFrom,
+      horizontalPosition: placementAlign,
+      panelClass: [colorName,'color-white']
+    });
+  }
+  exportForMobile(){
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
+      rep=>{
+        const blob = new Blob([JSON.stringify(rep)], {type : 'application/json'});
+        saveAs(blob, 'mobile.json');
+        this.securityServ.showLoadingIndicatior.next(false)
+      },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
+  }
+  importMobileFile(event){
+    this.dateInv=null
+    let selectedFile = event.target.files[0];
+    this.inputMobilFile=null
+    const fileReader = new FileReader();
+    fileReader.readAsText(selectedFile, "UTF-8");
+    fileReader.onload = () => {
+      const obj:string=typeof fileReader.result=="string"?fileReader.result:""
+      this.saveData(JSON.parse(obj))
+    }
+    fileReader.onerror = (error) => {
+      console.log(error);
+    }
+  }
+  saveData(data){
+    console.log(data);
+    this.getInventaireById(data.inventaire.id,data)
+  }
+  getInventaireById(id,data){
+    if(id){
+      this.inventaireServ.getInventaireById(id).then(
+        rep=>{
+          this.thraitement(rep,data)
+        },
+        error=>{
+          console.log(error);  
+          this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+        }
+      )
+      return ''
+    }
+    this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+  }
+  thraitement(rep,data){
+    this.dateInv=rep.dateInv
+    this.idCurrentEse = localStorage.getItem("currentEse")//laisser ici
+    console.log(rep,this.idCurrentEse);
+    if(rep.entreprise.id!=this.idCurrentEse){
+      this.showNotification('bg-red',"Cet inventaire n'est pas rattaché à l'entité dans lequel vous êtes connecté.",'top','center',7000)
+    }else if(rep.status=='close'){
+      this.showNotification('bg-red',"Cet inventaire est déja cloturé.",'top','center',7000)
+    }else{
+      this.inventaireServ.sendMobileData(data).then(
+        ()=>{
+          this.showNotification('bg-success',"Enregistré",'top','center',5000)
+          this.router.navigate(['/feuille/comptage/reload'])
+        },error=>this.showNotification('bg-red',error,'top','center',5000)
+      )
+    }
+  }
+  async getCountImmoToApprovByEse(){
+    this.countApprov = await this.immoServ.getCountImmoToApprovByEse(localStorage.getItem("currentEse"))    
   }
 }

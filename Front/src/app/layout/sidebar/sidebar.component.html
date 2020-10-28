@@ -36,7 +36,7 @@
                             [hidden]="!isGrantedSubM(sidebarItem,i)">
                             <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
                                 (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
-                                {{sidebarSubItem.title}}
+                                {{sidebarSubItem.title}} <span *ngIf="sidebarSubItem.title=='Ajuster FI' && securityServ.superviseurGene && countApprov>0" class="pl-2 pr-2" style="border-radius: 50%;border: 1px solid red;font-size: 11px;background-color: red;color: white;">{{countApprov}}</span>
                             </a>
                             <!-- Third level menu -->
                             <ul class="collapse" *ngIf="sidebarSubItem.submenu.length > 0"
@@ -51,6 +51,20 @@
                         </li>
                     </ul>
                 </li>
+                <!-- First level menu -->
+                <li  *ngIf="securityServ.superviseur||securityServ.superviseurGene">
+                    <a [routerLink]="null" (click)="exportForMobile()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span class="hide-menu">Exporter</span>
+                    </a>
+                </li>
+                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint">
+                    <a [routerLink]="null" (click)="fileMo.click()">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span class="hide-menu">Importer</span>
+                    </a>
+                </li>
+                <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>
         </div>
         <!-- #Menu -->

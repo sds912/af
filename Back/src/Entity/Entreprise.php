@@ -47,31 +47,31 @@ class Entreprise
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $republique;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $ville;
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="entreprise")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $localites;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_users_read"})
      */
     private $users;
 
@@ -94,15 +94,21 @@ class Entreprise
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $subdivisions = [];
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="entreprise")
+     */
+    private $immobilisations;
 
     public function __construct()
     {
         $this->localites = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -302,6 +308,37 @@ class Entreprise
     public function setSubdivisions(?array $subdivisions): self
     {
         $this->subdivisions = $subdivisions;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(Immobilisation $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(Immobilisation $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getEntreprise() === $this) {
+                $immobilisation->setEntreprise(null);
+            }
+        }
 
         return $this;
     }

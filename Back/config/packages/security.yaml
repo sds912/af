@@ -18,6 +18,12 @@ security:
             pattern:  ^/api$
             stateless: true
             anonymous: true
+
+        refresh:
+            pattern: ^/api/token/refresh #dans route.yaml
+            stateless: true
+            anonymous: true
+
         login:
             pattern:  ^/api/login
             user_checker : app.user_checker
@@ -27,10 +33,6 @@ security:
                 check_path:               /api/login
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-        refresh:
-            pattern: ^/api/token/refresh #dans route.yaml
-            stateless: true
-            anonymous: true
 
         api:
             pattern:   ^/api
@@ -52,5 +54,5 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/users/lock, roles: [ROLE_Amin,ROLE_SuperAdmin] }
-        - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/profile, roles: ROLE_USER }

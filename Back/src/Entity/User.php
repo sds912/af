@@ -75,19 +75,19 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user_read"})
+     * @Groups({"user_read","mobile_users_read"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","mobile_users_read","affectation_read"})
      */
     private $roles = [];
 
@@ -105,7 +105,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
      */
     private $nom;
 
@@ -123,13 +123,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif"})
+     * @Groups({"user_read","inv_read","entreprise_read","list_userNotif","affectation_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","entreprise_read"})
+     * @Groups({"user_read","entreprise_read","mobile_users_read"})
      */
     private $status;
 
@@ -146,11 +146,6 @@ class User implements UserInterface
     private $menu = [];
 
     /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="lecteur")
-     */
-    private $lectures;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class)
      * @Groups({"user_read"})
      */
@@ -161,12 +156,70 @@ class User implements UserInterface
      */
     private $localitesCrees;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="user")
+     */
+    private $affectations;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"matricule_read"})
+     */
+    private $matricule;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="lecteur")
+     */
+    private $scanImmos;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $cle;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"user_read"})
+     */
+    private $nombre;
+
+    private $myLoAffectes;//for mobile file before add groups user_idLoc look in SharedController getAffectLocOf
+
+    /**
+    * @Groups({"user_idLoc"})
+    */
+    private $idOfMyLoAffectes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="ajusteur")
+     */
+    private $mesAjustements;
+
     public function __construct()
     {
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
         $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
+        $this->scanImmos = new ArrayCollection();
+        $this->mesAjustements = new ArrayCollection();
+    }
+
+    /**
+     * @Groups({"mobile_users_read"})
+     */
+    public function getEntreprisess()
+    {
+        /** Only for mobile when we get user by entreprise we need all entreprises of user (circular ref) */
+        $eses=$this->entreprises;
+        $tab=[];
+        foreach($eses as $ese){
+            $obj=["id"=>$ese->getId(),"denomination"=>$ese->getDenomination()];
+            array_push($tab,$obj);
+        }
+        return $tab;
     }
 
     public function getId(): ?int
@@ -384,37 +437,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
-    {
-        return $this->lectures;
-    }
-
-    public function addLecture(Lecture $lecture): self
-    {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setLecteur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLecture(Lecture $lecture): self
-    {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
-            // set the owning side to null (unless already changed)
-            if ($lecture->getLecteur() === $this) {
-                $lecture->setLecteur(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCurrentEse(): ?Entreprise
     {
         return $this->currentEse;
@@ -452,6 +474,153 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($localitesCree->getCreateur() === $this) {
                 $localitesCree->setCreateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getUser() === $this) {
+                $affectation->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(?string $matricule): self
+    {
+        $this->matricule = $matricule;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getScanImmos(): Collection
+    {
+        return $this->scanImmos;
+    }
+
+    public function addScanImmo(Immobilisation $scanImmo): self
+    {
+        if (!$this->scanImmos->contains($scanImmo)) {
+            $this->scanImmos[] = $scanImmo;
+            $scanImmo->setLecteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScanImmo(Immobilisation $scanImmo): self
+    {
+        if ($this->scanImmos->contains($scanImmo)) {
+            $this->scanImmos->removeElement($scanImmo);
+            // set the owning side to null (unless already changed)
+            if ($scanImmo->getLecteur() === $this) {
+                $scanImmo->setLecteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCle(): ?string
+    {
+        return $this->cle;
+    }
+
+    public function setCle(?string $cle): self
+    {
+        $this->cle = $cle;
+
+        return $this;
+    }
+
+    public function getNombre(): ?int
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?int $nombre): self
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    public function getMyLoAffectes(){
+        return $this->myLoAffectes;
+    }
+
+    public function setMyLoAffectes($myLoAffectes){
+        $this->myLoAffectes=$myLoAffectes;
+        return $this;
+    }
+
+    public function getIdOfMyLoAffectes(){
+        return $this->idOfMyLoAffectes;
+    }
+    
+    public function setIdOfMyLoAffectes($idOfMyLoAffectes){
+        $this->idOfMyLoAffectes=$idOfMyLoAffectes;
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getMesAjustements(): Collection
+    {
+        return $this->mesAjustements;
+    }
+
+    public function addMesAjustement(Immobilisation $mesAjustement): self
+    {
+        if (!$this->mesAjustements->contains($mesAjustement)) {
+            $this->mesAjustements[] = $mesAjustement;
+            $mesAjustement->setAjusteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMesAjustement(Immobilisation $mesAjustement): self
+    {
+        if ($this->mesAjustements->contains($mesAjustement)) {
+            $this->mesAjustements->removeElement($mesAjustement);
+            // set the owning side to null (unless already changed)
+            if ($mesAjustement->getAjusteur() === $this) {
+                $mesAjustement->setAjusteur(null);
             }
         }
 

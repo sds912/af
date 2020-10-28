@@ -31,13 +31,13 @@ class EventSubscriber implements EventSubscriberInterface
             $response = new JsonResponse($data);
             $event->setResponse($response);
         }
-        else{
-            $data = [
-                'message' => $exception->getMessage()
-            ];
-            $response = new JsonResponse($data);
-            $event->setResponse($response);
-        }
+        // else{
+        //     $data = [
+        //         'message' => $exception->getMessage()
+        //     ];
+        //     $response = new JsonResponse($data);
+        //     $event->setResponse($response);
+        // }
     }
 
     public static function getSubscribedEvents()

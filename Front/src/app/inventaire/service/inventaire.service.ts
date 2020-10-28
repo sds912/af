@@ -17,11 +17,17 @@ export class InventaireService {
   getLocalite(id){
     return this.sharedService.getElement("/localites/"+id)
   }
+  getLocalitesOfEse(id){
+    return this.sharedService.getElement("/localites?entreprise.id="+id)
+  }
   deleteLoc(id){
     return this.sharedService.deleteElement("/localites/"+id)
   }
   getInventaire(){
     return this.sharedService.getElement("/inventaires")
+  }
+  getInventaireById(id){
+    return this.sharedService.getElement("/inventaires/"+id)
   }
   getInventaireByEse(id){
     return this.sharedService.getElement("/inventaires?entreprise.id="+id)
@@ -98,5 +104,20 @@ export class InventaireService {
       return this.sharedService.postElement(formData,"/inventaires/"+data.id)//si put avec form data tableau
     }
     return this.sharedService.postElement(formData,"/inventaires")
+  }
+  getDataForMobile(id){
+    return this.sharedService.getElement("/mobile/data/"+id)
+  }
+  getStatusInstr(id){
+    return this.sharedService.getElement("/approve_insts/status/inventaire/"+id)
+  }
+  approvInstr(id){
+    return this.sharedService.getElement("/approve_insts/inventaire/"+id)
+  }
+  sendMobileData(data){
+    return this.sharedService.postElement(data,"/mobile/data")
+  }
+  addCode(data){
+    return this.sharedService.postElement(data,"/code/defectueux")
   }
 }

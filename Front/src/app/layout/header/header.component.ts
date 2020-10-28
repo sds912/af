@@ -9,7 +9,8 @@ import { FormGroup, FormBuilder, FormControl, Validators, NgForm } from '@angula
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { LayoutService } from '../layout.service';
 const document: any = window.document;
-
+import { saveAs } from 'file-saver';
+import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -19,11 +20,16 @@ export class HeaderComponent implements OnInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
+  @ViewChild('openKeyModal', { static: true }) openKeyModal;
   @ViewChild('openEseModal', { static: true }) openEseModal;
+  @ViewChild('openNotif' , {static:true}) openNotif;
 
   @ViewChild('closeInfoModal', { static: false }) closeInfoModal;
   @ViewChild('closeEseModal', { static: false }) closeEseModal;
+  @ViewChild('closeKeyModal', { static: false }) closeKeyModal;
   @ViewChild('formDirective') private formDirective: NgForm;
+  @ViewChild('closeUnLockModal', { static: false }) closeUnLockModal;
+  
   isNavbarShow: boolean;
   imagePP=""
   editForm: FormGroup;
@@ -41,6 +47,15 @@ export class HeaderComponent implements OnInit {
   countNotif=6
   paginateN=false
   news=0
+  errorKey
+  cle=null
+  activCle=false
+  localites=[]
+  inventaires=[]
+  loc= null
+  inv= null
+  showCode=false
+  unLockCode=""
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -51,7 +66,8 @@ export class HeaderComponent implements OnInit {
     public securityServ:SecurityService,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
-    private layouteSev:LayoutService
+    private layouteSev:LayoutService,
+    private inventaireServ:InventaireService
     ){
       
   }
@@ -116,11 +132,9 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.isNavbarShow = true;
     this.setStartupStyles();
     this.initForm()
-    this.initForm3()
-    
+    this.initForm3()    
     if(this.securityServ.isAuth){
       this.getCountNew()
       this.imgLink=this.sharedService.baseUrl +"/images/"
@@ -129,13 +143,66 @@ export class HeaderComponent implements OnInit {
     }
     setTimeout(()=>{
         if(!this.securityServ.securePwd){
-          this.openPasswordModal.nativeElement.click()
+          this.openPasswordModal?.nativeElement.click()
         }
         if(!localStorage.getItem("currentEse") && !this.securityServ.admin){
-          this.openEseModal.nativeElement.click()
+          this.openEseModal?.nativeElement.click()
+        }
+        if(this.securityServ.activCle){
+          this.openKeyModal?.nativeElement.click()
         }
     },1000);
   }
+
+  getCode(){
+    this.showCode=true
+    this.unLockCode=this.codeK(this.inv+"-"+this.loc,1)
+  }
+
+  getLastLoc(localites){
+    localites=localites.filter(loc=>loc.subdivisions.length==0)
+    return localites
+  }
+
+  codeK(base,nmbr){//ne pas mettre dans shared car il ne doit pas faire partie des modules lors d'un deploiement
+    const n=(parseInt(nmbr)*5+9999)+parseInt(base.split("-")[1])
+    const rdm=Math.floor(Math.random()*20)
+    const frst=this.sharedService.tabAZ(rdm)
+    const snd=this.sharedService.tabAZ(rdm+2)
+    const th=this.sharedService.tabAZ(rdm+5)
+    return frst+snd+th+"-"+n+"-"+rdm+"-"+(n*4+17)
+  }
+
+  getInv(){
+    const id=localStorage.getItem("currentEse")
+    if(id && (this.securityServ.superviseur || this.securityServ.superviseurGene)){
+      this.inventaireServ.getInventaireByEse(id).then(rep=>{
+        this.inventaires=rep?.reverse()
+        this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
+        this.inv=this.inventaires?.length>0?this.inventaires[0].id:null
+      })
+    }
+  }
+
+  invChange(idInv){
+    const inventaire=this.inventaires.find(inv=>inv.id==idInv)
+    this.localites=inventaire?inventaire.localites:[]
+  }
+
+  exportForMobile(){
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
+      rep=>{
+        const blob = new Blob([JSON.stringify(rep)], {type : 'application/json'});
+        saveAs(blob, 'mobile.json');
+        this.securityServ.showLoadingIndicatior.next(false)
+      },message=>{
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red',message,'top','right')
+      }
+    )
+  }
+
   showAllNotif(){
     this.paginateN=false
     this.getNotif()
@@ -250,7 +317,7 @@ export class HeaderComponent implements OnInit {
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         this.securityServ.user.currentEse=rep.currentEse
-        this.showNotification('bg-success',"Enregistrer",'top','center')
+        //this.showNotification('bg-success',"Enregistrer",'top','center')
         this.closeEseModal.nativeElement.click();
         localStorage.setItem("currentEse",id)
         setTimeout(()=>{window.location.reload()},1000);
@@ -261,9 +328,9 @@ export class HeaderComponent implements OnInit {
     )
   }
 
-  showNotification(colorName, text, placementFrom, placementAlign) {
+  showNotification(colorName, text, placementFrom, placementAlign,duration=2000) {
     this._snackBar.open(text, '', {
-      duration: 2000,
+      duration: duration,
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: [colorName,'color-white']
@@ -385,5 +452,34 @@ export class HeaderComponent implements OnInit {
         console.log(message)
       }
     )
+  }
+  onSubmitCle(){
+    this.errorKey=true
+    const deco=this.sharedService.decok(this.securityServ.base,this.cle)
+    if(deco){
+      this.errorKey=false
+      this.securityServ.showLoadingIndicatior.next(true);
+      const data={nombre:deco,cle:this.cle}
+      this.securityServ.activKey(data).then(
+        rep=>{
+          //this.closeModal()
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-success',rep.message,'top','center',5000)
+          this.closeKeyModal.nativeElement.click();
+          setTimeout(()=>window.location.reload(),6000)
+        },
+        message=>{
+          this.securityServ.showLoadingIndicatior.next(false);
+          this.showNotification('bg-danger',message,'top','center')
+        }
+      )    
+    }
+    else{
+      this.showNotification('bg-danger','Clé non valide','bottom','center')
+    }
+  }
+  activNewKey(){
+    this.activCle=true
+    this.cle=null
   }
 }

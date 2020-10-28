@@ -44,7 +44,7 @@
 .inv .mat-form-field-outline-start, 
 .inv .mat-form-field-outline-gap, 
 .inv .mat-form-field-outline-end{
-    color: black !important;
+    color: #9933FF !important;
     border-width: 2px !important
 }
 .zonage .mat-chip-list-wrapper{
@@ -54,3 +54,16 @@
 .pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
     background-color: #f15381 !important;
 }
+
+.pick-loc .mat-checkbox-disabled .mat-checkbox-background, 
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #979596ef !important;
+}
+
+.new-immo .mat-form-field-outline-start, 
+.new-immo .mat-form-field-outline-gap, 
+.new-immo .mat-form-field-outline-end{
+    color: #28a745 !important;
+}
+
+.breadcrumb > li + li:before{display: none;}

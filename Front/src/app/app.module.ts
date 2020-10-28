@@ -71,7 +71,7 @@ monthYearA11yLabel: 'MMMM YYYY',
     RightSidebarComponent,
     SimpleDialogComponent,
     DialogformComponent,
-    BottomSheetOverviewExampleSheet
+    BottomSheetOverviewExampleSheet,
   ],
   imports: [
     BrowserModule,
@@ -122,7 +122,7 @@ monthYearA11yLabel: 'MMMM YYYY',
   entryComponents: [
     SimpleDialogComponent,
     DialogformComponent,
-    BottomSheetOverviewExampleSheet
+    BottomSheetOverviewExampleSheet,
   ],
   bootstrap: [AppComponent]
 })

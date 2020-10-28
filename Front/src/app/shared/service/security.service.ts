@@ -10,6 +10,10 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
+  public base="FA-8552" //l'identifiant de l'application heberger chez le client
+  ne=null
+  entiteRest=0
+  activCle=false
   loading=false
   showLoadingIndicatior: Subject<boolean> = new Subject<boolean>();
   constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) {
@@ -28,6 +32,8 @@ export class SecurityService {
   superviseurGene=false
   superviseurAdjoint=false
   guest=false
+  chefEquipe=false
+  membreInv=false
   fonction=""
   securePwd=true
   sidebarItems: any[];
@@ -88,6 +94,14 @@ export class SecurityService {
         this.guest=true;
         this.fonction="Invité";
     }
+    else if(roles.search("ROLE_CE")>=0){
+      this.chefEquipe=true;
+      this.fonction="Chef d'équipe de comptage";
+    }
+    else if(roles.search("ROLE_MI")>=0){
+      this.membreInv=true;
+      this.fonction="Membre d'équipe de comptage";
+    }
   }
   logOut(){
     this.isAuth=false;
@@ -97,6 +111,8 @@ export class SecurityService {
     this.superviseurGene=false;
     this.superviseurAdjoint=false;
     this.guest=false;
+    this.chefEquipe=false;
+    this.membreInv=false;
     localStorage.clear();
     this.router.navigate(['/login']);
   }
@@ -137,8 +153,8 @@ export class SecurityService {
       localStorage.setItem('mercureAuthorization',rep[1])
       if(rep[2]==1){
         this.securePwd=false
-      }
-      //console.log(rep)
+      }      
+      this.getNE()//this.securePwd=false
     })
   }
   refreshToken(){
@@ -189,5 +205,20 @@ export class SecurityService {
   }
   updateCurentEse(data){
     return this.sharedService.putElement(data,"/users/"+localStorage.getItem("idUser"))
+  }
+  getNE(){
+    let cree=0
+    this.activCle=false
+    if(this.user.entreprises){
+      cree=this.user.entreprises.length
+    }
+    if(this.user?.cle){
+      this.ne=this.sharedService.decok(this.base,this.user.cle)
+    }
+    this.entiteRest=this.ne-cree
+    if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
+      this.securePwd=true//car l 'activation predomine sur le changement de mdp
+      this.activCle=true  
+    }
   }
 }
