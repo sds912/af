@@ -1,0 +1,183 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="page-container">
+            <div class="p-grid p-mb-3">
+                <div [ngClass]="{'p-col-12 p-col-md-12 p-col-lg-12': !superviseurGene && !superviseur, 'p-col-9 p-col-md-9 p-col-lg-9':superviseurGene || superviseur}">
+                    <div class="p-grid">
+                        <div class="p-col-12 p-col-md-12">
+                            <div class="p-grid data-zone">
+                                <div class="p-col-12 p-md-4 p-lg-4">
+                                    <p-card header="Zone comptées" styleClass="bg-green">
+                                        <h2>155</h2>
+                                        <div class="img-diagram">
+                                            <img src="assets/images/diagram.png" alt="">
+                                        </div>
+                                    </p-card>
+                                </div>
+                                <div class="p-col-12 p-md-4 p-lg-4">
+                                    <p-card header="Zone entamées" styleClass="bg-orange">
+                                        <h2>353</h2>
+                                        <div class="img-diagram">
+                                            <img src="assets/images/diagram.png" alt="">
+                                        </div>
+                                    </p-card>
+                                </div>
+                                <div class="p-col-12 p-md-4 p-lg-4">
+                                    <p-card header="Zone non comptées" styleClass="bg-red">
+                                        <h2>1 204</h2>
+                                        <div class="img-diagram">
+                                            <img src="assets/images/diagram.png" alt="">
+                                        </div>
+                                    </p-card>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-12 p-col-md-12" *ngIf="superviseurGene || superviseur">
+                            <p-card styleClass="bg-gray card-instructions">
+                                <div class="p-grid">
+                                <div class="p-col-12 p-md-5 p-lg-5 p-my-auto">
+                                    <p class="legend-border-left border-orange">
+                                        Le nombre de personnes ayant
+                                        pris connaissance des instructions
+                                    </p>
+                                    <p class="legend-border-left border-blue">
+                                        Le nombre de personnes n'ayant pas
+                                        pris connaissance des instructions
+                                    </p>
+                                </div>
+                                <div class="p-col-12 p-md-7 p-lg-7 circle-progress-bars">
+                                    <circle-progress class="circle-progress-bar p-mr-auto"
+                                        [percent]="75"
+                                        [radius]="100"
+                                        [outerStrokeColor]="'#0f74bc'"
+                                        [innerStrokeColor]="'#c6cacb'"
+                                        [outerStrokeWidth]="16"
+                                        [innerStrokeWidth]="16"
+                                        [space]="-16"
+                                        [backgroundColor]="'transparent'"
+                                        [animationDuration]="300"
+                                        [titleFontSize]="36"
+                                        [responsive]="false"
+                                        [showUnits]="false"
+                                        [showSubtitle]="false"
+                                        [showZeroOuterStroke]="true"
+                                        [outerStrokeLinecap]="'inherit'"
+                                        [animation]="true"
+                                    ></circle-progress>
+        
+                                    <circle-progress class="circle-progress-bar"
+                                        [percent]="50"
+                                        [radius]="100"
+                                        [outerStrokeColor]="'#f47f38'"
+                                        [innerStrokeColor]="'#c6cacb'"
+                                        [outerStrokeWidth]="16"
+                                        [innerStrokeWidth]="16"
+                                        [space]="-16"
+                                        [backgroundColor]="'transparent'"
+                                        [animationDuration]="300"
+                                        [titleFontSize]="36"
+                                        [responsive]="false"
+                                        [showUnits]="false"
+                                        [showSubtitle]="false"
+                                        [showZeroOuterStroke]="true"
+                                        [outerStrokeLinecap]="'inherit'"
+                                        [animation]="true"
+                                    ></circle-progress>
+                                </div>
+                            </div>
+                            </p-card>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="superviseurGene || superviseur" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
+                    <p-card header="Le nombre d'inventaire clôturé" styleClass="card-inventaire">
+                        <circle-progress
+                            [percent]="65"
+                            [radius]="100"
+                            [outerStrokeColor]="'#f47f38'"
+                            [backgroundColor]="'#c6cacb'"
+                            [backgroundPadding]="0"
+                            [animationDuration]="300"
+                            [titleFontSize]="36"
+                            [responsive]="false"
+                            [outerStrokeWidth]="32"
+                            [showInnerStroke]="false"
+                            [showUnits]="false"
+                            [showSubtitle]="false"
+                            [outerStrokeLinecap]="'inherit'"
+                            [animation]="true"
+                        ></circle-progress>
+                        <img src="assets/images/diagram-2.png" alt="">
+                    </p-card>
+                </div>
+            </div>
+        
+            <div class="p-grid p-mb-5">
+                <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6': !superviseurGene && !superviseur, 'p-col-12 p-col-md-12 p-col-lg-12':superviseurGene || superviseur}">
+                    <p-card styleClass="bg-gray card-bar-chart " *ngIf="superviseurGene || superviseur || superviseurAdjoint || chefEquipe">
+                        <div class="p-grid">
+                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6 p-mt-5':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12 p-mt-6': !superviseurGene && !superviseur}">
+                                <div class="progress-bar p-mb-4">
+                                    <p-progressBar class="customProgress bg-orange" [value]="40" [unit]="''"></p-progressBar>
+                                    <small>Les immobilisations scannées (IS)</small>
+                                </div>
+                
+                                <div class="progress-bar p-mb-4">
+                                    <p-progressBar class="customProgress bg-purple" [value]="15" [unit]="''"></p-progressBar>
+                                    <small>Les immobilisations rajoutées (IR)</small>
+                                </div>
+                
+                                <div class="progress-bar p-mb-4">
+                                    <p-progressBar class="customProgress bg-blue" [value]="65" [unit]="''"></p-progressBar>
+                                    <small>Les immobilisations avec code barre défecteux (ICD)</small>
+                                </div>
+                
+                                <div class="progress-bar">
+                                    <p-progressBar class="customProgress bg-yellow" [value]="90" [unit]="''"></p-progressBar>
+                                    <small>Les immobilisations non retrouvées (ISNR)</small>
+                                </div>
+                            </div>
+                            <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12': !superviseurGene && !superviseur}">
+                                <div class="p-grid bar-chart">
+                                    <div class="p-col-8 p-col-md-8">
+                                        <p-chart type="bar" [data]="dataEtat" [options]="dataEtatOptions"></p-chart>
+                                    </div>
+                                    <div class="p-col-4 p-col-md-4 p-mt-5">
+                                        <div class="legend">
+                                            <span class="le-red p-mr-3">Mauvais état</span>
+                                            <span class="le-green">Bon état</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p-card>
+        
+                    <div class="card-img" *ngIf="membreInv">
+                        <img src="assets/images/point-de-vente.png" class="p-img-responsive" alt="Point de vente">
+                    </div>
+                </div>
+                <div class="p-col-6 p-col-md-6 p-col-lg-6">
+                    <p-card header="Planning de comptage du jour" styleClass="bg-gray card-plannings" *ngIf="!superviseurGene && !superviseur">
+                        <p-table [value]="plannings" styleClass="p-datatable-striped">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Date</th>
+                                    <th>Lieu</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-planning>
+                                <tr>
+                                    <td>{{planning.nom}}</td>
+                                    <td>{{planning.date}}</td>
+                                    <td>{{planning.lieu}}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
