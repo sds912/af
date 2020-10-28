@@ -91,8 +91,18 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
+                                    <ngx-datatable-column name="Etat théorique"  sortable="false" prop="etat" [width]="100">
+                                        <ng-template let-row="data" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" *ngIf="value" [title]="value">
+                                                {{longText(value)}}
+                                            </td>
+                                            <td *ngIf="!value">-</td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
                                     <ngx-datatable-column name="Statut" sortable="false"
-                                        prop="status" [width]="110">
+                                        prop="status" [width]="250">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
                                             <td class="table-img padding-0" [title]="getStatus(value)">

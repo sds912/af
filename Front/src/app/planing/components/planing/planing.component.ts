@@ -35,7 +35,9 @@ const colors: any = {
 })
 export class PlaningComponent implements OnInit {
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
-
+  @ViewChild('modalContentDay', { static: true }) modalContentDay: TemplateRef<any>;
+  @ViewChild('closeOneDayModal', { static: false }) closeOneDayModal;
+  @ViewChild('openDayModal', { static: false }) openDayModal;
   view: CalendarView = CalendarView.Month;
 
   CalendarView = CalendarView;
@@ -95,6 +97,7 @@ export class PlaningComponent implements OnInit {
   entreprise=null
   users=[]
   showTab=false
+  dayEvents=[]
   constructor(private modal: NgbModal,
     private inventaireServ: InventaireService,
     private planingServ: PlaningService,
@@ -113,6 +116,7 @@ export class PlaningComponent implements OnInit {
   }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+    this.dayEvents=[]
     if (isSameMonth(date, this.viewDate)) {
       if (
         (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
@@ -120,11 +124,15 @@ export class PlaningComponent implements OnInit {
       ) {
         this.activeDayIsOpen = false;
       } else {
-        this.activeDayIsOpen = true;
+        this.dayEvents=events
+        this.modal.open(this.modalContentDay, { size: 'lg' });
       }
       this.viewDate = date;
-      console.log(date);
+      console.log(date,events);
     }
+  }
+  openTheDayModal(){
+    this.modal.open(this.modalContentDay, { size: 'lg' });
   }
 
   eventTimesChanged({
@@ -148,9 +156,10 @@ export class PlaningComponent implements OnInit {
   handleEvent(action: string, event: any): void {
     const localites=this.getTabLoc(event.idLoc)
     this.modalData = { event, action,localites };
-    this.modal.open(this.modalContent, { size: 'md' });
+    //this.modal.hasOpenModals()?'lg':'md'
+    this.modal.open(this.modalContent, { size: 'md' });    
   }
-
+//la playa
   addEvent(): void {
     this.events = [
       ...this.events,
@@ -535,7 +544,7 @@ export class PlaningComponent implements OnInit {
   }
 
   firstSub(localites){
-    return localites?.filter(loc=>loc.position?.length>0)
+    return localites?.filter(loc=>loc.position?.length>0 && (!this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && loc.createur?.id==this.myId))
   }
 
   getCurrentSubById(id){
