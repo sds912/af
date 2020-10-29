@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { SecurityService } from 'src/app/shared/service/security.service';
+import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,10 +18,17 @@ export class DashboardComponent implements OnInit {
   superviseurAdjoint:boolean
   chefEquipe:boolean
   membreInv:boolean
-
-  constructor(private route: ActivatedRoute,public securityServ:SecurityService) { }
+  inventaires: any[]=[];
+  idCurrentEse:string
+  idCurrentInv:any
+  constructor(private route: ActivatedRoute,private inventaireServ: InventaireService,public securityServ:SecurityService,private router: Router) { }
 
   ngOnInit(): void {
+    if(this.securityServ.admin){
+      this.router.navigate(["/admin/entreprise"])
+    }
+    this.idCurrentEse=localStorage.getItem("currentEse")
+    this.getInventaireByEse()
     this.superviseur=this.securityServ.superviseur
     this.superviseurGene=this.securityServ.superviseurGene
     this.superviseurAdjoint=this.securityServ.superviseurAdjoint
@@ -105,6 +113,21 @@ export class DashboardComponent implements OnInit {
       });
       
     }
+  }
+  inventaireChange(value:string):void{
+    
+  }
+  getInventaireByEse() {
+    this.securityServ.showLoadingIndicatior.next(true);
+    this.idCurrentEse = localStorage.getItem("currentEse")
+    this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
+      this.inventaires = rep?.reverse();
+      this.idCurrentInv = this.inventaires[0]?.id;
+      this.securityServ.showLoadingIndicatior.next(false);
+    }, error => {
+      this.securityServ.showLoadingIndicatior.next(false);
+      console.log(error)
+    })
   }
 
 }
