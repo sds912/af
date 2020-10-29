@@ -246,7 +246,7 @@
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6mb-2">
                                                         <mat-form-field class="example-full-width" appearance="outline">
                                                             <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Valeur d'origine
-                                                                : {{selectedRowData?.valOrigine}}</mat-label>
+                                                                : {{curency(selectedRowData?.valOrigine)}}</mat-label>
                                                             <input matInput formControlName="denomination">
                                                         </mat-form-field>
                                                     </div>
@@ -280,7 +280,7 @@
                                                             <input matInput formControlName="denomination">
                                                         </mat-form-field>
                                                     </div>
-                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" >
                                                         <mat-form-field class="example-full-width" appearance="outline">
                                                             <mat-label *ngIf="selectedRowData?.etat" style="color: black;"> Etat du bien
                                                                 théorique

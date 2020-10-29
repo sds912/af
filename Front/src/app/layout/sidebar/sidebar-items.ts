@@ -98,7 +98,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Immobilisations',
     icon: 'fas fa-cubes',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
   },
   {
@@ -167,12 +167,21 @@ export const ROUTES: RouteInfo[] = [
       {
         id:'AJU3',
         path: "/ajuster/fi",
-        title: 'Ajuster FI',//si change modifier le html count approuve
+        title: 'Ajuster F I',//si change modifier le html count approuve
         icon: '',
         class: 'ml-menu',
         roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       }
     ]
-  }
+  },
+  {
+    id:'FC',
+    path: "immobilisations/ajustees",
+    title: 'F I ajustées',
+    icon: 'fas fa-align-justify',
+    class: '',
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+    submenu: []
+  },
 ];

@@ -196,6 +196,10 @@ export class ImmobilisationComponent implements OnInit {
     this.showImmo.elementRef.nativeElement.click();
   }
 
+  curency(str : string) {
+    return (parseFloat(str)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' FCFA';
+  }
+
   getAllImmos(evt: any) {
 
     const target: DataTransfer = <DataTransfer>(evt.target);
@@ -287,7 +291,7 @@ export class ImmobilisationComponent implements OnInit {
               "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
               "cumulAmortiss": parseFloat(element[12].split(',')[0] + element[12].split(',')[1]),
               "vnc": parseFloat(element[13].split(',')[0] + element[13].split(',')[1]),
-              "etat": this.is21 ? element[16] : element[14],
+              "etat": element[14],
               "inventaire": "/api/inventaires/" + this.idCurrentInv,
               "entreprise": "/api/entreprises/" + this.idCurrentEse,
 

@@ -76,8 +76,8 @@ export class AjusterFiComponent implements OnInit {
     this.editForm = this.fb.group({
       id: [0],
       code: [''],
-      libelle:  [''],
-      description:  [''],
+      endLibelle:  [''],
+      endDescription:  [''],
       compteAmort:  [''],
       compteImmo :  [''],
       cumulAmortiss :  [''],
@@ -130,12 +130,12 @@ export class AjusterFiComponent implements OnInit {
 
   editRow(row,lock=false) {
     if(this.formDirective)this.formDirective.resetForm()
-    this.securityServ.superviseurGene?lock=true:lock=lock
+    this.securityServ.superviseurGene?lock=true:null
     this.editForm = this.fb.group({
       id: [{value: row.id, disabled: lock}],
       code: [{value: row.code, disabled: lock}],
-      libelle:  [{value: row.libelle, disabled: lock}],
-      description:  [{value: row.description, disabled: lock}],
+      endLibelle:  [{value: row.endLibelle, disabled: lock}],
+      endDescription:  [{value: row.endDescription, disabled: lock}],
       compteAmort:  [{value: row.compteAmort, disabled: lock}],
       compteImmo :  [{value: row.compteImmo, disabled: lock}],
       cumulAmortiss :  [{value: row.cumulAmortiss, disabled: lock}],
@@ -189,7 +189,11 @@ export class AjusterFiComponent implements OnInit {
       console.log(error)
     });
   }
-
+  close(){
+    if(this.route.snapshot.params["id"]){
+      this.router.navigate(["/ajuster/fi"])
+    }
+  }
   setData(data){
     this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
     this.filteredData = data;
@@ -354,6 +358,7 @@ export class AjusterFiComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeConfirmModal.nativeElement.click();
         this.router.navigate(["/ajuster/fi"])
+        this.getImmos()
       },
       error=>{
         this.showNotification('bg-danger',error,'top','center');
@@ -378,6 +383,8 @@ export interface selectRowInterface {
   code: string;
   libelle: string;
   description: string;
+  endLibelle: string;
+  endDescription: string;
   compteAmort:string,
   compteImmo : string ,
   cumulAmortiss : number,
