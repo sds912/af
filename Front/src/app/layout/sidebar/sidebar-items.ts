@@ -70,7 +70,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Immobilisations',
     icon: 'fas fa-cubes',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_Admin'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: []
   },
   {
