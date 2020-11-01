@@ -33,9 +33,9 @@
                                         <li class="dropdown m-l-20 ml-5 mr-3">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
                                                 <option value="-2">Toutes les immobilisations</option>
-                                                <option value="-1">Immobilisations non scannées</option>
+                                                <option value="-1" *ngIf="afterAjustement">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
-                                                <option value="0" *ngIf="afterAjustement">Immobilisations scannées non réconciliées</option>
+                                                <option value="0">Immobilisations scannées non réconciliées</option>
                                                 <option value="2">Immobilisations rajoutées</option>
                                                 <option value="3">Immobilisations avec un code barre défectueux</option>
                                             </select>

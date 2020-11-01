@@ -45,10 +45,20 @@
                                 </div>
                               </div>
 
+                              <div class="row pb-3">
+                                <div class="col-4">
+                                    <input type="text" class="form-control" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
+                                </div>
+                                
+                                <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
+                                    <mat-icon class="pointer" style="font-size: 15px;">search</mat-icon>
+                                </button>
+                              </div>
+
                               <div class="row">
-                                <div class="col-4 row pb-4">
+                                <div class="col-4 row pb-4 pr-0">
                                     <div class="col-5 pr-0" [title]="subdivisions[0]">{{longText(subdivisions[0],17)}}</div>
-                                    <div class="col-7">
+                                    <div class="col-7 pr-0">
                                         <select class="select-trie" style="width: 100%;background-color: white;" (change)="openFirst($event.target.value)" [(ngModel)]="firstSearchLoc">
                                             <option value="0"></option>
                                             <option *ngFor="let loc of firstSub(localites)" [value]="loc.id">{{longText(loc.nom,23)}}</option>
@@ -66,15 +76,7 @@
                                 </div>
                               </div>
 
-                              <div class="row pt-3" hidden>
-                                <div class="col-4">
-                                    <input type="text" class="form-control" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
-                                </div>
-                                
-                                <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
-                                    <mat-icon class="pointer" style="font-size: 15px;">search</mat-icon>
-                                </button>
-                              </div>
+                              
                               <!-- calendar -->
                               
                               <div class=""  *ngIf="!showTab">
