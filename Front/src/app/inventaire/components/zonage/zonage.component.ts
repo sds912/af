@@ -13,6 +13,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, NgForm, FormArray } fr
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import * as XLSX from 'xlsx';
+import { isThisQuarter } from 'date-fns';
 type AOA = any[][];
 
 export interface ChipColor {
@@ -396,13 +397,8 @@ export class ZonageComponent implements OnInit {
   }
 
   getAllLocalite(evt: any) {
-    console.log('on es la');
 
-    this.subdivisions.forEach(element => {
-      console.log('element =>', element);
-    });
-
-    console.log('this.subdivisions.length => ', this.subdivisions.length);
+    // console.log('this.subdivisions.length => ', this.subdivisions.length);
 
     const target: DataTransfer = <DataTransfer>(evt.target);
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
@@ -424,6 +420,7 @@ export class ZonageComponent implements OnInit {
 
       for (let index = 0; index < this.data.length; index++) {
         const element = this.data[index];
+
         if (element.length > this.subdivisions.length) {
           this.isValableFileLocalite = false;
         }
@@ -432,16 +429,103 @@ export class ZonageComponent implements OnInit {
       if (this.isValableFileLocalite) {
         for (let index = 0; index < this.data.length; index++) {
           const element = this.data[index];
-          const element_suivant = this.data[index + 1];
-          if (!this.verfiIfDeuxLocIsSame(element[0], element_suivant[0])) {
-            this.localiteFile.push(["niveau1"][element[0]]);
+          const element_suivant = index + 1 == this.data.length ? this.data[index] : this.data[index + 1];
+          const element_precedent = index == 0 ? this.data[index] : this.data[index - 1];
+
+          // for (let i = 0; i < element.length; i++) {
+          //   const el = element[i];
+          //   if (i == 0) {
+          //     this.inventaireServ.addLocalite({
+          //       nom: el,
+          //       entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //       createur: "/api/users/" + this.myId,
+          //       position: this.getPosition()
+          //     })
+          //   }else {
+          //     this.inventaireServ.addLocalite({
+          //       nom: el,
+          //       entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //       createur: "/api/users/" + this.myId,
+          //       // position: this.getPosition()
+          //     })
+          //   }
+          // }
+
+
+
+          // console.log(this.verfiIfDeuxLocIsSame(element[0],element_suivant[0]));
+
+
+
+
+
+
+
+          if (this.verfiIfDeuxLocIsSame(element[0], element_precedent[0])) {
+            
+          } else {
+            const obj = {
+              nom: element[0],
+              entreprise: "/api/entreprises/" + this.idCurrentEse,
+              createur: "/api/users/" + this.myId,
+              position: this.getPosition()
+
+            };
+            this.inventaireServ.addLocalite(obj).then(rep => {
+              
+              if (rep.id>0) {
+                const obj = {
+                  nom: element[1],
+                  entreprise: "/api/entreprises/" + this.idCurrentEse,
+                  createur: "/api/users/" + this.myId,
+                  parent: "/api/localites/" + rep.id
+                  // position: this.getPosition()
+    
+                };
+                this.inventaireServ.addLocalite(obj).then(rep1 => {
+                  if (rep1.id > 0) {
+                    const obj = {
+                      nom: element[2],
+                      entreprise: "/api/entreprises/" + this.idCurrentEse,
+                      createur: "/api/users/" + this.myId,
+                      parent: "/api/localites/" + rep1.id
+                      // position: this.getPosition()
+        
+                    };
+                    this.inventaireServ.addLocalite(obj).then(rep2 => {
+                      if (rep2.id > 0) {
+                        const obj = {
+                          nom: element[3],
+                          entreprise: "/api/entreprises/" + this.idCurrentEse,
+                          createur: "/api/users/" + this.myId,
+                          parent: "/api/localites/" + rep2.id
+                          // position: this.getPosition()
+            
+                        };
+                        this.inventaireServ.addLocalite(obj).then(rep3 => {
+                          console.log(rep3);
+                          
+                        });
+                      }
+                      
+                    });
+                  }
+                });
+              }else {
+                console.log('not bon');
+                
+              }
+
+
+            });
           }
 
 
 
 
+
         }
-        console.log(this.localiteFile);
+        // console.log(this.localiteFile);
 
       } else {
         this.showNotification('bg-red', 'Fichier uploader pa bon', 'top', 'center')
@@ -456,5 +540,16 @@ export class ZonageComponent implements OnInit {
   verfiIfDeuxLocIsSame(str1: string, str2: string) {
     if (str1 == str2) return true;
     return false;
+  }
+  isLastChilTab(b, c) {
+    for (let index = 0; index < b.length - 1; index++) {
+      const element = b[index];
+      const el = c[index];
+
+      if (el != element) {
+        return index;
+      }
+    }
+    return 100;
   }
 }
