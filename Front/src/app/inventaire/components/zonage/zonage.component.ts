@@ -423,8 +423,14 @@ export class ZonageComponent implements OnInit {
 
       console.log(this.data);
 
-      for (let index = 0; index < this.data.length; index++) {
+      for (let index = 1; index < this.data.length; index++) {
         const element = this.data[index];
+        this.localiteFile.push(element);
+      }
+
+
+      for (let index = 0; index < this.localiteFile.length; index++) {
+        const element = this.localiteFile[index];
 
         if (element.length > this.subdivisions.length) {
           this.isValableFileLocalite = false;
@@ -432,12 +438,12 @@ export class ZonageComponent implements OnInit {
       }
 
       if (this.isValableFileLocalite) {
-        for await (const iterator of this.data) {
+        let il = 1 ;
+        for await (const iterator of this.localiteFile) {
+          il++ ;
           const element = iterator;
           
           let lastId = 0;
-
-
 
           for (let i = 0; i < element.length; i++) {
             const el = element[i];
@@ -449,8 +455,12 @@ export class ZonageComponent implements OnInit {
                 createur: "/api/users/" + this.myId,
                 level: i,
                 position: this.getPosition(),
-                lastLevel: i == element.length
-              }).then(rep => lastId = rep.id);
+                // lastLevel: i == element.length
+              }).then(rep => {
+                lastId = rep.id ;
+                this.securityServ.showLoadingIndicatior.next(true)
+                console.log(rep);
+              });
             } else {
              await  this.inventaireServ.addLocalite({
                 nom: el,
@@ -458,11 +468,19 @@ export class ZonageComponent implements OnInit {
                 createur: "/api/users/" + this.myId,
                 level: i,
                 parent: "/api/localites/" + lastId,
-                lastLevel: i == element.length
-              }).then(rep => lastId = rep.id);
+                // lastLevel: i == element.length
+              }).then(rep => {
+                lastId = rep.id;
+                this.securityServ.showLoadingIndicatior.next(true)
+                console.log(rep);
+                
+              });
             }
           }
         }
+        
+        this.securityServ.showLoadingIndicatior.next(false);
+        this.getOneEntreprise();
         // console.log(this.localiteFile);
 
       } else {
