@@ -24,7 +24,7 @@ class addLocaliteController
 
         foreach ($localites as $localite) {
             // Verification si la localité existe déjà
-            if ($localite && $data->getParent()->getId() == $localite->getParent()->getId()) {
+            if ($localite && $localite->getParent() && $data->getParent() && $data->getParent()->getId() == $localite->getParent()->getId()) {
                 $data = $localite;
                 break;
             }
