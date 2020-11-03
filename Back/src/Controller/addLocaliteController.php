@@ -22,11 +22,8 @@ class addLocaliteController
     {
         $localite = $this->localiteRepository->findOneBy(['level' => $data->getLevel(), 'nom' => $data->getNom()]);
 
-        $duplicateColumn = $localite && $data->getLastLevel() != true;
-        $duplicateLine = $localite && $data->getLastLevel() == true && $data->getParent() == $localite->getParent();
-
         // Verification si la localité existe déjà
-        if ($duplicateColumn || $duplicateLine) {
+        if ($localite && $data->getParent() == $localite->getParent()) {
             return $localite;
         }
 
