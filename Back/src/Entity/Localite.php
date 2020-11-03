@@ -108,8 +108,6 @@ class Localite
      */
     private $level;
 
-    private $lastLevel;
-
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -388,18 +386,6 @@ class Localite
     public function setLevel(int $level): self
     {
         $this->level = $level;
-
-        return $this;
-    }
-
-    public function getLastLevel(): ?bool
-    {
-        return $this->lastLevel;
-    }
-
-    public function setLastLevel(bool $lastLevel): self
-    {
-        $this->lastLevel = $lastLevel;
 
         return $this;
     }
