@@ -31,7 +31,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *  }
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *     "entreprise.id": "exact"
+ *     "entreprise.id": "exact","nom": "exact"
  * })
  */
 class Localite
