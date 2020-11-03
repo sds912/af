@@ -22,9 +22,14 @@ class addLocaliteController
     {
         $localites = $this->localiteRepository->findBy(['level' => $data->getLevel(), 'nom' => $data->getNom()]);
 
-        foreach ($localites as $localite) {
-            // Verification si la localité existe déjà
-            if ($localite && $localite->getParent() && $data->getParent() && $data->getParent()->getId() == $localite->getParent()->getId()) {
+        foreach ($localites as $localite) {            
+            // Si le localite existe déjà et qu'il n'a pas de parent
+            $localiteHasNotParent = $localite && !$localite->getParent();
+
+            // Si le localite existe déjà et qu'il a de parent
+            $localiteHasParent = $localite && $localite->getParent() && $data->getParent() && $data->getParent()->getId() == $localite->getParent()->getId();
+
+            if ($localiteHasNotParent || $localiteHasParent) {
                 $data = $localite;
                 break;
             }
