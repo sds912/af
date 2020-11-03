@@ -19,10 +19,9 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *  },
  *  collectionOperations={
  *     "get",
- *     "import_localites"={
+ *     "post"={
  *         "method"="POST",
- *         "path"="/localites/imports",
- *         "controller"="App\Controller\ImportLocalitesController",
+ *         "controller"="App\Controller\addLocaliteController",
  *         "swagger_context"={
  *            "summary"="Importer la liste des localites",
  *            "description"="Import"
