@@ -16,10 +16,21 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  * @ApiResource(
  * normalizationContext={
  *      "groups"={"loc_read"}
+ *  },
+ *  collectionOperations={
+ *     "get",
+ *     "post"={
+ *         "method"="POST",
+ *         "controller"="App\Controller\addLocaliteController",
+ *         "swagger_context"={
+ *            "summary"="Importer la liste des localites",
+ *            "description"="Import"
+ *         }
+ *     }
  *  }
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *     "entreprise.id": "exact"
+ *     "entreprise.id": "exact","nom": "exact"
  * })
  */
 class Localite
@@ -91,6 +102,12 @@ class Localite
      */
     private $idTampon;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read"})
+     */
+    private $level;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -119,7 +136,7 @@ class Localite
     /**
     * @Groups({"entreprise_read"})
     */
-    public function getLinkToUser(){
+    public function getLinkToUser() {
         /** revoir car maintenant on doit chercher dans les affectations si l id est dans le json localites */
         return count($this->users)>0;
     }
@@ -357,6 +374,18 @@ class Localite
     public function setIdTampon(?array $idTampon): self
     {
         $this->idTampon = $idTampon;
+
+        return $this;
+    }
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): self
+    {
+        $this->level = $level;
 
         return $this;
     }

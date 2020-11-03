@@ -76,8 +76,8 @@ export class AjusterFiComponent implements OnInit {
     this.editForm = this.fb.group({
       id: [0],
       code: [''],
-      libelle:  [''],
-      description:  [''],
+      endLibelle:  [''],
+      endDescription:  [''],
       compteAmort:  [''],
       compteImmo :  [''],
       cumulAmortiss :  [''],
@@ -130,12 +130,12 @@ export class AjusterFiComponent implements OnInit {
 
   editRow(row,lock=false) {
     if(this.formDirective)this.formDirective.resetForm()
-    this.securityServ.superviseurGene?lock=true:lock=lock
+    this.securityServ.superviseurGene?lock=true:null
     this.editForm = this.fb.group({
       id: [{value: row.id, disabled: lock}],
       code: [{value: row.code, disabled: lock}],
-      libelle:  [{value: row.libelle, disabled: lock}],
-      description:  [{value: row.description, disabled: lock}],
+      endLibelle:  [{value: row.endLibelle, disabled: lock}],
+      endDescription:  [{value: row.endDescription, disabled: lock}],
       compteAmort:  [{value: row.compteAmort, disabled: lock}],
       compteImmo :  [{value: row.compteImmo, disabled: lock}],
       cumulAmortiss :  [{value: row.cumulAmortiss, disabled: lock}],
@@ -175,7 +175,7 @@ export class AjusterFiComponent implements OnInit {
 
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
-    this.immoService.getImmobilisationByInventaire(this.idCurrentInv,'status=2').then((e) => {
+    this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
       this.allImmos = e?.filter(immo=>this.securityServ.superviseurAdjoint && immo.localite?.createur.id==this.myId || !this.securityServ.superviseurAdjoint);
       this.setData(this.allImmos)
       this.securityServ.showLoadingIndicatior.next(false);
@@ -189,9 +189,15 @@ export class AjusterFiComponent implements OnInit {
       console.log(error)
     });
   }
-
+  close(){
+    if(this.route.snapshot.params["id"]){
+      this.router.navigate(["/ajuster/fi"])
+    }
+  }
   setData(data){
-    this.data=data
+    this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
+    console.log(this.data);
+    
     this.filteredData = data;
   }
 
@@ -252,6 +258,7 @@ export class AjusterFiComponent implements OnInit {
       (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
       this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
       && (immo.endEtat==this.typeImmo || this.typeImmo==""))
+      console.table(this.data);
   }
 
   filterDatatable(value) {
@@ -307,6 +314,7 @@ export class AjusterFiComponent implements OnInit {
     data.soumettre=soumettre
     data.approvStatus=soumettre?0:-1
     this.securityServ.showLoadingIndicatior.next(true);
+    data.valOrigine=data.valOrigine?data.valOrigine:0
     this.immoService.postImmobilisation(data).then(
       ()=>{
         this.showNotification('bg-success',soumettre?'Ajustement soumis pour approbation':'Enregistré','top','center')
@@ -352,6 +360,7 @@ export class AjusterFiComponent implements OnInit {
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeConfirmModal.nativeElement.click();
         this.router.navigate(["/ajuster/fi"])
+        this.getImmos()
       },
       error=>{
         this.showNotification('bg-danger',error,'top','center');
@@ -376,6 +385,8 @@ export interface selectRowInterface {
   code: string;
   libelle: string;
   description: string;
+  endLibelle: string;
+  endDescription: string;
   compteAmort:string,
   compteImmo : string ,
   cumulAmortiss : number,

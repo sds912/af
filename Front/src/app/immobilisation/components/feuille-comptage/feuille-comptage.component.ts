@@ -50,7 +50,7 @@ export class FeuilleComptageComponent implements OnInit {
   details=false
   idCurrentEse;
   inventaires = [];
-  statusImmo=1
+  statusImmo=-2
   typeImmo=""
   filteredData = [];
   columns = [
@@ -67,6 +67,7 @@ export class FeuilleComptageComponent implements OnInit {
   affectations = [];
   entreprise=null
   users= [];
+  afterAjustement=false
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
@@ -92,6 +93,7 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   ngOnInit(): void {//faire le get status pour les details
+    this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getInventaireByEse();
@@ -159,17 +161,16 @@ export class FeuilleComptageComponent implements OnInit {
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e;
-      this.setData(e)
+      this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
+      this.setData(this.allImmos)
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
-      console.log(error)
     });
   }
 
   setData(data){
-    this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
+    this.data=data?.filter(immo=>this.statusFilter(immo))
     this.filteredData = data;
   }
 
@@ -229,12 +230,16 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   filtreImmoChange(){
-    this.data=this.filteredData?.filter(immo=>
-      (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
-      this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
-      && (immo.endEtat==this.typeImmo || this.typeImmo==""))
-    
-    console.log(this.data);
+    this.data=this.filteredData?.filter(immo=>this.statusFilter(immo))    
+  }
+  statusFilter(immo):boolean{
+    const cas1=this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo && !(immo.status==1 && immo.isMatched && !this.afterAjustement)
+    const cas2=this.statusImmo==-1 && immo.status==null
+    const cas3=this.statusImmo==-1 && immo.status==1 && immo.isMatched && !this.afterAjustement
+    const cas4=this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()
+    const cas5=this.statusImmo==-2//tous
+    const type=(immo.endEtat==this.typeImmo || this.typeImmo=="" || this.typeImmo!="" && this.statusImmo==-1)
+    return (cas1||cas2||cas3||cas4||cas5)  && type
   }
 
   filterDatatable(value) {
@@ -244,8 +249,7 @@ export class FeuilleComptageComponent implements OnInit {
       (immo.libelle?.toLowerCase().search(val)>=0 ||
       immo.lecteur?.nom.toLowerCase().search(val)>=0 ||
       immo.localite?.nom.toLowerCase().search(val)>=0 ||
-      immo.code?.toLowerCase().search(val)>=0) &&
-      (this.statusImmo!=-1 && immo.status==this.statusImmo || this.statusImmo==-1 && immo.status==null) && (immo.endEtat==this.typeImmo || this.typeImmo=="")
+      immo.code?.toLowerCase().search(val)>=0) && this.statusFilter(immo)
     );
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
@@ -428,7 +432,7 @@ export class FeuilleComptageComponent implements OnInit {
     let tab=[]
     data.forEach(immo => {
       let d=[
-        { text: immo.libelle ,fontSize:8},
+        { text: this.afterAjustement?immo.endLibelle:immo.libelle ,fontSize:8},
         { text: this.getEtat(immo.endEtat) ,fontSize:8},
         { text: this.locName(immo.localite.id) ,fontSize:8},
         { text: immo.lecteur.nom ,fontSize:8},
@@ -487,7 +491,7 @@ export class FeuilleComptageComponent implements OnInit {
     //https://www.ngdevelop.tech/export-to-excel-in-angular-6/
     let workbook = new Excel.Workbook();
     let worksheet = workbook.addWorksheet('Immobilisations'); //nouvelle feuille
-    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date inventoriée"]);//une ligne et les colonnes
+    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date de comptage"]);//une ligne et les colonnes
     worksheet.getColumn('A').width = 20;
     worksheet.getColumn('C').width = 30;
     worksheet.getColumn('B').width = 30;
@@ -521,14 +525,14 @@ export class FeuilleComptageComponent implements OnInit {
        cell.font = {size: 13, bold: true };
     });
     data.forEach(d => {
-      if(!d.status || d.status!=3 || d.status==3 && !d.isMatched){
+      if(!d.status || d.status!=3 && d.status!=2 && d.status!=0 || d.status==3 && !d.isMatched || (d.status==2||d.status==0) && d.approvStatus==1){
         let status=this.getStatus(d.status)//si match avec immo code def changer
         if(d.status==1 && d.isMatched){
           status=this.getStatus(3)
           //le colorier
         }
         let row = worksheet.addRow([
-          d.numeroOrdre??" ",d.code??" ",d.compteImmo??" ",d.compteAmort??" ",d.emplacement??" ",d.libelle??" ",this.formattedDate(d.dateAcquisition)??" ",this.formattedDate(d.dateMiseServ)??" ",d.dureeUtilite??" ",d.taux??0,
+          d.numeroOrdre??" ",d.code??" ",d.compteImmo??" ",d.compteAmort??" ",d.emplacement??" ",d.endLibelle??" ",this.formattedDate(d.dateAcquisition)??" ",this.formattedDate(d.dateMiseServ)??" ",d.dureeUtilite??" ",d.taux??0,
           d.valOrigine??0,d.dotation??0,d.cumulAmortiss??0,d.vnc??0,d.etat??" ",d.status?status:"Immobilisations non scannées",d.status?this.getEtat(d.endEtat):" ",d.localite?this.locName(d.localite?.id):" ",
           d.localite?.id??" ",d.lecteur?.nom??" ",d.dateLecture?this.formattedDate(d.dateLecture):" "]
         );
@@ -553,7 +557,7 @@ export class FeuilleComptageComponent implements OnInit {
     
     workbook.xlsx.writeBuffer().then((data) => {
        let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });       
-       fs.saveAs(blob, `Fichier des immobilisations au ${this.getExcelDate()}.xlsx`);
+       fs.saveAs(blob, `Fichier des immobilisations ajusté au ${this.getExcelDate()}.xlsx`);
     });    
   }
   getExcelDate():string{
@@ -564,6 +568,8 @@ export interface selectRowInterface {
   code: string;
   libelle: string;
   description: string;
+  endLibelle: string;
+  endDescription: string;
   compteAmort:string,
   compteImmo : string ,
   cumulAmortiss : number,
@@ -584,4 +590,5 @@ export interface selectRowInterface {
   dateLecture:any
   image:string
   isMatched:boolean
+  approvStatus:number
 }

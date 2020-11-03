@@ -20,7 +20,7 @@ final class Version20200920132109 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE lecture');
+        // $this->addSql('DROP TABLE lecture');
         $this->addSql('ALTER TABLE immobilisation ADD lecteur_id INT DEFAULT NULL, ADD localite_id INT DEFAULT NULL, ADD end_etat VARCHAR(255) DEFAULT NULL, ADD status VARCHAR(255) DEFAULT NULL, ADD image LONGTEXT DEFAULT NULL, ADD date_lecture DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE immobilisation ADD CONSTRAINT FK_B1563E2749DB9E60 FOREIGN KEY (lecteur_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE immobilisation ADD CONSTRAINT FK_B1563E27924DD2B5 FOREIGN KEY (localite_id) REFERENCES localite (id)');

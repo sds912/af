@@ -32,9 +32,8 @@
                                         </li>
                                         <li class="dropdown m-l-20 ml-5">
                                             <select class="form-control select-trie pl-0 pr-0" style="width: 200px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
-                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat de l'immobilisation</option>
+                                                <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
                                                 <option value="" *ngIf="typeImmo!=''">Tous</option>
-
                                                 <option value="1">Bon état</option>
                                                 <option value="0">Mauvais état</option>
                                             </select>
@@ -102,7 +101,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column  name="Date de lecture" sortable="false" prop="dateLecture"
+                                    <ngx-datatable-column  name="Date de comptage" sortable="false" prop="dateLecture"
                                         [width]="140">
                                         <ng-template let-row="data" let-value="value" let-i="index"
                                             ngx-datatable-cell-template>
@@ -123,11 +122,9 @@
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#showImmo" (click)="update(row)">
+                                                    data-target="#showImmo" (click)="update(row)" *ngIf="!this.securityServ.superviseurGene">
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
-
-
                                                 <button class="btn tblActnBtn pointer h-auto text-success ml-3" *ngIf="row.matchedImmo" title="Correspond à l'immobilisation {{row.matchedImmo.libelle}}">
                                                     <i class="material-icons">link</i>
                                                 </button>
@@ -151,7 +148,7 @@
                                                 [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage"
                                                 [size]="pageSize" [count]="rowCount"
                                                 [hidden]="!((rowCount / pageSize) > 1)"
-                                                (change)="table.onFooterPage($event)" (change)="look($event)">
+                                                (change)="table.onFooterPage($event)">
                                             </datatable-pager>
                                         </ng-template>
                                     </ngx-datatable-footer>

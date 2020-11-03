@@ -62,7 +62,9 @@ export class SidebarComponent implements OnInit {
     this.bodyTag = this.document.body;
     this.myRole=localStorage.getItem("roles")
     this.idCurrentEse = localStorage.getItem("currentEse")
-    this.getCountImmoToApprovByEse()
+    if(this.securityServ.isAuth){
+      this.getCountImmoToApprovByEse()
+    }
     this.immoServ.approvChange.subscribe(rep=>this.getCountImmoToApprovByEse())
   }
   isGranted(menu){

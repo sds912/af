@@ -11,13 +11,13 @@ declare const $: any;
 export class Dashboard2Component implements OnInit {
   percentageValue: (value: number) => string;
   gaugeValues: any = {
-    1: 100
+    1: 86
   };
   interval: any;
 
   constructor() {
     this.percentageValue = function (value: number): string {
-      return `${Math.round(value)} / ${this['max']}`;
+      return `86`;
     };
   }
 
@@ -126,8 +126,8 @@ export class Dashboard2Component implements OnInit {
 
     const INTERVAL: number = 3000;
 
-    this.interval = setInterval(updateValues, INTERVAL);
-    updateValues();
+    // this.interval = setInterval(updateValues, INTERVAL);
+    // updateValues();
   }
 
   //Charts

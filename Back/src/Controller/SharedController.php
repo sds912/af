@@ -149,8 +149,6 @@ class SharedController extends AbstractController
         return $this->json($afficher);
     }
 
-
-
     /**
     * @Route("/user_notis/count/new", methods={"GET"})
     */
@@ -158,6 +156,7 @@ class SharedController extends AbstractController
         $count=$repo->findCountNew($this->userCo->getId());
         return new Response($count,200);
     }
+
 
     /**
     * @Route("/inventaires", methods={"POST"})
@@ -513,8 +512,8 @@ class SharedController extends AbstractController
                 if($im){
                     $immobilisation=$im;
                 }
-                $immobilisation->setLibelle($immo["libelle"])->setCode($immo["code"])
-                    ->setDescription($immo["description"])->setInventaire($inventaire);
+                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])
+                    ->setDescription($immo["description"])->setEndDescription($immo["description"])->setInventaire($inventaire);
             }
             $immobilisation->setLecteur($this->repoUser->find($immo["lecteur"]))
                 ->setEndEtat($immo["etat"])->setStatus($immo["status"])

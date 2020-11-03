@@ -10,7 +10,11 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
+<<<<<<< HEAD
   public base="FA-658" //l'identifiant de l'application heberger chez le client
+=======
+  public base="FA-2284" //l'identifiant de l'application heberger chez le client
+>>>>>>> feature-add-localite-dii
   ne=null
   entiteRest=0
   activCle=false
