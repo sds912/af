@@ -196,6 +196,8 @@ export class AjusterFiComponent implements OnInit {
   }
   setData(data){
     this.data=data?.filter(immo=>this.statusImmo!=-1 && immo.status==this.statusImmo ||this.statusImmo==-1 && immo.status==null)
+    console.log(this.data);
+    
     this.filteredData = data;
   }
 

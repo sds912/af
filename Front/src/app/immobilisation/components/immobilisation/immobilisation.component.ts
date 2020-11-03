@@ -197,7 +197,7 @@ export class ImmobilisationComponent implements OnInit {
   }
 
   curency(str : string) {
-    return (parseFloat(str)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' FCFA';
+    return this.sharedService.numStr(str," ");
   }
 
   getAllImmos(evt: any) {

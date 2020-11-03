@@ -1,0 +1,246 @@
+@import "src/assets/scss/variables";
+
+::ng-deep.page-container {
+    .p-card {
+        border-radius: 5px;
+        // box-shadow: rgba(121,121,121,.35) 1px 10px 20px;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.2);
+        color: #ffffff;
+        &.bg-red {
+            background: #ef474b !important;
+        }
+        &.bg-orange {
+            background: #f47f38 !important;
+        }
+        &.bg-green {
+            background: #46b75c !important;
+        }
+        &.bg-gray {
+            color: #5c5e60 !important;
+            background: #e6e7e9 !important;
+        }
+        .p-card-title {
+            font-size: 1rem;
+        }
+        h2 {
+            margin: 0;
+        }
+        &.card-inventaire {
+            color: #5c5e60 !important;
+            background: #e6e7e9 !important;
+            .p-card-title {
+                font-size: 0.8rem;
+                padding: 0 1rem;
+                margin-bottom: 0;
+            }
+            .p-card-body {
+                padding: 0;
+                padding-top: 1rem;
+                position: relative;
+            }
+            .p-card-content {
+                height: 308px;
+                max-height: 308px;
+                padding: 0;
+                text-align: center;
+                img {
+                    width: 100%;
+                    height: 115px;
+                    max-height: 115px;
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                }
+                svg {
+                    width: 180px;
+                    max-width: 180px;
+                    height: 200px;
+                    max-height: 200px;
+                }
+            }
+        }
+        .img-diagram {
+            position: relative;
+            img {
+                position: absolute;
+                right: 0;
+                bottom: -15px;
+                width: 110px;
+                max-width: 110px;
+            }
+        }
+        &.card-plannings {
+            height: 493px;
+            max-height: 493px;
+            overflow-y: auto;
+            table {
+                border-collapse: separate;
+                border-spacing: 0 0.5em;
+            }
+            .p-datatable {
+                .p-datatable-thead > tr > th {
+                    color: #ffffff !important;
+                    background: $primary-color !important;
+                }
+                .p-datatable-thead > tr > th,
+                .p-datatable-tbody > tr > td {
+                    position: relative;
+                    font-size: 0.9rem;
+                    padding: 0.4rem 1rem;
+                    text-align: center;
+                    &::after {
+                        content: '|';
+                        color: #9b9da0 !important;
+                        position: absolute;
+                        right: 0;
+                        font-size: 12px;
+                    }
+                    &:last-child::after {
+                        display: none;
+                    }
+                }
+                .p-datatable-tbody {
+                    > tr {
+                        background: #ffffff !important;
+                    }
+        
+                    > tr:nth-child(even) {
+                        background-color: #d1d2d4 !important;
+                    }
+                }
+            }
+        }
+
+        &.card-instructions {
+            .p-card-body {
+                padding: 0 1rem;
+            }
+            .p-card-content {
+                padding: 0;
+                .circle-progress-bars {
+                    padding: 0;
+                    text-align: center;
+                }
+            }
+        }
+
+        &.card-bar-chart {
+            .p-card-content {
+                padding: 0;
+            }
+            .bar-chart  {
+                canvas {
+                    height: 230px !important;
+                }
+                .legend {
+                    display: flex;
+                    flex-direction: column;
+                    span {
+                        position: relative;
+                        padding-left: 40px;
+                        margin-bottom: 30px;
+                        font-size: 14px;
+                        &::before {
+                            position: absolute;
+                            content: '';
+                            width: 30px;
+                            height: 30px;
+                            left: 0;
+                            top: -5px;
+                        }
+                        &.le-red {
+                            &::before {
+                                background-color: #ef474b !important;
+                            }
+                        }
+                        &.le-green {
+                            &::before {
+                                background-color: #46b75c !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .legend-border-left {
+            font-size: 12px;
+            padding-left: 10px;
+            border-left-width: 15px;
+            border-left-style: solid;
+        }
+        .border-orange {
+            border-left-color: #f47f38;
+        }
+        .border-blue {
+            border-left-color: #0f74bc;
+        }
+
+        .circle-progress-bar svg {
+            width: 180px;
+            max-width: 180px;
+            height: 200px;
+            max-height: 200px;
+        }
+    }
+
+    .progress-bar {
+        small {
+            text-align: left;
+            color: #5c5e60;
+            background-color: #e6e7e9;
+        }
+        .customProgress {
+            .p-progressbar {
+                height: 1rem;
+                background: #e8bfc1;
+                .p-progressbar-label {
+                    color: #ffffff;
+                    font-size: 0.8rem;
+                    line-height: 1rem;
+                }
+            }
+            &.bg-orange .p-progressbar-value {
+                background: #f47f38;
+            }
+            &.bg-purple .p-progressbar-value {
+                background: #f1709f;
+            }
+            &.bg-blue .p-progressbar-value {
+                background: #0f74bc;
+            }
+            &.bg-yellow .p-progressbar-value {
+                background: #ffde38;
+            }
+        }
+    }
+
+    .card-img img {
+        width: 100%;
+        height: 493px;
+        max-height: 493px;
+        overflow-y: auto;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .float-legend {
+        .chartjs-render-monitor {
+            float: right;
+            width: 335px !important;
+            position: relative;
+            top: -39px;
+        }
+        .legend {
+            display: flex;
+            flex-direction: column;
+            padding-top: 3rem !important;
+            span {
+                font-size: 10px;
+            }
+            span:last-child {
+                top: 20px;
+            }
+        }
+    }
+}

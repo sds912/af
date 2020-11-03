@@ -1,22 +1,43 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { MainComponent } from './main/main.component';
-import { Dashboard2Component } from './dashboard2/dashboard2.component';
-import { Dashboard3Component } from './dashboard3/dashboard3.component';
-import { ChartsModule as chartjsModule } from 'ng2-charts';
-import { NgxEchartsModule } from 'ngx-echarts';
-import { GaugeModule } from 'angular-gauge';
+import { DashboardComponent } from './dashboard/dashboard.component';
+
+import {CardModule} from 'primeng/card';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {TableModule} from 'primeng/table';
+import {ProgressBarModule} from 'primeng/progressbar';
+import {ChartModule} from 'primeng/chart';
+
+import { NgCircleProgressModule } from 'ng-circle-progress';
+
 
 @NgModule({
-  declarations: [MainComponent, Dashboard2Component, Dashboard3Component],
+  declarations: [DashboardComponent],
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    chartjsModule,
-    NgxEchartsModule,
-    GaugeModule.forRoot()
+    ChartModule,
+    ProgressBarModule,
+    NgCircleProgressModule.forRoot({
+      // set defaults here
+      radius: 100,
+      outerStrokeWidth: 16,
+      innerStrokeWidth: 8,
+      animationDuration: 300,
+    }),
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CardModule,
+    ButtonModule,
+    InputTextModule,
+    TableModule
   ]
 })
-export class DashboardModule {}
+export class DashboardModule { }

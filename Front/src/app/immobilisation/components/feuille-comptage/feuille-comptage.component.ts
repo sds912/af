@@ -170,7 +170,7 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   setData(data){
-    // this.data=data?.filter(immo=>this.statusFilter(immo))
+    this.data=data?.filter(immo=>this.statusFilter(immo))
     this.filteredData = data;
   }
 
@@ -230,10 +230,16 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   filtreImmoChange(){
-    this.data=this.filteredData?.filter(immo=>
-      (this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo ||
-      this.statusImmo==-1 && immo.status==null || this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()) 
-      && (immo.endEtat==this.typeImmo || this.typeImmo==""))    
+    this.data=this.filteredData?.filter(immo=>this.statusFilter(immo))    
+  }
+  statusFilter(immo):boolean{
+    const cas1=this.statusImmo!=-1 && this.statusImmo!=4 && immo.status==this.statusImmo && !(immo.status==1 && immo.isMatched && !this.afterAjustement)
+    const cas2=this.statusImmo==-1 && immo.status==null
+    const cas3=this.statusImmo==-1 && immo.status==1 && immo.isMatched && !this.afterAjustement
+    const cas4=this.statusImmo==4 && immo.localite && immo.emplacement?.toLowerCase()!=immo.localite.nom?.toLowerCase()
+    const cas5=this.statusImmo==-2//tous
+    const type=(immo.endEtat==this.typeImmo || this.typeImmo=="" || this.typeImmo!="" && this.statusImmo==-1)
+    return (cas1||cas2||cas3||cas4||cas5)  && type
   }
 
   filterDatatable(value) {
@@ -242,8 +248,8 @@ export class FeuilleComptageComponent implements OnInit {
     this.data = this.filteredData.filter(immo=>
       (immo.libelle?.toLowerCase().search(val)>=0 ||
       immo.lecteur?.nom.toLowerCase().search(val)>=0 ||
-      immo.localite?.nom.toLowerCase().search(val)>=0 )
-      // immo.code?.toLowerCase().search(val)>=0) && this.statusFilter(immo)
+      immo.localite?.nom.toLowerCase().search(val)>=0 ||
+      immo.code?.toLowerCase().search(val)>=0) && this.statusFilter(immo)
     );
     // whenever the filter changes, always go back to the first page
     this.table.offset = 0;
@@ -551,7 +557,7 @@ export class FeuilleComptageComponent implements OnInit {
     
     workbook.xlsx.writeBuffer().then((data) => {
        let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });       
-       fs.saveAs(blob, `Fichier des immobilisations ajustées au ${this.getExcelDate()}.xlsx`);
+       fs.saveAs(blob, `Fichier des immobilisations ajusté au ${this.getExcelDate()}.xlsx`);
     });    
   }
   getExcelDate():string{

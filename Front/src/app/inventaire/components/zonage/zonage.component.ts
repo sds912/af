@@ -90,9 +90,9 @@ export class ZonageComponent implements OnInit {
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.getOneEntreprise()
     this.addSubdivision("Localité")
-    if (this.route.snapshot.params['id']) {
-      const id = this.route.snapshot.params['id']
-      this.idToOpen = this.sharedService.decodId(+id)
+    if(this.route.snapshot.params['id']){
+      const id=this.route.snapshot.params['id']
+      this.idToOpen=this.sharedService.decodId(+id)      
     }
     this.sameComponent()
   }
@@ -117,13 +117,16 @@ export class ZonageComponent implements OnInit {
   }
   getOneEntreprise() {
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
-      rep => {
-        this.allLoc = rep.localites//les positions
-        this.localites = rep.localites//all sauf adjoint
-        if (this.idToOpen && this.securityServ.superviseurGene) this.openOneById(this.idToOpen)//notif sup gene
-        if (this.securityServ.superviseurAdjoint) this.localites = this.allLoc.filter(loc => loc.createur?.id == this.myId)
-        this.subdivisions = rep.subdivisions
-        if (this.tabOpen?.length == 0) this.subdivisions?.forEach(sub => this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
+      rep=>{
+        this.allLoc=rep.localites//les positions
+        this.localites=rep.localites//all sauf adjoint
+        if(this.idToOpen && (this.securityServ.superviseurGene || this.securityServ.superviseur || 
+          this.securityServ.superviseurAdjoint && this.allLoc.find(loc=>loc.id==this.idToOpen && loc.createur?.id==this.myId))){
+          this.openOneById(this.idToOpen)
+        }
+        if(this.securityServ.superviseurAdjoint)this.localites=this.allLoc.filter(loc=>loc.createur?.id==this.myId)
+        this.subdivisions=rep.subdivisions
+        if(this.tabOpen?.length==0)this.subdivisions?.forEach(sub=>this.tabOpen.push(0))//pour avoir un tableau qui a la taille des subdivisions
         this.securityServ.showLoadingIndicatior.next(false)
       },
       error => {

@@ -45,10 +45,20 @@
                                 </div>
                               </div>
 
+                              <div class="row pb-3">
+                                <div class="col-4">
+                                    <input type="text" class="form-control" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
+                                </div>
+                                
+                                <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
+                                    <mat-icon class="pointer" style="font-size: 15px;">search</mat-icon>
+                                </button>
+                              </div>
+
                               <div class="row">
-                                <div class="col-4 row pb-4">
+                                <div class="col-4 row pb-4 pr-0">
                                     <div class="col-5 pr-0" [title]="subdivisions[0]">{{longText(subdivisions[0],17)}}</div>
-                                    <div class="col-7">
+                                    <div class="col-7 pr-0">
                                         <select class="select-trie" style="width: 100%;background-color: white;" (change)="openFirst($event.target.value)" [(ngModel)]="firstSearchLoc">
                                             <option value="0"></option>
                                             <option *ngFor="let loc of firstSub(localites)" [value]="loc.id">{{longText(loc.nom,23)}}</option>
@@ -66,15 +76,7 @@
                                 </div>
                               </div>
 
-                              <div class="row pt-3" hidden>
-                                <div class="col-4">
-                                    <input type="text" class="form-control" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
-                                </div>
-                                
-                                <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
-                                    <mat-icon class="pointer" style="font-size: 15px;">search</mat-icon>
-                                </button>
-                              </div>
+                              
                               <!-- calendar -->
                               
                               <div class=""  *ngIf="!showTab">
@@ -227,13 +229,13 @@
 </section>
 
 <ng-template #modalContent let-close="close">
-    <div class="modal-header">
+  <div class="modal-header">
       <h5 class="modal-title">Planning</h5>
       <button type="button" class="close" (click)="close()">
         <span aria-hidden="true">&times;</span>
       </button>
-    </div>
-    <div class="modal-body" style="color: #181818;font-size: 15px;">
+  </div>
+  <div class="modal-body" [perfectScrollbar] style="color: #181818;font-size: 15px;">
         <div class="row">
             <div class="contact-photo">
                 <img [src]="imgLink+modalData?.event?.user?.image" class="img-responsive pick-img" alt=""> 
@@ -252,5 +254,38 @@
       <div class="pt-3 pb-3" *ngFor="let localite of modalData?.localites;let i=index">
         <strong>{{subdivisions[i]}} : </strong>{{localite.nom}}
       </div>
+  </div>
+</ng-template>
+
+<ng-template #modalContentDay let-close="close">
+  <div class="modal-header">
+      <h5 class="modal-title">Planning du {{viewDate|date:'dd/MM/yyyy'}}</h5>
+      <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body" [perfectScrollbar] style="color: #181818;">
+    <div class="table-responsive mt-3">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Prénom et nom</th>
+            <th style="width: 23.5%;">Rôle</th>
+            <th style="width: 26.5%;">Emplacement</th>
+            <th style="width: 9.5%;">Début</th>
+            <th style="width: 9%;">Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let event of dayEvents"  (click)="handleEvent('Clicked',event)" class="pointer">
+            <td>{{ event?.user?.nom }}</td>
+            <td>{{ getRole(event?.user?.roles) }}</td>
+            <td>{{ getOneById(event?.idLoc)?.nom }}</td>
+            <td>{{event.start|date:'dd/MM/yyyy'}}</td>
+            <td>{{event.end|date:'dd/MM/yyyy'}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </ng-template>
+  </div>
+</ng-template>
