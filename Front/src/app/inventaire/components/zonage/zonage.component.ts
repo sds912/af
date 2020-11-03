@@ -396,14 +396,16 @@ export class ZonageComponent implements OnInit {
     this.idCurrentLocal = this.tabOpen[0]
   }
 
-  getAllLocalite(evt: any) {
+  
+
+   getAllLocalite(evt: any) {
 
     // console.log('this.subdivisions.length => ', this.subdivisions.length);
 
     const target: DataTransfer = <DataTransfer>(evt.target);
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       /* read workbook */
 
       const bstr: string = e.target.result;
@@ -414,7 +416,7 @@ export class ZonageComponent implements OnInit {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       /* save data */
-      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
+      this.data = await <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
 
       console.log(this.data);
 
@@ -427,103 +429,36 @@ export class ZonageComponent implements OnInit {
       }
 
       if (this.isValableFileLocalite) {
-        for (let index = 0; index < this.data.length; index++) {
-          const element = this.data[index];
-          const element_suivant = index + 1 == this.data.length ? this.data[index] : this.data[index + 1];
-          const element_precedent = index == 0 ? this.data[index] : this.data[index - 1];
-
-          // for (let i = 0; i < element.length; i++) {
-          //   const el = element[i];
-          //   if (i == 0) {
-          //     this.inventaireServ.addLocalite({
-          //       nom: el,
-          //       entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //       createur: "/api/users/" + this.myId,
-          //       position: this.getPosition()
-          //     })
-          //   }else {
-          //     this.inventaireServ.addLocalite({
-          //       nom: el,
-          //       entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //       createur: "/api/users/" + this.myId,
-          //       // position: this.getPosition()
-          //     })
-          //   }
-          // }
+        for await (const iterator of this.data) {
+          const element = iterator;
+          
+          let lastId = 0;
 
 
 
-          // console.log(this.verfiIfDeuxLocIsSame(element[0],element_suivant[0]));
+          for (let i = 0; i < element.length; i++) {
+            const el = element[i];
 
-
-
-
-
-
-
-          if (this.verfiIfDeuxLocIsSame(element[0], element_precedent[0])) {
-            
-          } else {
-            const obj = {
-              nom: element[0],
-              entreprise: "/api/entreprises/" + this.idCurrentEse,
-              createur: "/api/users/" + this.myId,
-              position: this.getPosition()
-
-            };
-            this.inventaireServ.addLocalite(obj).then(rep => {
-              
-              if (rep.id>0) {
-                const obj = {
-                  nom: element[1],
-                  entreprise: "/api/entreprises/" + this.idCurrentEse,
-                  createur: "/api/users/" + this.myId,
-                  parent: "/api/localites/" + rep.id
-                  // position: this.getPosition()
-    
-                };
-                this.inventaireServ.addLocalite(obj).then(rep1 => {
-                  if (rep1.id > 0) {
-                    const obj = {
-                      nom: element[2],
-                      entreprise: "/api/entreprises/" + this.idCurrentEse,
-                      createur: "/api/users/" + this.myId,
-                      parent: "/api/localites/" + rep1.id
-                      // position: this.getPosition()
-        
-                    };
-                    this.inventaireServ.addLocalite(obj).then(rep2 => {
-                      if (rep2.id > 0) {
-                        const obj = {
-                          nom: element[3],
-                          entreprise: "/api/entreprises/" + this.idCurrentEse,
-                          createur: "/api/users/" + this.myId,
-                          parent: "/api/localites/" + rep2.id
-                          // position: this.getPosition()
-            
-                        };
-                        this.inventaireServ.addLocalite(obj).then(rep3 => {
-                          console.log(rep3);
-                          
-                        });
-                      }
-                      
-                    });
-                  }
-                });
-              }else {
-                console.log('not bon');
-                
-              }
-
-
-            });
+            if (i == 0) {
+            await  this.inventaireServ.addLocalite({
+                nom: el,
+                entreprise: "/api/entreprises/" + this.idCurrentEse,
+                createur: "/api/users/" + this.myId,
+                level: i,
+                position: this.getPosition(),
+                lastLevel: i == element.length
+              }).then(rep => lastId = rep.id);
+            } else {
+             await  this.inventaireServ.addLocalite({
+                nom: el,
+                entreprise: "/api/entreprises/" + this.idCurrentEse,
+                createur: "/api/users/" + this.myId,
+                level: i,
+                parent: "/api/localites/" + lastId,
+                lastLevel: i == element.length
+              }).then(rep => lastId = rep.id);
+            }
           }
-
-
-
-
-
         }
         // console.log(this.localiteFile);
 
@@ -553,3 +488,88 @@ export class ZonageComponent implements OnInit {
     return 100;
   }
 }
+
+ // this.inventaireServ.addLocalite({
+            //   nom: el,
+            //   entreprise: "/api/entreprises/" + this.idCurrentEse,
+            //   createur: "/api/users/" + this.myId,
+            //   level : i ,
+            //   position: i==0 ? this.getPosition() : "",
+            //   lastLevel : i == element.length ,
+            // }).then(rep => {
+            //   this.inventaireServ.addLocalite({
+            //     nom: element[i+1],
+            //     entreprise: "/api/entreprises/" + this.idCurrentEse,
+            //     createur: "/api/users/" + this.myId,
+            //     level : i ,
+            //     parent: "/api/localites/" +rep.id,
+            //     lastLevel : i == element.length
+            //   });
+            // });
+
+// console.log(this.verfiIfDeuxLocIsSame(element[0],element_suivant[0]));
+
+
+
+
+
+
+
+          // if (this.verfiIfDeuxLocIsSame(element[0], element_precedent[0])) {
+
+          // } else {
+          //   const obj = {
+          //     nom: element[0],
+          //     entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //     createur: "/api/users/" + this.myId,
+          //     position: this.getPosition()
+
+          //   };
+          //   this.inventaireServ.addLocalite(obj).then(rep => {
+
+          //     if (rep.id>0) {
+          //       const obj = {
+          //         nom: element[1],
+          //         entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //         createur: "/api/users/" + this.myId,
+          //         parent: "/api/localites/" + rep.id
+          //         // position: this.getPosition()
+
+          //       };
+          //       this.inventaireServ.addLocalite(obj).then(rep1 => {
+          //         if (rep1.id > 0) {
+          //           const obj = {
+          //             nom: element[2],
+          //             entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //             createur: "/api/users/" + this.myId,
+          //             parent: "/api/localites/" + rep1.id
+          //             // position: this.getPosition()
+
+          //           };
+          //           this.inventaireServ.addLocalite(obj).then(rep2 => {
+          //             if (rep2.id > 0) {
+          //               const obj = {
+          //                 nom: element[3],
+          //                 entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //                 createur: "/api/users/" + this.myId,
+          //                 parent: "/api/localites/" + rep2.id
+          //                 // position: this.getPosition()
+
+          //               };
+          //               this.inventaireServ.addLocalite(obj).then(rep3 => {
+          //                 console.log(rep3);
+
+          //               });
+          //             }
+
+          //           });
+          //         }
+          //       });
+          //     }else {
+          //       console.log('not bon');
+
+          //     }
+
+
+          //   });
+          // }
