@@ -1,4 +1,4 @@
-<section class="content">
+git<section class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -15,18 +15,13 @@
                                         <mat-icon>add</mat-icon>
                                     </button>
                                     <button class="addInv" *ngIf="!subdivisions || subdivisions.length==0" mat-mini-fab disabled [title]="titleAdd" color="primary" aria-label="Example icon-button with a heart icon">
-                                            <mat-icon>add</mat-icon>
-                                        </button>
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                        
                                     <button class="addInv" data-toggle="modal" data-target="#Subdivision" data-backdrop="static" data-keyboard="false" [ngClass]="{'btn-add-sub': !securityServ.superviseurGene}"
                                         #subd mat-mini-fab title="Ajouter une subdivision" color="primary" aria-label="Example icon-button with a heart icon" (click)="initSub()" *ngIf="securityServ.superviseur || securityServ.superviseurGene">
                                         <mat-icon>reorder</mat-icon>
                                     </button>
-                                    <!-- <button mat-mini-fab  class="addLocaliteExcel" style="color: brown;" *ngIf="securityServ.superviseur || securityServ.superviseurGene" > 
-                                        <mat-icon style="color: white;" (click)="openFileUload.click()">
-                                            cloud_upload
-                                        </mat-icon>
-                                        <input type="file" hidden #openFileUload (change)="getAllLocalite($event)">
-                                    </button> -->
                                     
                                 </li>
                             </ul>

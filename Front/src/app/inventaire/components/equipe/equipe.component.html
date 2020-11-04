@@ -22,12 +22,22 @@
                                     <ul class="header-buttons m-r-20">
                                         <li *ngIf="entreprises && entreprises.length>0 && securityServ.admin">
                                             <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="openFileUload.click()">
+                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                </button>
+                                            </div>
+                                            <input type="file" hidden #openFileUload (change)="getAllAgents($event)">
+                                        </li>
+
+                                        <li *ngIf="entreprises && entreprises.length>0 && securityServ.admin">
+                                            <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='addRow()'>
                                                     <mat-icon class="col-white">add</mat-icon>
                                                 </button>
                                             </div>
                                         </li>
+                                        
                                     </ul>
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">

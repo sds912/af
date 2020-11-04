@@ -52,18 +52,19 @@
                     </ul>
                 </li>
                 <!-- First level menu -->
-                <li  *ngIf="securityServ.superviseur||securityServ.superviseurGene">
+                <!-- <li  *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint">
                     <a [routerLink]="null" (click)="exportForMobile()">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <span class="hide-menu">Exporter</span>
+                        <span class="hide-menu">Exporter inventaire</span>
                     </a>
                 </li>
                 <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint">
                     <a [routerLink]="null" (click)="fileMo.click()">
                         <i class="fas fa-cloud-download-alt"></i>
-                        <span class="hide-menu">Importer</span>
+                        <span class="hide-menu">Importer comptage</span>
                     </a>
-                </li>
+                </li> -->
+                
                 <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>
         </div>
@@ -71,3 +72,4 @@
     </aside>
     <!-- #END# Left Sidebar -->
 </div>
+
