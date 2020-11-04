@@ -21,10 +21,10 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *     "get",
  *     "post"={
  *         "method"="POST",
- *         "controller"="App\Controller\addLocaliteController",
+ *         "controller"="App\Controller\AddLocaliteController",
  *         "swagger_context"={
- *            "summary"="Importer la liste des localites",
- *            "description"="Import"
+ *            "summary"="Ajout d'une localite",
+ *            "description"="Ajout d'une localite"
  *         }
  *     }
  *  }
