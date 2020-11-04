@@ -7,7 +7,7 @@ use App\Repository\LocaliteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 
-class addLocaliteController
+class AddLocaliteController
 {
     private $entityManager;
     private $localiteRepository;

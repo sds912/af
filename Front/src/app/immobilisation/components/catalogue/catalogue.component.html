@@ -1,0 +1,48 @@
+<section class="content">
+    <div class="container-fluid"><div class="block-header">
+        <div class="row">
+        </div>
+    </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="ngxTableHeader pl-0 pb-0">
+                                    <ul class="header-buttons-left ml-0">
+                                        <li class="dropdown m-l-20">
+                                            <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                                            <input placeholder="Rechercher dans catalogues" type="text"
+                                                class="browser-default search-field" aria-label="Search box">
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20">
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="openFileUload.click()">
+                                                    <mat-icon class="col-white">file_download</mat-icon>
+                                                </button>
+                                                <input type="file" hidden #openFileUload (change)="getAllCatalaogue($event)" >
+                                            </div>
+                                        </li>
+
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab class="bg-red" (click)="deleteCatalogueInventaire()">
+                                                    <mat-icon class="col-white">delete</mat-icon>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                              
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
