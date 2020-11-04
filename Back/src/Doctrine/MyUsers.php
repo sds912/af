@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInter
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use App\Entity\Entreprise;
 use App\Entity\User;
+use App\Utils\Shared;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -24,8 +25,13 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
                                       string $resourceClass, //le nom de la classe ex si on fait un getEntreprise ici resourceClass sera Entreprise
                                       ?string $operationName = null)
     {//de l interface QueryCollectionExtensionInterface
-        if($resourceClass===User::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
+        if ($resourceClass===User::class && !$this->droit->isGranted('ROLE_SuperAdmin')) {
             $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
+            // $queryBuilder->andWhere(sprintf('%s.status != :status', $rootAlias));
+            // $queryBuilder->setParameter('status', Shared::OUT);
+            // ->andWhere('user.status != :status')
+            // ->setParameter('id', $this->userCo->getId())
+            
             $queryBuilder->join("$rootAlias.entreprises",'entreprise');
             if($this->droit->isGranted('ROLE_Admin')){
                $queryBuilder->join("entreprise.users",'user')
