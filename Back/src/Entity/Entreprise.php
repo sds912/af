@@ -103,12 +103,19 @@ class Entreprise
      */
     private $immobilisations;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Catalogue::class, mappedBy="entreprise", orphanRemoval=true)
+     * @Groups({"catalogue_read", "catalogue_write"})
+     */
+    private $catalogues;
+
     public function __construct()
     {
         $this->localites = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
         $this->immobilisations = new ArrayCollection();
+        $this->catalogues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -337,6 +344,37 @@ class Entreprise
             // set the owning side to null (unless already changed)
             if ($immobilisation->getEntreprise() === $this) {
                 $immobilisation->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Catalogue[]
+     */
+    public function getCatalogues(): Collection
+    {
+        return $this->catalogues;
+    }
+
+    public function addCatalogue(Catalogue $catalogue): self
+    {
+        if (!$this->catalogues->contains($catalogue)) {
+            $this->catalogues[] = $catalogue;
+            $catalogue->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCatalogue(Catalogue $catalogue): self
+    {
+        if ($this->catalogues->contains($catalogue)) {
+            $this->catalogues->removeElement($catalogue);
+            // set the owning side to null (unless already changed)
+            if ($catalogue->getEntreprise() === $this) {
+                $catalogue->setEntreprise(null);
             }
         }
 
