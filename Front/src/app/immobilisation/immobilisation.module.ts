@@ -45,13 +45,14 @@ import { TraitementComponent } from './components/traitement/traitement.componen
 import { FeuilleComptageComponent } from './components/feuille-comptage/feuille-comptage.component';
 import { CodeDefectueuxComponent } from './components/code-defectueux/code-defectueux.component';
 import { AjusterFiComponent } from './components/ajuster-fi/ajuster-fi.component';
+import { CatalogueComponent } from './components/catalogue/catalogue.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 
 @NgModule({
-  declarations: [ImmobilisationComponent, TraitementComponent, FeuilleComptageComponent, CodeDefectueuxComponent, AjusterFiComponent],
+  declarations: [ImmobilisationComponent, TraitementComponent, FeuilleComptageComponent, CodeDefectueuxComponent, AjusterFiComponent, CatalogueComponent],
   imports: [
     CommonModule,
     ImmobilisationRoutingModule,
