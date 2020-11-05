@@ -39,6 +39,8 @@ main {
         text-align: center;
         .logo {
             width: 200px;
+            position: relative;
+            bottom: 80px;
         }
         .form-login {
             background: #e3deda;

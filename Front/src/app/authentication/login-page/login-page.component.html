@@ -7,7 +7,7 @@
             <div class="card-form-login">
                 <img class="logo p-mb-5" src="assets/logo-black.png" alt="" srcset="">
 
-                <form class="form-login" [formGroup]="loginForm">
+                <form class="form-login" [formGroup]="loginForm" (keyup.enter)="onSubmit()">
                     <h2>Bienvenue</h2>
                     <p class="login-info">Veuillez saisir votre E-mail et votre mot de passe pour vous connecter.</p>
                     <div class="p-field p-grid input-field">
