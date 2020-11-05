@@ -243,15 +243,15 @@ export const ROUTES: RouteInfo[] = [
     submenu: []
   },
 
-  // {
-  //   id:'CLI',
-  //   path: '/clients',
-  //   title: 'Clients',
-  //   icon: 'fas fa-building',
-  //   class: '',
-  //   roles:['ROLE_SuperAdmin'],
-  //   submenu: []
-  // },
+  {
+    id:'CLI',
+    path: '/clients',
+    title: 'Clients',
+    icon: 'fas fa-building',
+    class: '',
+    roles:['ROLE_SuperAdmin'],
+    submenu: []
+  },
   // {
   //   id:'INS',
   //   path: '/instruction',

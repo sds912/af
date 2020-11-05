@@ -177,6 +177,8 @@ export class CatalogueComponent implements OnInit {
 
       this.data.shift();
       console.log(this.data);
+      this.securityServ.showLoadingIndicatior.next(true);
+
 
       for await (const iterator of this.data) {
         const obj = {
@@ -194,6 +196,10 @@ export class CatalogueComponent implements OnInit {
 
 
       }
+
+      this.getCatalogueListe();
+      this.securityServ.showLoadingIndicatior.next(false);
+
 
 
     };
@@ -233,7 +239,12 @@ export class CatalogueComponent implements OnInit {
         reverseButtons: true,
       }).then((result) => {
         if (result.isConfirmed) {
-
+          this.securityServ.showLoadingIndicatior.next(true);
+          this.sharedService.getElement('/entreprises/catalogues/' + this.idCurrentEse).then(rep => {
+            console.log(rep);
+            this.getCatalogueListe();
+            this.securityServ.showLoadingIndicatior.next(false);
+          });
         } else if (
           /* Read more about handling dismissals below */
           result.dismiss === Swal.DismissReason.cancel
