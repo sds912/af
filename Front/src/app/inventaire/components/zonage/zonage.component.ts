@@ -478,9 +478,8 @@ export class ZonageComponent implements OnInit {
             }
           }
         }
-        
-        this.securityServ.showLoadingIndicatior.next(false);
         this.getOneEntreprise();
+        this.securityServ.showLoadingIndicatior.next(false);
         // console.log(this.localiteFile);
 
       } else {
