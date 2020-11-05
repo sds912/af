@@ -439,6 +439,12 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->find($data['id']);
         $this->treatmentNewLoc($data,$inventaire,$tokenRepo);
         $this->treatmentImmo($data,$inventaire);
+        $closed=$inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
+        if(isset($data["close"])){
+            $closed=array_merge($closed,$data["close"]);
+            $closed=array_unique($closed);
+        }
+        $inventaire->setClosedLoc($closed);
         $this->manager->flush();
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
@@ -623,6 +629,85 @@ class SharedController extends AbstractController
         $inv=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $immos=$this->repoImmo->findBy(["inventaire"=>$inv,"approvStatus"=>0]);
         return $this->json(count($immos));
+    }
+
+    /**
+    * @Route("/dashbord/{id}", methods={"POST"})
+    */
+    public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff,$id=null){
+        $data=Shared::getData($request);
+        $inventaire=$this->repoInv->find($data['id']);
+        //si superviseur ou sup gen tous les immos
+        $immos=$this->repoImmo->findByInventaire($inventaire);
+        
+        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
+            //si sup adjoint les immos de sa loc
+           $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo); 
+        }elseif($this->droit->isGranted('ROLE_CE')){
+            //si chef equipes les immos ou il est
+            $affectations=$repoAff->findBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
+            $immos=$this->getImmoInMyLocalities($affectations,$immos);
+        }elseif($this->droit->isGranted('ROLE_MI')){
+            //mi les immos qu ils a scannees
+            $user=$this->repoUser->find($this->userCo->getId());
+            $immos=$user->getScanImmos();
+        }
+        $closedId=$this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone compte
+        $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+
+        //me les immos qu ils a scannees
+        $d = $serializer->serialize([], 'json', ['groups' => ['entreprise_read']]);
+        return new Response($d,200);
+    }
+
+    public function getImmoInMyLocalities($affectations,$immos){
+        $myImmos=[];
+        foreach ($immos as $immo) {
+            foreach ($affectations as $affectation) {
+                if($immo instanceof Immobilisation && $immo->getLocalite() &&
+                   $affectation instanceof Affectation && $affectation->getLocalite() && 
+                   $affectation->getLocalite()->getId()==$immo->getLocalite()->getId()){
+                    array_push($myImmos,$immo);
+                    break;
+                }
+            }
+        }
+        return $myImmos;
+    }
+
+    public function loopOfImmo($immos){
+        $idZones=[];
+        foreach ($immos as $immo) {
+            if($immo instanceof Immobilisation && $immo->getLocalite()){
+                array_push($idZones,$immo->getId());
+            }
+        }
+        $idZones=array_unique($idZones);
+        return [$idZones];
+    }
+
+    public function filtreByAffectation($allId,$affectations){
+        $allId=$allId?$allId:[];
+        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')||$this->droit->isGranted('ROLE_SuperViseur')){
+            return $allId;
+        }
+        $ids=[];
+        foreach ($affectations as $affectation) {
+            if($affectation instanceof Affectation && $affectation->getLocalite() && 
+                in_array($affectation->getLocalite()->getId(),$allId)){
+                array_push($ids,$affectation->getLocalite()->getId());
+                break;
+            }
+        }
+        return $ids;
+    }
+
+    public function onlyId($collection){
+        $ids=[];
+        foreach ($collection as $object) {
+            array_push($ids,$object->getId());
+        }
+        return $ids;
     }
 
 

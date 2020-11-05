@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { SuperviseurGuard } from '../core/guard/superviseur.guard';
+import { SuperviseurAndCE } from '../core/guard/superviseurAndCE.guard ';
 import { AjusterFiComponent } from './components/ajuster-fi/ajuster-fi.component';
 import { CodeDefectueuxComponent } from './components/code-defectueux/code-defectueux.component';
 import { FeuilleComptageComponent } from './components/feuille-comptage/feuille-comptage.component';
@@ -8,7 +9,7 @@ import { ImmobilisationComponent } from './components/immobilisation/immobilisat
 
 const routes: Routes = [
   {path: 'immos',canActivate:[SuperviseurGuard],component: ImmobilisationComponent},
-  {path: 'feuille/comptage',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
+  {path: 'feuille/comptage',canActivate:[SuperviseurAndCE],component: FeuilleComptageComponent},
   {path: 'feuille/comptage/reload',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'immobilisations/:type',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'code/defectueux',canActivate:[SuperviseurGuard],component: CodeDefectueuxComponent},

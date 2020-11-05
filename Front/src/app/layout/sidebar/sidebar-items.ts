@@ -116,7 +116,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Feuille de comptage',
     icon: 'fas fa-book-open',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
+    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
     submenu: []
   },
   {

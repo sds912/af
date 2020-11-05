@@ -259,10 +259,10 @@ export class EquipeComponent implements OnInit {
     }
   }
   nomChange(nom) {
-    if (!this.update) {
-      let u = nom.replace(/\ /g, "").replace(/\é/g, "e").replace(/\è/g, "e")
-      this.editForm.get('username').setValue(u + '@gestion-immo.com')
-    }
+    //if (!this.update) {
+     // let u = nom.replace(/\ /g, "").replace(/\é/g, "e").replace(/\è/g, "e")
+     // this.editForm.get('username').setValue(u + '@gestion-immo.com')
+    //}
   }
   updateUser(user) {
     this.details = false
