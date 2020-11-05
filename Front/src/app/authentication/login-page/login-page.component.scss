@@ -18,8 +18,8 @@ main {
     flex: 1;
     overflow-x: hidden;
     width: 100vw;
-    padding-left: 50px;
-    padding-right: 50px;
+    // padding-left: 50px;
+    // padding-right: 50px;
     background-color: #ffffff;
 }
 
@@ -33,9 +33,9 @@ main {
     background-size: cover;
     display:flex;
     .card-form-login {
-        width: 300px;
+        width: 400px;
         margin: auto;
-        margin-right: 70px;
+        margin-right: 10%;
         text-align: center;
         .logo {
             width: 200px;
@@ -51,12 +51,29 @@ main {
                 font-weight: 500;
             }
             .login-info {
-                font-size: 12.5px;
-                text-align: justify;
+                font-size: 14px;
+                text-align: center;
+                font-weight: bold;
+                margin-top: 30px;
+                margin-bottom: 30px;
             }
-            .input-field,
+            .input-field {
+                margin-bottom: 30px;
+                input {
+                    width: 100%;
+                }
+            }
+            .input-btn {
+                margin-top: 5rem;
+                .btn-login {
+                    width: 60%;
+                }
+            }
+            .input-field input,
             .btn-login {
                 border-radius: 10px;
+                height: 46px;
+                font-size: 16px !important;
             }
             .btn-login.p-button {
                 background: #ab5624 !important;

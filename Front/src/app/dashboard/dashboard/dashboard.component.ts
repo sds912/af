@@ -61,6 +61,9 @@ export class DashboardComponent implements OnInit {
           display: true,
           stacked: true,
           barPercentage: 0.8,
+          gridLines: {
+            display: false
+          },
           ticks: {
             fontSize: 10
         }

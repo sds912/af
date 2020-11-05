@@ -70,8 +70,8 @@
             }
         }
         &.card-plannings {
-            height: 493px;
-            max-height: 493px;
+            height: 527px;
+            max-height: 527px;
             overflow-y: auto;
             table {
                 border-collapse: separate;
@@ -192,12 +192,12 @@
         }
         .customProgress {
             .p-progressbar {
-                height: 1rem;
+                height: 1.7rem;
                 background: #e8bfc1;
                 .p-progressbar-label {
                     color: #ffffff;
-                    font-size: 0.8rem;
-                    line-height: 1rem;
+                    font-size: 1rem;
+                    line-height: 1.7rem;
                 }
             }
             &.bg-orange .p-progressbar-value {
@@ -217,8 +217,8 @@
 
     .card-img img {
         width: 100%;
-        height: 493px;
-        max-height: 493px;
+        height: 527px;
+        max-height: 527px;
         overflow-y: auto;
         object-fit: cover;
         border-radius: 10px;
@@ -242,5 +242,8 @@
                 top: 20px;
             }
         }
+    }
+    .hover-cursor-pointer:hover {
+        cursor: pointer !important;
     }
 }

@@ -11,8 +11,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *    normalizationContext={
- *      "groups"={"entreprise_read"}
+ *  normalizationContext={
+ *    "groups"={"entreprise_read"}
+ *  },
+ *  itemOperations={
+ *    "GET",
+ *    "PUT",
+ *    "DELETE",
+ *    "PATCH",
+ *    "REMOVE_CATALOGUE"={
+ *      "method"="get",
+ *      "path"="/entreprises/catalogues/{id}",
+ *      "controller"="App\Controller\RemoveEntrepriseCataloguesController",
+ *      "swagger_context"={
+ *        "summary"="Supprimer les catalogues d'une entreprise",
+ *        "description"="Supprimer les catalogues d'une entreprise"
+ *      }
+ *    }
  *  }
  * )
  * @ORM\Entity(repositoryClass=EntrepriseRepository::class)

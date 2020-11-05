@@ -26,7 +26,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *   }
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *   "catalogue.libelle": "exact"
+ *   "catalogue.libelle": "partial",
+ *   "entreprise": "exact"
  * })
  * @ORM\Entity(repositoryClass=CatalogueRepository::class)
  */
