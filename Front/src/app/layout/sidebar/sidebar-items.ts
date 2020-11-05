@@ -160,7 +160,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         id: 'FCA',
-        path: "/feuille/comptage",
+        path: "/catalogue",
         title: 'Importer Catalogue',
         icon: 'fas fa-book-open',
         class: '',
