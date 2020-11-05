@@ -29,8 +29,8 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
                                       string $resourceClass, //le nom de la classe ex si on fait un getEntreprise ici resourceClass sera Entreprise
                                       ?string $operationName = null)
     {//de l interface QueryCollectionExtensionInterface
-        if ($resourceClass===User::class) {
-            $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
+        if ($resourceClass === User::class) {
+            $rootAlias = $queryBuilder->getRootAliases()[0];// tableau d'alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
             $request = $this->requestStack->getCurrentRequest();
 
             if (!$this->droit->isGranted('ROLE_SuperAdmin') && $this->droit->isGranted('ROLE_Admin')) {
@@ -42,13 +42,10 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
                 $queryBuilder->join("$rootAlias.entreprises",'entreprise');
                 $queryBuilder->andWhere('entreprise.id = :id')->setParameter('id', $this->getIdCurrentEse());
             }
-            
-            if ($request->query->has('showOut') && $request->query->get('showOut') == 1) {
-                $queryBuilder->andWhere(sprintf('%s.status = :status', $rootAlias));
-            } else {
+            if (!$request->query->has('status')) {
                 $queryBuilder->andWhere(sprintf('%s.status != :status', $rootAlias));
+                $queryBuilder->setParameter('status', Shared::OUT);
             }
-            $queryBuilder->setParameter('status', Shared::OUT);
         }
     }
     public function applyToItem(QueryBuilder $queryBuilder,QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])

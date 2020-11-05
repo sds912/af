@@ -105,7 +105,6 @@ class Entreprise
 
     /**
      * @ORM\OneToMany(targetEntity=Catalogue::class, mappedBy="entreprise", orphanRemoval=true)
-     * @Groups({"catalogue_read", "catalogue_write"})
      */
     private $catalogues;
 

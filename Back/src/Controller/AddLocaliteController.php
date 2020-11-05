@@ -23,7 +23,7 @@ class AddLocaliteController
         $localite = $this->localiteRepository->findOneBy([
             'level' => $data->getLevel(),
             'nom' => $data->getNom(),
-            'parent' => $data->getParent()->getId() || null
+            'parent' => $data->getParent() ? $data->getParent()->getId() : null
         ]);
 
         if ($localite) {

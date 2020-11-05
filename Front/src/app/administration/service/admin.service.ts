@@ -34,8 +34,12 @@ export class AdminService {
     else
       return this.sharedService.putElement(data,"/clients/"+data.id)
   }
-  getUsers(){
-    return this.sharedService.getElement("/users")
+  getUsers(filters?: string) {
+    let url = "/users";
+    if (filters) {
+      url += `?${filters}`;
+    }
+    return this.sharedService.getElement(url);
   }
   addUser(data){
     if(data.id==0) {

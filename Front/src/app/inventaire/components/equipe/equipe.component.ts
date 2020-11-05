@@ -74,7 +74,8 @@ export class EquipeComponent implements OnInit {
   searchValue = ""
   subdivisions = []//leurs libelles
   tabOpen = []//les subdivisions ouvertes
-  openLocalite = null
+  openLocalite = null;
+  outUsers: [];
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private adminServ: AdminService, private sharedService: SharedService, public securityServ: SecurityService) {
     this.editForm = this.fb.group({
       id: [0],
@@ -98,6 +99,7 @@ export class EquipeComponent implements OnInit {
     this.getEntreprises()
     this.securityServ.getUser()
     this.sidebarItems = this.useInSideBI(ROUTES);
+    this.outUsers = [];
   }
   useInSideBI(tab) {
     let objs = []
@@ -266,6 +268,15 @@ export class EquipeComponent implements OnInit {
       let u = nom.replace(/\ /g, "").replace(/\é/g, "e").replace(/\è/g, "e")
       this.editForm.get('username').setValue(u + '@gestion-immo.com')
     }
+  }
+  keyUpNomChange(nom: string) {
+    this.adminServ.getUsers(`status=out&nom=${nom}`).then((rep: any) => {
+      this.outUsers = rep;
+    });
+  }
+  selectOutUser(outUser) {
+    this.update = true;
+    this.editRow(outUser);
   }
   updateUser(user) {
     this.details = false
