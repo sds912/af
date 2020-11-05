@@ -10,22 +10,22 @@
                 <form class="form-login" [formGroup]="loginForm">
                     <h2>Bienvenue</h2>
                     <p class="login-info">Veuillez saisir votre E-mail et votre mot de passe pour vous connecter.</p>
-                    <div class="p-field p-grid p-mb-3">
+                    <div class="p-field p-grid input-field">
                         <div class="p-col-12 p-col-md-12">
-                            <input id="email" type="text" class="input-field" formControlName="username" pInputText placeholder="E-mail"> 
+                            <input id="email" type="text" formControlName="username" pInputText placeholder="E-mail"> 
                         </div>
                     </div>
-                    <div class="p-field p-grid p-mb-5">
+                    <div class="p-field p-grid input-field">
                         <div class="p-col-12 p-col-md-12">
-                            <input id="password" type="password" class="input-field" formControlName="password" pInputText placeholder="Mot de passe"> 
+                            <input id="password" type="password" formControlName="password" pInputText placeholder="Mot de passe"> 
                         </div>
                     </div>
-                    <p-button label="Connexion" icon="pi pi-angle-right" styleClass="btn-login" iconPos="right" (click)="onSubmit()"></p-button>
+                    <div class="p-field p-grid input-btn">
+                        <div class="p-col-12 p-col-md-12">
+                            <p-button label="Connexion" icon="pi pi-angle-right" styleClass="btn-login" iconPos="right" (click)="onSubmit()"></p-button>
+                        </div>
+                    </div>
                 </form>
-
-                <p class="footer-desc p-mt-5">
-                    Le cabinet Asma Audit & Conseil est une équipe d'auditeurs professionnels, dynamique, réactive et proche de ses clients. Toujours à la pointe de l'actualité...
-                </p>
             </div>
         </div>
     </main>
