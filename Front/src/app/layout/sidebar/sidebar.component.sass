@@ -1,1 +1,79 @@
-.img-pp{width: 75px !important;height: 75px !important;}
+.img-pp
+    width: 75px !important
+    height: 75px !important
+
+
+.sidebar
+    top: 0
+    height: 100vh
+    padding-top: 30px
+    background: #616160
+    border-bottom: 4rem solid #ef7711
+    // border-image: radial-gradient(#EF7711, #774007)
+    // border-width: 4rem
+    // border-style: solid
+    // border-top: 0
+    // border-left: 0
+    // border-right: 0
+    .profile-usertitle 
+        color: #ffffff
+        .sidebar-userpic-name
+            font-size: 1.3rem
+            font-weight: bold
+        .profile-usertitle-job
+            color: #ffffff
+            font-size: 1rem
+            font-weight: bold
+            text-transform: capitalize
+    .logo-panel
+        text-align: center
+        img
+            width: 220px
+            max-width: 220px
+    .menu
+        overflow: hidden
+        #sidebarnav .sidebar-user-panel
+            margin-bottom: 50px
+
+        .list
+            li.menu-item
+                border-bottom: 1.5px solid #ffffff
+                &.active
+                    background: radial-gradient(#EF7711, #774007) // #EF7711
+                    a
+                        border-radius: 0
+                    .ml-menu
+                        background-color: #774007
+                        li
+                            border-bottom: 1.5px solid #ffffff
+                            &:first-child
+                                border-top: 1.5px solid #ffffff
+                                border-bottom: 0
+                            &.active
+                                background-color: #774007
+                        
+            li:nth-child(2)
+                border-top: 1.5px solid #ffffff
+            a, span
+                color: #ffffff
+                font-size: 16px
+        .list .menu-toggle
+            background: transparent
+            &:not(.toggled)
+                &:before
+                    content: ">"
+                    transform: scale(1.5)
+                &:after
+                    content: ">"
+                    transform: scale(0)
+            &.toggled
+                &:before
+                    content: ">"
+                    transform: scale(0)
+                &:after
+                    content: ">"
+                    transform: scale(1.5) rotate(90deg)
+                    color: #ffffff
+
+
+

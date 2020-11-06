@@ -5,7 +5,7 @@ export const ROUTES: RouteInfo[] = [
     id: 'DASH',
     path: '',
     title: 'Accueil',
-    icon: 'fas fa-tachometer-alt',
+    icon: 'fas fa-home',
     class: 'menu-toggle',
     roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
     submenu: [
@@ -61,7 +61,7 @@ export const ROUTES: RouteInfo[] = [
     id: 'PRE',
     path: '',
     title: 'Préparation',
-    icon: 'fas fa-barcode',
+    icon: 'fas fa-star',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
     submenu: [

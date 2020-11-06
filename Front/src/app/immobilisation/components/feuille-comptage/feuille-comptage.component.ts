@@ -292,7 +292,7 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   getImage() {
-    if (this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
+    if (this.entreprise && this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
     return [{}]
   }
 
