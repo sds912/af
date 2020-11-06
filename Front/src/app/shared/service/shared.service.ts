@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SharedService {
-  public baseUrl="http://127.0.0.1:8000"//image et autre
+  public baseUrl="http://127.0.0.1:8000"//image et autre  
+  // public baseUrl="https://8168f2bdbcd4.ngrok.io:8000"//image et autre
   // public baseUrl="https://699869d4e751.ngrok.io"
   public urlBack=this.baseUrl+'/api';
   public baseAsset="assets"
