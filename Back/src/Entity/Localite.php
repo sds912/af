@@ -103,7 +103,7 @@ class Localite
     private $idTampon;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read"})
      */
     private $level;
