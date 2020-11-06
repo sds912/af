@@ -69,3 +69,19 @@
 .breadcrumb > li + li:before{display: none;}
 
 .cal-events .cal-event{display: none !important;}
+
+.ngxTableHeader {
+    border-color: #ef7711;
+    background: radial-gradient(#EF7711, #774007);
+    select.form-control {
+        background-color: transparent !important; // #ef7711 !important;
+        color: #ffffff;
+        option {
+            color: #000000;
+        }
+    }
+    .mat-mini-fab.mat-primary {
+        background-color: #ef7711;
+        border: 1.5px solid #ffffff;
+    }
+}

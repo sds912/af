@@ -3,6 +3,11 @@
     <aside id="leftsidebar" class="sidebar" (mouseenter)="mouseHover($event)" (mouseleave)="mouseOut($event)">
         <!-- Menu -->
         <div class="menu">
+            <div class="logo-panel">
+                <a routerLink="dashboard/main">
+                    <img src="assets/logo-white.png" class="img-responsive" alt="" />
+                </a>
+            </div>
             <ul id="sidebarnav" class="list"
                 [ngStyle]="{'position' : 'relative', 'max-height' : listMaxHeight+'px', 'max-width' : listMaxWidth+'px'}"
                 [perfectScrollbar]>
@@ -20,7 +25,7 @@
                     </div>
                 </li>
                 <!-- First level menu -->
-                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" 
+                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems"  class="menu-item"
                     [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem)">
                     <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
                         [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">

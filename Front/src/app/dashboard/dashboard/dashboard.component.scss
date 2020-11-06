@@ -246,4 +246,8 @@
     .hover-cursor-pointer:hover {
         cursor: pointer !important;
     }
+
+    .p-grid > .p-col, .p-grid > [class*=p-col] {
+        padding: 0.5rem !important;
+    }
 }

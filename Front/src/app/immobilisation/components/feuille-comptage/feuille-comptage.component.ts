@@ -292,7 +292,7 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   getImage() {
-    if (this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
+    if (this.entreprise && this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
     return [{}]
   }
 
@@ -434,13 +434,13 @@ export class FeuilleComptageComponent implements OnInit {
       let d=[
         { text: this.afterAjustement?immo.endLibelle:immo.libelle ,fontSize:8},
         { text: this.getEtat(immo.endEtat) ,fontSize:8},
-        { text: this.locName(immo.localite.id) ,fontSize:8},
-        { text: immo.lecteur.nom ,fontSize:8},
+        { text: immo.localite ? this.locName(immo.localite.id) : '' ,fontSize:8},
+        { text: immo.lecteur ? immo.lecteur.nom : '' ,fontSize:8},
         { text: this.formattedDate(immo.dateLecture) ,fontSize:8},
-        { text: this.getChefEquipOf(immo.localite.id) ,fontSize:8}
+        { text: immo.localite ? this.getChefEquipOf(immo.localite.id) : '',fontSize:8}
       ]
       if(this.statusImmo!=3)d=[{ text: immo.code?immo.code:"-" ,fontSize:8},...d]
-      if(supAdjoint){d.push({ text: this.getSupadjoint(immo.localite) ,fontSize:8})}
+      if(supAdjoint){d.push({ text: immo.localite ? this.getSupadjoint(immo.localite) : '',fontSize:8})}
       tab.push(d)
     }
     );
