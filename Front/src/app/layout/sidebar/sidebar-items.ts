@@ -143,7 +143,7 @@ export const ROUTES: RouteInfo[] = [
       {
         id: 'IMMO',
         path: '/immos',
-        title: 'Importer F.I',
+        title: 'Importer FI',
         icon: 'fas fa-cubes',
         class: '',
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
@@ -215,7 +215,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         id: 'AJU2',
-        path: "/code/defectueux",
+        path: "/ajuster/fi",
         title: 'Autre Adjustement',
         icon: '',
         class: 'ml-menu',
