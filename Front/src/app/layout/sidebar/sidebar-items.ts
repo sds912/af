@@ -224,7 +224,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         id: 'AJU3',
-        path: "/ajuster/fi",
+        path: "/immobilisations/ajustees",
         title: 'F.I. ajusté',//si change modifier le html count approuve
         icon: '',
         class: 'ml-menu',
