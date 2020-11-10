@@ -25,10 +25,10 @@
                     </div>
                 </li>
                 <!-- First level menu -->
-                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems"  class="menu-item"
+                <li [ngClass]="{'active': showMenu === sidebarItem.title}" *ngFor="let sidebarItem of sidebarItems" class="menu-item"
                     [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem)">
-                    <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
-                        [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
+                    <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null" class="ele-menu"
+                        [ngClass]="[sidebarItem.class]" #eleMenu (click)="callMenuToggle(eleMenu, sidebarItem.title)">
                         <i [ngClass]="[sidebarItem.icon]"></i>
                         <span class="hide-menu">{{sidebarItem.title}}
                         </span>
@@ -57,19 +57,27 @@
                     </ul>
                 </li>
                 <!-- First level menu -->
-                <!-- <li  *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint">
-                    <a [routerLink]="null" (click)="exportForMobile()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span class="hide-menu">Exporter inventaire</span>
+                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint"
+                    [ngClass]="{'active': showMenu === 'Traitement offline'}" routerLinkActive="" class="menu-item">
+                    <a [routerLink]="" class="menu-toggle ele-menu" #eleMenu (click)="callMenuToggle(eleMenu, 'Traitement offline')">
+                        <i class="fas fa-cubes"></i>
+                        <span class="hide-menu">Traitement offline</span>
                     </a>
+                    <!-- Second level menu -->
+                    <ul class="ml-menu" >
+                        <li [class.activeSub]="showSubMenu === 'Exporter inventaire'">
+                            <a [routerLink]="" (click)="exportForMobile()">
+                                <span class="hide-menu">Exporter inventaire</span>
+                            </a>
+                        </li>
+                        <li [class.activeSub]="showSubMenu === 'Importer comptage'">
+                            <a [routerLink]="" (click)="fileMo.click()">
+                                <span class="hide-menu">Importer comptage</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint">
-                    <a [routerLink]="null" (click)="fileMo.click()">
-                        <i class="fas fa-cloud-download-alt"></i>
-                        <span class="hide-menu">Importer comptage</span>
-                    </a>
-                </li> -->
-                
+
                 <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>
         </div>

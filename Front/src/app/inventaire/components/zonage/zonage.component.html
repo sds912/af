@@ -69,11 +69,11 @@ git<section class="content">
                     <div class="body">
                         <mat-form-field class="example-chip-list example-full-width zonage" *ngIf="subdivisions && subdivisions[i+1]">
                             <mat-chip-list #chipList aria-label="Sous-zones">
-                                <mat-chip *ngFor="let sub of getCurrentSubById(idParent)" [selectable]="selectable" [removable]="false"
+                                <mat-chip *ngFor="let sub of getCurrentSubById(idParent)" [selectable]="selectable"  class="chip-localite-{{i+1}}" [removable]="false"
                                     class="w-25 row pt-1 color-chips" style="min-width: 275px;">
                                     <span class="p-0 pl-1" [ngClass]="{'col-8': !securityServ.superviseurGene,'col-11': securityServ.superviseurGene}" [title]="sub.nom">{{longText(sub.nom,20)}}</span>
                                     <span class="p-0" [ngClass]="{'col-4': !securityServ.superviseurGene,'col-1': securityServ.superviseurGene}">
-                                        <mat-icon class="edit-sousZ pointer text-secondary" title="Afficher" (click)="openOther(i+1,sub.id)">playlist_add</mat-icon>
+                                        <mat-icon class="edit-sousZ pointer text-secondary" title="Afficher" (click)="openOther($event, i+1, sub.id)">playlist_add</mat-icon>
                                         
                                         <mat-icon *ngIf="!securityServ.superviseurGene" class="ml-2 edit-sousZ pointer text-secondary" title="Modifier" (click)="updateL(sub)"  (click)="openLocM.click()">edit</mat-icon>
                                         

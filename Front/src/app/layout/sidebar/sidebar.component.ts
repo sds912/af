@@ -65,7 +65,13 @@ export class SidebarComponent implements OnInit {
     if(this.securityServ.isAuth){
       this.getCountImmoToApprovByEse()
     }
-    this.immoServ.approvChange.subscribe(rep=>this.getCountImmoToApprovByEse())
+    this.immoServ.approvChange.subscribe(rep=>this.getCountImmoToApprovByEse());
+    // setTimeout(() => {
+    //   document.querySelectorAll('.menu-item').forEach((ele: HTMLElement) => {
+    //     ele.style.background = 'none';
+    //   });
+    //   (document.querySelector('.menu-active').closest('.menu-item') as HTMLElement).style.background = 'radial-gradient(#EF7711, #774007)';
+    // }, 1000);
   }
   isGranted(menu){
     let roles=menu.roles
@@ -149,17 +155,20 @@ export class SidebarComponent implements OnInit {
   }
 
 
-  callMenuToggle(event: any, element: any) {
+  callMenuToggle(eleMenu: any, element: any) {
     if (element === this.showMenu) {
       this.showMenu = '0';
     } else {
       this.showMenu = element;
     }
-    const hasClass = event.target.classList.contains('toggled');
-    if (hasClass) {
-      this.renderer.removeClass(event.target, 'toggled');
-    } else {
-      this.renderer.addClass(event.target, 'toggled');
+    const isToggled = eleMenu.classList.contains('toggled');
+    
+    document.querySelectorAll('.ele-menu.toggled').forEach((ele: HTMLElement) => {
+      ele.classList.remove('toggled');
+    })
+
+    if (!isToggled) {
+      this.renderer.addClass(eleMenu, 'toggled');
     }
   }
   callSubMenuToggle(element: any) {

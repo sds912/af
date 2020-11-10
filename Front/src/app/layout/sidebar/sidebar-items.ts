@@ -3,39 +3,39 @@ import { RouteInfo } from './sidebar.metadata';
 export const ROUTES: RouteInfo[] = [
   {
     id: 'DASH',
-    path: '',
+    path: '/dashboard/main',
     title: 'Accueil',
     icon: 'fas fa-home',
-    class: 'menu-toggle',
+    class: '',
     roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
     submenu: [
-      {
-        id: 'DASH1',
-        path: '/dashboard/main',
-        title: 'Dashboard 1',
-        icon: '',
-        class: 'ml-menu',
-        roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-        submenu: []
-      },
-      {
-        id: 'DASH2',
-        path: '/dashboard/dashboard2',
-        title: 'Dashboard 2',
-        icon: '',
-        class: 'ml-menu',
-        roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-        submenu: []
-      },
-      {
-        id: 'DASH3',
-        path: '/dashboard/dashboard3',
-        title: 'Dashboard 3',
-        icon: '',
-        class: 'ml-menu',
-        roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-        submenu: []
-      }
+      // {
+      //   id: 'DASH1',
+      //   path: '/dashboard/main',
+      //   title: 'Dashboard 1',
+      //   icon: '',
+      //   class: 'ml-menu',
+      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
+      //   submenu: []
+      // },
+      // {
+      //   id: 'DASH2',
+      //   path: '/dashboard/dashboard2',
+      //   title: 'Dashboard 2',
+      //   icon: '',
+      //   class: 'ml-menu',
+      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
+      //   submenu: []
+      // },
+      // {
+      //   id: 'DASH3',
+      //   path: '/dashboard/dashboard3',
+      //   title: 'Dashboard 3',
+      //   icon: '',
+      //   class: 'ml-menu',
+      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
+      //   submenu: []
+      // }
     ]
   }, // Admin et other 
   {
@@ -66,15 +66,6 @@ export const ROUTES: RouteInfo[] = [
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
     submenu: [
       {
-        id: 'INS',
-        path: '/instruction',
-        title: 'Instructions',
-        icon: 'fas fa-file-signature',
-        class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
-        submenu: []
-      },
-      {
         id: 'INV',
         path: '/inventaires',
         title: 'Inventaires',
@@ -83,6 +74,15 @@ export const ROUTES: RouteInfo[] = [
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
         submenu: []
       },
+      {
+        id: 'INS',
+        path: '/instruction',
+        title: 'Instructions',
+        icon: 'fas fa-file-signature',
+        class: '',
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+        submenu: []
+      }
     ]
   },
   {
@@ -166,25 +166,7 @@ export const ROUTES: RouteInfo[] = [
         class: '',
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
         submenu: []
-      },
-      {
-        id: 'FC',
-        path: "/feuille/comptage",
-        title: 'Exporter inventaire',
-        icon: 'fas fa-cloud-download-alt',
-        class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
-        submenu: []
-      },
-      {
-        id: 'FCA',
-        path: "/feuille/comptage",
-        title: 'Importer comptage',
-        icon: 'fas fa-cloud-upload-alt',
-        class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
-        submenu: []
-      },
+      }
     ]
   },
   {
@@ -251,7 +233,7 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     roles:['ROLE_SuperAdmin'],
     submenu: []
-  },
+  }
   // {
   //   id:'INS',
   //   path: '/instruction',

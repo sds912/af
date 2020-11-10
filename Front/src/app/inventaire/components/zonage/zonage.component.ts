@@ -372,9 +372,14 @@ export class ZonageComponent implements OnInit {
     this.tabOpen[0] = id
     this.offUnderSub(1)
   }
-  openOther(i, id) {
+  openOther(e: Event, i, id) {
     this.tabOpen[i] = id
-    this.offUnderSub(i + 1)//les surdivisions en dessous
+    this.offUnderSub(i + 1); //les surdivisions en dessous
+    console.log(e);
+    document.querySelectorAll('.chip-localite-'+i).forEach((ele: HTMLElement) => {
+      ele.classList.remove('active');
+    });
+    (e.target as HTMLElement).closest('.chip-localite-'+i).classList.add('active');
   }
   offUnderSub(j) {
     for (let i = j; i < this.tabOpen.length; i++) {
