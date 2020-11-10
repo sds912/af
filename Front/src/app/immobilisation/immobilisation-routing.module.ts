@@ -10,12 +10,7 @@ import { ImmobilisationComponent } from './components/immobilisation/immobilisat
 
 const routes: Routes = [
   {path: 'immos',canActivate:[SuperviseurGuard],component: ImmobilisationComponent},
-<<<<<<< HEAD
-  {path: 'catalogue',canActivate:[SuperviseurGuard],component: CatalogueComponent},
-  {path: 'feuille/comptage',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
-=======
   {path: 'feuille/comptage',canActivate:[SuperviseurAndCE],component: FeuilleComptageComponent},
->>>>>>> 0134d8778fd7e8b94605b733bf430b2843b7aee6
   {path: 'feuille/comptage/reload',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'immobilisations/:type',canActivate:[SuperviseurGuard],component: FeuilleComptageComponent},
   {path: 'code/defectueux',canActivate:[SuperviseurGuard],component: CodeDefectueuxComponent},
