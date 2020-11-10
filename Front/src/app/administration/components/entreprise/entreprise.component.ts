@@ -145,7 +145,10 @@ export class EntrepriseComponent implements OnInit {
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
-    data.image=this.image!=""?this.image:IMAGE64
+    data.image=data.image!=""?data.image:IMAGE64
+    if(this.image!=""){
+      data.image=this.image
+    }
     if(data.id==0)data.users=["/api/users/"+localStorage.getItem("idUser")]
     this.adminServ.addEntreprise(data).then(
       rep=>{

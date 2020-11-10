@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200922165407 extends AbstractMigration
+final class Version20201102211727 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -20,12 +20,12 @@ final class Version20200922165407 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user ADD cle VARCHAR(255) DEFAULT NULL, ADD nombre INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE inventaire ADD closed_loc JSON DEFAULT NULL');
     }
 
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user DROP cle, DROP nombre');
+        $this->addSql('ALTER TABLE inventaire DROP closed_loc');
     }
 }

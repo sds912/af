@@ -208,7 +208,6 @@ class User implements UserInterface
         $this->roles = ['ROLE_USER'];
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
-        $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
         $this->affectations = new ArrayCollection();
         $this->scanImmos = new ArrayCollection();

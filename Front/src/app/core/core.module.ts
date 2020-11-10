@@ -6,6 +6,7 @@ import { SupervAdminGuard } from './guard/superv-admin.guard';
 import { AdminGuard } from './guard/admin.guard';
 import { TokenInterceptor } from './interceptor/token.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SuperviseurAndCE } from './guard/superviseurAndCE.guard ';
 
 @NgModule({
   declarations: [],
@@ -15,7 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule
   ],
   providers: [
-    AuthGuard,SupervAdminGuard,AdminGuard,
+    AuthGuard,SupervAdminGuard,AdminGuard,SuperviseurAndCE,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

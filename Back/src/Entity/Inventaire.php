@@ -140,6 +140,11 @@ class Inventaire
      * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaire")
      */
     private $immobilisations;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $closedLoc = [];
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
@@ -471,6 +476,18 @@ class Inventaire
                 $immobilisation->setInventaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getClosedLoc(): ?array
+    {
+        return $this->closedLoc;
+    }
+
+    public function setClosedLoc(?array $closedLoc): self
+    {
+        $this->closedLoc = $closedLoc;
 
         return $this;
     }

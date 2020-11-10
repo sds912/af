@@ -161,12 +161,19 @@ export class FeuilleComptageComponent implements OnInit {
   getImmos() {
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
+      this.allImmos = e?.filter(immo=>immo.localite==null || 
+        this.securityServ.superviseur || this.securityServ.superviseurGene || 
+        this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId  ||
+        this.securityServ.chefEquipe && immo?.localite && this.isAffected(immo?.localite?.id)
+      );
       this.setData(this.allImmos)
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
     });
+  }
+  isAffected(idLoc):boolean{
+    return this.affectations.find(aff=>aff?.localite?.id==idLoc)?true:false
   }
 
   setData(data){
