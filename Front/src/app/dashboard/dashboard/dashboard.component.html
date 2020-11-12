@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="p-col-12 p-md-7 p-lg-7 circle-progress-bars">
                                     <circle-progress class="circle-progress-bar p-mr-auto"
-                                        [percent]="75"
+                                        [percent]="dataInstructions.prisConnaissance"
                                         [radius]="100"
                                         [outerStrokeColor]="'#0f74bc'"
                                         [innerStrokeColor]="'#c6cacb'"
@@ -81,7 +81,7 @@
                                     ></circle-progress>
         
                                     <circle-progress class="circle-progress-bar"
-                                        [percent]="50"
+                                        [percent]="dataInstructions.pasPrisConnaissance"
                                         [radius]="100"
                                         [outerStrokeColor]="'#f47f38'"
                                         [innerStrokeColor]="'#c6cacb'"
@@ -107,7 +107,7 @@
                 <div *ngIf="superviseurGene || superviseur" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
                     <p-card header="Le nombre d'inventaire clôturé" styleClass="card-inventaire">
                         <circle-progress
-                            [percent]="65"
+                            [percent]="dataLocaliteInventories"
                             [radius]="100"
                             [outerStrokeColor]="'#f47f38'"
                             [backgroundColor]="'#c6cacb'"
@@ -138,12 +138,12 @@
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-purple" [value]="15" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-purple" [value]="dataImmobilisations.rajoutees" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations rajoutées (IR)</small>
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-blue" [value]="65" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-blue" [value]="dataImmobilisations.codeBarreDefectueux" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations avec code barre défecteux (ICD)</small>
                                 </div>
                 

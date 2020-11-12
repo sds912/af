@@ -78,8 +78,8 @@
             }
         }
         &.card-plannings {
-            height: 527px;
-            max-height: 527px;
+            height: 580px;
+            max-height: 580px;
             overflow-y: auto;
             table {
                 border-collapse: separate;
@@ -93,7 +93,7 @@
                 .p-datatable-thead > tr > th,
                 .p-datatable-tbody > tr > td {
                     position: relative;
-                    font-size: 0.9rem;
+                    font-size: 1.1rem;
                     padding: 0.4rem 1rem;
                     text-align: center;
                     &::after {
@@ -197,6 +197,7 @@
             text-align: left;
             color: #5c5e60;
             background-color: #e6e7e9;
+            font-size: 1rem;
         }
         .customProgress {
             .p-progressbar {

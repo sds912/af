@@ -442,11 +442,31 @@ class SharedController extends AbstractController
         $closed = $inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
         $beginned = $inventaire->getBeginnedLoc() ? $inventaire->getBeginnedLoc() : [];
         if(isset($data["close"])) {
-            $closed=array_merge($closed,$data["close"]);
+            foreach ($data['close'] as $value) {
+                $locs = $this->repoLoc->findBy(['parent' => $value]);
+                if (count($locs) > 0) {
+                    $childs = $this->getChilds($locs);
+                    foreach ($childs as $child) {
+                        $closed[] = $child->getId();
+                    }
+                } else {
+                    $closed[] = $value;
+                }
+            }
             $closed=array_unique($closed);
         }
         if(isset($data["begin"])) {
-            $beginned = array_merge($beginned, $data["begin"]);
+            foreach ($data['begin'] as $value) {
+                $locs = $this->repoLoc->findBy(['parent' => $value]);
+                if (count($locs) > 0) {
+                    $childs = $this->getChilds($locs);
+                    foreach ($childs as $child) {
+                        $beginned[] = $child->getId();
+                    }
+                } else {
+                    $beginned[] = $value;
+                }
+            }
             $beginned = array_unique($beginned);
         }
         $inventaire->setClosedLoc($closed);
@@ -641,9 +661,8 @@ class SharedController extends AbstractController
     /**
      * @Route("/dashbord/{id}", methods={"POST"})
      */
-    public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff,$id=null){
+    public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository, $id=null){
         $data=Shared::getData($request);
-        $response = [];
 
         // $loc = $this->repoLoc->find(1);
         // dd($this->getLastLevelChilds($loc));
@@ -652,42 +671,64 @@ class SharedController extends AbstractController
         //si superviseur ou sup gen tous les immos
         $immos=$this->repoImmo->findByInventaire($inventaire);
 
-        $notPendedLocs = array_unique(array_merge($inventaire->getBeginnedLoc(), $inventaire->getClosedLoc()));
-
-        $zones = [
-            'pended' => $inventaire->getLocalites()->count() - count($notPendedLocs),
-            'beginned' => count($inventaire->getBeginnedLoc()),
-            'closed' => count($inventaire->getClosedLoc())
-        ];
+        $affectations = [];
 
         if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
             //si sup adjoint les immos de sa loc
            $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo); 
         }elseif($this->droit->isGranted('ROLE_CE')){
             //si chef equipes les immos ou il est
-            $affectations=$repoAff->findBy(['user'=>$this->userCo,'inventaire'=>$inventaire]);
+            $affectations=$repoAff->findBy(['user'=>$this->userCo, 'inventaire'=>$inventaire]);
             $immos=$this->getImmoInMyLocalities($affectations,$immos);
         }elseif($this->droit->isGranted('ROLE_MI')){
             //mi les immos qu ils a scannees
             $user=$this->repoUser->find($this->userCo->getId());
             $immos=$user->getScanImmos();
         }
-        // $closedId=$this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone compte
-        // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
 
-        // dd($immos);
+        $allLocalites = array_unique($this->getChilds($inventaire->getLocalites()));
+
+        $idAllLocalites = [];
+
+        foreach ($allLocalites as $value) {
+            $idAllLocalites[] = $value->getId();
+        }
+
+        $idAllLocalites = $this->filtreByAffectation($idAllLocalites, $affectations);
+
+        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone comptées
+        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(),$affectations);//pour zone entamées
+
+        $zones = [
+            'pended' => count($idAllLocalites) - count(array_unique(array_merge($beginnedId, $closedId))),
+            'beginned' => count($beginnedId),
+            'closed' => count($closedId)
+        ];
+
+        $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+
+        $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
+        $allUsers = $this->repoUser->findBy(['status' => Shared::ACTIF]);
+        $prisConnaissance = count($approv);
+
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => count($allUsers) - $prisConnaissance];
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
-        return $this->json(['zones' => $zones, 'immobilisations' => $immos], 200);
+        return $this->json(['zones' => $zones, 'immobilisations' => $immos, 'instructions' => $instructions, 'localiteInventories' => count($locInventories)], 200);
     }
 
-    public function getParent($localite) {
-        $parent = $this->repoLoc->find($localite->getParent());
-        while ($parent->getParent()) {
-            $parent = $this->repoLoc->find($parent->getParent());
+    public function getChilds($localites) {
+        $listChilds = [];
+        foreach ($localites as $localite) {
+            $childs = $this->repoLoc->findBy(['parent' => $localite]);
+            if (count($childs) > 0) {
+                $listChilds = $this->getChilds($childs);
+            } else {
+                $listChilds[] = $localite;
+            }
         }
-        return $parent;
+        return $listChilds;
     }
 
     public function getLastLevelChilds($localite) {
