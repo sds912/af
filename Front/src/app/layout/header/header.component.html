@@ -103,6 +103,11 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a [routerLink]="['/supports/new']">
+                                        <em class="fas fa-life-ring mr-2"></em>Supports
+                                    </a>
+                                </li>
+                                <li>
                                     <a routerLink="/login" (click)="logOut()">
                                         <mat-icon aria-hidden="false" class="mr-2">power_settings_new</mat-icon>Déconnexion
                                     </a>
@@ -284,7 +289,7 @@
                     <div class="modal-footer pr-0">
                         <div class="button-demo">
                             <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="eseForm.invalid">Valider</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]="eseForm.invalid||!idEse">Annuler</button>
+                            <!-- <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]="eseForm.invalid||!idEse">Annuler</button> -->
                         </div>
                     </div>
                 </div>
@@ -325,7 +330,7 @@
                     <div class="modal-footer pr-0 pt-0">
                         <div class="button-demo">
                             <button type="submit" class="btn btn-outline-success btn-border-radius" [disabled]="!cle">Valider</button>
-                            <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]='securityServ.activCle'>Annuler</button>
+                            <!-- <button type="button" class="btn btn-outline-danger btn-border-radius mr-0" data-dismiss="modal" [disabled]='securityServ.activCle'>Annuler</button> -->
                         </div>
                     </div>
                 </div>

@@ -55,6 +55,11 @@ const routes: Routes = [
     loadChildren: () => import('./icons/icons.module').then(m => m.IconsModule)
   },
   {
+    path: 'supports',canActivate:[AuthGuard],
+    loadChildren: () =>
+      import('./supports/supports.module').then(m => m.SupportsModule)
+  },
+  {
     path: '',
     loadChildren: () =>
       import('./authentication/authentication.module').then(

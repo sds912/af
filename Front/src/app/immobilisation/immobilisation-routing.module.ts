@@ -16,6 +16,7 @@ const routes: Routes = [
   {path: 'code/defectueux',canActivate:[SuperviseurGuard],component: CodeDefectueuxComponent},
   {path: 'ajuster/fi',canActivate:[SuperviseurGuard],component: AjusterFiComponent},
   {path: 'ajuster/fi/:id',canActivate:[SuperviseurGuard],component: AjusterFiComponent},
+  {path: 'catalogue',canActivate:[SuperviseurGuard],component: CatalogueComponent},
 ];
 
 @NgModule({

@@ -6,6 +6,7 @@
 parameters:
     image_directory: '%kernel.project_dir%/public/images'
     document_directory: '%kernel.project_dir%/public/documents'
+    supports_directory: '%kernel.project_dir%/public/supports'
 
 services:
     app.user_checker :

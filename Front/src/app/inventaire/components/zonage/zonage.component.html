@@ -1,4 +1,4 @@
-git<section class="content">
+<section class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -83,11 +83,11 @@ git<section class="content">
                                 <input [placeholder]="subdivisions[i+1]" #fruitInput 
                                     [matChipInputFor]="chipList"
                                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="add($event,idParent)" disabled *ngIf="securityServ.superviseurGene">
+                                    (matChipInputTokenEnd)="add($event,idParent, i + 1)" disabled *ngIf="securityServ.superviseurGene">
                                 <input [placeholder]="subdivisions[i+1]" #fruitInput [formControl]="fruitCtrl" *ngIf="!securityServ.superviseurGene"
                                     [matChipInputFor]="chipList"
                                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="add($event,idParent)">
+                                    (matChipInputTokenEnd)="add($event,idParent, i + 1)">
                             </mat-chip-list>
                         </mat-form-field>
                         <p *ngIf="!subdivisions[i+1]">Veuillez ajouter une nouvelle subdivision</p>

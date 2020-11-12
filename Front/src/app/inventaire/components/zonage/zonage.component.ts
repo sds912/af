@@ -112,7 +112,8 @@ export class ZonageComponent implements OnInit {
     this.localiteForm = this.fb.group({
       id: [localite.id],
       nom: [localite.nom, [Validators.required]],
-      position: [localite.position]
+      position: [localite.position],
+      level: []
     });
   }
   getOneEntreprise() {
@@ -170,8 +171,8 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  addSub(value, idParent) {//l ajout des autres sub
-    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, createur: "/api/users/" + this.myId }
+  addSub(value, idParent, level) {//l ajout des autres sub
+    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, level: level, createur: "/api/users/" + this.myId }
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addLocalite(data).then(
       rep => {
@@ -201,8 +202,12 @@ export class ZonageComponent implements OnInit {
       })
   }
   onSubmit(form: FormGroup) {
-    if (!this.update) this.addLocalite(form)
-    else this.updateOne(form) // le update de toutes
+    if (!this.update) {
+      form.controls['level'].setValue(0);
+      this.addLocalite(form)
+    } else {
+      this.updateOne(form) // le update de toutes
+    }
   }
   firstSubNameExiste(tab, localite) {
     const nom = localite.nom.trim()
@@ -223,14 +228,14 @@ export class ZonageComponent implements OnInit {
     }
     return t
   }
-  add(event: MatChipInputEvent, idParent): void {
+  add(event: MatChipInputEvent, idParent, level): void {
     const input = event.input;
     const value = event.value;
     const exist = this.localites.find(loc => loc.nom?.toLowerCase() == value.trim()?.toLowerCase() && loc.idParent == idParent)
     // Add our sub
     if ((value || '').trim() && !exist) {
       const v = value.trim()
-      if (v) this.addSub(value, idParent)
+      if (v) this.addSub(value, idParent, level)
     } else if (exist) {
       this.showNotification('bg-info', value.trim() + " existe déja.", 'bottom', 'center', 5000)
       return
@@ -375,7 +380,6 @@ export class ZonageComponent implements OnInit {
   openOther(e: Event, i, id) {
     this.tabOpen[i] = id
     this.offUnderSub(i + 1); //les surdivisions en dessous
-    console.log(e);
     document.querySelectorAll('.chip-localite-'+i).forEach((ele: HTMLElement) => {
       ele.classList.remove('active');
     });

@@ -275,7 +275,7 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
             "immos"=>$this->repoImmo->findBy(['inventaire' => $inventaire]),
-            "inventaire"=>$inventaire
+            "inventaire"=>$inventaire // Ajouter dans l'api
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);
         return new Response($data,200);
@@ -439,13 +439,20 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->find($data['id']);
         $this->treatmentNewLoc($data,$inventaire,$tokenRepo);
         $this->treatmentImmo($data,$inventaire);
-        $closed=$inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
-        if(isset($data["close"])){
+        $closed = $inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
+        $beginned = $inventaire->getBeginnedLoc() ? $inventaire->getBeginnedLoc() : [];
+        if(isset($data["close"])) {
             $closed=array_merge($closed,$data["close"]);
             $closed=array_unique($closed);
         }
+        if(isset($data["begin"])) {
+            $beginned = array_merge($beginned, $data["begin"]);
+            $beginned = array_unique($beginned);
+        }
         $inventaire->setClosedLoc($closed);
+        $inventaire->setBeginnedLoc($beginned);
         $this->manager->flush();
+
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
             Shared::CODE => 200
@@ -632,14 +639,27 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/dashbord/{id}", methods={"POST"})
-    */
+     * @Route("/dashbord/{id}", methods={"POST"})
+     */
     public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff,$id=null){
         $data=Shared::getData($request);
+        $response = [];
+
+        // $loc = $this->repoLoc->find(1);
+        // dd($this->getLastLevelChilds($loc));
+
         $inventaire=$this->repoInv->find($data['id']);
         //si superviseur ou sup gen tous les immos
         $immos=$this->repoImmo->findByInventaire($inventaire);
-        
+
+        $notPendedLocs = array_unique(array_merge($inventaire->getBeginnedLoc(), $inventaire->getClosedLoc()));
+
+        $zones = [
+            'pended' => $inventaire->getLocalites()->count() - count($notPendedLocs),
+            'beginned' => count($inventaire->getBeginnedLoc()),
+            'closed' => count($inventaire->getClosedLoc())
+        ];
+
         if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
             //si sup adjoint les immos de sa loc
            $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo); 
@@ -652,12 +672,35 @@ class SharedController extends AbstractController
             $user=$this->repoUser->find($this->userCo->getId());
             $immos=$user->getScanImmos();
         }
-        $closedId=$this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone compte
-        $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+        // $closedId=$this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone compte
+        // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+
+        // dd($immos);
 
         //me les immos qu ils a scannees
-        $d = $serializer->serialize([], 'json', ['groups' => ['entreprise_read']]);
-        return new Response($d,200);
+        // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
+        return $this->json(['zones' => $zones, 'immobilisations' => $immos], 200);
+    }
+
+    public function getParent($localite) {
+        $parent = $this->repoLoc->find($localite->getParent());
+        while ($parent->getParent()) {
+            $parent = $this->repoLoc->find($parent->getParent());
+        }
+        return $parent;
+    }
+
+    public function getLastLevelChilds($localite) {
+        $firstChilds = $this->repoLoc->findBy(['parent' => $localite->getId()]);
+        $lastChilds = [];
+
+        foreach ($firstChilds as $firstChild) {
+            $childs = $this->repoLoc->findBy(['parent' => $firstChild->getId()]);
+            while (is_array($childs) && count($childs) > 0) {
+                $childs = $this->repoLoc->findBy(['parent' => $localite->getId()]);
+            }
+        }
+        return $lastChilds;
     }
 
     public function getImmoInMyLocalities($affectations,$immos){

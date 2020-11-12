@@ -8,35 +8,7 @@ export const ROUTES: RouteInfo[] = [
     icon: 'fas fa-home',
     class: '',
     roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
-    submenu: [
-      // {
-      //   id: 'DASH1',
-      //   path: '/dashboard/main',
-      //   title: 'Dashboard 1',
-      //   icon: '',
-      //   class: 'ml-menu',
-      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-      //   submenu: []
-      // },
-      // {
-      //   id: 'DASH2',
-      //   path: '/dashboard/dashboard2',
-      //   title: 'Dashboard 2',
-      //   icon: '',
-      //   class: 'ml-menu',
-      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-      //   submenu: []
-      // },
-      // {
-      //   id: 'DASH3',
-      //   path: '/dashboard/dashboard3',
-      //   title: 'Dashboard 3',
-      //   icon: '',
-      //   class: 'ml-menu',
-      //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
-      //   submenu: []
-      // }
-    ]
+    submenu: []
   }, // Admin et other 
   {
     id: 'ESE',
@@ -224,7 +196,6 @@ export const ROUTES: RouteInfo[] = [
     roles: ['ROLE_MI'],
     submenu: []
   },
-
   {
     id:'CLI',
     path: '/clients',
@@ -233,7 +204,16 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     roles:['ROLE_SuperAdmin'],
     submenu: []
-  }
+  },
+  // {
+  //   id: 'SUPP',
+  //   path: '/supports',
+  //   title: 'Supports',
+  //   icon: 'fas fa-life-ring',
+  //   class: '',
+  //   roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
+  //   submenu: []
+  // }
   // {
   //   id:'INS',
   //   path: '/instruction',

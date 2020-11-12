@@ -145,6 +145,12 @@ class Inventaire
      * @ORM\Column(type="json", nullable=true)
      */
     private $closedLoc = [];
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $beginnedLoc = [];
+
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
@@ -482,12 +488,30 @@ class Inventaire
 
     public function getClosedLoc(): ?array
     {
+        if (!is_array($this->closedLoc)) {
+            return [];
+        }
         return $this->closedLoc;
     }
 
     public function setClosedLoc(?array $closedLoc): self
     {
         $this->closedLoc = $closedLoc;
+
+        return $this;
+    }
+
+    public function getBeginnedLoc(): ?array
+    {
+        if (!is_array($this->beginnedLoc)) {
+            return [];
+        }
+        return $this->beginnedLoc;
+    }
+
+    public function setBeginnedLoc(?array $beginnedLoc): self
+    {
+        $this->beginnedLoc = $beginnedLoc;
 
         return $this;
     }

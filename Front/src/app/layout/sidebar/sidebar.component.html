@@ -77,6 +77,13 @@
                         </li>
                     </ul>
                 </li>
+                <li [ngClass]="{'active': showMenu === 'Supports'}" routerLinkActive="active" class="menu-item">
+                    <a [routerLink]="['/supports']" class="ele-menu">
+                        <i class="fas fa-life-ring"></i>
+                        <span class="hide-menu">Service Supports</span>
+                    </a>
+                </li>
+
 
                 <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>

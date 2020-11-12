@@ -22,24 +22,24 @@
                         <div class="p-col-12 p-col-md-12">
                             <div class="p-grid data-zone">
                                 <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
-                                    <p-card header="Zones comptées" styleClass="bg-green">
-                                        <h2>155</h2>
+                                    <p-card header="Zones comptées" styleClass="card-zone bg-green">
+                                        <h2>{{this.dataZones.closed}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>
                                     </p-card>
                                 </div>
                                 <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
-                                    <p-card header="Zones entamées" styleClass="bg-orange">
-                                        <h2>353</h2>
+                                    <p-card header="Zones entamées" styleClass="card-zone bg-orange">
+                                        <h2>{{this.dataZones.beginned}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>
                                     </p-card>
                                 </div>
                                 <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
-                                    <p-card header="Zones non comptées" styleClass="bg-red">
-                                        <h2>1 204</h2>
+                                    <p-card header="Zones non comptées" styleClass="card-zone bg-red">
+                                        <h2>{{this.dataZones.pended}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>

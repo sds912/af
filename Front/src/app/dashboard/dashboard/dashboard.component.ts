@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
+import { DashboardService } from '../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,9 +22,11 @@ export class DashboardComponent implements OnInit {
   inventaires: any[]=[];
   idCurrentEse:string
   idCurrentInv:any
-  constructor(private route: ActivatedRoute,private inventaireServ: InventaireService,public securityServ:SecurityService,private router: Router) { }
+  dataZones: any;
+  constructor(private route: ActivatedRoute,private inventaireServ: InventaireService,public securityServ:SecurityService,private router: Router, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
+    this.dataZones = {pended: null, beginned: null, closed: null};
     if(this.securityServ.admin){
       this.router.navigate(["/admin/entreprise"])
     }
@@ -118,7 +121,7 @@ export class DashboardComponent implements OnInit {
     }
   }
   inventaireChange(value:string):void{
-    
+    console.log(value);
   }
   getInventaireByEse() {
     this.securityServ.showLoadingIndicatior.next(true);
@@ -126,6 +129,10 @@ export class DashboardComponent implements OnInit {
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
       this.inventaires = rep?.reverse();
       this.idCurrentInv = this.inventaires[0]?.id;
+      this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
+        this.dataZones = data.zones;
+        console.log(data);
+      })
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
