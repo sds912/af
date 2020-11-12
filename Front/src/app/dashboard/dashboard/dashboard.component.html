@@ -107,7 +107,7 @@
                 <div *ngIf="superviseurGene || superviseur" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
                     <p-card header="Le nombre d'inventaire clôturé" styleClass="card-inventaire">
                         <circle-progress
-                            [percent]="dataLocaliteInventories"
+                            [percent]="dataInventairesCloses"
                             [radius]="100"
                             [outerStrokeColor]="'#f47f38'"
                             [backgroundColor]="'#c6cacb'"
@@ -133,17 +133,17 @@
                         <div class="p-grid">
                             <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6 p-mt-5':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12 p-mt-6': !superviseurGene && !superviseur}">
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-orange" [value]="40" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-orange" [value]="dataImmobilisations.scannees.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations scannées (IS)</small>
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-purple" [value]="dataImmobilisations.rajoutees" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-purple" [value]="dataImmobilisations.rajoutees.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations rajoutées (IR)</small>
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-blue" [value]="dataImmobilisations.codeBarreDefectueux" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-blue" [value]="dataImmobilisations.codeBarreDefectueux.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations avec code barre défecteux (ICD)</small>
                                 </div>
                 

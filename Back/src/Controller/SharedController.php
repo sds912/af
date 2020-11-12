@@ -688,24 +688,26 @@ class SharedController extends AbstractController
 
         $allLocalites = array_unique($this->getChilds($inventaire->getLocalites()));
 
-        $idAllLocalites = [];
+        $_localitesId = [];
 
         foreach ($allLocalites as $value) {
-            $idAllLocalites[] = $value->getId();
+            $_localitesId[] = $value->getId();
         }
 
-        $idAllLocalites = $this->filtreByAffectation($idAllLocalites, $affectations);
+        $localitesId = $this->filtreByAffectation($_localitesId, $affectations);
 
         $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone comptées
         $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(),$affectations);//pour zone entamées
 
         $zones = [
-            'pended' => count($idAllLocalites) - count(array_unique(array_merge($beginnedId, $closedId))),
+            'pended' => count($localitesId) - count(array_unique(array_merge($beginnedId, $closedId))),
             'beginned' => count($beginnedId),
             'closed' => count($closedId)
         ];
 
-        $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+        // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+
+        $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
         $allUsers = $this->repoUser->findBy(['status' => Shared::ACTIF]);
@@ -715,7 +717,7 @@ class SharedController extends AbstractController
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
-        return $this->json(['zones' => $zones, 'immobilisations' => $immos, 'instructions' => $instructions, 'localiteInventories' => count($locInventories)], 200);
+        return $this->json(['zones' => $zones, 'immobilisations' => $immos, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
     }
 
     public function getChilds($localites) {
@@ -770,9 +772,11 @@ class SharedController extends AbstractController
         return [$idZones];
     }
 
-    public function filtreByAffectation($allId,$affectations){
-        $allId=$allId?$allId:[];
-        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')||$this->droit->isGranted('ROLE_SuperViseur')){
+    public function filtreByAffectation($allId, $affectations) {
+        if (!is_array($allId)) {
+            $allId = [];
+        }
+        if($this->droit->isGranted('ROLE_SuperViseurGene') || $this->droit->isGranted('ROLE_SuperViseurAdjoint') || $this->droit->isGranted('ROLE_SuperViseur')){
             return $allId;
         }
         $ids=[];

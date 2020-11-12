@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dataZones: any;
   dataInstructions: any;
   dataImmobilisations: any;
-  dataLocaliteInventories: number;
+  dataInventairesCloses: number;
   timerSubscription: any;
   firstLoad: boolean;
 
@@ -36,8 +36,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dataZones = {pended: null, beginned: null, closed: null};
     this.dataInstructions = {prisConnaissance: null, pasPrisConnaissance: null};
-    this.dataImmobilisations = {nonScannees: 0, nonReconciliees: 0, reconciliees: 0, rajoutees: 0, codeBarreDefectueux: 0, bonEtat: 0, mauvaisEtat: 0};
-    this.dataLocaliteInventories = 0;
+    this.dataImmobilisations = {
+      scannees: {count: 0, bon: 0, mauvais: 0},
+      nonScannees: {count: 0, bon: 0, mauvais: 0},
+      nonReconciliees: {count: 0, bon: 0, mauvais: 0},
+      reconciliees: {count: 0, bon: 0, mauvais: 0},
+      rajoutees: {count: 0, bon: 0, mauvais: 0},
+      codeBarreDefectueux: {count: 0, bon: 0, mauvais: 0}
+    };
+    this.dataInventairesCloses = 0;
     if(this.securityServ.admin){
       this.router.navigate(["/admin/entreprise"])
     }
@@ -146,7 +153,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
       this.dataZones = data.zones;
       this.dataInstructions = data.instructions;
-      this.dataLocaliteInventories = data.localiteInventories;
+      this.dataInventairesCloses = data.inventairesCloses;
       this.filterImmos(data.immobilisations);
     })
     this.subscribeToData();
@@ -171,28 +178,56 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   filterImmos(immos: any[]) {
-    this.dataImmobilisations = {nonScannees: 0, nonReconciliees: 0, reconciliees: 0, rajoutees: 0, codeBarreDefectueux: 0, bonEtat: 0, mauvaisEtat: 0};
+    this.dataImmobilisations = {
+      scannees: {count: 0, bon: 0, mauvais: 0},
+      nonScannees: {count: 0, bon: 0, mauvais: 0},
+      nonReconciliees: {count: 0, bon: 0, mauvais: 0},
+      reconciliees: {count: 0, bon: 0, mauvais: 0},
+      rajoutees: {count: 0, bon: 0, mauvais: 0},
+      codeBarreDefectueux: {count: 0, bon: 0, mauvais: 0}
+    };
+    this.dataImmobilisations.scannees.count = immos.length; 
     immos.forEach((immo: any) => {
-      if (immo.etat) {
-        this.dataImmobilisations.bonEtat ++;
-      } else {
-        this.dataImmobilisations.mauvaisEtat ++;
-      }
-      if(immo.status == -1){
+      if(immo.status == -1) {
         // Immobilisations non scannées
-        this.dataImmobilisations.nonScannees ++;
-      }else if(immo.status == 0){
+        this.dataImmobilisations.nonScannees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.nonScannees.bon ++;
+        } else {
+          this.dataImmobilisations.nonScannees.mauvais ++;
+        }
+      } else if(immo.status == 0) {
         // Immobilisations scannées non réconciliées
-        this.dataImmobilisations.nonReconciliees ++;
-      }else if(immo.status == 1){
+        this.dataImmobilisations.nonReconciliees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.nonReconciliees.bon ++;
+        } else {
+          this.dataImmobilisations.nonReconciliees.mauvais ++;
+        }
+      } else if(immo.status == 1) {
         // Immobilisations scannées réconciliées
-        this.dataImmobilisations.reconciliees ++;
-      }else if(immo.status == 2){
+        this.dataImmobilisations.reconciliees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.reconciliees.bon ++;
+        } else {
+          this.dataImmobilisations.reconciliees.mauvais ++;
+        }
+      } else if(immo.status == 2) {
         // Immobilisations rajoutées
-        this.dataImmobilisations.rajoutees ++;
-      }else if(immo.status == 3){
+        this.dataImmobilisations.rajoutees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.rajoutees.bon ++;
+        } else {
+          this.dataImmobilisations.rajoutees.mauvais ++;
+        }
+      } else if(immo.status == 3) {
         // Immobilisations avec un code barre défectueux
-        this.dataImmobilisations.codeBarreDefectueux ++;
+        this.dataImmobilisations.codeBarreDefectueux.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.codeBarreDefectueux.bon ++;
+        } else {
+          this.dataImmobilisations.codeBarreDefectueux.mauvais ++;
+        }
       }
     })
   }
