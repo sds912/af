@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dataZones = {pended: null, beginned: null, closed: null};
     this.dataInstructions = {prisConnaissance: null, pasPrisConnaissance: null};
     this.dataImmobilisations = {
+      nonRetrouvees: {count: 0, bon: 0, mauvais: 0},
       scannees: {count: 0, bon: 0, mauvais: 0},
       nonScannees: {count: 0, bon: 0, mauvais: 0},
       nonReconciliees: {count: 0, bon: 0, mauvais: 0},
@@ -179,6 +180,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   filterImmos(immos: any[]) {
     this.dataImmobilisations = {
+      nonRetrouvees: {count: 0, bon: 0, mauvais: 0},
       scannees: {count: 0, bon: 0, mauvais: 0},
       nonScannees: {count: 0, bon: 0, mauvais: 0},
       nonReconciliees: {count: 0, bon: 0, mauvais: 0},
@@ -186,9 +188,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       rajoutees: {count: 0, bon: 0, mauvais: 0},
       codeBarreDefectueux: {count: 0, bon: 0, mauvais: 0}
     };
-    this.dataImmobilisations.scannees.count = immos.length; 
     immos.forEach((immo: any) => {
-      if(immo.status == -1) {
+      if (immo.status == null) {
+        // Immobilisations non retrouvés
+        this.dataImmobilisations.nonRetrouvees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.nonRetrouvees.bon ++;
+        } else {
+          this.dataImmobilisations.nonRetrouvees.mauvais ++;
+        }
+      } else {
+        // Immobilisations scannées
+        this.dataImmobilisations.scannees.count ++;
+        if (immo.etat) {
+          this.dataImmobilisations.scannees.bon ++;
+        } else {
+          this.dataImmobilisations.scannees.mauvais ++;
+        }
+      }
+      
+      if (immo.status == -1) {
         // Immobilisations non scannées
         this.dataImmobilisations.nonScannees.count ++;
         if (immo.etat) {
@@ -230,6 +249,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       }
     })
+
+    // this.dataEtat = {
+    //   labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
+    //   datasets: [
+    //     {
+    //       label: 'Bon état',
+    //       backgroundColor: '#46b75c',
+    //       borderColor: '#46b75c',
+    //       data: [
+    //         this.dataImmobilisations.scannees.bon,
+    //         this.dataImmobilisations.rajoutees.bon,
+    //         this.dataImmobilisations.codeBarreDefectueux.bon,
+    //         this.dataImmobilisations.nonRetrouvees.bon
+    //       ]
+    //     },
+    //     {
+    //       label: 'Mauvais état',
+    //       backgroundColor: '#ef474b',
+    //       borderColor: '#ef474b',
+    //       data: [
+    //         this.dataImmobilisations.scannees.mauvais,
+    //         this.dataImmobilisations.rajoutees.mauvais,
+    //         this.dataImmobilisations.codeBarreDefectueux.mauvais,
+    //         this.dataImmobilisations.nonRetrouvees.mauvais
+    //       ]
+    //     }
+    //   ]
+    // }
   }
 
 }
