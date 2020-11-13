@@ -317,7 +317,8 @@ class SharedController extends AbstractController
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
             "users"=>$users,
-            "devices"=>$devices
+            "devices"=>$devices,
+            "catalogues"=>$inventaire->getEntreprise()->getCatalogues()
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read','user_idLoc']]);
         return new Response($data,200);
