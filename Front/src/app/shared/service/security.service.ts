@@ -10,7 +10,7 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
-  public base="FA-6171" //l'identifiant de l'application heberger chez le client
+  public base="FA-9429" //l'identifiant de l'application heberger chez le client
   ne=null
   entiteRest=0
   activCle=false
