@@ -1,4 +1,4 @@
-<section class="content">
+<!-- <section class="content">
     <div class="container-fluid" *ngIf="ticket">
         <div class="block-header">
             <div class="row">
@@ -101,6 +101,145 @@
                                 <p>Voulez-vous clôturer le ticket ?</p>
                                 <button type="button" class="btn btn-lg btn-success mr-3">Oui</button>
                                 <button type="button" class="btn btn-lg btn-secondary">Non</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+<section class="content">
+    <div class="container-fluid" *ngIf="ticket">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item mr-4">
+                            <h4 class="page-title">Suivis ticket No {{ticket.numero}}</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="bg-header">
+                            &nbsp;
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title text-center mb-5">Progession</h4>
+                        <div class="container-form">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                            <div class="row">
+                                                <div class="col-md-3 my-auto">
+                                                    <mat-label>No ticket</mat-label>
+                                                </div>
+                                                <div class="col-md-5 mb-0">
+                                                    <mat-form-field appearance="outline">
+                                                        <input matInput id="numero" value="{{ticket.numero}}" readonly="">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                            <div class="row">
+                                                <div class="col-md-3 my-auto">
+                                                    <mat-label>Type de ticket</mat-label>
+                                                </div>
+                                                <div class="col-md-5 mb-0">
+                                                    <mat-form-field appearance="outline">
+                                                        <input matInput id="type" value="{{ticket.type}}" readonly="">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                            <div class="row">
+                                                <div class="col-md-3 my-auto">
+                                                    <mat-label>Objet</mat-label>
+                                                </div>
+                                                <div class="col-md-5 mb-0">
+                                                    <mat-form-field appearance="outline">
+                                                        <input matInput id="objet" value="{{ticket.objet}}" readonly="">
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                            <div class="row">
+                                                <div class="col-md-3 my-auto">
+                                                    <mat-label>Description</mat-label>
+                                                </div>
+                                                <div class="col-md-9 mb-0">
+                                                    <mat-form-field appearance="outline">
+                                                        <textarea matInput id="description" readonly="" rows="8">{{ticket.description}}</textarea>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div style="visibility: hidden" id="container-progegress-bar">
+                                        <div id="border" class="active-border">
+                                            <div id="circle" class="circle">
+                                                <div id="needle" class="needle"></div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row band-gray">
+                            <div class="col-md-3 my-auto">
+                                <!-- <mat-icon>file_upload</mat-icon>  -->
+                                <span class="pointer btn-upload">   
+                                    {{ticket.entreprise.denomination}}
+                                </span> 
+                            </div>
+                            <div class="col-md-3 my-auto">
+                                <!-- <mat-icon>file_upload</mat-icon>  -->
+                                <span class="pointer btn-upload">   
+                                    {{ticket.auteur?.username}}
+                                </span> 
+                            </div>
+                            <div class="col-md-3 my-auto">
+                                <!-- <mat-icon>file_upload</mat-icon>  -->
+                                <span class="pointer btn-upload">   
+                                    {{ticket.assigne?.nom}}
+                                </span> 
+                            </div>
+                            <div class="col-md-3 my-auto">
+                                <ul>
+                                    <li>
+                                        <span>color</span> signification
+                                    </li>
+                                    <li>
+                                        <span>color</span> signification
+                                    </li>
+                                    <li>
+                                        <span>color</span> signification
+                                    </li>
+                                    <li>
+                                        <span>color</span> signification
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>

@@ -85,3 +85,65 @@
         border: 1.5px solid #ffffff;
     }
 }
+
+.btn-orange-raduis {
+    background-color: #ef7711;
+    border: 1.5px solid #ffffff;
+}
+
+.btn-40-rounded {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+#container-progess-bar {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    top: -25%;
+    
+    .circle{
+        position: relative;
+        top: 5px;
+        left: 5px;
+        text-align: center;
+        width: 200px;
+        height: 200px;
+        border-radius: 100%;
+        background-color: rgba(0,0,0,1);
+    }
+    
+    .border{
+        position: relative;
+        text-align: center;
+        width: 210px;
+        height: 210px;
+        border-radius: 100%;
+        top : 50%;
+        background-color:#00a651;
+    }
+    
+    .needle {
+        position: absolute;
+        background-color: #f0566f;
+        height: 100%;
+        width: 0.5%;
+        left: 50%;
+    }
+    
+    .needle:before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        left: -10px;
+        width: 0px;
+        height: 0px;
+        border-top: 10px solid transparent;
+        border-right: 20px solid #f0566f;
+        border-bottom: 10px solid transparent;
+        -webkit-transform: rotate(90deg);
+    }
+}
