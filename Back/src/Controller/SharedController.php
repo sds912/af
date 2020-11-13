@@ -710,10 +710,10 @@ class SharedController extends AbstractController
         $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
-        $allUsers = $this->repoUser->findBy(['status' => Shared::ACTIF]);
+        $allUsers = $inventaire->getEntreprise()->getUsers();
         $prisConnaissance = count($approv);
 
-        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => count($allUsers) - $prisConnaissance];
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers)) - $prisConnaissance];
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
