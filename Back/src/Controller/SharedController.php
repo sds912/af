@@ -317,7 +317,8 @@ class SharedController extends AbstractController
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
             "users"=>$users,
-            "devices"=>$devices
+            "devices"=>$devices,
+            "catalogues"=>$inventaire->getEntreprise()->getCatalogues()
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read','user_idLoc']]);
         return new Response($data,200);
@@ -710,10 +711,10 @@ class SharedController extends AbstractController
         $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
-        $allUsers = $this->repoUser->findBy(['status' => Shared::ACTIF]);
+        $allUsers = $inventaire->getEntreprise()->getUsers();
         $prisConnaissance = count($approv);
 
-        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => count($allUsers) - $prisConnaissance];
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers)) - $prisConnaissance];
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
