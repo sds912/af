@@ -1,11 +1,11 @@
 <section class="content">
-    <div class="container-fluid">
+    <div class="container-fluid" *ngIf="ticket">
         <div class="block-header">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <ul class="breadcrumb breadcrumb-style ">
                         <li class="breadcrumb-item mr-4">
-                            <h4 class="page-title">Infos ticket No </h4>
+                            <h4 class="page-title">Infos ticket No {{ticket.numero}}</h4>
                         </li>
                     </ul>
                 </div>
@@ -20,19 +20,19 @@
                             <h3 class="mb-3">No: 711245</h3>
                             <p class="row">
                                 <span class="col-md-2 font-weight-bold">Type de ticket :</span>
-                                <span class="col-md-10">Type de ticket</span>
+                                <span class="col-md-10">{{ticket.type}}</span>
                             </p>
                             <p class="row">
                                 <span class="col-md-2 font-weight-bold">Objet :</span>
-                                <span class="col-md-10">Objet du ticket</span>
+                                <span class="col-md-10">{{ticket.objet}}</span>
                             </p>
                             <p class="row">
                                 <span class="col-md-2 font-weight-bold">Description :</span>
-                                <span class="col-md-10">Description du ticket</span>
+                                <span class="col-md-10">{{ticket.description}}</span>
                             </p>
                             <p class="row">
-                                <span class="col-md-2 font-weight-bold">Status :</span>
-                                <span class="col-md-10"> <span class="badge badge-success">Clôturé</span> <!-- [innerHTML]="getTicketStatus(element)" --> </span>
+                                <span class="col-md-2 font-weight-bold">Statut :</span>
+                                <span class="col-md-10" [innerHTML]="getTicketStatus(ticket)"></span>
                             </p>
                         </div>
                         <div class="row">
@@ -40,31 +40,31 @@
                                 <div class="mdl-card mdl-shadow--2dp">
                                     <div class="mdl-card__supporting-text">
                                         <div class="mdl-stepper-horizontal-alternative">
-                                            <div class="mdl-stepper-step active-step step-done">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 0, 'step-done': ticket.status > 0}">
                                                 <div class="mdl-stepper-circle"><span>1</span></div>
                                                 <div class="mdl-stepper-title">Ouvert</div>
                                                 <div class="mdl-stepper-bar-left"></div>
                                                 <div class="mdl-stepper-bar-right"></div>
                                             </div>
-                                            <div class="mdl-stepper-step active-step editable-step">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 1, 'step-done': ticket.status > 1}">
                                                 <div class="mdl-stepper-circle"><span>2</span></div>
                                                 <div class="mdl-stepper-title">Pris en charge</div>
                                                 <div class="mdl-stepper-bar-left"></div>
                                                 <div class="mdl-stepper-bar-right"></div>
                                             </div>
-                                            <div class="mdl-stepper-step">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 2, 'step-done': ticket.status > 2}">
                                                 <div class="mdl-stepper-circle"><span>3</span></div>
                                                 <div class="mdl-stepper-title">En traitement</div>
                                                 <div class="mdl-stepper-bar-left"></div>
                                                 <div class="mdl-stepper-bar-right"></div>
                                             </div>
-                                            <div class="mdl-stepper-step">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 3, 'step-done': ticket.status > 3}">
                                                 <div class="mdl-stepper-circle"><span>4</span></div>
                                                 <div class="mdl-stepper-title">Traité</div>
                                                 <div class="mdl-stepper-bar-left"></div>
                                                 <div class="mdl-stepper-bar-right"></div>
                                             </div>
-                                            <div class="mdl-stepper-step">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 4, 'step-done': ticket.status > 4}">
                                                 <div class="mdl-stepper-circle"><span>5</span></div>
                                                 <div class="mdl-stepper-title">Clôturé</div>
                                                 <div class="mdl-stepper-bar-left"></div>

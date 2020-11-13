@@ -16,6 +16,10 @@ export class SupportService {
     return this.http.post(`${this.apiUrl}`, data);
   }
 
+  get(id: number) {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
+
   lists() {
     return this.http.get(`${this.apiUrl}`);
   }
