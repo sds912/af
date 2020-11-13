@@ -37,44 +37,44 @@ class Catalogue
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"catalogue_read","entreprise_read"})
+     * @Groups({"catalogue_read","entreprise_read", "mobile_inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=200, nullable=true)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $marque;
 
     /**
      * @ORM\Column(type="string", length=200, nullable=true)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $reference;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $specifites;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $fournisseur;
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="catalogues")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"catalogue_read", "catalogue_write","entreprise_read"})
+     * @Groups({"catalogue_read", "catalogue_write","entreprise_read", "mobile_inv_read"})
      */
     private $entreprise;
 
