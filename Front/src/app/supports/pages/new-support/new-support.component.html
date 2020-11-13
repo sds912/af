@@ -14,14 +14,14 @@
         <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
-                    <div class="card-header">
-                        <div class="bg-header">
-                            &nbsp;
+                    <form id="ticketForm" (ngSubmit)="saveTicket()" [formGroup]="ticketForm">
+                        <div class="card-header">
+                            <div class="bg-header">
+                                &nbsp;
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title text-center mb-5">Ouvrir un ticket</h4>
-                        <form (ngSubmit)="saveTicket()" [formGroup]="ticketForm">
+                        <div class="card-body">
+                            <h4 class="card-title text-center mb-5">Ouvrir un ticket</h4>
                             <div class="container-form">
                                 <div class="row">
                                     <div class="col-md-9">
@@ -81,21 +81,21 @@
                                     </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row band-gray">
-                            <div class="col-md-7 mx-auto">
-                                <button type="submit" class="btn btn-submit btn-border-radius mr-3" [disabled]="ticketForm.invalid">Envoyer <i class="fas fa-caret-right" aria-hidden="true"></i></button>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row band-gray">
+                                <div class="col-md-7 mx-auto">
+                                    <button type="submit" click class="btn btn-submit btn-border-radius mr-3" [disabled]="ticketForm.invalid">Envoyer <i class="fas fa-chevron-right ml-5" aria-hidden="true"></i></button>
 
-                                <span class="pointer btn-upload float-right" (click)="onClick()">  
-                                    <mat-icon>file_upload</mat-icon>  
-                                    Attacher une capture
-                                </span> 
-                                <input type="file" #fileUpload id="fileUpload" (change)="changeListener()" multiple="multiple" style="display:none;" />
+                                    <span class="pointer btn-upload float-right" (click)="onClick()">  
+                                        <mat-icon>file_upload</mat-icon>  
+                                        Attacher une capture
+                                    </span> 
+                                    <input type="file" #fileUpload id="fileUpload" (change)="changeListener()" multiple="multiple" style="display:none;" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

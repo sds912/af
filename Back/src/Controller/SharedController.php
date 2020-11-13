@@ -275,7 +275,8 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
             "immos"=>$this->repoImmo->findBy(['inventaire' => $inventaire]),
-            "inventaire"=>$inventaire // Ajouter dans l'api
+            "inventaire"=>$inventaire, // Ajouter dans l'api,
+            "catalogues"=>$inventaire->getEntreprise()->getCatalogues()
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);
         return new Response($data,200);
@@ -317,8 +318,7 @@ class SharedController extends AbstractController
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
             "users"=>$users,
-            "devices"=>$devices,
-            "catalogues"=>$inventaire->getEntreprise()->getCatalogues()
+            "devices"=>$devices
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read','mobile_loc_read','mobile_users_read','matricule_read','device_read','user_idLoc']]);
         return new Response($data,200);

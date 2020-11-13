@@ -25,7 +25,9 @@ export class ListSupportsComponent implements OnInit {
     this.idUser = localStorage.getItem("idUser");
     this.supportService.lists().subscribe((res: any) => {
       console.log(res);
-      this.tickets = res;
+      if (res && res.length > 0) {
+        this.tickets = res.reverse();
+      }
     })
   }
 
