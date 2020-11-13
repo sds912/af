@@ -192,11 +192,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (immo.status == null) {
         // Immobilisations non retrouvés
         this.dataImmobilisations.nonRetrouvees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.nonRetrouvees.bon ++;
-        } else {
-          this.dataImmobilisations.nonRetrouvees.mauvais ++;
-        }
+        this.dataImmobilisations.nonRetrouvees.bon ++;
+        // this.dataImmobilisations.nonRetrouvees.mauvais ++;
       } else {
         // Immobilisations scannées
         this.dataImmobilisations.scannees.count ++;
@@ -249,6 +246,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       }
     })
+
+    const data1 = [
+      this.dataImmobilisations.scannees.bon,
+      this.dataImmobilisations.rajoutees.bon,
+      this.dataImmobilisations.codeBarreDefectueux.bon,
+      this.dataImmobilisations.nonRetrouvees.bon
+    ];
+
+    const data2 = [
+      this.dataImmobilisations.scannees.mauvais,
+      this.dataImmobilisations.rajoutees.mauvais,
+      this.dataImmobilisations.codeBarreDefectueux.mauvais,
+      this.dataImmobilisations.nonRetrouvees.mauvais
+    ];
+
+    // console.log(data1, data2);
 
     // this.dataEtat = {
     //   labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],

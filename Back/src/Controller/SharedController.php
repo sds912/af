@@ -696,8 +696,8 @@ class SharedController extends AbstractController
 
         $localitesId = $this->filtreByAffectation($_localitesId, $affectations);
 
-        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(),$affectations);//pour zone comptées
-        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(),$affectations);//pour zone entamées
+        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(), $affectations);//pour zone comptées
+        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(), $affectations);//pour zone entamées
 
         $zones = [
             'pended' => count($localitesId) - count(array_unique(array_merge($beginnedId, $closedId))),

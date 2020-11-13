@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Support;
+use App\Entity\Parametres;
 use App\Form\SupportType;
 use App\Repository\SupportRepository;
 use App\Repository\ParametresRepository;
@@ -33,17 +34,19 @@ class AddSupportController
         return $data;
     }
 
-    public function generateNumero(): number
+    public function generateNumero()
     {
         $lastNumero = 600000;
 
-        $parametres = $this->parametresRepository->findOneBy([]);
+        $parametre = $this->parametresRepository->findOneBy([]);
         
-        if (!$parametres) {
-            $parametres = new Parametres();
-            $parametres->setLastNumero($lastNumero);
-            $this->entityManager->persist($parametres);
+        if (!$parametre) {
+            $parametre = new Parametres();
+            $parametre->setLastNumero($lastNumero);
+            $this->entityManager->persist($parametre);
         }
+
+        $lastNumero = $parametre->getLastNumero();
 
         if (strpos(strval($lastNumero), "99999")) {
             $index = intval(substr(strval($lastNumero), 0, 1)) + 2;
@@ -52,7 +55,7 @@ class AddSupportController
 
         $lastNumero++;
 
-        $parametres->setLastNumero($lastNumero);
+        $parametre->setLastNumero($lastNumero);
         $this->entityManager->flush();
 
         return $lastNumero;

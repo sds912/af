@@ -7,7 +7,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Accueil',
     icon: 'fas fa-home',
     class: '',
-    roles: ['ROLE_Admin', 'ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
+    roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint','ROLE_CE' ,'ROLE_MI'],//ne pas oublier les guards en fonction des roles
     submenu: []
   }, // Admin et other 
   {
@@ -147,7 +147,7 @@ export const ROUTES: RouteInfo[] = [
     title: 'Feuille de comptage',
     icon: 'fas fa-book-open',
     class: '',
-    roles:['ROLE_Superviseur','ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint','ROLE_CE'],
+    roles:['ROLE_SuperViseurAdjoint','ROLE_CE'],
     submenu: []
   },
   {

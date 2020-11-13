@@ -20,7 +20,7 @@ const routes: Routes = [
     component: NewSupportComponent
   },
   {
-    path: 'infos',
+    path: 'infos/:id',
     component: InfosSupportComponent
   }
 ];
