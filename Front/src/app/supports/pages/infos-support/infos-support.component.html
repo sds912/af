@@ -194,6 +194,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
+                                    <div class="row" *ngIf="ticket.piecesJointes.length > 0">
+                                        <div class="col-md-6" *ngFor="let file of ticket.piecesJointes">
+                                            <img class="img-thumbnail" [src]="file" alt="">
+                                        </div>
+                                    </div>
                                     <div style="visibility: hidden" id="container-progegress-bar">
                                         <div id="border" class="active-border">
                                             <div id="circle" class="circle">

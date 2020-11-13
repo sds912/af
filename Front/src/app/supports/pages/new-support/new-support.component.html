@@ -77,7 +77,11 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-
+                                        <div class="row" *ngIf="files.length > 0">
+                                            <div class="col-md-6" *ngFor="let file of files">
+                                                <img class="img-thumbnail" [src]="file" alt="">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
