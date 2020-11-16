@@ -106,16 +106,6 @@
 .mdl-stepper-horizontal-alternative .mdl-stepper-step.editable-step .mdl-stepper-arrow* 
   display: none
 
-.mdl-stepper-horizontal-alternative .mdl-stepper-step.editable-step .mdl-stepper-arrow
-  -moz-transform: scaleX(-1)
-  /* Gecko */
-  -o-transform: scaleX(-1)
-  /* Opera */
-  -webkit-transform: scaleX(-1)
-  /* Webkit */
-  transform: scaleX(-1)
-  /* Standard */
-
 .mdl-stepper-horizontal-alternative .mdl-stepper-step.editable-step .mdl-stepper-circle:before 
   content: "\270E"
 
@@ -148,7 +138,6 @@
 ::ng-deep 
     .legend
         max-width: 285px
-        margin: 0 auto
         position: relative
         &::before
             content: 'Insatisfait'
@@ -161,6 +150,7 @@
             position: absolute
             bottom: 10px
             font-size: 16px
+            top: 18px
             
         li
             position: relative
@@ -169,6 +159,7 @@
                 top: -2px
                 left: 2px
                 color: #ffffff
+                font-size: 1.3rem
             .mat-radio-outer-circle,
             .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle
                 border-color: #ffffff
@@ -252,10 +243,13 @@
     padding-bottom: 1.4rem
     margin-bottom: 1rem !important
     color: #ffffff
+    p
+        font-size: 1.3rem
+
 
 .card-info
     padding: 10px 15px
-    border-radius: 15px
+    border-radius: 6px
     color: #ffffff
     &.bg-red
         background: red
@@ -263,3 +257,22 @@
         background: gray
     &.bg-orange
         background: #EF7711
+
+.legend-card
+  li
+    margin-bottom: 5px
+    .card-info
+      padding: 0 
+      width: 60px
+      border-radius: 2px
+      display: inline-block
+
+.div-close
+  .btn
+    padding: 5px 30px
+    font-size: 1.3rem
+  span
+    font-size: 1.1rem
+
+.satisfaction-notation
+  margin-left: 5rem !important

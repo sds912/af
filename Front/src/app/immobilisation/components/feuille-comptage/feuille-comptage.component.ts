@@ -332,7 +332,8 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     const inv=this.inventaires.find(inventaire=>inventaire.id==this.idCurrentInv)
     const superviseur=this.users.find(user=>user.roles[0]==='ROLE_SuperViseurGene' ||user.roles[0]==='ROLE_Superviseur')
     const general=superviseur?.roles[0]==='ROLE_SuperViseurGene'?"Général":""
-    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    // const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    const title=this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
 
     return [
       [

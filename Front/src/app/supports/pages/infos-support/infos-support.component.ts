@@ -14,15 +14,24 @@ export class InfosSupportComponent implements OnInit {
   currentContainer = 1;
   niveauSatisfaction: number;
   niveauSatisfactions: number[] = [1, 2, 3, 4, 5];
+  isSuperAdmin: boolean;
+  isAuteur: boolean;
+  wantClose: boolean = false;
+  goToNextStep: boolean = false;
 
   constructor(private route: ActivatedRoute, private supportService: SupportService, private securityService: SecurityService) { }
 
   ngOnInit(): void {
     this.ticket = null;
     this.securityService.showLoadingIndicatior.next(true);
+    this.isSuperAdmin = this.securityService.SupAdmin;
+    this.isAuteur = false;
+    this.wantClose = false;
     this.supportService.get(this.route.snapshot.params.id).subscribe((res: any) => {
       if (res && res.id) {
         this.ticket = res;
+        this.niveauSatisfaction = +this.ticket.satisfaction;
+          this.isAuteur = this.ticket.auteur.username === localStorage.getItem("username");
       }
       this.securityService.showLoadingIndicatior.next(false);
       setTimeout(() => {
@@ -34,6 +43,31 @@ export class InfosSupportComponent implements OnInit {
 
   getTicketStatus(ticket: any) {
     return this.supportService.getTicketStatus(ticket);
+  }
+
+  closeTicket() {
+    this.ticket.status = 3;
+    this.ticket.closed = true;
+    this.ticket.satisfaction = this.niveauSatisfaction;
+    this.supportService.update(this.ticket.id, this.ticket).subscribe((res: any) => {
+      console.log(res);
+      this.ticket = res;
+      this.wantClose = false;
+    });
+  }
+
+  nextStep() {
+    let status = +this.ticket.status;
+    if (status < 3) {
+      this.ticket.status = status + 1;
+      console.log(status, this.ticket);
+    }
+
+    this.supportService.update(this.ticket.id, this.ticket).subscribe((res: any) => {
+      console.log(res);
+      this.ticket = res;
+      this.goToNextStep = false;
+    });
   }
 
   createProgressBar() {

@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\SupportRepository;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,6 +25,9 @@ use Doctrine\ORM\Mapping as ORM;
  *     }
  *   }
  * )
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "licence": "exact"
+ * })
  * @ORM\Entity(repositoryClass=SupportRepository::class)
  */
 class Support

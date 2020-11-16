@@ -16,12 +16,20 @@ export class SupportService {
     return this.http.post(`${this.apiUrl}`, data);
   }
 
+  update(id: number, data: any) {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
+
   get(id: number) {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
-  lists() {
-    return this.http.get(`${this.apiUrl}`);
+  lists(licence?: string) {
+    let url = `${this.apiUrl}`;
+    if (licence) {
+      url += `?licence=${licence}`;
+    }
+    return this.http.get(url);
   }
 
   getTicketStatus(ticket: any) {
