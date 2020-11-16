@@ -11,6 +11,9 @@ import { SupportService } from '../../services/support.service';
 export class InfosSupportComponent implements OnInit {
   ticket: any;
   loading: boolean = false;
+  currentContainer = 1;
+  niveauSatisfaction: number;
+  niveauSatisfactions: number[] = [1, 2, 3, 4, 5];
 
   constructor(private route: ActivatedRoute, private supportService: SupportService, private securityService: SecurityService) { }
 

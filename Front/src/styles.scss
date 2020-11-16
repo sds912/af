@@ -86,13 +86,15 @@
     }
 }
 
-.btn-orange-raduis {
+.btn-orange {
     background-color: #ef7711;
     border: 1.5px solid #ffffff;
+    color: #ffffff;
+    border-radius: 5px;
 }
 
 .btn-40-rounded {
-    border-radius: 50%;
+    border-radius: 50% !important;
     width: 40px;
     height: 40px;
     padding: 0;

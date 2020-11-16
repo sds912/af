@@ -441,10 +441,14 @@ export class AffectationComponent implements OnInit {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
-  openFirst(id) {
+  openFirst(e, id) {
     this.openLocalite = id
     this.tabOpen[0] = id
     this.offUnderSub(1)
+    document.querySelectorAll('.pic-loc-first').forEach((ele: HTMLElement) => {
+      ele.classList.remove('active');
+    });
+    (e.target as HTMLElement).closest('.pic-loc-first').classList.add('active');
   }
   offUnderSub(j) {
     for (let i = j; i < this.tabOpen.length; i++) {
@@ -455,9 +459,14 @@ export class AffectationComponent implements OnInit {
     let l = this.getOneById(id)?.subdivisions
     return l ? l : []
   }
-  openOther(i, id) {
+  openOther(e, i, id) {
     this.tabOpen[i] = id
+    console.log('e')
     this.offUnderSub(i + 1)//les surdivisions en dessous
+    document.querySelectorAll('.pic-localite-'+i).forEach((ele: HTMLElement) => {
+      ele.classList.remove('active');
+    });
+    (e.target as HTMLElement).closest('.pic-localite-'+i).classList.add('active');
   }
   getRole(role, show = true):string {
     let r1 = '', r2 = ''

@@ -11,7 +11,7 @@ import { SupportService } from '../../services/support.service';
 export class ListSupportsComponent implements OnInit {
 
   tickets: any[];
-  displayedColumns: string[] = ['numero','type', 'objet', 'entreprise', 'auteur', 'assigne', 'status', 'actions'];
+  displayedColumns: string[] = ['numero','type', 'objet', 'entreprise', 'auteur', 'assigne', 'status'];
   
   inventaires = [];
   idUser: string;
