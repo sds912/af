@@ -192,7 +192,7 @@
                             <div class="col-md-12 text-right div-close">
                                 <span class="mr-5" *ngIf="!wantClose">Voulez-vous clôturer le ticket ? </span>
                                 <button type="button" *ngIf="!wantClose" (click)="wantClose = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
-                                <button type="button" *ngIf="!wantClose" class="btn btn-lg btn-secondary">Non</button>
+                                <button type="button" *ngIf="!wantClose" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
                                 <button type="button" *ngIf="wantClose" (click)="closeTicket()" class="btn btn-lg btn-success mr-3">Confirmer</button>
                                 <button type="button" *ngIf="wantClose" (click)="wantClose = false" class="btn btn-lg btn-secondary">Annuler</button>
                             </div>
@@ -201,7 +201,7 @@
                             <div class="col-md-12 text-right div-close">
                                 <span class="mr-5" *ngIf="!goToNextStep">Voulez-vous passer à l'étape suivante ? </span>
                                 <button type="button" *ngIf="!goToNextStep" (click)="goToNextStep = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
-                                <button type="button" *ngIf="!goToNextStep" class="btn btn-lg btn-secondary">Non</button>
+                                <button type="button" *ngIf="!goToNextStep" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
                                 <button type="button" *ngIf="goToNextStep" (click)="nextStep()" class="btn btn-lg btn-success mr-3">Confirmer</button>
                                 <button type="button" *ngIf="goToNextStep" (click)="goToNextStep = false"class="btn btn-lg btn-secondary">Annuler</button>
                             </div>
