@@ -112,7 +112,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     }
   }
   private subscribeToData(): void {
-    this.timerSubscription = combineLatest(timer(5000)).subscribe(() => this.refreshData());
+    this.timerSubscription = combineLatest(timer(2000)).subscribe(() => this.refreshData());
   }
   private refreshData(): void {
     this.getImmos();

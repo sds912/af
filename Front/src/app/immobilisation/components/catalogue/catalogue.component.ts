@@ -191,7 +191,10 @@ export class CatalogueComponent implements OnInit {
         }
         // console.log(obj);
 
-        this.sharedService.postElement(obj, '/catalogues').then(rep => console.log(rep))
+        this.sharedService.postElement(obj, '/catalogues').then((rep: any) => {
+          console.log(rep);
+          this.allCatalogue.push(rep);
+        })
 
 
 

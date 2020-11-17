@@ -100,8 +100,8 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
   private subscribeToData(): void {
     this.timerSubscription = combineLatest(timer(5000)).subscribe(() => this.refreshData());
   }
-  private refreshData(): void {
-    this.getImmos();
+  private refreshData(force?: boolean): void {
+    this.getImmos(force);
     this.subscribeToData();
   }
   sameComponent(){
@@ -147,14 +147,14 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.editRow(row, false)
   }
 
-  getImmos() {
+  getImmos(force?: boolean) {
     if (this.firstLoad) {
       this.securityServ.showLoadingIndicatior.next(true);
       this.firstLoad = false;
     }
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv,'status=3').then((e) => {
       this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
-      if (this.data.length != this.allImmos.length) {
+      if (force || (this.data.length != this.allImmos.length)) {
         this.setData(this.allImmos);
       }
       this.securityServ.showLoadingIndicatior.next(false);
@@ -214,7 +214,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
   inventaireChange(id) {
     this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id   
     this.getAffectationByInv(this.idCurrentInv); 
-    this.refreshData();
+    this.refreshData(true);
   }
 
   showDialogImmo() {
@@ -283,7 +283,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.inventaireServ.addCode({id:id,code:code,match:match}).then(
       ()=>{
         this.showNotification('bg-success','Enregistré','top','center')
-        this.refreshData();
+        this.refreshData(true);
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeEditModal.nativeElement.click();
         this.closeMatchModal.nativeElement.click();

@@ -84,18 +84,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-7 mx-auto">
+                                        <span class="pointer btn-upload" (click)="onClick()">  
+                                            <mat-icon>file_upload</mat-icon>  
+                                            Attacher une capture
+                                        </span> 
+                                        <input type="file" #fileUpload id="fileUpload" (change)="changeListener()" multiple="multiple" style="display:none;" />    
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer">
                             <div class="row band-gray">
-                                <div class="col-md-7 mx-auto">
-                                    <button type="submit" click class="btn btn-submit btn-border-radius mr-3" [disabled]="ticketForm.invalid">Envoyer <i class="fas fa-chevron-right ml-5" aria-hidden="true"></i></button>
-
-                                    <span class="pointer btn-upload float-right" (click)="onClick()">  
-                                        <mat-icon>file_upload</mat-icon>  
-                                        Attacher une capture
-                                    </span> 
-                                    <input type="file" #fileUpload id="fileUpload" (change)="changeListener()" multiple="multiple" style="display:none;" />
+                                <div class="col-md-6 mx-auto text-right">
+                                    <button type="submit" click class="btn btn-submit btn-border-radius mr-3" [disabled]="ticketForm.invalid">
+                                        <span [hidden]="isLoading">Envoyer <i class="fas fa-chevron-right ml-5" aria-hidden="true"></i></span>
+                                        <span [hidden]="!isLoading" class="text-center">
+                                            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
