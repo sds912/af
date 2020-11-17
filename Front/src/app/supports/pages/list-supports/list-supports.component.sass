@@ -1,0 +1,23 @@
+table
+  width: 100%
+  .ele-ticket
+    z-index: 1
+    -webkit-transition: all .4s ease-in-out
+    -moz-transition: all .4s ease-in-out
+    -o-transition: all .4s ease-in-out
+    -ms-transition: all .4s ease-in-out
+    &:hover
+      background: #EF7711
+      cursor: pointer
+      z-index: 10
+      box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.02)
+      -webkit-transform: scale(03)
+      -moz-transform: scale(1.01)
+      -o-transform: scale(1.01)
+      transform: scale(1.01)
+      td
+        color: #ffffff
+
+::ng-deep .badge-warning
+  background: #EF7711 !important
+  color: #ffffff !important

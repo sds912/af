@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef, OnDestroy } from '@angular/core';
 import { ImmobilisationService } from '../../services/immobilisation.service';
 import { AdminService } from 'src/app/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
@@ -16,13 +16,15 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as Excel from "exceljs/dist/exceljs.min.js";
 import * as ExcelProper from "exceljs";
 import * as fs from 'file-saver';
+import { timer, combineLatest } from 'rxjs';
+
 let workbook: ExcelProper.Workbook = new Excel.Workbook();
 @Component({
   selector: 'app-feuille-comptage',
   templateUrl: './feuille-comptage.component.html',
   styleUrls: ['./feuille-comptage.component.sass']
 })
-export class FeuilleComptageComponent implements OnInit {
+export class FeuilleComptageComponent implements OnInit, OnDestroy {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
@@ -68,6 +70,9 @@ export class FeuilleComptageComponent implements OnInit {
   entreprise=null
   users= [];
   afterAjustement=false
+  timerSubscription: any;
+  firstLoad: boolean;
+
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
@@ -93,12 +98,25 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   ngOnInit(): void {//faire le get status pour les details
+    this.firstLoad = true;
     this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getInventaireByEse();
     this.sameComponent()
     this.getOneEntreprise()
+  }
+  public ngOnDestroy(): void {
+    if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+    }
+  }
+  private subscribeToData(): void {
+    this.timerSubscription = combineLatest(timer(5000)).subscribe(() => this.refreshData());
+  }
+  private refreshData(): void {
+    this.getImmos();
+    this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
@@ -159,14 +177,26 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   getImmos() {
-    this.securityServ.showLoadingIndicatior.next(true);
+    if (this.firstLoad) {
+      this.securityServ.showLoadingIndicatior.next(true);
+      this.firstLoad = false;
+    }
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
-      this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
-      this.setData(this.allImmos)
+      this.allImmos = e?.filter(immo=>immo.localite==null || 
+        this.securityServ.superviseur || this.securityServ.superviseurGene || 
+        this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId  ||
+        this.securityServ.chefEquipe && immo?.localite && this.isAffected(immo?.localite?.id)
+      );
+      if (this.data.length != this.allImmos.length) {
+        this.setData(this.allImmos);
+      }
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
     });
+  }
+  isAffected(idLoc):boolean{
+    return this.affectations.find(aff=>aff?.localite?.id==idLoc)?true:false
   }
 
   setData(data){
@@ -194,7 +224,7 @@ export class FeuilleComptageComponent implements OnInit {
         this.inventaires = rep?.reverse();
         this.idCurrentInv = this.inventaires[0]?.id;
         this.getAffectationByInv(this.idCurrentInv);
-        this.getImmos();
+        this.refreshData();
         this.securityServ.showLoadingIndicatior.next(false);
       }, error => {
         this.securityServ.showLoadingIndicatior.next(false);
@@ -222,7 +252,7 @@ export class FeuilleComptageComponent implements OnInit {
   inventaireChange(id) {
     this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id    
     this.getAffectationByInv(this.idCurrentInv);
-    this.getImmos();
+    this.refreshData();
   }
 
   showDialogImmo() {
@@ -292,7 +322,7 @@ export class FeuilleComptageComponent implements OnInit {
   }
 
   getImage() {
-    if (this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
+    if (this.entreprise && this.entreprise.image && this.entreprise.image != IMAGE64) return [{ image: this.entreprise.image, width: 75 }]
     return [{}]
   }
 
@@ -302,7 +332,8 @@ export class FeuilleComptageComponent implements OnInit {
     const inv=this.inventaires.find(inventaire=>inventaire.id==this.idCurrentInv)
     const superviseur=this.users.find(user=>user.roles[0]==='ROLE_SuperViseurGene' ||user.roles[0]==='ROLE_Superviseur')
     const general=superviseur?.roles[0]==='ROLE_SuperViseurGene'?"Général":""
-    const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    // const title="FEUILLE DE COMPTAGE DES "+this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
+    const title=this.getStatus(this.statusImmo).replace(/é/gi,"e").toUpperCase()
 
     return [
       [
@@ -434,13 +465,13 @@ export class FeuilleComptageComponent implements OnInit {
       let d=[
         { text: this.afterAjustement?immo.endLibelle:immo.libelle ,fontSize:8},
         { text: this.getEtat(immo.endEtat) ,fontSize:8},
-        { text: this.locName(immo.localite.id) ,fontSize:8},
-        { text: immo.lecteur.nom ,fontSize:8},
+        { text: immo.localite ? this.locName(immo.localite.id) : '' ,fontSize:8},
+        { text: immo.lecteur ? immo.lecteur.nom : '' ,fontSize:8},
         { text: this.formattedDate(immo.dateLecture) ,fontSize:8},
-        { text: this.getChefEquipOf(immo.localite.id) ,fontSize:8}
+        { text: immo.localite ? this.getChefEquipOf(immo.localite.id) : '',fontSize:8}
       ]
       if(this.statusImmo!=3)d=[{ text: immo.code?immo.code:"-" ,fontSize:8},...d]
-      if(supAdjoint){d.push({ text: this.getSupadjoint(immo.localite) ,fontSize:8})}
+      if(supAdjoint){d.push({ text: immo.localite ? this.getSupadjoint(immo.localite) : '',fontSize:8})}
       tab.push(d)
     }
     );

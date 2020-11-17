@@ -5,9 +5,6 @@
               <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <ul class="breadcrumb breadcrumb-style ">
                     <li class="breadcrumb-item mr-4">
-                        <h4 class="page-title">Choisir un inventaire</h4>
-                    </li>
-                    <li class="breadcrumb-item mr-4">
                       <select [(ngModel)]="idCurrentInv" class="select-trie" style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
                           <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">
                               Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
@@ -47,7 +44,7 @@
 
                               <div class="row pb-3">
                                 <div class="col-4">
-                                    <input type="text" class="form-control" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
+                                    <input type="text" class="form-control" style="width: 96% !important;" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
                                 </div>
                                 
                                 <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
@@ -56,7 +53,7 @@
                               </div>
 
                               <div class="row">
-                                <div class="col-4 row pb-4 pr-0">
+                                <div class="col-4 row pb-4">
                                     <div class="col-5 pr-0" [title]="subdivisions[0]">{{longText(subdivisions[0],17)}}</div>
                                     <div class="col-7 pr-0">
                                         <select class="select-trie" style="width: 100%;background-color: white;" (change)="openFirst($event.target.value)" [(ngModel)]="firstSearchLoc">

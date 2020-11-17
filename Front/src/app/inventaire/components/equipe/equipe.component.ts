@@ -10,6 +10,8 @@ import Swal from 'sweetalert2';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import * as $ from 'jquery';
 import { ROUTES } from '../../../layout/sidebar/sidebar-items';
+import * as XLSX from 'xlsx';
+type AOA = any[][];
 
 @Component({
   selector: 'app-equipe',
@@ -22,6 +24,7 @@ export class EquipeComponent implements OnInit {
   @ViewChild('closeEditModal', { static: false }) closeEditModal;
   @ViewChild('formDirective') private formDirective: NgForm;
   rows = [];
+  data_dii = [];
   colNmbre = 5
   selectedRowData: selectRowInterface;
   newUserImg = '';
@@ -71,7 +74,8 @@ export class EquipeComponent implements OnInit {
   searchValue = ""
   subdivisions = []//leurs libelles
   tabOpen = []//les subdivisions ouvertes
-  openLocalite = null
+  openLocalite = null;
+  outUsers: [];
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private adminServ: AdminService, private sharedService: SharedService, public securityServ: SecurityService) {
     this.editForm = this.fb.group({
       id: [0],
@@ -95,6 +99,7 @@ export class EquipeComponent implements OnInit {
     this.getEntreprises()
     this.securityServ.getUser()
     this.sidebarItems = this.useInSideBI(ROUTES);
+    this.outUsers = [];
   }
   useInSideBI(tab) {
     let objs = []
@@ -164,7 +169,7 @@ export class EquipeComponent implements OnInit {
     this.isMembreEquipe = false
     this.isGuest = false
     if (role == "Chef d'équipe" || role == "Chef d'équipe de comptage" ||
-        role == "ROLE_CE" || role == "Membre d'équipe de comptage" || role == "Membre inventaire" || role == "ROLE_MI") {
+      role == "ROLE_CE" || role == "Membre d'équipe de comptage" || role == "Membre inventaire" || role == "ROLE_MI") {
       this.isMembreEquipe = true
     } else if (role == "Guest" || role == "ROLE_Guest") {
       this.isGuest = true
@@ -260,9 +265,18 @@ export class EquipeComponent implements OnInit {
   }
   nomChange(nom) {
     if (!this.update) {
-      let u = nom.replace(/\ /g, "").replace(/\é/g, "e").replace(/\è/g, "e")
-      this.editForm.get('username').setValue(u + '@gestion-immo.com')
+     let u = nom.replace(/\ /g, "").replace(/\é/g, "e").replace(/\è/g, "e")
+     this.editForm.get('username').setValue(u + '@gestion-immo.com')
     }
+  }
+  keyUpNomChange(nom: string) {
+    this.adminServ.getUsers(`status=out&nom=${nom}`).then((rep: any) => {
+      this.outUsers = rep;
+    });
+  }
+  selectOutUser(outUser) {
+    this.update = true;
+    this.editRow(outUser);
   }
   updateUser(user) {
     this.details = false
@@ -286,7 +300,7 @@ export class EquipeComponent implements OnInit {
     if (user.menu) this.tabMenu = user.menu
     user.entreprises.forEach(e => this.addEntreprise(e.id));
     this.tabLoc = []
-    user.localites.forEach(l => this.checkLoc(l,true));
+    user.localites.forEach(l => this.checkLoc(l, true));
     this.tabOpen = []
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
@@ -572,11 +586,11 @@ export class EquipeComponent implements OnInit {
   inTab(valeur, tab) {
     return tab?.find(id => id == valeur);
   }
-  checkLoc(loc,addOnly=false) {
+  checkLoc(loc, addOnly = false) {
     var index = this.tabLoc.indexOf(loc.id);
-    if(index > -1 && !addOnly) {
+    if (index > -1 && !addOnly) {
       this.tabLoc.splice(index, 1);
-    }else if(index <= -1) {
+    } else if (index <= -1) {
       this.tabLoc.push(loc.id)
       const idParent = loc.idParent
       if (idParent && !this.inTab(idParent, this.tabLoc)) this.checkLoc(this.getOnById(idParent))//cocher les parents recursif
@@ -619,6 +633,72 @@ export class EquipeComponent implements OnInit {
       }
     });
     return change
+  }
+  getAllAgents(evt: any) {
+
+    const tabdii = [];
+
+    console.log();
+
+
+    const target: DataTransfer = <DataTransfer>(evt.target);
+    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+    const reader: FileReader = new FileReader();
+    reader.onload = async (e: any) => {
+      /* read workbook */
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+
+      /* grab first sheet */
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      /* save data */
+      this.data_dii = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
+
+
+      for (let index = 1; index < this.data_dii.length; index++) {
+        const element = this.data_dii[index];
+        tabdii.push(element);
+      }
+
+      if (this.idCurrentEse == 0) {
+        this.showNotification('bg-red', 'Selectionner Une Entité', 'top', 'center')
+
+      } else {
+        for await (const iterator of tabdii) {
+          const obj = {
+            id: 0,
+            nom: iterator[0],
+            entreprises: ["api/entreprises/" + this.idCurrentEse],
+            username: iterator[3],
+            poste: iterator[1],
+            departement: iterator[2],
+            password: "azerty",
+            status: "OUT",
+            image: "exemple.jpg"
+          };
+          // console.log(obj);
+          this.securityServ.showLoadingIndicatior.next(true);
+          this.adminServ.addUser(obj).then(rep => {
+            // this.getUsers();
+          });
+
+        }
+        this.securityServ.showLoadingIndicatior.next(false);
+        this.showNotification('bg-success', 'Fichier Enregistré', 'top', 'center')
+      }
+
+
+
+      // console.log(this.data_dii);  
+
+
+
+      // Verification
+
+    };
+    reader.readAsBinaryString(target.files[0]);
   }
 }
 export interface selectRowInterface {

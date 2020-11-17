@@ -20,19 +20,14 @@ class AddLocaliteController
 
     public function __invoke(Localite $data): Localite
     {
-        $localites = $this->localiteRepository->findBy(['level' => $data->getLevel(), 'nom' => $data->getNom()]);
+        $localite = $this->localiteRepository->findOneBy([
+            'level' => $data->getLevel(),
+            'nom' => $data->getNom(),
+            'parent' => $data->getParent() ? $data->getParent()->getId() : null
+        ]);
 
-        foreach ($localites as $localite) {            
-            // Si le localite existe déjà et qu'il n'a pas de parent
-            $localiteHasNotParent = $localite && !$localite->getParent();
-
-            // Si le localite existe déjà et qu'il a de parent
-            $localiteHasParent = $localite && $localite->getParent() && $data->getParent() && $data->getParent()->getId() == $localite->getParent()->getId();
-
-            if ($localiteHasNotParent || $localiteHasParent) {
-                $data = $localite;
-                break;
-            }
+        if ($localite) {
+            return $localite;
         }
 
         return $data;

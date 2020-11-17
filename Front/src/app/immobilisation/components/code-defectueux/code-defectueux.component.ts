@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef, OnDestroy } from '@angular/core';
 import { ImmobilisationService } from '../../services/immobilisation.service';
 import { AdminService } from 'src/app/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
@@ -10,12 +10,14 @@ import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PlaningService } from 'src/app/planing/services/planing.service';
+import { timer, combineLatest } from 'rxjs';
+
 @Component({
   selector: 'app-code-defectueux',
   templateUrl: './code-defectueux.component.html',
   styleUrls: ['./code-defectueux.component.sass']
 })
-export class CodeDefectueuxComponent implements OnInit {
+export class CodeDefectueuxComponent implements OnInit, OnDestroy {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
@@ -62,6 +64,9 @@ export class CodeDefectueuxComponent implements OnInit {
   localites = [];
   affectations = [];
   matchLibelle=""
+  timerSubscription: any;
+  firstLoad: boolean;
+
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
@@ -80,11 +85,24 @@ export class CodeDefectueuxComponent implements OnInit {
   }
 
   ngOnInit(): void {//faire le get status pour les details
+    this.firstLoad = true;
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getAllLoc()
     this.getInventaireByEse();
     this.sameComponent()
+  }
+  public ngOnDestroy(): void {
+    if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+    }
+  }
+  private subscribeToData(): void {
+    this.timerSubscription = combineLatest(timer(5000)).subscribe(() => this.refreshData());
+  }
+  private refreshData(): void {
+    this.getImmos();
+    this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
@@ -130,10 +148,15 @@ export class CodeDefectueuxComponent implements OnInit {
   }
 
   getImmos() {
-    this.securityServ.showLoadingIndicatior.next(true);
+    if (this.firstLoad) {
+      this.securityServ.showLoadingIndicatior.next(true);
+      this.firstLoad = false;
+    }
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv,'status=3').then((e) => {
       this.allImmos = e?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
-      this.setData(this.allImmos)
+      if (this.data.length != this.allImmos.length) {
+        this.setData(this.allImmos);
+      }
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
       this.securityServ.showLoadingIndicatior.next(false);
@@ -165,7 +188,7 @@ export class CodeDefectueuxComponent implements OnInit {
       this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
         this.inventaires = rep?.reverse();
         this.idCurrentInv = this.inventaires[0]?.id;
-        this.getImmos();
+        this.refreshData();
         this.getAffectationByInv(this.idCurrentInv);
         this.securityServ.showLoadingIndicatior.next(false);
       }, error => {
@@ -191,7 +214,7 @@ export class CodeDefectueuxComponent implements OnInit {
   inventaireChange(id) {
     this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id   
     this.getAffectationByInv(this.idCurrentInv); 
-    this.getImmos();
+    this.refreshData();
   }
 
   showDialogImmo() {
@@ -260,7 +283,7 @@ export class CodeDefectueuxComponent implements OnInit {
     this.inventaireServ.addCode({id:id,code:code,match:match}).then(
       ()=>{
         this.showNotification('bg-success','Enregistré','top','center')
-        this.getImmos()
+        this.refreshData();
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeEditModal.nativeElement.click();
         this.closeMatchModal.nativeElement.click();

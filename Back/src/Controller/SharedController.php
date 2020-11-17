@@ -275,7 +275,8 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
             "immos"=>$this->repoImmo->findBy(['inventaire' => $inventaire]),
-            "inventaire"=>$inventaire
+            "inventaire"=>$inventaire, // Ajouter dans l'api,
+            "catalogues"=>$inventaire->getEntreprise()->getCatalogues()
         ];
         $data = $serializer->serialize($data, 'json', ['groups' => ['mobile_inv_read']]);
         return new Response($data,200);
@@ -439,7 +440,40 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->find($data['id']);
         $this->treatmentNewLoc($data,$inventaire,$tokenRepo);
         $this->treatmentImmo($data,$inventaire);
+        $closed = $inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
+        $beginned = $inventaire->getBeginnedLoc() ? $inventaire->getBeginnedLoc() : [];
+        if(isset($data["close"])) {
+            foreach ($data['close'] as $value) {
+                $locs = $this->repoLoc->findBy(['parent' => $value]);
+                if (count($locs) > 0) {
+                    $childs = $this->getChilds($locs);
+                    foreach ($childs as $child) {
+                        $closed[] = $child->getId();
+                    }
+                } else {
+                    $closed[] = $value;
+                }
+            }
+            $closed=array_unique($closed);
+        }
+        if(isset($data["begin"])) {
+            foreach ($data['begin'] as $value) {
+                $locs = $this->repoLoc->findBy(['parent' => $value]);
+                if (count($locs) > 0) {
+                    $childs = $this->getChilds($locs);
+                    foreach ($childs as $child) {
+                        $beginned[] = $child->getId();
+                    }
+                } else {
+                    $beginned[] = $value;
+                }
+            }
+            $beginned = array_unique($beginned);
+        }
+        $inventaire->setClosedLoc($closed);
+        $inventaire->setBeginnedLoc($beginned);
         $this->manager->flush();
+
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
             Shared::CODE => 200
@@ -623,6 +657,146 @@ class SharedController extends AbstractController
         $inv=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $immos=$this->repoImmo->findBy(["inventaire"=>$inv,"approvStatus"=>0]);
         return $this->json(count($immos));
+    }
+
+    /**
+     * @Route("/dashbord/{id}", methods={"POST"})
+     */
+    public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository, $id=null){
+        $data=Shared::getData($request);
+
+        // $loc = $this->repoLoc->find(1);
+        // dd($this->getLastLevelChilds($loc));
+
+        $inventaire=$this->repoInv->find($data['id']);
+        //si superviseur ou sup gen tous les immos
+        $immos=$this->repoImmo->findByInventaire($inventaire);
+
+        $affectations = [];
+
+        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
+            //si sup adjoint les immos de sa loc
+           $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo); 
+        }elseif($this->droit->isGranted('ROLE_CE')){
+            //si chef equipes les immos ou il est
+            $affectations=$repoAff->findBy(['user'=>$this->userCo, 'inventaire'=>$inventaire]);
+            $immos=$this->getImmoInMyLocalities($affectations,$immos);
+        }elseif($this->droit->isGranted('ROLE_MI')){
+            //mi les immos qu ils a scannees
+            $user=$this->repoUser->find($this->userCo->getId());
+            $immos=$user->getScanImmos();
+        }
+
+        $allLocalites = array_unique($this->getChilds($inventaire->getLocalites()));
+
+        $_localitesId = [];
+
+        foreach ($allLocalites as $value) {
+            $_localitesId[] = $value->getId();
+        }
+
+        $localitesId = $this->filtreByAffectation($_localitesId, $affectations);
+
+        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(), $affectations);//pour zone comptées
+        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(), $affectations);//pour zone entamées
+
+        $zones = [
+            'pended' => count($localitesId) - count(array_unique(array_merge($beginnedId, $closedId))),
+            'beginned' => count($beginnedId),
+            'closed' => count($closedId)
+        ];
+
+        // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
+
+        $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
+
+        $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
+        $allUsers = $inventaire->getEntreprise()->getUsers();
+        $prisConnaissance = count($approv);
+
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers)) - $prisConnaissance];
+
+        //me les immos qu ils a scannees
+        // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
+        return $this->json(['zones' => $zones, 'immobilisations' => $immos, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
+    }
+
+    public function getChilds($localites) {
+        $listChilds = [];
+        foreach ($localites as $localite) {
+            $childs = $this->repoLoc->findBy(['parent' => $localite]);
+            if (count($childs) > 0) {
+                $listChilds = $this->getChilds($childs);
+            } else {
+                $listChilds[] = $localite;
+            }
+        }
+        return $listChilds;
+    }
+
+    public function getLastLevelChilds($localite) {
+        $firstChilds = $this->repoLoc->findBy(['parent' => $localite->getId()]);
+        $lastChilds = [];
+
+        foreach ($firstChilds as $firstChild) {
+            $childs = $this->repoLoc->findBy(['parent' => $firstChild->getId()]);
+            while (is_array($childs) && count($childs) > 0) {
+                $childs = $this->repoLoc->findBy(['parent' => $localite->getId()]);
+            }
+        }
+        return $lastChilds;
+    }
+
+    public function getImmoInMyLocalities($affectations,$immos){
+        $myImmos=[];
+        foreach ($immos as $immo) {
+            foreach ($affectations as $affectation) {
+                if($immo instanceof Immobilisation && $immo->getLocalite() &&
+                   $affectation instanceof Affectation && $affectation->getLocalite() && 
+                   $affectation->getLocalite()->getId()==$immo->getLocalite()->getId()){
+                    array_push($myImmos,$immo);
+                    break;
+                }
+            }
+        }
+        return $myImmos;
+    }
+
+    public function loopOfImmo($immos){
+        $idZones=[];
+        foreach ($immos as $immo) {
+            if($immo instanceof Immobilisation && $immo->getLocalite()){
+                array_push($idZones,$immo->getId());
+            }
+        }
+        $idZones=array_unique($idZones);
+        return [$idZones];
+    }
+
+    public function filtreByAffectation($allId, $affectations) {
+        if (!is_array($allId)) {
+            $allId = [];
+        }
+        if($this->droit->isGranted('ROLE_SuperViseurGene') || $this->droit->isGranted('ROLE_SuperViseurAdjoint') || $this->droit->isGranted('ROLE_SuperViseur')){
+            return $allId;
+        }
+        $ids=[];
+        foreach ($affectations as $affectation) {
+            if($affectation instanceof Affectation && $affectation->getLocalite() && 
+                in_array($affectation->getLocalite()->getId(),$allId)){
+                array_push($ids,$affectation->getLocalite()->getId());
+                break;
+            }
+        }
+        return $ids;
+    }
+
+    public function onlyId($collection){
+        $ids=[];
+        foreach ($collection as $object) {
+            array_push($ids,$object->getId());
+        }
+        return $ids;
     }
 
 

@@ -54,14 +54,16 @@
                                         <li *ngIf="afterAjustement">
                                             <div class="icon-button-demo">
                                                 <button class="btn btn-success pt-0 pb-0 mr-4" (click)="generateExcel()" title="Exporter le fichier des immobilisations ajusté au {{ getExcelDate() }}">
-                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                    <!-- <mat-icon class="col-white">file_upload</mat-icon> -->
+                                                    <i class="fas fa-file-excel fa-2x"></i>
                                                 </button>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" (click)="generatePdf()" title="Exporter PDF">
-                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                    <!-- <mat-icon class="col-white">file_upload</mat-icon> -->
+                                                    <i class="fas fa-file-pdf fa-2x"></i>
                                                 </button>
                                             </div>
                                         </li>

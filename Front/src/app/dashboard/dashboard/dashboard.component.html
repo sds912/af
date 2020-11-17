@@ -21,25 +21,25 @@
                     <div class="p-grid">
                         <div class="p-col-12 p-col-md-12">
                             <div class="p-grid data-zone">
-                                <div class="p-col-12 p-md-4 p-lg-4">
-                                    <p-card header="Zone comptées" styleClass="bg-green">
-                                        <h2>155</h2>
+                                <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
+                                    <p-card header="Zones comptées" styleClass="card-zone bg-green">
+                                        <h2>{{this.dataZones.closed}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>
                                     </p-card>
                                 </div>
-                                <div class="p-col-12 p-md-4 p-lg-4">
-                                    <p-card header="Zone entamées" styleClass="bg-orange">
-                                        <h2>353</h2>
+                                <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
+                                    <p-card header="Zones entamées" styleClass="card-zone bg-orange">
+                                        <h2>{{this.dataZones.beginned}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>
                                     </p-card>
                                 </div>
-                                <div class="p-col-12 p-md-4 p-lg-4">
-                                    <p-card header="Zone non comptées" styleClass="bg-red">
-                                        <h2>1 204</h2>
+                                <div class="p-col-12 p-md-4 p-lg-4 hover-cursor-pointer">
+                                    <p-card header="Zones non comptées" styleClass="card-zone bg-red">
+                                        <h2>{{this.dataZones.pended}}</h2>
                                         <div class="img-diagram">
                                             <img src="assets/images/diagram.png" alt="">
                                         </div>
@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="p-col-12 p-md-7 p-lg-7 circle-progress-bars">
                                     <circle-progress class="circle-progress-bar p-mr-auto"
-                                        [percent]="75"
+                                        [percent]="dataInstructions.pasPrisConnaissance"
                                         [radius]="100"
                                         [outerStrokeColor]="'#0f74bc'"
                                         [innerStrokeColor]="'#c6cacb'"
@@ -81,7 +81,7 @@
                                     ></circle-progress>
         
                                     <circle-progress class="circle-progress-bar"
-                                        [percent]="50"
+                                        [percent]="dataInstructions.prisConnaissance"
                                         [radius]="100"
                                         [outerStrokeColor]="'#f47f38'"
                                         [innerStrokeColor]="'#c6cacb'"
@@ -107,7 +107,7 @@
                 <div *ngIf="superviseurGene || superviseur" class="p-col-3 p-col-md-3 p-col-lg-3" style="padding-top: 18px;">
                     <p-card header="Le nombre d'inventaire clôturé" styleClass="card-inventaire">
                         <circle-progress
-                            [percent]="65"
+                            [percent]="dataInventairesCloses"
                             [radius]="100"
                             [outerStrokeColor]="'#f47f38'"
                             [backgroundColor]="'#c6cacb'"
@@ -133,22 +133,22 @@
                         <div class="p-grid">
                             <div [ngClass]="{'p-col-6 p-col-md-6 p-col-lg-6 p-mt-5':superviseurGene || superviseur, 'p-col-12 p-col-md-12 p-col-lg-12 p-mt-6': !superviseurGene && !superviseur}">
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-orange" [value]="40" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-orange" [value]="dataImmobilisations.scannees.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations scannées (IS)</small>
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-purple" [value]="15" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-purple" [value]="dataImmobilisations.rajoutees.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations rajoutées (IR)</small>
                                 </div>
                 
                                 <div class="progress-bar p-mb-4">
-                                    <p-progressBar class="customProgress bg-blue" [value]="65" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-blue" [value]="dataImmobilisations.codeBarreDefectueux.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations avec code barre défecteux (ICD)</small>
                                 </div>
                 
                                 <div class="progress-bar">
-                                    <p-progressBar class="customProgress bg-yellow" [value]="90" [unit]="''"></p-progressBar>
+                                    <p-progressBar class="customProgress bg-yellow" [value]="dataImmobilisations.nonRetrouvees.count" [unit]="''"></p-progressBar>
                                     <small>Les immobilisations non retrouvées (ISNR)</small>
                                 </div>
                             </div>

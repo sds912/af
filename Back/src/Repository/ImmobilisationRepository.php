@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Immobilisation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @method Immobilisation|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +16,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ImmobilisationRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /** @var AuthorizationCheckerInterface */
+    private $droit;
+    public function __construct(ManagerRegistry $registry,AuthorizationCheckerInterface $checker)
     {
         parent::__construct($registry, Immobilisation::class);
+        $this->droit=$checker;
+    }
+
+    /**
+     * @return Immobilisation[] Returns an array of Immobilisation objects
+     */
+    public function findImmoSupAdjoint(User $user){
+        $immos= $this->createQueryBuilder('i')
+        ->join("i.localite",'localite')->
+        andWhere('localite.createur = :user')
+        ->setParameter('user', $user);
+        return $immos->getQuery()->getResult();
     }
 
     // /**

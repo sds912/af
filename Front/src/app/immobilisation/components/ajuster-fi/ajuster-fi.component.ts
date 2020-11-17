@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef, OnDestroy } from '@angular/core';
 import { ImmobilisationService } from '../../services/immobilisation.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
@@ -9,12 +9,14 @@ import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PlaningService } from 'src/app/planing/services/planing.service';
+import { timer, combineLatest } from 'rxjs';
+
 @Component({
   selector: 'app-ajuster-fi',
   templateUrl: './ajuster-fi.component.html',
   styleUrls: ['./ajuster-fi.component.sass']
 })
-export class AjusterFiComponent implements OnInit {
+export class AjusterFiComponent implements OnInit, OnDestroy {
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
@@ -63,6 +65,9 @@ export class AjusterFiComponent implements OnInit {
   approuvText=""
   isUpdate=false
   confirmationValue=false
+  timerSubscription: any;
+  firstLoad: boolean;
+
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
     public securityServ: SecurityService,
@@ -101,11 +106,24 @@ export class AjusterFiComponent implements OnInit {
   }
 
   ngOnInit(): void {//faire le get status pour les details
+    this.firstLoad = true;
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getAllLoc()
     this.getInventaireByEse();
     this.sameComponent()
+  }
+  public ngOnDestroy(): void {
+    if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+    }
+  }
+  private subscribeToData(): void {
+    this.timerSubscription = combineLatest(timer(5000)).subscribe(() => this.refreshDataT());
+  }
+  private refreshDataT(): void {
+    this.getImmos();
+    this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
@@ -174,10 +192,15 @@ export class AjusterFiComponent implements OnInit {
   }
 
   getImmos() {
-    this.securityServ.showLoadingIndicatior.next(true);
+    if (this.firstLoad) {
+      this.securityServ.showLoadingIndicatior.next(true);
+      this.firstLoad = false;
+    }
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
       this.allImmos = e?.filter(immo=>this.securityServ.superviseurAdjoint && immo.localite?.createur.id==this.myId || !this.securityServ.superviseurAdjoint);
-      this.setData(this.allImmos)
+      if (this.data.length != this.allImmos.length) {
+        this.setData(this.allImmos);
+      }
       this.securityServ.showLoadingIndicatior.next(false);
       if(this.route.snapshot.params["id"]){
         const immo=this.allImmos.find(im=>im.id==this.sharedService.decodId(this.route.snapshot.params["id"]))        
@@ -220,7 +243,7 @@ export class AjusterFiComponent implements OnInit {
       this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
         this.inventaires = rep?.reverse();
         this.idCurrentInv = this.inventaires[0]?.id;
-        this.getImmos();
+        this.refreshDataT();
         this.getAffectationByInv(this.idCurrentInv);
         this.securityServ.showLoadingIndicatior.next(false);
       }, error => {

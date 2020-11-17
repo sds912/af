@@ -10,6 +10,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 /**
@@ -68,6 +70,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *      }
  *  }
  * )
+ * @ApiFilter(SearchFilter::class, properties={
+ *   "nom": "partial",
+ *   "username": "partial",
+ *   "status": "partial"
+ * })
  */
 class User implements UserInterface
 {
@@ -75,13 +82,13 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read", "support_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user_read","mobile_users_read"})
+     * @Groups({"user_read","mobile_users_read", "support_read"})
      */
     private $username;
 
@@ -105,7 +112,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read"})
+     * @Groups({"user_read","inv_read","entreprise_read","loc_read","list_userNotif","mobile_users_read","affectation_read","immo_read", "support_read"})
      */
     private $nom;
 
@@ -196,16 +203,21 @@ class User implements UserInterface
      */
     private $mesAjustements;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Support::class, mappedBy="assigner", orphanRemoval=true)
+     */
+    private $supports;
+
     public function __construct()
     {
         $this->roles = ['ROLE_USER'];
         $this->entreprises = new ArrayCollection();
         $this->localites = new ArrayCollection();
-        $this->lectures = new ArrayCollection();
         $this->localitesCrees = new ArrayCollection();
         $this->affectations = new ArrayCollection();
         $this->scanImmos = new ArrayCollection();
         $this->mesAjustements = new ArrayCollection();
+        $this->supports = new ArrayCollection();
     }
 
     /**
@@ -618,6 +630,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($mesAjustement->getAjusteur() === $this) {
                 $mesAjustement->setAjusteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Support[]
+     */
+    public function getSupports(): Collection
+    {
+        return $this->supports;
+    }
+
+    public function addSupport(Support $support): self
+    {
+        if (!$this->supports->contains($support)) {
+            $this->supports[] = $support;
+            $support->setAssigner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSupport(Support $support): self
+    {
+        if ($this->supports->contains($support)) {
+            $this->supports->removeElement($support);
+            // set the owning side to null (unless already changed)
+            if ($support->getAssigner() === $this) {
+                $support->setAssigner(null);
             }
         }
 

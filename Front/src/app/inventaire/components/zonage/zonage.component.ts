@@ -13,6 +13,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, NgForm, FormArray } fr
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import * as XLSX from 'xlsx';
+import { isThisQuarter } from 'date-fns';
 type AOA = any[][];
 
 export interface ChipColor {
@@ -111,7 +112,8 @@ export class ZonageComponent implements OnInit {
     this.localiteForm = this.fb.group({
       id: [localite.id],
       nom: [localite.nom, [Validators.required]],
-      position: [localite.position]
+      position: [localite.position],
+      level: []
     });
   }
   getOneEntreprise() {
@@ -169,8 +171,8 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  addSub(value, idParent) {//l ajout des autres sub
-    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, createur: "/api/users/" + this.myId }
+  addSub(value, idParent, level) {//l ajout des autres sub
+    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, level: level, createur: "/api/users/" + this.myId }
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.addLocalite(data).then(
       rep => {
@@ -200,8 +202,12 @@ export class ZonageComponent implements OnInit {
       })
   }
   onSubmit(form: FormGroup) {
-    if (!this.update) this.addLocalite(form)
-    else this.updateOne(form) // le update de toutes
+    if (!this.update) {
+      form.controls['level'].setValue(0);
+      this.addLocalite(form)
+    } else {
+      this.updateOne(form) // le update de toutes
+    }
   }
   firstSubNameExiste(tab, localite) {
     const nom = localite.nom.trim()
@@ -222,14 +228,14 @@ export class ZonageComponent implements OnInit {
     }
     return t
   }
-  add(event: MatChipInputEvent, idParent): void {
+  add(event: MatChipInputEvent, idParent, level): void {
     const input = event.input;
     const value = event.value;
     const exist = this.localites.find(loc => loc.nom?.toLowerCase() == value.trim()?.toLowerCase() && loc.idParent == idParent)
     // Add our sub
     if ((value || '').trim() && !exist) {
       const v = value.trim()
-      if (v) this.addSub(value, idParent)
+      if (v) this.addSub(value, idParent, level)
     } else if (exist) {
       this.showNotification('bg-info', value.trim() + " existe déja.", 'bottom', 'center', 5000)
       return
@@ -371,9 +377,13 @@ export class ZonageComponent implements OnInit {
     this.tabOpen[0] = id
     this.offUnderSub(1)
   }
-  openOther(i, id) {
+  openOther(e: Event, i, id) {
     this.tabOpen[i] = id
-    this.offUnderSub(i + 1)//les surdivisions en dessous
+    this.offUnderSub(i + 1); //les surdivisions en dessous
+    document.querySelectorAll('.chip-localite-'+i).forEach((ele: HTMLElement) => {
+      ele.classList.remove('active');
+    });
+    (e.target as HTMLElement).closest('.chip-localite-'+i).classList.add('active');
   }
   offUnderSub(j) {
     for (let i = j; i < this.tabOpen.length; i++) {
@@ -398,19 +408,16 @@ export class ZonageComponent implements OnInit {
     this.idCurrentLocal = this.tabOpen[0]
   }
 
-  getAllLocalite(evt: any) {
-    console.log('on es la');
+  
 
-    this.subdivisions.forEach(element => {
-      console.log('element =>', element);
-    });
+   getAllLocalite(evt: any) {
 
-    console.log('this.subdivisions.length => ', this.subdivisions.length);
+    // console.log('this.subdivisions.length => ', this.subdivisions.length);
 
     const target: DataTransfer = <DataTransfer>(evt.target);
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       /* read workbook */
 
       const bstr: string = e.target.result;
@@ -421,30 +428,68 @@ export class ZonageComponent implements OnInit {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       /* save data */
-      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
+      this.data = await <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
 
       console.log(this.data);
 
-      for (let index = 0; index < this.data.length; index++) {
+      for (let index = 1; index < this.data.length; index++) {
         const element = this.data[index];
+        this.localiteFile.push(element);
+      }
+
+
+      for (let index = 0; index < this.localiteFile.length; index++) {
+        const element = this.localiteFile[index];
+
         if (element.length > this.subdivisions.length) {
           this.isValableFileLocalite = false;
         }
       }
 
       if (this.isValableFileLocalite) {
-        for (let index = 0; index < this.data.length; index++) {
-          const element = this.data[index];
-          const element_suivant = this.data[index + 1];
-          if (!this.verfiIfDeuxLocIsSame(element[0], element_suivant[0])) {
-            this.localiteFile.push(["niveau1"][element[0]]);
+        let il = 1 ;
+        for await (const iterator of this.localiteFile) {
+          il++ ;
+          const element = iterator;
+          
+          let lastId = 0;
+
+          for (let i = 0; i < element.length; i++) {
+            const el = element[i];
+
+            if (i == 0) {
+            await  this.inventaireServ.addLocalite({
+                nom: el,
+                entreprise: "/api/entreprises/" + this.idCurrentEse,
+                createur: "/api/users/" + this.myId,
+                level: i,
+                position: this.getPosition(),
+                // lastLevel: i == element.length
+              }).then(rep => {
+                lastId = rep.id ;
+                this.securityServ.showLoadingIndicatior.next(true)
+                console.log(rep);
+              });
+            } else {
+             await  this.inventaireServ.addLocalite({
+                nom: el,
+                entreprise: "/api/entreprises/" + this.idCurrentEse,
+                createur: "/api/users/" + this.myId,
+                level: i,
+                parent: "/api/localites/" + lastId,
+                // lastLevel: i == element.length
+              }).then(rep => {
+                lastId = rep.id;
+                this.securityServ.showLoadingIndicatior.next(true)
+                console.log(rep);
+                
+              });
+            }
           }
-
-
-
-
         }
-        console.log(this.localiteFile);
+        this.getOneEntreprise();
+        this.securityServ.showLoadingIndicatior.next(false);
+        // console.log(this.localiteFile);
 
       } else {
         this.showNotification('bg-red', 'Fichier uploader pa bon', 'top', 'center')
@@ -460,4 +505,100 @@ export class ZonageComponent implements OnInit {
     if (str1 == str2) return true;
     return false;
   }
+  isLastChilTab(b, c) {
+    for (let index = 0; index < b.length - 1; index++) {
+      const element = b[index];
+      const el = c[index];
+
+      if (el != element) {
+        return index;
+      }
+    }
+    return 100;
+  }
 }
+
+ // this.inventaireServ.addLocalite({
+            //   nom: el,
+            //   entreprise: "/api/entreprises/" + this.idCurrentEse,
+            //   createur: "/api/users/" + this.myId,
+            //   level : i ,
+            //   position: i==0 ? this.getPosition() : "",
+            //   lastLevel : i == element.length ,
+            // }).then(rep => {
+            //   this.inventaireServ.addLocalite({
+            //     nom: element[i+1],
+            //     entreprise: "/api/entreprises/" + this.idCurrentEse,
+            //     createur: "/api/users/" + this.myId,
+            //     level : i ,
+            //     parent: "/api/localites/" +rep.id,
+            //     lastLevel : i == element.length
+            //   });
+            // });
+
+// console.log(this.verfiIfDeuxLocIsSame(element[0],element_suivant[0]));
+
+
+
+
+
+
+
+          // if (this.verfiIfDeuxLocIsSame(element[0], element_precedent[0])) {
+
+          // } else {
+          //   const obj = {
+          //     nom: element[0],
+          //     entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //     createur: "/api/users/" + this.myId,
+          //     position: this.getPosition()
+
+          //   };
+          //   this.inventaireServ.addLocalite(obj).then(rep => {
+
+          //     if (rep.id>0) {
+          //       const obj = {
+          //         nom: element[1],
+          //         entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //         createur: "/api/users/" + this.myId,
+          //         parent: "/api/localites/" + rep.id
+          //         // position: this.getPosition()
+
+          //       };
+          //       this.inventaireServ.addLocalite(obj).then(rep1 => {
+          //         if (rep1.id > 0) {
+          //           const obj = {
+          //             nom: element[2],
+          //             entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //             createur: "/api/users/" + this.myId,
+          //             parent: "/api/localites/" + rep1.id
+          //             // position: this.getPosition()
+
+          //           };
+          //           this.inventaireServ.addLocalite(obj).then(rep2 => {
+          //             if (rep2.id > 0) {
+          //               const obj = {
+          //                 nom: element[3],
+          //                 entreprise: "/api/entreprises/" + this.idCurrentEse,
+          //                 createur: "/api/users/" + this.myId,
+          //                 parent: "/api/localites/" + rep2.id
+          //                 // position: this.getPosition()
+
+          //               };
+          //               this.inventaireServ.addLocalite(obj).then(rep3 => {
+          //                 console.log(rep3);
+
+          //               });
+          //             }
+
+          //           });
+          //         }
+          //       });
+          //     }else {
+          //       console.log('not bon');
+
+          //     }
+
+
+          //   });
+          // }
