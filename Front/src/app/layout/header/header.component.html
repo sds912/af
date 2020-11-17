@@ -42,18 +42,20 @@
                             <ul class="menu" style="position: relative; max-width: 600px; max-height: 300px;"
                                 [perfectScrollbar]>
                                 <li>
-                                    <a *ngFor="let n of notifs"  [routerLink]="n.notification.lien" (click)="lireNotif(n.id)" [ngClass]="{'new-notif': n.status==0}">
-                                        <span class="table-img msg-user">
-                                            <img src="{{imgLink+n.notification.emetteur.image}}" alt="">
-                                        </span>
-                                        <span class="menu-info">
-                                            <span class="menu-title">{{n.notification.emetteur.nom}}</span>
-                                            <span class="menu-desc">
-                                                <i class="material-icons">access_time</i> {{n.notification.date |date:'dd/MM/yyyy à HH:mm'}}
+                                    <ng-container *ngFor="let n of notifs">
+                                        <a *ngIf="n.notification"  [routerLink]="n.notification.lien" (click)="lireNotif(n.id)" [ngClass]="{'new-notif': n.status==0}">
+                                            <span class="table-img msg-user">
+                                                <img src="{{imgLink+n.notification.emetteur.image}}" alt="">
                                             </span>
-                                            <span class="menu-desc">{{n.notification.message}}</span>
-                                        </span>
-                                    </a>
+                                            <span class="menu-info">
+                                                <span class="menu-title">{{n.notification.emetteur.nom}}</span>
+                                                <span class="menu-desc">
+                                                    <i class="material-icons">access_time</i> {{n.notification.date |date:'dd/MM/yyyy à HH:mm'}}
+                                                </span>
+                                                <span class="menu-desc">{{n.notification.message}}</span>
+                                            </span>
+                                        </a>
+                                    </ng-container>
                                     <a href="#" onClick="return false;" *ngIf="notifs.length==0">
                                         <span class="menu-info">
                                             <span class="menu-desc">Aucune notification</span>
