@@ -198,9 +198,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     }
     this.immoService.getImmobilisationByInventaire(this.idCurrentInv).then((e) => {
       this.allImmos = e?.filter(immo=>this.securityServ.superviseurAdjoint && immo.localite?.createur.id==this.myId || !this.securityServ.superviseurAdjoint);
-      if (this.data.length != this.allImmos.length) {
-        this.setData(this.allImmos);
-      }
+      this.setData(this.allImmos);
       this.securityServ.showLoadingIndicatior.next(false);
       if(this.route.snapshot.params["id"]){
         const immo=this.allImmos.find(im=>im.id==this.sharedService.decodId(this.route.snapshot.params["id"]))        
