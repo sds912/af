@@ -470,8 +470,15 @@ class SharedController extends AbstractController
             }
             $beginned = array_unique($beginned);
         }
+        $filteredBeginned = [];
+        // Suppression des localite entamé et close
+        foreach ($beginned as $value) {
+            if (!in_array($value, $closed)) {
+                $filteredBeginned[] = $value;
+            }
+        }
         $inventaire->setClosedLoc($closed);
-        $inventaire->setBeginnedLoc($beginned);
+        $inventaire->setBeginnedLoc($filteredBeginned);
         $this->manager->flush();
 
         return $this->json([
@@ -697,8 +704,8 @@ class SharedController extends AbstractController
 
         $localitesId = $this->filtreByAffectation($_localitesId, $affectations);
 
-        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(), $affectations);//pour zone comptées
-        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(), $affectations);//pour zone entamées
+        $closedId = $this->filtreByAffectation($inventaire->getClosedLoc(), $affectations);//pour zone comptées par rapport aux zones qui lui sont affecté
+        $beginnedId = $this->filtreByAffectation($inventaire->getBeginnedLoc(), $affectations);//pour zone entamées par rapport aux zones qui lui sont affecté
 
         $zones = [
             'pended' => count($localitesId) - count(array_unique(array_merge($beginnedId, $closedId))),
@@ -714,7 +721,7 @@ class SharedController extends AbstractController
         $allUsers = $inventaire->getEntreprise()->getUsers();
         $prisConnaissance = count($approv);
 
-        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers)) - $prisConnaissance];
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers) - 1) - $prisConnaissance];
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
@@ -726,7 +733,7 @@ class SharedController extends AbstractController
         foreach ($localites as $localite) {
             $childs = $this->repoLoc->findBy(['parent' => $localite]);
             if (count($childs) > 0) {
-                $listChilds = $this->getChilds($childs);
+                $listChilds = array_merge($listChilds, $this->getChilds($childs));
             } else {
                 $listChilds[] = $localite;
             }
@@ -785,7 +792,6 @@ class SharedController extends AbstractController
             if($affectation instanceof Affectation && $affectation->getLocalite() && 
                 in_array($affectation->getLocalite()->getId(),$allId)){
                 array_push($ids,$affectation->getLocalite()->getId());
-                break;
             }
         }
         return $ids;

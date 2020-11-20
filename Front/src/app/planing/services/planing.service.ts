@@ -16,4 +16,7 @@ export class PlaningService {
   getTabLocAffectation(idInv){
     return this.sharedService.getElement("/affectations/localites/inventaire/"+idInv)
   }
+  getLocaliteParent(idLocalite){
+    return this.sharedService.getElement("/parent/localite/"+idLocalite)
+  }
 }

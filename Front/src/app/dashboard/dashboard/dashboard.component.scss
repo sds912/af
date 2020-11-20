@@ -78,9 +78,8 @@
             }
         }
         &.card-plannings {
-            height: 580px;
-            max-height: 580px;
-            overflow-y: auto;
+            height: 598px;
+            max-height: 598px;
             table {
                 border-collapse: separate;
                 border-spacing: 0 0.5em;
@@ -197,7 +196,7 @@
             text-align: left;
             color: #5c5e60;
             background-color: #e6e7e9;
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
         .customProgress {
             .p-progressbar {
@@ -205,7 +204,7 @@
                 background: #e8bfc1;
                 border-radius: 0;
                 .p-progressbar-label {
-                    color: #ffffff;
+                    color: #000000;
                     font-size: 1rem;
                     line-height: 1.7rem;
                 }

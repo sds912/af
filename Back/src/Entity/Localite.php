@@ -45,7 +45,7 @@ class Localite
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "affectation_read"})
      */
     private $nom;
 
@@ -72,12 +72,13 @@ class Localite
 
     /**
      * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="subdivisions")
+     * @Groups({"affectation_read"})
      */
     private $parent;
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="parent")
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read", "affectation_read"})
      */
     private $subdivisions;
 

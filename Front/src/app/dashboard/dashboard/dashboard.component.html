@@ -174,7 +174,7 @@
                 </div>
                 <div class="p-col-6 p-col-md-6 p-col-lg-6">
                     <p-card header="Planning de comptage du jour" styleClass="bg-gray card-plannings" *ngIf="!superviseurGene && !superviseur">
-                        <p-table [value]="plannings" styleClass="p-datatable-striped">
+                        <p-table [value]="affectations" [scrollable]="true" scrollHeight="470px" styleClass="p-datatable-striped">
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th>Nom</th>
@@ -182,11 +182,11 @@
                                     <th>Lieu</th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-planning>
+                            <ng-template pTemplate="body" let-affectation>
                                 <tr>
-                                    <td>{{planning.nom}}</td>
-                                    <td>{{planning.date}}</td>
-                                    <td>{{planning.lieu}}</td>
+                                    <td>{{affectation.user?.nom}}</td>
+                                    <td>{{affectation.debut | date:'dd/MM/yyyy'}}</td>
+                                    <td [title]="locName(affectation.localite.id)">{{ affectation.localite.nom }}</td>
                                 </tr>
                             </ng-template>
                         </p-table>

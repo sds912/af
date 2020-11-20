@@ -5,6 +5,7 @@ import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
 import { DashboardService } from '../services/dashboard.service';
 import { timer, combineLatest } from 'rxjs';
+import { PlaningService } from 'src/app/planing/services/planing.service';
 
 
 @Component({
@@ -30,8 +31,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dataInventairesCloses: number;
   timerSubscription: any;
   firstLoad: boolean;
+  affectations: any[];
+  localites: any[];
+  
 
-  constructor(private route: ActivatedRoute,private inventaireServ: InventaireService,public securityServ:SecurityService,private router: Router, private dashboardService: DashboardService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private inventaireServ: InventaireService,
+    public securityServ:SecurityService,
+    private router: Router,
+    private dashboardService: DashboardService,
+    private planingService: PlaningService
+  ) { }
 
   ngOnInit(): void {
     this.dataZones = {pended: null, beginned: null, closed: null};
@@ -49,6 +60,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if(this.securityServ.admin){
       this.router.navigate(["/admin/entreprise"])
     }
+    this.localites = [];
+    this.affectations = [];
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getInventaireByEse()
     this.superviseur=this.securityServ.superviseur
@@ -170,6 +183,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
       this.inventaires = rep?.reverse();
       this.idCurrentInv = this.inventaires[0]?.id;
+      this.localites = this.inventaires[0]?.localites;
+      this.getPlanningByInv(this.idCurrentInv);
       this.refreshData();
       this.securityServ.showLoadingIndicatior.next(false);
     }, error => {
@@ -290,6 +305,61 @@ export class DashboardComponent implements OnInit, OnDestroy {
     //     }
     //   ]
     // }
+  }
+
+  getPlanningByInv(id:number){
+    this.planingService.getAffectations("?inventaire.id="+id).then((rep: any) => {
+        if (!rep || rep.length <= 0) {
+          return;
+        }
+        rep.forEach((planning: any) => {
+          if (this.canSeePlanning(planning)) {
+            this.affectations.push(planning);
+          }
+        });
+      },
+      error=>console.log(error)
+    )
+  }
+
+  canSeePlanning(affectation: any):boolean{
+    
+    const service=this.securityServ
+
+    const cas1 = affectation?.user?.id == localStorage.getItem('idUser')
+
+    const cas2 = service.superviseur||service.superviseurGene
+    
+    const cas3 = (service.superviseurAdjoint && (affectation?.user?.roles[0]=="ROLE_CE" || affectation?.user?.roles[0]=="ROLE_MI"))
+      
+    const cas4 = (service.chefEquipe && affectation?.user?.roles[0]=="ROLE_MI")
+    
+    if (cas1 || cas2 || cas3 || cas4) {
+      return true
+    }
+
+    return false
+  }
+
+  locName(id){
+    const localite=this.getOneById(id)
+    let idParent=localite?.idParent
+    let nom=" - "+localite?.nom
+    if(idParent){
+      this.localites.forEach(loc=>{
+        if(idParent){
+          let parent=this.getOneById(idParent)
+          nom=" - "+parent?.nom+nom
+          idParent=parent?.idParent
+        }
+      })
+    }
+    return nom.substr(3)
+  }
+
+  getOneById(id) {
+    let l = this.localites?.find(loc => loc.id == id)
+    return l ? l : null
   }
 
 }
