@@ -58,7 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
     this.dataInventairesCloses = 0;
     if(this.securityServ.admin){
-      this.router.navigate(["/admin/entreprise"])
+      this.router.navigate(["/admin/entreprise"]);
+      return;
     }
     this.localites = [];
     this.affectations = [];
@@ -155,7 +156,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     if (this.timerSubscription) {
-        this.timerSubscription.unsubscribe();
+      this.timerSubscription.unsubscribe();
     }
   }
 
