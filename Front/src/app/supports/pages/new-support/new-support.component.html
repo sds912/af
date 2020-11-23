@@ -1,0 +1,115 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item mr-4">
+                            <h4 class="page-title">Ouvrir un ticket</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <form id="ticketForm" (ngSubmit)="saveTicket()" [formGroup]="ticketForm">
+                        <div class="card-header">
+                            <div class="bg-header">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title text-center mb-5">Ouvrir un ticket</h4>
+                            <div class="container-form">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="row">
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-3 my-auto">
+                                                        <mat-label>Type de tickets *</mat-label>
+                                                    </div>
+                                                    <div class="col-md-5 mb-0">
+                                                        <mat-form-field appearance="outline">
+                                                            <mat-select id="type" formControlName="type">
+                                                                <mat-option *ngFor="let ticketType of ticketTypes" value="{{ticketType}}">{{ticketType}}</mat-option>
+                                                            </mat-select>                                              
+                                                            <mat-error *ngIf="f['type'].errors">Le type de ticket est requise</mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-3 my-auto">
+                                                        <mat-label>Objet *</mat-label>
+                                                    </div>
+                                                    <div class="col-md-5 mb-0">
+                                                        <mat-form-field appearance="outline">
+                                                            <input matInput id="objet" formControlName="objet">
+                                                            <mat-error *ngIf="f['objet'].errors">L'objet du ticket est requise</mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-3 my-auto">
+                                                        <mat-label>Description *</mat-label>
+                                                        <p class="text-muted">
+                                                            Faire une description sommaire du problème rencontré.
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-9 mb-0">
+                                                        <mat-form-field appearance="outline">
+                                                            <textarea matInput id="description" formControlName="description" rows="8"></textarea>
+                                                            <mat-error *ngIf="f['description'].errors">Une description du ticket est requise</mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="row" *ngIf="files.length > 0">
+                                            <div class="col-md-6" *ngFor="let file of files">
+                                                <img class="img-thumbnail" [src]="file" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7 mx-auto">
+                                        <span class="pointer btn-upload" (click)="onClick()">  
+                                            <mat-icon>file_upload</mat-icon>  
+                                            Attacher une capture
+                                        </span> 
+                                        <input type="file" #fileUpload id="fileUpload" (change)="changeListener()" multiple="multiple" style="display:none;" />    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row band-gray">
+                                <div class="col-md-6 mx-auto text-right">
+                                    <button type="submit" click class="btn btn-submit btn-border-radius mr-3" [disabled]="ticketForm.invalid">
+                                        <span [hidden]="isLoading">Envoyer <i class="fas fa-chevron-right ml-5" aria-hidden="true"></i></span>
+                                        <span [hidden]="!isLoading" class="text-center">
+                                            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

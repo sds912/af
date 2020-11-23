@@ -22,12 +22,22 @@
                                     <ul class="header-buttons m-r-20">
                                         <li *ngIf="entreprises && entreprises.length>0 && securityServ.admin">
                                             <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="openFileUload.click()">
+                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                </button>
+                                            </div>
+                                            <input type="file" hidden #openFileUload (change)="getAllAgents($event)">
+                                        </li>
+
+                                        <li *ngIf="entreprises && entreprises.length>0 && securityServ.admin">
+                                            <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#editModal" (click)='addRow()'>
                                                     <mat-icon class="col-white">add</mat-icon>
                                                 </button>
                                             </div>
                                         </li>
+                                        
                                     </ul>
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
@@ -66,10 +76,11 @@
                                     <ngx-datatable-column name="Entité" sortable="false" prop="entreprises" [width]="130">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
-                                                <span *ngIf="value && value.length==1" [title]="value[0].denomination">{{longText(value[0].denomination,20)}}</span>
-                                                <select *ngIf="value && value.length>1" class="form-control no-border pl-0" style="border: none !important;">
+                                                <span *ngIf="value && value.length==1  && securityServ.admin" [title]="value[0].denomination">{{longText(value[0].denomination,20)}}</span>
+                                                <select *ngIf="value && value.length>1 && securityServ.admin" class="form-control no-border pl-0" style="border: none !important;">
                                                    <option *ngFor="let e of value">{{e.denomination}}</option> 
                                                 </select>
+                                                <span *ngIf="!securityServ.admin" [title]="value[0].denomination">{{getEntrepriseById()?.denomination}}</span>
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
@@ -81,13 +92,6 @@
                                             <span>
                                                 <button class="btn tblActnBtn pointer h-auto text-info" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#editModal" title="Afficher les detais de l'utilisateur" (click)='showDetails(row)'>
                                                     <i class="material-icons">remove_red_eye</i>
-                                                </button>
-                                                <button 
-                                                    [disabled]="securityServ.superviseurAdjoint && (row.roles[0]=='ROLE_SuperViseurGene' || row.roles[0]=='ROLE_SuperViseurAdjoint') || 
-                                                                securityServ.superviseur && row.roles[0]=='ROLE_Superviseur'" 
-                                                    class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
-                                                    data-target="#editModal" title="Modifier l'utilisateur" (click)='updateUser(row)'>
-                                                    <i class="material-icons">mode_edit</i>
                                                 </button>
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary ml-4" title="Rattacher à une localité" *ngIf="row.localites?.length>0">
                                                     <i class="material-icons">room</i>
@@ -192,7 +196,12 @@
                             <mat-form-field class="example-full-width"
                                 appearance="outline">
                                 <mat-label>Prénom et nom</mat-label>
-                                <input matInput formControlName="nom" (change)="nomChange($event.target.value)">
+                                <input matInput formControlName="nom" [matAutocomplete]="auto" (keyup)="keyUpNomChange($event.target.value)" (change)="nomChange($event.target.value)">
+                                <mat-autocomplete #auto="matAutocomplete">
+                                    <mat-option *ngFor="let outUser of outUsers" (click)="selectOutUser(outUser)" [value]="outUser.nom" [title]="outUser.nom + ' - ' + outUser.username">
+                                      {{outUser.nom}} - {{outUser.username}}
+                                    </mat-option>
+                                  </mat-autocomplete>
                                 <mat-icon matSuffix>face</mat-icon>
                                 <mat-error
                                     *ngIf="editForm.get('nom').hasError('required')">

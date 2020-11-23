@@ -3,6 +3,11 @@
     <aside id="leftsidebar" class="sidebar" (mouseenter)="mouseHover($event)" (mouseleave)="mouseOut($event)">
         <!-- Menu -->
         <div class="menu">
+            <div class="logo-panel">
+                <a routerLink="dashboard/main">
+                    <img src="assets/logo-white.png" class="img-responsive" alt="" />
+                </a>
+            </div>
             <ul id="sidebarnav" class="list"
                 [ngStyle]="{'position' : 'relative', 'max-height' : listMaxHeight+'px', 'max-width' : listMaxWidth+'px'}"
                 [perfectScrollbar]>
@@ -20,10 +25,10 @@
                     </div>
                 </li>
                 <!-- First level menu -->
-                <li [class.active]="showMenu === sidebarItem.title" *ngFor="let sidebarItem of sidebarItems" 
+                <li [ngClass]="{'active': showMenu === sidebarItem.title}" *ngFor="let sidebarItem of sidebarItems" class="menu-item"
                     [routerLinkActive]="sidebarItem.submenu.length != 0 ? '' : 'active'" [hidden]="!isGranted(sidebarItem)">
-                    <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
-                        [ngClass]="[sidebarItem.class]" (click)="callMenuToggle($event, sidebarItem.title)">
+                    <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null" class="ele-menu"
+                        [ngClass]="[sidebarItem.class]" #eleMenu (click)="callMenuToggle(eleMenu, sidebarItem.title)">
                         <i [ngClass]="[sidebarItem.icon]"></i>
                         <span class="hide-menu">{{sidebarItem.title}}
                         </span>
@@ -36,7 +41,7 @@
                             [hidden]="!isGrantedSubM(sidebarItem,i)">
                             <a [routerLink]="sidebarSubItem.submenu.length > 0 ? null : [sidebarSubItem.path]"
                                 (click)="callSubMenuToggle(sidebarSubItem.title)" [ngClass]="[sidebarSubItem.class]">
-                                {{sidebarSubItem.title}}
+                                {{sidebarSubItem.title}} <span *ngIf="sidebarSubItem.title=='Ajuster FI' && securityServ.superviseurGene && countApprov>0" class="pl-2 pr-2" style="border-radius: 50%;border: 1px solid red;font-size: 11px;background-color: red;color: white;">{{countApprov}}</span>
                             </a>
                             <!-- Third level menu -->
                             <ul class="collapse" *ngIf="sidebarSubItem.submenu.length > 0"
@@ -51,9 +56,40 @@
                         </li>
                     </ul>
                 </li>
+                <!-- First level menu -->
+                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint"
+                    [ngClass]="{'active': showMenu === 'Traitement offline'}" routerLinkActive="" class="menu-item">
+                    <a [routerLink]="" class="menu-toggle ele-menu" #eleMenu (click)="callMenuToggle(eleMenu, 'Traitement offline')">
+                        <i class="fas fa-cubes"></i>
+                        <span class="hide-menu">Traitement offline</span>
+                    </a>
+                    <!-- Second level menu -->
+                    <ul class="ml-menu" >
+                        <li [class.activeSub]="showSubMenu === 'Exporter inventaire'">
+                            <a [routerLink]="" (click)="exportForMobile()">
+                                <span class="hide-menu">Exporter inventaire</span>
+                            </a>
+                        </li>
+                        <li [class.activeSub]="showSubMenu === 'Importer comptage'">
+                            <a [routerLink]="" (click)="fileMo.click()">
+                                <span class="hide-menu">Importer comptage</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li [ngClass]="{'active': showMenu === 'Supports'}" routerLinkActive="active" class="menu-item">
+                    <a [routerLink]="['/supports']" class="ele-menu">
+                        <i class="fas fa-life-ring"></i>
+                        <span class="hide-menu">Support</span>
+                    </a>
+                </li>
+
+
+                <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
             </ul>
         </div>
         <!-- #Menu -->
     </aside>
     <!-- #END# Left Sidebar -->
 </div>
+

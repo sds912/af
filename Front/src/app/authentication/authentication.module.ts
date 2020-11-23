@@ -15,6 +15,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
+import { LoginPageComponent } from './login-page/login-page.component';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+
 @NgModule({
   declarations: [
     Page500Component,
@@ -22,7 +26,8 @@ import { MatButtonModule } from '@angular/material/button';
     SigninComponent,
     SignupComponent,
     LockedComponent,
-    ForgotPasswordComponent
+    ForgotPasswordComponent,
+    LoginPageComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +37,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    ButtonModule,
+    InputTextModule
   ]
 })
 export class AuthenticationModule {}

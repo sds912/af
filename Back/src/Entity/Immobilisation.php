@@ -7,12 +7,29 @@ use App\Repository\ImmobilisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
 /**
- * @ApiResource()
+ * @ApiResource(
+ * normalizationContext={
+ *      "groups"={"immo_read"}
+ *  },
+ * itemOperations={
+ *      "GET",
+ *      "PUT",
+ *      "DELETE_BY_INV"={
+ *          "method"="get",
+ *          "path"="/immobilisations/delete/{id}/inventaire",
+ *           "openapi_context"={
+ *              "summary"="Supprimer les immos d'un inventaire",
+ *              "description"="Supprime l'ensemble des immobilisations d'un inventaire"
+ *           }
+ *      }
+ *  }
+ * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
  */
 class Immobilisation
 {
@@ -20,89 +37,202 @@ class Immobilisation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $code;
+    
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
     private $compteImmo;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
     private $compteAmort;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $emplacement;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateAcquisition;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateMiseServ;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dateSortie;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dureeUtilite;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $taux;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $valOrigine;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $dotation;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $cumulAmortiss;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"immo_read"})
      */
     private $vnc;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lecture::class, mappedBy="immobilisation")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
      */
-    private $lectures;
+    private $etat;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"mobile_inv_read","immo_read"})
+     */
+    private $description;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="immobilisations")
+     */
+    private $entreprise;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $numeroOrdre;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
+     */
+    private $inventaire;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="scanImmos")
+     * @Groups({"immo_read"})
+     */
+    private $lecteur;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
+     */
+    private $localite;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endEtat;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $image;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $dateLecture;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $isMatched;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Immobilisation::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
+     */
+    private $matchedImmo;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="matchedImmo")
+     */
+    private $immobilisations;//matched
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="mesAjustements")
+     * @Groups({"immo_read"})
+     */
+    private $ajusteur;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $approvStatus;//0 - pending, 1 - approve, -1 save
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endDescription;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"immo_read"})
+     */
+    private $endLibelle;
 
     public function __construct()
     {
-        $this->lectures = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,12 +336,12 @@ class Immobilisation
         return $this;
     }
 
-    public function getDureeUtilite(): ?\DateTimeInterface
+    public function getDureeUtilite(): ?string
     {
         return $this->dureeUtilite;
     }
 
-    public function setDureeUtilite(?\DateTimeInterface $dureeUtilite): self
+    public function setDureeUtilite(?string $dureeUtilite): self
     {
         $this->dureeUtilite = $dureeUtilite;
 
@@ -278,33 +408,237 @@ class Immobilisation
         return $this;
     }
 
-    /**
-     * @return Collection|Lecture[]
-     */
-    public function getLectures(): Collection
+    public function getEtat(): ?string
     {
-        return $this->lectures;
+        return $this->etat;
     }
 
-    public function addLecture(Lecture $lecture): self
+    public function setEtat(?string $etat): self
     {
-        if (!$this->lectures->contains($lecture)) {
-            $this->lectures[] = $lecture;
-            $lecture->setImmobilisation($this);
+        $this->etat = $etat;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): self
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getNumeroOrdre(): ?string
+    {
+        return $this->numeroOrdre;
+    }
+
+    public function setNumeroOrdre(?string $numeroOrdre): self
+    {
+        $this->numeroOrdre = $numeroOrdre;
+
+        return $this;
+    }
+
+    public function getInventaire(): ?Inventaire
+    {
+        return $this->inventaire;
+    }
+
+    public function setInventaire(?Inventaire $inventaire): self
+    {
+        $this->inventaire = $inventaire;
+
+        return $this;
+    }
+
+    public function getLecteur(): ?User
+    {
+        return $this->lecteur;
+    }
+
+    public function setLecteur(?User $lecteur): self
+    {
+        $this->lecteur = $lecteur;
+
+        return $this;
+    }
+
+    public function getLocalite(): ?Localite
+    {
+        return $this->localite;
+    }
+
+    public function setLocalite(?Localite $localite): self
+    {
+        $this->localite = $localite;
+
+        return $this;
+    }
+
+    public function getEndEtat(): ?string
+    {
+        return $this->endEtat;
+    }
+
+    public function setEndEtat(?string $endEtat): self
+    {
+        $this->endEtat = $endEtat;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDateLecture(): ?\DateTimeInterface
+    {
+        return $this->dateLecture;
+    }
+
+    public function setDateLecture(?\DateTimeInterface $dateLecture): self
+    {
+        $this->dateLecture = $dateLecture;
+
+        return $this;
+    }
+
+    public function getIsMatched(): ?bool
+    {
+        return $this->isMatched;
+    }
+
+    public function setIsMatched(?bool $isMatched): self
+    {
+        $this->isMatched = $isMatched;
+
+        return $this;
+    }
+
+    public function getMatchedImmo(): ?self
+    {
+        return $this->matchedImmo;
+    }
+
+    public function setMatchedImmo(?self $matchedImmo): self
+    {
+        $this->matchedImmo = $matchedImmo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(self $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setMatchedImmo($this);
         }
 
         return $this;
     }
 
-    public function removeLecture(Lecture $lecture): self
+    public function removeImmobilisation(self $immobilisation): self
     {
-        if ($this->lectures->contains($lecture)) {
-            $this->lectures->removeElement($lecture);
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
             // set the owning side to null (unless already changed)
-            if ($lecture->getImmobilisation() === $this) {
-                $lecture->setImmobilisation(null);
+            if ($immobilisation->getMatchedImmo() === $this) {
+                $immobilisation->setMatchedImmo(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAjusteur(): ?User
+    {
+        return $this->ajusteur;
+    }
+
+    public function setAjusteur(?User $ajusteur): self
+    {
+        $this->ajusteur = $ajusteur;
+
+        return $this;
+    }
+
+    public function getApprovStatus(): ?int
+    {
+        return $this->approvStatus;
+    }
+
+    public function setApprovStatus(?int $approvStatus): self
+    {
+        $this->approvStatus = $approvStatus;
+
+        return $this;
+    }
+
+    public function getEndDescription(): ?string
+    {
+        return $this->endDescription;
+    }
+
+    public function setEndDescription(?string $endDescription): self
+    {
+        $this->endDescription = $endDescription;
+
+        return $this;
+    }
+
+    public function getEndLibelle(): ?string
+    {
+        return $this->endLibelle;
+    }
+
+    public function setEndLibelle(?string $endLibelle): self
+    {
+        $this->endLibelle = $endLibelle;
 
         return $this;
     }

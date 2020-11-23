@@ -1,0 +1,288 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="breadcrumb breadcrumb-style ">
+                    <li class="breadcrumb-item mr-4">
+                      <select [(ngModel)]="idCurrentInv" class="select-trie" style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
+                          <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">
+                              Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
+                        </option>
+                      </select>
+                    </li>
+                    <li class="breadcrumb-item ml-5" *ngIf="currentInv">
+                        <span>Période d'inventaire du <strong>{{currentInv.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv.fin|date:'dd/MM/yyyy'}}</strong> </span>
+                    </li>
+                </ul>
+              </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                              <div class="" style="position: relative;">
+                                <h3 class="bolder mb-4">
+                                  Planning <span *ngIf="affectations.length>0"> ( {{affectations.length}} )</span>
+                                  <div class="clearfix"></div>
+                                </h3>
+                                <div class="" style="position: absolute;right: 15px;top: 0px;">
+                                  <div class="btn btn-info pb-0" title="Exporter en PDF" (click)="toggleView()">
+                                    <mat-icon class="col-white">
+                                      <span *ngIf="!showTab">grid_on</span>
+                                      <span *ngIf="showTab">date_range</span>
+                                    </mat-icon>
+                                  </div>
+                                  <div class="ml-3 btn btn-primary pb-0" title="Exporter en PDF" (click)="generatePdf()">
+                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row pb-3">
+                                <div class="col-4">
+                                    <input type="text" class="form-control" style="width: 96% !important;" placeholder="Recherche" [(ngModel)]="searchValue" (keyup)="search($event.target.value)">
+                                </div>
+                                
+                                <button mat-mini-fab color="primary" style="width: 30px;height: 30px;">
+                                    <mat-icon class="pointer" style="font-size: 15px;">search</mat-icon>
+                                </button>
+                              </div>
+
+                              <div class="row">
+                                <div class="col-4 row pb-4">
+                                    <div class="col-5 pr-0" [title]="subdivisions[0]">{{longText(subdivisions[0],17)}}</div>
+                                    <div class="col-7 pr-0">
+                                        <select class="select-trie" style="width: 100%;background-color: white;" (change)="openFirst($event.target.value)" [(ngModel)]="firstSearchLoc">
+                                            <option value="0"></option>
+                                            <option *ngFor="let loc of firstSub(localites)" [value]="loc.id">{{longText(loc.nom,23)}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4 row pb-4" *ngFor="let idParent of tabOpen;let i=index" [hidden]="idParent==0">
+                                    <div class="col-5 pr-0" *ngIf="subdivisions[i+1]" [title]="subdivisions[i]">{{longText(subdivisions[i+1],17)}}</div>
+                                    <div class="col-7" *ngIf="subdivisions[i+1]">
+                                        <select class="select-trie" style="width: 100%;background-color: white;" (change)="openOther(i+1,$event.target.value)">
+                                            <option value="0"><span *ngIf="getCurrentSubById(idParent).length==0">Vide</span></option>
+                                            <option *ngFor="let loc of getCurrentSubById(idParent)" [value]="loc.id">{{longText(getOneById(loc.id)?.nom,23)}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+
+                              
+                              <!-- calendar -->
+                              
+                              <div class=""  *ngIf="!showTab">
+                                <br/>
+                                <div class="row text-center">
+                                    <div class="col-md-4">
+                                      <div class="btn-group">
+                                        <div
+                                          class="btn btn-primary"
+                                          mwlCalendarPreviousView
+                                          [view]="view"
+                                          [(viewDate)]="viewDate"
+                                          (viewDateChange)="closeOpenMonthViewDay()"
+                                          (click)="traduireHeure()"
+                                        >
+                                        Précédent
+                                        </div>
+                                        <div
+                                          class="btn btn-outline-secondary"
+                                          mwlCalendarToday
+                                          [(viewDate)]="viewDate"
+                                          (click)="traduireHeure()"
+                                        >
+                                        Aujourd'hui
+                                        </div>
+                                        <div
+                                          class="btn btn-primary"
+                                          mwlCalendarNextView
+                                          [view]="view"
+                                          [(viewDate)]="viewDate"
+                                          (viewDateChange)="closeOpenMonthViewDay()"
+                                          (click)="traduireHeure()"
+                                        >
+                                        Suivant
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                      <h3>{{ traduireDate(viewDate | calendarDate:(view + 'ViewTitle'):'en') }}</h3>
+                                    </div>
+                                    <div class="col-md-4">
+                                      <div class="btn-group">
+                                        <div
+                                          class="btn btn-primary"
+                                          (click)="setView(CalendarView.Month)"
+                                          [class.active]="view === CalendarView.Month"
+                                          (click)="traduireDay()"
+                                        >
+                                        Mois
+                                        </div>
+                                        <div
+                                          class="btn btn-primary"
+                                          (click)="setView(CalendarView.Week)"
+                                          [class.active]="view === CalendarView.Week"
+                                          (click)="traduireHeure()"
+                                        >
+                                        Semaines
+                                        </div>
+                                        <div
+                                          class="btn btn-primary"
+                                          (click)="setView(CalendarView.Day)"
+                                          [class.active]="view === CalendarView.Day"
+                                          (click)="traduireHeure()"
+                                        >
+                                        Jours
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div [ngSwitch]="view">
+                                      <mwl-calendar-month-view
+                                        *ngSwitchCase="CalendarView.Month"
+                                        [viewDate]="viewDate"
+                                        [events]="events"
+                                        [refresh]="refresh"
+                                        [activeDayIsOpen]="activeDayIsOpen"
+                                        (dayClicked)="dayClicked($event.day)"
+                                        (eventClicked)="handleEvent('Clicked', $event.event)"
+                                        (eventTimesChanged)="eventTimesChanged($event)"
+                                      >
+                                      </mwl-calendar-month-view>
+                                      <mwl-calendar-week-view
+                                        *ngSwitchCase="CalendarView.Week"
+                                        [viewDate]="viewDate"
+                                        [events]="events"
+                                        [refresh]="refresh"
+                                        (eventClicked)="handleEvent('Clicked', $event.event)"
+                                        (eventTimesChanged)="eventTimesChanged($event)"
+                                      >
+                                      </mwl-calendar-week-view>
+                                      <mwl-calendar-day-view
+                                        *ngSwitchCase="CalendarView.Day"
+                                        [viewDate]="viewDate"
+                                        [events]="events"
+                                        [refresh]="refresh"
+                                        (eventClicked)="handleEvent('Clicked', $event.event)"
+                                        (eventTimesChanged)="eventTimesChanged($event)"
+                                      >
+                                      </mwl-calendar-day-view>
+                                </div>
+                                <br/><br/><br/>
+                              </div>  
+                              <!-- calendar -->
+
+                              <!-- table -->
+                              <div class="" *ngIf="showTab">
+                                  <div class="table-responsive mt-3">
+                                    <table class="table table-bordered">
+                                      <thead>
+                                        <tr>
+                                          <th>Prénom et nom</th>
+                                          <th style="width: 23.5%;">Rôle</th>
+                                          <th style="width: 26.5%;">Emplacement</th>
+                                          <th style="width: 9.5%;">Début</th>
+                                          <th style="width: 9%;">Fin</th>
+                                        </tr>
+                                      </thead>
+                                  
+                                      <tbody>
+                                        <tr *ngFor="let affectation of affectations" (click)="showDetails(affectation)" class="pointer">
+                                          <td>
+                                            {{ affectation?.user?.nom }}
+                                          </td>
+                                          <td>
+                                            {{ getRole(affectation?.user?.roles) }}
+                                          </td>
+                                          <td>
+                                            {{ getOneById(affectation?.localite?.id)?.nom }}
+                                          </td>
+                                          <td>
+                                            {{affectation.debut|date:'dd/MM/yyyy'}}
+                                          </td>
+                                          <td>
+                                            {{affectation.fin|date:'dd/MM/yyyy'}}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                              </div>
+                              <!-- table -->
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+      <h5 class="modal-title">Planning</h5>
+      <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body" [perfectScrollbar] style="color: #181818;font-size: 15px;">
+        <div class="row">
+            <div class="contact-photo">
+                <img [src]="imgLink+modalData?.event?.user?.image" class="img-responsive pick-img" alt=""> 
+            </div>
+        </div>
+
+      <div class="mt-5 pt-3 pb-3">
+        <strong>Prénom et nom : </strong>{{modalData?.event?.user?.nom}}
+      </div>
+      <div class="pt-3 pb-3">
+        <strong>Role : </strong>{{getRole(modalData?.event?.user?.roles)}}
+      </div>
+      <div class="pt-3 pb-3">
+        <strong>Période : </strong> du {{modalData?.event?.start|date:'dd/MM/yyyy'}} au {{modalData?.event?.end|date:'dd/MM/yyyy'}}
+      </div>
+      <div class="pt-3 pb-3" *ngFor="let localite of modalData?.localites;let i=index">
+        <strong>{{subdivisions[i]}} : </strong>{{localite.nom}}
+      </div>
+  </div>
+</ng-template>
+
+<ng-template #modalContentDay let-close="close">
+  <div class="modal-header">
+      <h5 class="modal-title">Planning du {{viewDate|date:'dd/MM/yyyy'}}</h5>
+      <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body" [perfectScrollbar] style="color: #181818;">
+    <div class="table-responsive mt-3">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Prénom et nom</th>
+            <th style="width: 23.5%;">Rôle</th>
+            <th style="width: 26.5%;">Emplacement</th>
+            <th style="width: 9.5%;">Début</th>
+            <th style="width: 9%;">Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let event of dayEvents"  (click)="handleEvent('Clicked',event)" class="pointer">
+            <td>{{ event?.user?.nom }}</td>
+            <td>{{ getRole(event?.user?.roles) }}</td>
+            <td>{{ getOneById(event?.idLoc)?.nom }}</td>
+            <td>{{event.start|date:'dd/MM/yyyy'}}</td>
+            <td>{{event.end|date:'dd/MM/yyyy'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-template>

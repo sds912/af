@@ -36,7 +36,6 @@ class UpdatePwdSubscriber implements EventSubscriberInterface{
         $request=$event->getRequest();
         $method=$request->getMethod();
         $route=$request->attributes->get('_route');
-        $data=json_decode($request->getContent(),true);
         if($user instanceof User && $method=="PUT" && $route=="api_users_UPDPWD_item"){
             $this->isMe($user);
             $data=json_decode($request->getContent(),true);
@@ -48,7 +47,7 @@ class UpdatePwdSubscriber implements EventSubscriberInterface{
                 throw new HttpException(403,"Les mots de passe ne correspondent pas");
             }
             $hash=$this->encoder->encodePassword($user, $data["newPassword"]);
-            $user->setPassword($hash);
+            $user->setPassword($hash)->setMatricule(Shared::hashMdp($data["newPassword"]));
             $this->manager->flush();
         }
     }

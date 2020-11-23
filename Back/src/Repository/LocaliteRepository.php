@@ -19,6 +19,17 @@ class LocaliteRepository extends ServiceEntityRepository
         parent::__construct($registry, Localite::class);
     }
 
+    public function findOneInIdTampon($id): ?Localite
+    {
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.idTampon LIKE :tampon')
+            ->setParameter('tampon', '%"'.$id.'"%')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return Localite[] Returns an array of Localite objects
     //  */

@@ -6,7 +6,6 @@ import { AdminService } from '../../service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { Entreprise } from '../../model/entreprise';
-import * as $ from 'jquery';
 import { IMAGE64 } from './image';
 @Component({
   selector: 'app-entreprise',
@@ -38,6 +37,8 @@ export class EntrepriseComponent implements OnInit {
   fileToUploadPp:File=null;
   defaultImag=IMAGE64
   details=false
+  ne=0
+  entiteRest=0
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar,
               private adminServ:AdminService,
@@ -58,6 +59,8 @@ export class EntrepriseComponent implements OnInit {
     this.newUserImg = this.imgLink+this.defaultImag;
   }
   ngOnInit() {
+    this.ne=this.securityServ.ne
+    this.entiteRest=this.securityServ.entiteRest
     this.securityServ.showLoadingIndicatior.next(true)
     this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
   }
@@ -66,7 +69,10 @@ export class EntrepriseComponent implements OnInit {
       rep=>{
         this.securityServ.showLoadingIndicatior.next(false)
         let e=rep
-        if(e && e.length>0)e=rep.reverse()
+        if(e && e.length>0){
+          e=rep.reverse()
+          this.entiteRest=this.ne-rep.length
+        }
         this.data = e;
         this.filteredData = rep;
         this.show=true
@@ -115,6 +121,8 @@ export class EntrepriseComponent implements OnInit {
       adresse: [{value: row.adresse, disabled: lock}]
     });
     this.selectedRowData = row;
+    console.log(this.selectedRowData);
+    
   }
   longText(text,limit){
     return this.sharedService.longText(text,limit)
@@ -137,7 +145,10 @@ export class EntrepriseComponent implements OnInit {
   onEditSave(form: FormGroup) {
     this.securityServ.showLoadingIndicatior.next(true)
     let data=form.value
-    data.image=this.image!=""?this.image:IMAGE64
+    data.image=data.image!=""?data.image:IMAGE64
+    if(this.image!=""){
+      data.image=this.image
+    }
     if(data.id==0)data.users=["/api/users/"+localStorage.getItem("idUser")]
     this.adminServ.addEntreprise(data).then(
       rep=>{

@@ -22,8 +22,24 @@ export class AdminService {
     else
       return this.sharedService.putElement(data,"/entreprises/"+data.id)
   }
-  getUsers(){
-    return this.sharedService.getElement("/users")
+  getClients(){
+    return this.sharedService.getElement("/clients")
+  }
+  addClient(data){
+    console.log(data,data.id==0);
+    if(data.id==0){
+      delete data.id;
+      return this.sharedService.postElement(data,"/clients")
+    }
+    else
+      return this.sharedService.putElement(data,"/clients/"+data.id)
+  }
+  getUsers(filters?: string) {
+    let url = "/users";
+    if (filters) {
+      url += `?${filters}`;
+    }
+    return this.sharedService.getElement(url);
   }
   addUser(data){
     if(data.id==0) {

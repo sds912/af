@@ -6,33 +6,45 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInter
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use App\Entity\Entreprise;
 use App\Entity\User;
+use App\Utils\Shared;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInterface{//pour un get d une collection et le get d'un seul élément video 80 lior
     /** @var User */
     private $userCo;
     private $droit;
-    public function __construct(Security $security,AuthorizationCheckerInterface $checker)
+    protected $requestStack;
+
+    public function __construct(Security $security,AuthorizationCheckerInterface $checker, RequestStack $requestStack)
     {
         $this->userCo=$security->getUser();//quand on l utilise ne pas oublier de mettre instanceof User pour si l utilisateur n est pas co
         $this->droit=$checker;// donc on pourra faire $this->droit->isGranted('ROLE_ADMIN') pour avoir le role de la personne co
+        $this->requestStack = $requestStack;
     }
     public function applyToCollection(QueryBuilder $queryBuilder, //la requete à envoyer
                                       QueryNameGeneratorInterface $queryNameGenerator, 
                                       string $resourceClass, //le nom de la classe ex si on fait un getEntreprise ici resourceClass sera Entreprise
                                       ?string $operationName = null)
     {//de l interface QueryCollectionExtensionInterface
-        if($resourceClass===User::class && !$this->droit->isGranted('ROLE_SuperAdmin')){
-            $rootAlias=$queryBuilder->getRootAliases()[0];//tableau d alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
-            $queryBuilder->join("$rootAlias.entreprises",'entreprise');
-            if($this->droit->isGranted('ROLE_Admin')){
-               $queryBuilder->join("entreprise.users",'user')
-                ->andWhere('user.id = :id')
-                ->setParameter('id', $this->userCo->getId());
-            }else{
+        if ($resourceClass === User::class) {
+            $rootAlias = $queryBuilder->getRootAliases()[0];// tableau d'alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
+            $request = $this->requestStack->getCurrentRequest();
+
+            if (!$this->droit->isGranted('ROLE_SuperAdmin') && $this->droit->isGranted('ROLE_Admin')) {
+                $queryBuilder->join("$rootAlias.entreprises",'entreprise');
+                $queryBuilder->join("entreprise.users",'user')
+                    ->andWhere('user.id = :id')
+                    ->setParameter('id', $this->userCo->getId());
+            } elseif (!$this->droit->isGranted('ROLE_SuperAdmin') && !$this->droit->isGranted('ROLE_Admin')) {
+                $queryBuilder->join("$rootAlias.entreprises",'entreprise');
                 $queryBuilder->andWhere('entreprise.id = :id')->setParameter('id', $this->getIdCurrentEse());
+            }
+            if (!$request->query->has('status')) {
+                $queryBuilder->andWhere(sprintf('%s.status != :status', $rootAlias));
+                $queryBuilder->setParameter('status', Shared::OUT);
             }
         }
     }

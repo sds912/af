@@ -1,0 +1,321 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item mr-4">
+                            <h4 class="page-title">Choisir un inventaire</h4>
+                        </li>
+                        <li class="breadcrumb-item mr-4"> <select [(ngModel)]="idCurrentInv" class="select-trie"
+                                style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
+                                <option *ngFor="let inventaire of inventaires" [value]="inventaire.id"> Inventaire <span
+                                        *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
+                                </option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="ngxTableHeader pl-0 pb-0">
+                                    <ul class="header-buttons-left ml-0">
+                                        <li class="dropdown m-l-20">
+                                            <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                                            <input placeholder="Rechercher une immobilisation" type="text"
+                                                class="browser-default search-field" aria-label="Search box">
+                                        </li>
+                                    </ul>
+                                    <ul class="header-buttons m-r-20">
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab color="primary" (click)="openFileUload.click()">
+                                                    <mat-icon class="col-white">file_download</mat-icon>
+                                                </button>
+                                                <input type="file" hidden #openFileUload (change)="getAllImmos($event)">
+                                            </div>
+                                        </li>
+
+                                        <li>
+                                            <div class="icon-button-demo">
+                                                <button mat-mini-fab class="bg-red" (click)="deleteImmoInventaire()">
+                                                    <mat-icon class="col-white">delete</mat-icon>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ngx-datatable #table class="material" [rows]="allImmos" [columns]="columns"
+                                    [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
+                                    [rowHeight]="'60'" [limit]="10">
+                                    <!-- user image -->
+
+                                    <ngx-datatable-column name="Numéro ordre" sortable="false" prop="numeroOrdre"
+                                        [width]="70">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Code" sortable="false" prop="code" [width]="70">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,10)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Compte d'Immobilisations" sortable="false"
+                                        prop="compteImmo" [width]="110">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Compte d'armortissement" sortable="false"
+                                        prop="compteAmort" [width]="110">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column   name="Date acquisition" sortable="false"
+                                        prop="dateAcquisition" [width]="120">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{value|date:'dd/MM/yyyy'}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column  name="Date de mise en Service" sortable="false" prop="dateMiseServ"
+                                        [width]="140">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{value|date:'dd/MM/yyyy'}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <!-- <ngx-datatable-column  name="Description" sortable="false" prop="description"
+                                        [width]="100">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column> -->
+
+                                    <ngx-datatable-column name="Emplacement"  sortable="false" prop="emplacement"
+                                        [width]="100">
+                                        <ng-template let-row="allImmos" let-value="value" let-i="index"
+                                            ngx-datatable-cell-template>
+                                            <td class="table-img padding-0" [title]="value">
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+
+                                    <!-- action buttons -->
+                                    <ngx-datatable-column name="Actions" sortable="false" [width]="130">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span>
+                                                <button class="btn tblActnBtn pointer h-auto text-info"
+                                                    data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#showImmo" (click)="showDetails(row)">
+                                                    <i class="material-icons">remove_red_eye</i>
+                                                </button>
+                                                <!-- <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+                                                    data-target="#editModal" >
+                                                    <i class="material-icons">mode_edit</i>
+                                                </button> -->
+                                            </span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-footer>
+                                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount"
+                                            let-pageSize="pageSize" let-selectedCount="selectedCount"
+                                            let-curPage="curPage" let-offset="offset" let-isVisible="isVisible">
+                                            <div class="page-count">
+                                                <span *ngIf="selectedMessage">
+                                                    {{selectedCount.toLocaleString()}} {{selectedMessage}} /
+                                                </span>
+                                                {{totalMessage}} {{rowCount.toLocaleString()}}
+                                            </div>
+                                            <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                                [pagerPreviousIcon]="'datatable-icon-prev'"
+                                                [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage"
+                                                [size]="pageSize" [count]="rowCount"
+                                                [hidden]="!((rowCount / pageSize) > 1)"
+                                                (change)="table.onFooterPage($event)" (change)="look($event)">
+                                            </datatable-pager>
+                                        </ng-template>
+                                    </ngx-datatable-footer>
+                                </ngx-datatable>
+
+                                <!-- Modal Window -->
+
+                                <!-- Modal Window -->
+                                <div class="modal fade" id="showImmo" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog instruction-modal" role="document">
+                                        <form class="modal-content" [formGroup]="editForm" #formDirective="ngForm">
+                                            <div class="modal-header">
+                                                <div class="editRowModal">
+                                                    <div class="modal-header clearfix">
+                                                        <div class="modal-about">
+                                                            <div class="font-weight-bold p-t-10 font-17"
+                                                                *ngIf="selectedRowData?.libelle">
+                                                                {{selectedRowData?.libelle}}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" #closeEditModal
+                                                    class="btn p-t-10 modal-close-button" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <i class="material-icons">clear</i>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body" [perfectScrollbar]>
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Description :
+                                                                {{selectedRowData?.description}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Code :
+                                                                {{selectedRowData?.code}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Compte
+                                                                d'immobilisation
+                                                                : {{selectedRowData?.compteAmort}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Compte
+                                                                d'amortissement
+                                                                : {{selectedRowData?.compteImmo}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Emplacement
+                                                                : {{selectedRowData?.emplacement}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Valeur d'origine
+                                                                : {{curency(selectedRowData?.valOrigine)}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code"style="color: black;"> Date de mise en
+                                                                service
+                                                                : {{selectedRowData?.dateMiseServ|date:'dd/MM/yyyy'}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code" style="color: black;"> Date d'acquisition :
+                                                                {{selectedRowData?.dateAcquisition|date:'dd/MM/yyyy'}}
+                                                            </mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+                                                
+
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code" style="color: black;"> Taux
+                                                                d'amortissement :
+                                                                {{selectedRowData?.taux}} %</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" >
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.etat" style="color: black;"> Etat du bien
+                                                                théorique
+                                                                : {{selectedRowData?.etat}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                                        <mat-form-field class="example-full-width" appearance="outline">
+                                                            <mat-label *ngIf="selectedRowData?.code" style="color: black;"> Durée d'utilité
+                                                                : {{(selectedRowData?.dureeUtilite)}}</mat-label>
+                                                            <input matInput formControlName="denomination">
+                                                        </mat-form-field>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer pr-0">
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-border-radius mr-0"
+                                                        data-dismiss="modal">Fermer</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Modal Window -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -44,7 +44,7 @@
 .inv .mat-form-field-outline-start, 
 .inv .mat-form-field-outline-gap, 
 .inv .mat-form-field-outline-end{
-    color: black !important;
+    color: #9933FF !important;
     border-width: 2px !important
 }
 .zonage .mat-chip-list-wrapper{
@@ -53,4 +53,113 @@
 .pick-loc .mat-checkbox-disabled.mat-checkbox-checked .mat-checkbox-background, 
 .pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
     background-color: #f15381 !important;
+}
+
+.pick-loc .mat-checkbox-disabled .mat-checkbox-background, 
+.pick-loc .mat-checkbox-disabled.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #979596ef !important;
+}
+
+.new-immo .mat-form-field-outline-start, 
+.new-immo .mat-form-field-outline-gap, 
+.new-immo .mat-form-field-outline-end{
+    color: #28a745 !important;
+}
+
+.breadcrumb > li + li:before{display: none;}
+
+.cal-events .cal-event{display: none !important;}
+
+.ngxTableHeader {
+    border-color: #ef7711;
+    background: radial-gradient(#EF7711, #774007);
+    select.form-control {
+        background-color: transparent !important; // #ef7711 !important;
+        color: #ffffff;
+        option {
+            color: #000000;
+        }
+    }
+    .mat-mini-fab.mat-primary {
+        background-color: #ef7711;
+        border: 1.5px solid #ffffff;
+    }
+}
+
+.btn-orange {
+    background-color: #ef7711;
+    border: 1.5px solid #ffffff;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.btn-orange-gradient {
+    background: radial-gradient(#EF7711, #774007);
+    border: 1.5px solid #ffffff;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.btn-40-rounded {
+    border-radius: 50% !important;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+#container-progess-bar {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    top: -25%;
+    
+    .circle{
+        position: relative;
+        top: 5px;
+        left: 5px;
+        text-align: center;
+        width: 200px;
+        height: 200px;
+        border-radius: 100%;
+        background-color: rgba(0,0,0,1);
+    }
+    
+    .border{
+        position: relative;
+        text-align: center;
+        width: 210px;
+        height: 210px;
+        border-radius: 100%;
+        top : 50%;
+        background-color:#00a651;
+    }
+    
+    .needle {
+        position: absolute;
+        background-color: #f0566f;
+        height: 100%;
+        width: 0.5%;
+        left: 50%;
+    }
+    
+    .needle:before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        left: -10px;
+        width: 0px;
+        height: 0px;
+        border-top: 10px solid transparent;
+        border-right: 20px solid #f0566f;
+        border-bottom: 10px solid transparent;
+        -webkit-transform: rotate(90deg);
+    }
+}
+
+// *************************** MAT CUSTOM COLOR *************************************** //
+
+.mat-success {
+    background-color: #66BB6A;
+    color: #fff;
 }

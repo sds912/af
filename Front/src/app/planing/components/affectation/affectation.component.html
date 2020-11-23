@@ -1,0 +1,224 @@
+<section class="content" *ngIf="show">
+    <div class="container-fluid">
+
+        <div class="block-header">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="breadcrumb breadcrumb-style ">
+                    <li class="breadcrumb-item mr-4">
+                        <h4 class="page-title">Choisir un inventaire</h4>
+                    </li>
+                    <li class="breadcrumb-item mr-4">
+                      <select [(ngModel)]="idCurrentInv" class="select-trie" style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
+                          <option *ngFor="let inventaire of inventaires" [value]="inventaire.id">
+                              Inventaire <span *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
+                        </option>
+                      </select>
+                    </li>
+                    <li class="breadcrumb-item ml-5">
+                        <span>Période d'inventaire du <strong>{{currentInv.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv.fin|date:'dd/MM/yyyy'}}</strong> </span>
+                    </li>
+                </ul>
+              </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- one user -->
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="card body">
+                    <hr class="mt-0 mb-0">
+                    <div class="">
+                        
+                        <div class="row">
+                            <div class="contact-photo">
+                                <img *ngIf="!currentUser" src="assets/images/usrbig.jpg" class="img-responsive pick-img" alt=""> 
+                                <img *ngIf="currentUser" [src]="imgLink + currentUser.image" class="img-responsive pick-img" alt="">
+                            </div>
+                        </div>
+                        <div class="contact-usertitle">
+                            <div class="contact-usertitle-name"> {{ currentUser?.nom }} </div>
+                            <div class="contact-usertitle-job"> {{ getRole(currentUser?.roles, true) }} </div>
+                        </div>
+                        <ul class="list-group list-group-unbordered mb-3 mt-2" *ngIf="idLocCurrentAffectation">
+                            <li class="list-group-item entete" style="background-color: #ebebeead;">
+                                <strong style="text-align: center;display: inherit;">{{getOneById(idLocCurrentAffectation)?.nom}}</strong>
+                                <span  *ngIf="!securityServ.superviseurGene && !securityServ.superviseur && getDateComptage()?.debut">
+                                    Période de comptage du 
+                                    <strong *ngIf="getDateComptage()?.debut">{{getDateComptage()?.debut|date:'dd/MM/yyyy'}}</strong>
+                                    <strong *ngIf="!getDateComptage()?.debut"> - </strong>
+                                      au 
+                                    <strong *ngIf="getDateComptage()?.fin">{{getDateComptage()?.fin|date:'dd/MM/yyyy'}}</strong>
+                                    <strong *ngIf="!getDateComptage()?.fin"> - </strong>
+                                </span>
+                            </li>
+                            <li class="list-group-item">
+                                <span [ngClass]="{'date-label-edit': update}">Début</span>
+                                <a class="pull-right" *ngIf="!update">
+                                    {{debut|date:'dd/MM/yyyy'}}
+                                    <span *ngIf="!debut">-</span>
+                                </a>
+                                <a class="pull-right" *ngIf="update">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(0) && fin ,'proposition-date':dateProposition}">
+                                        <mat-label>Début</mat-label>
+                                        <input matInput [matDatepicker]="dbut" [(ngModel)]="debut" (ngModelChange)='dateChange()' (ngModelChange)="dateProposition=false">
+                                        <mat-datepicker-toggle matSuffix [for]="dbut"></mat-datepicker-toggle>
+                                        <mat-datepicker #dbut></mat-datepicker>
+                                    </mat-form-field>
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span [ngClass]="{'date-label-edit': update}">Fin</span>
+                                <a class="pull-right" *ngIf="!update">
+                                    {{fin|date:'dd/MM/yyyy'}}
+                                    <span *ngIf="!fin">-</span>
+                                </a>
+                                <a class="pull-right" *ngIf="update">
+                                    <mat-form-field class="example-full-width" [ngClass]="{'error-date': isErrorDate(1) , 'proposition-date':dateProposition}">
+                                        <mat-label>Fin</mat-label>
+                                        <input matInput [matDatepicker]="Inputfin" [(ngModel)]="fin" (ngModelChange)='dateChange()' (ngModelChange)="dateProposition=false">
+                                        <mat-datepicker-toggle matSuffix [for]="Inputfin"></mat-datepicker-toggle>
+                                        <mat-datepicker #Inputfin></mat-datepicker>
+                                    </mat-form-field>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item bolder entete">Emplacements</li>
+                        </ul>
+                        <div class="details-box">
+                            <!--1ere subdivision-->
+                            <ul class="list-group list-group-unbordered">
+                                <li class="list-group-item italic">{{subdivisions[0]}} :</li>
+                                <li class="list-group-item pl-2 pick-loc pic-loc-first" *ngFor="let localite of firstSub(localites); index as i" [hidden]="hiddenLoc(localite)"  [ngClass]="{'error-row': idLocError==localite.id}">
+                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(localite)" [checked]="inTab(localite.id,tabLoc)">
+                                        {{localite.nom}}
+                                    </mat-checkbox>
+                                    
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(localite.id)" *ngIf="inTab(localite.id,tabLoc)">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(localite.id,tabLoc)">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openFirst($event, localite.id)">remove_red_eye</mat-icon>
+                                </li>
+                            </ul>
+                            <!--1ere subdivision-->
+
+                            <!--Autres subdivisions-->
+                            <ul class="list-group list-group-unbordered"  *ngFor="let idParent of tabOpen;let i=index" [hidden]="!openLocalite || !getOneById(idParent)">
+                                <li class="list-group-item bolder entete">{{getOneById(idParent)?.nom}}</li>
+                                <li class="list-group-item italic" *ngIf="subdivisions[i+1]">{{subdivisions[i+1]}} :</li>
+                                <li class="list-group-item pl-2 pick-loc pic-localite-{{i+1}}" *ngFor="let sub of getCurrentSubById(idParent);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)" [ngClass]="{'error-row': idLocError==sub.id}">
+                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
+                                        {{sub.nom}}
+                                    </mat-checkbox>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;" title="Définir une période" (click)="openAffectation(sub.id)" *ngIf="inTab(sub.id,tabLoc) && !securityServ.superviseurGene">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-primary" style="font-size: 22px;color: #9d9b9d !important;" title="Définir une période" *ngIf="!inTab(sub.id,tabLoc) || securityServ.superviseurGene">alarme</mat-icon>
+                                    <mat-icon class="pull-right icone-affectation pointer text-info mr-4" title="Afficher" (click)="openOther($event, i+1,sub.id)">remove_red_eye</mat-icon>
+                                </li>
+                                <li *ngIf="getCurrentSubById(idParent).length==0" class="list-group-item italic">Cette subdivision est vide</li>
+                            </ul>
+                            <!--Autres subdivisions-->
+                        </div>
+                    </div>
+                    <hr class="mt-0">
+                    <div class="newLabelBtn pt-1">
+                        <button mat-flat-button color="primary" *ngIf="!isEditable() && !update || invIsClose" disabled>Editer</button>
+                        <button mat-flat-button color="primary" *ngIf="isEditable() && !update && !invIsClose" (click)="editOne()">Editer</button>
+
+                        <button mat-flat-button color="primary" class="mr-3" *ngIf="update" (click)="save()" [disabled]="disabledInput()">
+                            <span *ngIf="!idLocError">Enregistrer</span> 
+                            <mat-icon class="icone-affectation pointer text-danger" [title]="infoTextError" *ngIf="idLocError">info</mat-icon>
+                        </button>
+                        <button class="btn btn-danger" *ngIf="update" (click)="off()">Annuler</button>
+                    </div>
+                </div>
+            </div>
+            <!-- one user -->
+
+            <!-- list users -->
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                <div class="card">
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="ngxTableHeader pl-0 pb-0" style="min-width: 700px;">
+                                    <ul class="header-buttons-left ml-0">
+                                        <li class="dropdown m-l-20">
+                                            <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                                            <input placeholder="Recherche" type="text" class="browser-default search-field" (keyup)='filterDatatable($event.target.value)' aria-label="Search box" [(ngModel)]="searchValue">
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ngx-datatable #table class="material" [rows]="data" [columns]="columns" [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'60'" [limit]="10">
+                                    <!-- user image -->
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="10">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="table-img padding-0 pointer" (click)='openOn(row)'>
+                                                <img [src]="imgLink + value" />
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                  
+                                    <ngx-datatable-column name="Prénom et nom" sortable="false" prop="nom" [width]="150">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="value" (click)='openOn(row)'>
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Département" sortable="false" prop="departement" [width]="150">
+                                        <ng-template let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="value" (click)='openOn(row)'>
+                                                {{longText(value,20)}}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Roles" sortable="false" prop="roles" [width]="150">
+                                        <ng-template let-row="row" let-value="value" let-i="index"  ngx-datatable-cell-template>
+                                            <td class="padding-0 pointer" [title]="getRole(value, true)" (click)='openOn(row)'>
+                                                {{ longText(getRole(value, true),20) }}
+                                            </td>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    
+                                    <ngx-datatable-footer>
+                                        <ng-template 
+                                          ngx-datatable-footer-template
+                                          let-rowCount="rowCount"
+                                          let-pageSize="pageSize"
+                                          let-selectedCount="selectedCount"
+                                          let-curPage="curPage"
+                                          let-offset="offset"
+                                          let-isVisible="isVisible">
+                                            <div class="page-count">
+                                              <span *ngIf="selectedMessage">
+                                                {{selectedCount.toLocaleString()}} {{selectedMessage}} / 
+                                              </span>
+                                               {{totalMessage}} {{rowCount.toLocaleString()}}
+                                            </div>
+                                            <datatable-pager
+                                                [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                                [pagerRightArrowIcon]="'datatable-icon-right'"
+                                                [pagerPreviousIcon]="'datatable-icon-prev'"
+                                                [pagerNextIcon]="'datatable-icon-skip'"
+                                                [page]="curPage"
+                                                [size]="pageSize"
+                                                [count]="rowCount"
+                                                [hidden]="!((rowCount / pageSize) > 1)"
+                                                (change)="table.onFooterPage($event)"
+                                                (change)="look($event)"
+                                            >
+                                            </datatable-pager>
+                                        </ng-template>
+                                    </ngx-datatable-footer>
+                                </ngx-datatable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- list users -->
+        </div>
+    </div>
+</section>

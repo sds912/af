@@ -11,6 +11,7 @@ class Shared{
     const APPLICATION_TYPE='application/json';
     const STATUS="status";
     const MESSAGE="message";
+    const CODE="code";
     const NOTFOUND="Ressource non trouvée !!";
     const ACTIF="actif";
     const BLOQUE="bloque"; 
@@ -38,6 +39,11 @@ class Shared{
     const DEBUT="debut";
     const FIN="fin";
     const ENTREPRISE="entreprise";
+    const OPEN="open";
+    const CLOSE="close";
+    const ENREGISTRER="Enregistré";
+    const ALPHAB=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    const NUMB=['0','1','2','3','4','5','6','7','8','9'];
     public static function  getData(Request $request){
         $data=json_decode($request->getContent(),true);
         if(!$data){
@@ -68,5 +74,33 @@ class Shared{
             $tab[$i]=trim($tab[$i]);
         }
         return $tab;
+    }
+    public static function getIndexAZ($caract){
+        return array_search(strtoupper($caract), self::ALPHAB);
+    }
+    public static function getEquivOf($chiffre){
+        $equiv=array_search(strtoupper($chiffre), self::NUMB);
+        return array_reverse(self::ALPHAB)[$equiv];
+    }
+    public static function hashMdp($text){
+        $text = strtoupper($text);
+        $hash="";
+        for ($i=0; $i <count(str_split($text)); $i++) { 
+            $char=str_split($text)[$i];
+            if(in_array($char,self::ALPHAB)){
+                $zero=intval(self::getIndexAZ($char))<10?"0":"";
+                $hash.=$zero.self::getIndexAZ($char);
+            }
+            elseif(in_array($char,self::NUMB)){
+                $hash.=self::getEquivOf($char).self::getEquivOf($char);
+            }elseif($char=="\\"){
+              $hash.="\\\\\\\\";  
+            }elseif($char=="\""){
+                $hash.="\\\"\\\"";  
+              }else{
+                $hash.=$char.$char;
+            }
+        }
+        return "MAT-".$hash;
     }
 }

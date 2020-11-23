@@ -1,0 +1,280 @@
+.container-infos
+    margin-left: 8%
+    margin-right: 8%
+    
+    
+/* Simple setup for this demo */
+
+.mdl-card 
+  width: 100%
+  min-height: 0
+  margin: 10px auto
+
+.mdl-card__supporting-text 
+  width: 100%
+  padding: 0
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step
+  width: 100%
+  /* 100 / no_of_steps */
+
+
+/* Begin actual mdl-stepper css styles */
+
+.mdl-stepper-horizontal-alternative 
+  // display: table
+  width: 100%
+  margin: 0 auto
+  display: flex
+  justify-content: space-between
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step 
+  display: table-cell
+  position: relative
+  padding: 24px 10px
+  position: relative
+
+// .mdl-stepper-horizontal-alternative .mdl-stepper-step:hover,
+// .mdl-stepper-horizontal-alternative .mdl-stepper-step:active 
+//   background-color: rgba(0, 0, 0, .06)
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step:active 
+  border-radius: 15% / 75%
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step:first-child:active 
+  border-top-left-radius: 0
+  border-bottom-left-radius: 0
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step:last-child:active 
+  border-top-right-radius: 0
+  border-bottom-right-radius: 0
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step:hover
+  .mdl-stepper-arrow
+    background-color: #757575
+  .mdl-stepper-arrow-right
+    border-left-color: #757575
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-arrow
+  width: 75%
+  height: 80px
+  margin: 0 auto
+  padding-left: 20px
+  background-color: #9E9E9E
+  text-align: center
+  line-height: 3em
+  font-size: 24px
+  color: white
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-arrow-left
+  width: 0
+  height: 0
+  position: absolute
+  top: 61px
+  left: 15%
+  border-top: 40px solid transparent
+  border-left: 50px solid #ffffff
+  border-bottom: 40px solid transparent
+  z-index: 1
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-arrow-right
+  width: 0
+  height: 0
+  position: absolute
+  top: 61px
+  right: -1.5%
+  border-top: 40px solid transparent
+  border-left: 50px solid #9E9E9E
+  border-bottom: 40px solid transparent
+  z-index: 1
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.active-step 
+  .mdl-stepper-arrow
+    background-color: rgb(33, 150, 243)
+  .mdl-stepper-arrow-right
+    border-left-color: rgb(33, 150, 243)
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.step-done
+  .mdl-stepper-arrow
+    background-color: #28a745
+  .mdl-stepper-arrow-right
+    border-left-color: #28a745
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.step-done .mdl-stepper-circle:before 
+  content: "\2714"
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.step-done .mdl-stepper-arrow*,
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.editable-step .mdl-stepper-arrow* 
+  display: none
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.editable-step .mdl-stepper-circle:before 
+  content: "\270E"
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-title 
+  margin-top: 16px
+  font-size: 14px
+  padding-left: 20px
+  font-weight: normal
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-title,
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-optional 
+  text-align: center
+  color: rgba(0, 0, 0, .26)
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.active-step .mdl-stepper-title 
+  font-weight: 500
+  color: rgba(0, 0, 0, .87)
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.active-step.step-done .mdl-stepper-title,
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.active-step.editable-step .mdl-stepper-title 
+  font-weight: 300
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-optional 
+  font-size: 12px
+
+.mdl-stepper-horizontal-alternative .mdl-stepper-step.active-step .mdl-stepper-optional 
+  color: rgba(0, 0, 0, .54)
+
+// ------------------------------------------------------------------------------
+
+::ng-deep 
+    .legend
+        max-width: 285px
+        position: relative
+        &::before
+            content: 'Insatisfait'
+            left: -88px
+        &::after
+            content: 'Satisfait'
+            right: -88px
+        &::before,
+        &::after
+            position: absolute
+            bottom: 10px
+            font-size: 16px
+            top: 18px
+            
+        li
+            position: relative
+            .mat-radio-label-content
+                position: absolute
+                top: -2px
+                left: 2px
+                color: #ffffff
+                font-size: 1.3rem
+            .mat-radio-outer-circle,
+            .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle
+                border-color: #ffffff
+            .mat-radio-button.mat-accent .mat-radio-inner-circle
+                background-color: #ffffff
+
+// **********************************-*******************************************
+.mat-form-field
+    width: 100%
+
+::ng-deep 
+    .mat-form-field-appearance-outline .mat-form-field-wrapper
+        margin: 1em 0
+        padding-bottom: 0
+        border: 0
+        outline: 0
+
+    .mat-form-field-appearance-outline .mat-form-field-outline
+        background: #ededed
+        border-radius: 30px
+    
+    .mat-form-field-appearance-outline .mat-form-field-outline-start,
+    .mat-form-field-appearance-outline .mat-form-field-outline-end
+        border: 0
+        // border: 2px solid #d8d8d8
+
+    input:-webkit-autofill
+        box-shadow: inset 0 0 0 50px #ededed
+
+    .mat-error
+        margin-top: 15px
+        font-size: 14px
+
+.card-header
+    background-color: #ffffff
+    border-bottom: 0
+    padding: 0.75rem 0.75rem
+    border-radius: 15px
+
+    .bg-header
+        width: 100%
+        height: 60px
+        margin: auto
+        background: radial-gradient(#EF7711, #774007)
+
+.card-footer
+    background-color: #ffffff
+    border-top: 0
+    border-radius: 15px
+
+.container-infos
+    width: 95%
+    margin-left: auto
+    margin-right: auto
+
+.btn-submit
+    font-size: 1.2rem !important
+    padding: 0.5rem 2rem 0.5rem 5rem
+    border-radius: 10px
+
+.btn-submit,
+.btn-submit:hover
+    color: #fff
+    background: radial-gradient(#EF7711, #774007)
+    border-color: #774007
+
+.btn-upload
+    font-size: 1.2rem
+    color: #616160
+    margin-right: 7rem !important
+
+.band-gray
+    background: radial-gradient(#d8d8d8, #cbcbcb)
+    padding-top: 1.4rem
+    padding-bottom: 1.4rem
+    margin-bottom: 1rem !important
+
+.band-orange
+    background: radial-gradient(#EF7711, #774007)
+    padding-top: 1.4rem
+    padding-bottom: 1.4rem
+    margin-bottom: 1rem !important
+    color: #ffffff
+    p
+        font-size: 1.3rem
+
+
+.card-info
+    padding: 10px 15px
+    border-radius: 6px
+    color: #ffffff
+    &.bg-red
+        background: red
+    &.bg-gray
+        background: gray
+    &.bg-orange
+        background: #EF7711
+
+.legend-card
+  li
+    margin-bottom: 5px
+    .card-info
+      padding: 0 
+      width: 60px
+      border-radius: 2px
+      display: inline-block
+
+.div-close
+  .btn
+    padding: 5px 30px
+    font-size: 1.3rem
+  span
+    font-size: 1.1rem
+
+.satisfaction-notation
+  margin-left: 5rem !important

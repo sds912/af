@@ -1,0 +1,36 @@
+<div class="wrapper">
+    <header>
+        &nbsp;
+    </header>
+    <main>
+        <div class="container-form-login">
+            <div class="card-form-login">
+                <img class="logo p-mb-5" src="assets/logo-black.png" alt="" srcset="">
+                
+                <form class="form-login" [formGroup]="loginForm" (keyup.enter)="onSubmit()">
+                    <h2>Bienvenue</h2>
+                    <p class="login-info">Veuillez saisir votre E-mail et votre mot de passe pour vous connecter.</p>
+                    <p class="text-danger" *ngIf="textError" style="text-align: center;">{{textError}}</p>
+                    <div class="p-field p-grid input-field">
+                        <div class="p-col-12 p-col-md-12">
+                            <input id="email" type="text" formControlName="username" pInputText placeholder="E-mail"> 
+                        </div>
+                    </div>
+                    <div class="p-field p-grid input-field">
+                        <div class="p-col-12 p-col-md-12">
+                            <input id="password" type="password" formControlName="password" pInputText placeholder="Mot de passe"> 
+                        </div>
+                    </div>
+                    <div class="p-field p-grid input-btn">
+                        <div class="p-col-12 p-col-md-12">
+                            <p-button label="Connexion" icon="pi pi-angle-right" styleClass="btn-login" iconPos="right" (click)="onSubmit()"></p-button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        &nbsp;
+    </footer>
+</div>

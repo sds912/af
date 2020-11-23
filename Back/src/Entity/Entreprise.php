@@ -11,8 +11,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *    normalizationContext={
- *      "groups"={"entreprise_read"}
+ *  normalizationContext={
+ *    "groups"={"entreprise_read"}
+ *  },
+ *  itemOperations={
+ *    "GET",
+ *    "PUT",
+ *    "DELETE",
+ *    "PATCH",
+ *    "REMOVE_CATALOGUE"={
+ *      "method"="get",
+ *      "path"="/entreprises/catalogues/{id}",
+ *      "controller"="App\Controller\RemoveEntrepriseCataloguesController",
+ *      "swagger_context"={
+ *        "summary"="Supprimer les catalogues d'une entreprise",
+ *        "description"="Supprimer les catalogues d'une entreprise"
+ *      }
+ *    }
  *  }
  * )
  * @ORM\Entity(repositoryClass=EntrepriseRepository::class)
@@ -47,31 +62,31 @@ class Entreprise
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $republique;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $ville;
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="entreprise")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $localites;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_users_read"})
      */
     private $users;
 
@@ -94,15 +109,28 @@ class Entreprise
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read"})
+     * @Groups({"entreprise_read","mobile_loc_read"})
      */
     private $subdivisions = [];
+
+    /**
+     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="entreprise")
+     */
+    private $immobilisations;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Catalogue::class, mappedBy="entreprise", orphanRemoval=true)
+     * 
+     */
+    private $catalogues;
 
     public function __construct()
     {
         $this->localites = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->inventaires = new ArrayCollection();
+        $this->immobilisations = new ArrayCollection();
+        $this->catalogues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -302,6 +330,68 @@ class Entreprise
     public function setSubdivisions(?array $subdivisions): self
     {
         $this->subdivisions = $subdivisions;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Immobilisation[]
+     */
+    public function getImmobilisations(): Collection
+    {
+        return $this->immobilisations;
+    }
+
+    public function addImmobilisation(Immobilisation $immobilisation): self
+    {
+        if (!$this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations[] = $immobilisation;
+            $immobilisation->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImmobilisation(Immobilisation $immobilisation): self
+    {
+        if ($this->immobilisations->contains($immobilisation)) {
+            $this->immobilisations->removeElement($immobilisation);
+            // set the owning side to null (unless already changed)
+            if ($immobilisation->getEntreprise() === $this) {
+                $immobilisation->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Catalogue[]
+     */
+    public function getCatalogues(): Collection
+    {
+        return $this->catalogues;
+    }
+
+    public function addCatalogue(Catalogue $catalogue): self
+    {
+        if (!$this->catalogues->contains($catalogue)) {
+            $this->catalogues[] = $catalogue;
+            $catalogue->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCatalogue(Catalogue $catalogue): self
+    {
+        if ($this->catalogues->contains($catalogue)) {
+            $this->catalogues->removeElement($catalogue);
+            // set the owning side to null (unless already changed)
+            if ($catalogue->getEntreprise() === $this) {
+                $catalogue->setEntreprise(null);
+            }
+        }
 
         return $this;
     }
