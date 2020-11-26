@@ -59,6 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dataInventairesCloses = 0;
     if(this.securityServ.admin){
       this.router.navigate(["/admin/entreprise"])
+      return;
     }
     this.localites = [];
     this.affectations = [];
