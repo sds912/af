@@ -91,10 +91,10 @@ const routes: Routes = [
     path: '',canActivate:[AuthGuard],
     loadChildren: () => import('./planing/planing.module').then(m => m.PlaningModule)
   },
-  {
-    path: '',canActivate:[AuthGuard,SuperAdminGuard],
-    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
-  },
+  // {
+  //   path: '',canActivate:[AuthGuard,SuperAdminGuard],
+  //   loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
+  // },
   {
     path: '',
     redirectTo: 'dashboard',

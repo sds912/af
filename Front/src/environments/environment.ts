@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiSupportUrl: 'http://127.0.0.1:8000'
+  apiSupportUrl: 'http://127.0.0.1:8001',
 };
 
 /*

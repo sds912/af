@@ -11,6 +11,7 @@ import { LayoutService } from '../layout.service';
 const document: any = window.document;
 import { saveAs } from 'file-saver';
 import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
+import { AdministrationService } from 'src/app/shared/service/administration.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -67,7 +68,8 @@ export class HeaderComponent implements OnInit {
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private layouteSev:LayoutService,
-    private inventaireServ:InventaireService
+    private inventaireServ:InventaireService,
+    private administrationService: AdministrationService
     ){
       
   }
@@ -455,28 +457,31 @@ export class HeaderComponent implements OnInit {
   }
   onSubmitCle(){
     this.errorKey=true
-    const deco=this.sharedService.decok(this.securityServ.base,this.cle)
-    if(deco){
-      this.errorKey=false
-      this.securityServ.showLoadingIndicatior.next(true);
-      const data={nombre:deco,cle:this.cle}
-      this.securityServ.activKey(data).then(
-        rep=>{
-          //this.closeModal()
-          this.securityServ.showLoadingIndicatior.next(false);
-          this.showNotification('bg-success',rep.message,'top','center',5000)
-          this.closeKeyModal.nativeElement.click();
-          setTimeout(()=>window.location.reload(),6000)
-        },
-        message=>{
-          this.securityServ.showLoadingIndicatior.next(false);
-          this.showNotification('bg-danger',message,'top','center')
-        }
-      )    
-    }
-    else{
-      this.showNotification('bg-danger','Clé non valide','bottom','center')
-    }
+    // const deco=this.sharedService.decok(this.securityServ.base,this.cle)
+    this.administrationService.valideLicense(this.cle).then((res: any) => {
+      if(res){
+        let deco = res.split('-');
+        this.errorKey=false
+        this.securityServ.showLoadingIndicatior.next(true);
+        const data={nombre:+deco[2],cle:this.cle}
+        this.securityServ.activKey(data).then(
+          rep=>{
+            //this.closeModal()
+            this.securityServ.showLoadingIndicatior.next(false);
+            this.showNotification('bg-success',rep.message,'top','center',5000)
+            this.closeKeyModal.nativeElement.click();
+            setTimeout(()=>window.location.reload(),6000)
+          },
+          message=>{
+            this.securityServ.showLoadingIndicatior.next(false);
+            this.showNotification('bg-danger',message,'top','center')
+          }
+        )    
+      }
+      else{
+        this.showNotification('bg-danger','Clé non valide','bottom','center')
+      }
+    })
   }
   activNewKey(){
     this.activCle=true
