@@ -221,4 +221,12 @@ export class SecurityService {
       this.activCle=true  
     }
   }
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  getRefreshToken() {
+    const data =  {refresh_token: localStorage.getItem('refreshToken')};
+    return this.httpClient.post<any>(this.urlBack+"/token/refresh", data);
+  }
 }

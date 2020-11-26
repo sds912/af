@@ -42,7 +42,7 @@ export class AppComponent {
     if(localStorage.getItem('token')){
       this.securityService.load();
     }
-    this.tokenExpire();
+    // this.tokenExpire();
     this.shortWidth()
   }
   tokenExpire(){
