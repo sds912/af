@@ -443,39 +443,18 @@ class SharedController extends AbstractController
         $closed = $inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
         $beginned = $inventaire->getBeginnedLoc() ? $inventaire->getBeginnedLoc() : [];
         if(isset($data["close"])) {
-            foreach ($data['close'] as $value) {
-                $locs = $this->repoLoc->findBy(['parent' => $value]);
-                if (count($locs) > 0) {
-                    $childs = $this->getChilds($locs);
-                    foreach ($childs as $child) {
-                        $closed[] = $child->getId();
-                    }
-                } else {
-                    $closed[] = $value;
-                }
-            }
+            $closed=array_merge($closed, $data["close"]);
             $closed=array_unique($closed);
         }
+        $filteredBeginned = [];
         if(isset($data["begin"])) {
             foreach ($data['begin'] as $value) {
-                $locs = $this->repoLoc->findBy(['parent' => $value]);
-                if (count($locs) > 0) {
-                    $childs = $this->getChilds($locs);
-                    foreach ($childs as $child) {
-                        $beginned[] = $child->getId();
-                    }
-                } else {
-                    $beginned[] = $value;
+                // Suppression des localite entamé et close
+                if (!in_array($value, $closed)) {
+                    $filteredBeginned[] = $value;
                 }
             }
             $beginned = array_unique($beginned);
-        }
-        $filteredBeginned = [];
-        // Suppression des localite entamé et close
-        foreach ($beginned as $value) {
-            if (!in_array($value, $closed)) {
-                $filteredBeginned[] = $value;
-            }
         }
         $inventaire->setClosedLoc($closed);
         $inventaire->setBeginnedLoc($filteredBeginned);
