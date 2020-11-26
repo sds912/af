@@ -30,6 +30,11 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   @ViewChild('formDirective') private formDirective: NgForm;
   workbook=workbook
 
+  dateInv=null
+
+  inputMobilFile=null
+
+
   data = [];
 
   allImmos = [];
@@ -594,6 +599,59 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   getExcelDate():string{
     return this.formattedDate(this.inventaires.find(inv=>inv.id==this.idCurrentInv)?.dateInv)
   }
+
+  importMobileFile(event){
+    this.dateInv=null
+    let selectedFile = event.target.files[0];
+    this.inputMobilFile=null
+    const fileReader = new FileReader();
+    fileReader.readAsText(selectedFile, "UTF-8");
+    fileReader.onload = () => {
+      const obj:string=typeof fileReader.result=="string"?fileReader.result:""
+      this.saveData(JSON.parse(obj))
+    }
+    fileReader.onerror = (error) => {
+      console.log(error);
+    }
+  }
+  saveData(data){
+    console.log(data);
+    this.getInventaireById(data.inventaire.id,data)
+  }
+  getInventaireById(id,data){
+    if(id){
+      this.inventaireServ.getInventaireById(id).then(
+        rep=>{
+          this.thraitement(rep,data)
+        },
+        error=>{
+          console.log(error);  
+          this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+        }
+      )
+      return ''
+    }
+    this.showNotification('bg-red',"Fichier incorrect.",'top','center',5000)
+  }
+
+  thraitement(rep,data){
+    this.dateInv=rep.dateInv
+    this.idCurrentEse = localStorage.getItem("currentEse")//laisser ici
+    console.log(rep,this.idCurrentEse);
+    if(rep.entreprise.id!=this.idCurrentEse){
+      this.showNotification('bg-red',"Cet inventaire n'est pas rattaché à l'entité dans lequel vous êtes connecté.",'top','center',7000)
+    }else if(rep.status=='close'){
+      this.showNotification('bg-red',"Cet inventaire est déja cloturé.",'top','center',7000)
+    }else{
+      this.inventaireServ.sendMobileData(data).then(
+        ()=>{
+          this.showNotification('bg-success',"Enregistré",'top','center',5000)
+          this.router.navigate(['/feuille/comptage/reload'])
+        },error=>this.showNotification('bg-red',error,'top','center',5000)
+      )
+    }
+  }
+  
 }
 export interface selectRowInterface {
   code: string;
