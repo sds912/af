@@ -148,22 +148,28 @@ export class InventaireComponent implements OnInit {
     )
   }
   addNew() {
-    this.showForm = true
-    this.idPresiComite = 0
-    this.instructions = []
-    this.docsPv = []
-    this.docsDc = []
-    this.tabComite = new FormArray([]);
-    this.tabPresents = new FormArray([]);
-    this.tabOtherPresent = new FormArray([]);
-    this.tabLoc = [];
-    this.tabDeliberation = new FormArray([]);
-    this.pvCreer = false
-    this.invCreer = false
-    this.signatairesPv = []
-    this.signatairesInst = []
-    this.tabOpen = []
-    this.subdivisions?.forEach(sub => this.tabOpen.push(0))
+    // console.log('inventaires[]', this.inventaires);
+    if (this.inventaires.length > 0) {
+      this.updateOne(this.inventaires[this.inventaires.length - 1]);
+    } else {
+      this.showForm = true
+      this.idPresiComite = 0
+      this.instructions = []
+      this.docsPv = []
+      this.docsDc = []
+      this.tabComite = new FormArray([]);
+      this.tabPresents = new FormArray([]);
+      this.tabOtherPresent = new FormArray([]);
+      this.tabLoc = [];
+      this.tabDeliberation = new FormArray([]);
+      this.pvCreer = false
+      this.invCreer = false
+      this.signatairesPv = []
+      this.signatairesInst = []
+      this.tabOpen = []
+      this.subdivisions?.forEach(sub => this.tabOpen.push(0))
+    }
+
     this.initForm()
   }
   updateOne(inventaire) {
@@ -186,7 +192,7 @@ export class InventaireComponent implements OnInit {
     if (this.tabOtherPresent.length == 0) this.addOtherPres()
 
     this.tabLoc = []
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));    
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
       this.invCreer = true
@@ -255,7 +261,23 @@ export class InventaireComponent implements OnInit {
       bloc2: [data[1]],
       bloc3: [data[2]]
     })
+    console.log('tabPresents => ', this.users);
     this.tabSignatairesPv = new FormArray([])
+
+
+    this.tabPresents.value.map(element => {
+      this.users.map(e => {
+
+        if (element === e.id) {
+          this.addSignatairePv(e.nom, e.poste)
+        }
+      });
+    });
+
+
+
+
+
     const dataSignataire = data[3]?.length > 0 ? data[3] : ["", ""]
     for (let index = 0; index < dataSignataire.length; index += 2) {
       this.addSignatairePv(dataSignataire[index], dataSignataire[index + 1])
@@ -802,14 +824,17 @@ export class InventaireComponent implements OnInit {
     ]
   }
   doEspace(nom, fnc) {
+    console.log('nom',nom);
+    console.log('fnc',fnc);
+    
     let i = 0;
     let espace = '';
     if (nom.length > fnc.length) {
       i = nom.length - fnc.length;
-      for (let index = 0; index < 2*i; index++) {
+      for (let index = 0; index < 2 * i; index++) {
         espace += '  ';
       }
-      fnc = fnc + espace ;
+      fnc = fnc + espace;
     } else {
       i = fnc.length - nom.length;
 
@@ -844,7 +869,7 @@ export class InventaireComponent implements OnInit {
   getOneSignatairePdf(signataires) {
     return [
       { text: signataires[0], margin: [0, 20, 0, 0], fontSize: 10, decoration: '' },
-      { text: this.doEspace(signataires[0], signataires[1])+signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
+      { text: this.doEspace(signataires[0], signataires[1]) + signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
     ]
   }
   get3SignatairePdf(signataires) {
@@ -882,14 +907,11 @@ export class InventaireComponent implements OnInit {
     let tab = []
     let a = 0
     for (let i = 0; i < signataires.length; i += 4) {
-      console.log('this.doEspace => ',this.doEspace(signataires[i + 0], signataires[i + 1]).length);
-      console.log('this.doEspace => ',this.doEspace(signataires[i + 2], signataires[i + 3]).length);
-
 
       tab.push(
         [
           { text: signataires[i] + '\n' + signataires[i + 1], fontSize: 10, margin: [0, 20, 0, 70], border: [false, false, false, false] },
-          { text: this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 2] + '\n' + this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
+          { text: this.doEspace(signataires[i + 2], signataires[i + 3]) + signataires[i + 2] + '\n' + this.doEspace(signataires[i + 2], signataires[i + 3]) + signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
         ]
       )
     }

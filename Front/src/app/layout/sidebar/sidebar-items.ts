@@ -32,10 +32,10 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'PRE',
     path: '',
-    title: 'Préparation',
+    title: 'Phase Préparation',
     icon: 'fas fa-star',
     class: 'menu-toggle',
-    roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+    roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: [
       {
         id: 'INV',
@@ -43,7 +43,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Inventaires',
         icon: 'fas fa-barcode',
         class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       },
       {
@@ -52,7 +52,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Instructions',
         icon: 'fas fa-file-signature',
         class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       }
     ]
@@ -63,13 +63,13 @@ export const ROUTES: RouteInfo[] = [
     title: 'Instructions',
     icon: 'fas fa-file-signature',
     class: '',
-    roles: ['ROLE_SuperViseurAdjoint', 'ROLE_MI', 'ROLE_CE'],
+    roles: [ 'ROLE_MI', 'ROLE_CE'],
     submenu: []
   },
   {
     id: 'PLA',
     path: '',
-    title: 'Planification',
+    title: 'Phase Planification',
     icon: 'far fa-calendar-alt',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint', 'ROLE_CE'],
@@ -106,7 +106,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'TRA',
     path: '',
-    title: 'Traitement',
+    title: 'Phase Traitement',
     icon: 'fas fa-cubes',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
@@ -153,7 +153,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'AJT',
     path: '',
-    title: 'Ajustement',
+    title: 'Phase Ajustement',
     icon: 'fas fa-check-double',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],
