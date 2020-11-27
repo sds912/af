@@ -144,15 +144,15 @@ export class HeaderComponent implements OnInit {
       this.realTime('notification')
     }
     setTimeout(()=>{
-        if(!this.securityServ.securePwd){
-          this.openPasswordModal?.nativeElement.click()
-        }
-        if(!localStorage.getItem("currentEse") && !this.securityServ.admin){
-          this.openEseModal?.nativeElement.click()
-        }
-        if(this.securityServ.activCle){
-          this.openKeyModal?.nativeElement.click()
-        }
+      if(!this.securityServ.securePwd){
+        this.openPasswordModal?.nativeElement.click()
+      }
+      if(!localStorage.getItem("currentEse") && !this.securityServ.admin){
+        this.openEseModal?.nativeElement.click()
+      }
+      if(this.securityServ.activCle){
+        this.openKeyModal?.nativeElement.click()
+      }
     },1000);
   }
 

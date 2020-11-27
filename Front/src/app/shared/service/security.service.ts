@@ -154,8 +154,10 @@ export class SecurityService {
       localStorage.setItem('mercureAuthorization',rep[1])
       if(rep[2]==1){
         this.securePwd=false
-      }      
-      this.getNE()//this.securePwd=false
+      }
+      if (this.user.roles[0].search("ROLE_Admin")>=0) {
+        this.getNE()//this.securePwd=false
+      } 
     })
   }
   refreshToken(){
@@ -213,17 +215,17 @@ export class SecurityService {
     if(this.user.entreprises){
       cree=this.user.entreprises.length
     }
-    if(this.user?.cle){
-      this.ne=this.sharedService.decok(this.base,this.user.cle)
+    if(!this.user?.cle) {
+      this.securePwd=true
+      this.activCle=true
+      return false;
     }
-    if(this.user?.cle){
-      // this.ne=this.sharedService.decok(this.base,this.user.cle)
-      await this.administrationService.valideLicense(this.user.cle).then((res: any) => {
-        if (res) {
-          this.ne = res.split('-');
-        }
-      })
-    }
+    // this.ne=this.sharedService.decok(this.base,this.user.cle)
+    await this.administrationService.valideLicense(this.user.cle).then((res: any) => {
+      if (res) {
+        this.ne = res.split('-');
+      }
+    })
     this.entiteRest = this.ne[2] - cree;
     if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
       this.securePwd=true//car l 'activation predomine sur le changement de mdp

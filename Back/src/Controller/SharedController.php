@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Shared;
 use App\Entity\Entreprise;
 use App\Entity\Immobilisation;
+use App\Entity\License;
 use App\Entity\Inventaire;
 use App\Entity\Localite;
 use App\Entity\MobileToken;
@@ -134,9 +135,19 @@ class SharedController extends AbstractController
     public function activeKey(Request $request,EntityManagerInterface $manager){
         $data=Shared::getData($request);
         $user=$this->getUser();
-        
+        $cle = $data['cle'];
+
+        $license = $this->manager->getRepository(License::class)->findOneBy(['licenseCle' => $cle]);
+
+        if (!$license) {
+            $license = new License();
+            $license->setDateCreation(new \DateTime('now'))->setLicenseCle($cle);
+            $this->manager->persist($license);
+            $this->manager->flush();
+        }
+
         $nmbre=$data['nombre'];
-        $user->setCle($data['cle'])->setNombre($nmbre);
+        $user->setCle($cle)->setNombre($nmbre);
         $txt="une entité";
         if($nmbre>1){
             $txt=$nmbre." entités";

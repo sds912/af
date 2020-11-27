@@ -59,7 +59,7 @@ export class EntrepriseComponent implements OnInit {
     this.newUserImg = this.imgLink+this.defaultImag;
   }
   ngOnInit() {
-    this.ne=this.securityServ.ne
+    this.ne = this.securityServ.ne
     this.entiteRest=this.securityServ.entiteRest
     this.securityServ.showLoadingIndicatior.next(true)
     this.securityServ.admin?this.getEntreprise():this.getOneEntreprise()
@@ -71,7 +71,7 @@ export class EntrepriseComponent implements OnInit {
         let e=rep
         if(e && e.length>0){
           e=rep.reverse()
-          this.entiteRest=this.ne-rep.length
+          this.entiteRest= this.ne[2] - rep.length
         }
         this.data = e;
         this.filteredData = rep;
