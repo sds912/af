@@ -99,7 +99,7 @@ export class InventaireComponent implements OnInit {
     this.initForm()
     this.initInstrucForm()
     this.comments = this.getCommentInst()
-    this.initPvForm(false)
+    this.initPvForm(true)
     this.commentsPv = this.getCommentPv()
     this.getOneEntreprise();
     this.addFuctionSign = this.fb.group(
@@ -150,9 +150,9 @@ export class InventaireComponent implements OnInit {
     )
   }
   addNew() {
-    // console.log('inventaires[]', this.inventaires);
+    console.log('inventaires[]', this.inventaires);
     if (this.inventaires.length > 0) {
-      this.updateOne(this.inventaires[this.inventaires.length - 1]);
+      this.updateOne(this.inventaires[1]);
     } else {
       this.showForm = true
       this.idPresiComite = 0
@@ -206,7 +206,7 @@ export class InventaireComponent implements OnInit {
       let data = inventaire.pvReunion
       this.tabDeliberation = new FormArray([]);
       data[1].forEach(del => this.addDeliberation(del[0], del[1]));
-      this.initPvForm(false ,[
+      this.initPvForm(false, [
         data[0][0], data[0][1], data[0][2],
         data[0][3] ? data[0][3] : []
       ])
@@ -257,7 +257,7 @@ export class InventaireComponent implements OnInit {
     console.log(inventaire.localites);
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
-  initPvForm( verif = true ,data = ["", "", "", []] ) {
+  initPvForm(verif = true, data = ["", "", "", []]) {
     this.pvForm = this.fb.group({
       bloc1: [data[0]],
       bloc2: [data[1]],
@@ -266,19 +266,14 @@ export class InventaireComponent implements OnInit {
     this.tabSignatairesPv = new FormArray([])
 
 
-    if(verif) {
+    if (verif) {
       this.users.map(e => {
-      console.log(e);
+        console.log(e);
 
-      if (e.roles.indexOf("ROLE_SuperViseurGene") > -1 || e.roles.indexOf("ROLE_PC") > -1) {
-        this.addSignatairePv(e.nom, e.poste)
-      }
-
-
-      // if (element === e.id) {
-      //   this.addSignatairePv(e.nom, e.poste)
-      // }
-    });
+        if (e.roles.indexOf("ROLE_SuperViseurGene") > -1 || e.roles.indexOf("ROLE_PC") > -1) {
+          this.addSignatairePv(e.nom, e.poste)
+        }
+      });
     }
 
 
@@ -606,7 +601,7 @@ export class InventaireComponent implements OnInit {
     this.pvCreer = true
     this.tabDeliberation = new FormArray([]);
     const valPv = this.getPvValDef()
-    this.initPvForm(false,[valPv[0], valPv[1], valPv[2], []])
+    this.initPvForm(true, [valPv[0], valPv[1], valPv[2], []])
     this.tabDeliberation = new FormArray([]);
     const content = "Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
     const title = "DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
@@ -631,16 +626,16 @@ export class InventaireComponent implements OnInit {
     // });
     pdfMake.createPdf(documentDefinition).open();
   }
-  exportForMobile(){
+  exportForMobile() {
     this.securityServ.showLoadingIndicatior.next(true)
     this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
-      rep=>{
-        const blob = new Blob([JSON.stringify(rep)], {type : 'application/json'});
+      rep => {
+        const blob = new Blob([JSON.stringify(rep)], { type: 'application/json' });
         saveAs(blob, 'mobile.json');
         this.securityServ.showLoadingIndicatior.next(false)
-      },message=>{
+      }, message => {
         this.securityServ.showLoadingIndicatior.next(false)
-        this.showNotification('bg-red',message,'top','right')
+        this.showNotification('bg-red', message, 'top', 'right')
       }
     )
   }
