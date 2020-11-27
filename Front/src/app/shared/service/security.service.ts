@@ -11,7 +11,7 @@ import { ROUTES } from '../../layout/sidebar/sidebar-items';
   providedIn: 'root'
 })
 export class SecurityService {
-  public base="FA-1717" //l'identifiant de l'application heberger chez le client
+  public base="FA-5456" //l'identifiant de l'application heberger chez le client
   ne=null
   entiteRest=0
   activCle=false
@@ -231,5 +231,13 @@ export class SecurityService {
       this.securePwd=true//car l 'activation predomine sur le changement de mdp
       this.activCle=true  
     }
+  }
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  getRefreshToken() {
+    const data =  {refresh_token: localStorage.getItem('refreshToken')};
+    return this.httpClient.post<any>(this.urlBack+"/token/refresh", data);
   }
 }

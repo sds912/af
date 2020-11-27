@@ -454,39 +454,18 @@ class SharedController extends AbstractController
         $closed = $inventaire->getClosedLoc()?$inventaire->getClosedLoc():[];
         $beginned = $inventaire->getBeginnedLoc() ? $inventaire->getBeginnedLoc() : [];
         if(isset($data["close"])) {
-            foreach ($data['close'] as $value) {
-                $locs = $this->repoLoc->findBy(['parent' => $value]);
-                if (count($locs) > 0) {
-                    $childs = $this->getChilds($locs);
-                    foreach ($childs as $child) {
-                        $closed[] = $child->getId();
-                    }
-                } else {
-                    $closed[] = $value;
-                }
-            }
+            $closed=array_merge($closed, $data["close"]);
             $closed=array_unique($closed);
         }
+        $filteredBeginned = [];
         if(isset($data["begin"])) {
             foreach ($data['begin'] as $value) {
-                $locs = $this->repoLoc->findBy(['parent' => $value]);
-                if (count($locs) > 0) {
-                    $childs = $this->getChilds($locs);
-                    foreach ($childs as $child) {
-                        $beginned[] = $child->getId();
-                    }
-                } else {
-                    $beginned[] = $value;
+                // Suppression des localite entamé et close
+                if (!in_array($value, $closed)) {
+                    $filteredBeginned[] = $value;
                 }
             }
             $beginned = array_unique($beginned);
-        }
-        $filteredBeginned = [];
-        // Suppression des localite entamé et close
-        foreach ($beginned as $value) {
-            if (!in_array($value, $closed)) {
-                $filteredBeginned[] = $value;
-            }
         }
         $inventaire->setClosedLoc($closed);
         $inventaire->setBeginnedLoc($filteredBeginned);
@@ -564,8 +543,8 @@ class SharedController extends AbstractController
                 if($im){
                     $immobilisation=$im;
                 }
-                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])
-                    ->setDescription($immo["description"])->setEndDescription($immo["description"])->setInventaire($inventaire);
+                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])->setDescription($immo["description"])
+                ->setEndDescription($immo["description"])->setInventaire($inventaire)->setEntreprise($inventaire->getEntreprise());
             }
             $immobilisation->setLecteur($this->repoUser->find($immo["lecteur"]))
                 ->setEndEtat($immo["etat"])->setStatus($immo["status"])
@@ -683,10 +662,14 @@ class SharedController extends AbstractController
     public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository, $id=null){
         $data=Shared::getData($request);
 
-        // $loc = $this->repoLoc->find(1);
-        // dd($this->getLastLevelChilds($loc));
+        $user = $this->getUser();
 
-        $inventaire=$this->repoInv->find($data['id']);
+        $inventaire= $this->repoInv->find($data['id']);
+
+        if (!$user->inEntreprise($inventaire->getEntreprise())) {
+            return $this->json([], 200);
+        }
+
         //si superviseur ou sup gen tous les immos
         $immos=$this->repoImmo->findByInventaire($inventaire);
 

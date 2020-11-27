@@ -310,10 +310,13 @@
                                         </p>
                                     </mat-panel-title>
                                     <mat-panel-description class="mr-0">
-                                        <div class="pt-5 pb-4" *ngIf="!securityServ.superviseurAdjoint">
-                                            <mat-icon data-toggle="modal" class="mr-2 icone-loc"
-                                                (click)="updateOne(inventaire)">edit</mat-icon>
-                                            <mat-icon class="icone-loc">delete</mat-icon>
+                                        <div class="pt-5 pb-4" >
+                                            <mat-icon data-toggle="modal" *ngIf="!securityServ.superviseurAdjoint" class="mr-4 icone-loc"
+                                                (click)="updateOne(inventaire)" title="Modifier Inventaire">edit</mat-icon>
+
+                                            <mat-icon class="mr-4 icone-loc" (click)="exportForMobile()" title="Exporter Inventaire">file_upload</mat-icon>
+
+                                            <mat-icon class="icone-loc" (click)="closeInv()" *ngIf="!securityServ.superviseurAdjoint" title="Fermer Inventaire">close</mat-icon>
                                         </div>
                                     </mat-panel-description>
                                 </mat-expansion-panel-header>

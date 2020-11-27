@@ -180,7 +180,7 @@ export class CatalogueComponent implements OnInit {
       this.securityServ.showLoadingIndicatior.next(true);
 
 
-      for await (const iterator of this.data) {
+      for  (const iterator of this.data) {
         const obj = {
           libelle: iterator[0],
           entreprise: "api/entreprises/" + this.idCurrentEse,
@@ -199,7 +199,7 @@ export class CatalogueComponent implements OnInit {
 
 
       }
-
+      this.showNotification('bg-success', 'Fichier Enregistré', 'top', 'center')
       this.getCatalogueListe();
       this.securityServ.showLoadingIndicatior.next(false);
 

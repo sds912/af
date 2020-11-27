@@ -13,7 +13,9 @@ import { IMAGE64 } from 'src/app/administration/components/entreprise/image';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { saveAs } from 'file-saver';
 import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2'
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-inventaire',
@@ -97,7 +99,7 @@ export class InventaireComponent implements OnInit {
     this.initForm()
     this.initInstrucForm()
     this.comments = this.getCommentInst()
-    this.initPvForm()
+    this.initPvForm(true)
     this.commentsPv = this.getCommentPv()
     this.getOneEntreprise();
     this.addFuctionSign = this.fb.group(
@@ -148,22 +150,28 @@ export class InventaireComponent implements OnInit {
     )
   }
   addNew() {
-    this.showForm = true
-    this.idPresiComite = 0
-    this.instructions = []
-    this.docsPv = []
-    this.docsDc = []
-    this.tabComite = new FormArray([]);
-    this.tabPresents = new FormArray([]);
-    this.tabOtherPresent = new FormArray([]);
-    this.tabLoc = [];
-    this.tabDeliberation = new FormArray([]);
-    this.pvCreer = false
-    this.invCreer = false
-    this.signatairesPv = []
-    this.signatairesInst = []
-    this.tabOpen = []
-    this.subdivisions?.forEach(sub => this.tabOpen.push(0))
+    console.log('inventaires[]', this.inventaires);
+    if (this.inventaires.length > 0) {
+      this.updateOne(this.inventaires[1]);
+    } else {
+      this.showForm = true
+      this.idPresiComite = 0
+      this.instructions = []
+      this.docsPv = []
+      this.docsDc = []
+      this.tabComite = new FormArray([]);
+      this.tabPresents = new FormArray([]);
+      this.tabOtherPresent = new FormArray([]);
+      this.tabLoc = [];
+      this.tabDeliberation = new FormArray([]);
+      this.pvCreer = false
+      this.invCreer = false
+      this.signatairesPv = []
+      this.signatairesInst = []
+      this.tabOpen = []
+      this.subdivisions?.forEach(sub => this.tabOpen.push(0))
+    }
+
     this.initForm()
   }
   updateOne(inventaire) {
@@ -186,7 +194,7 @@ export class InventaireComponent implements OnInit {
     if (this.tabOtherPresent.length == 0) this.addOtherPres()
 
     this.tabLoc = []
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));    
+    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
       this.invCreer = true
@@ -198,7 +206,7 @@ export class InventaireComponent implements OnInit {
       let data = inventaire.pvReunion
       this.tabDeliberation = new FormArray([]);
       data[1].forEach(del => this.addDeliberation(del[0], del[1]));
-      this.initPvForm([
+      this.initPvForm(false, [
         data[0][0], data[0][1], data[0][2],
         data[0][3] ? data[0][3] : []
       ])
@@ -249,13 +257,29 @@ export class InventaireComponent implements OnInit {
     console.log(inventaire.localites);
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
-  initPvForm(data = ["", "", "", []]) {
+  initPvForm(verif = true, data = ["", "", "", []]) {
     this.pvForm = this.fb.group({
       bloc1: [data[0]],
       bloc2: [data[1]],
       bloc3: [data[2]]
     })
     this.tabSignatairesPv = new FormArray([])
+
+
+    if (verif) {
+      this.users.map(e => {
+        console.log(e);
+
+        if (e.roles.indexOf("ROLE_SuperViseurGene") > -1 || e.roles.indexOf("ROLE_PC") > -1) {
+          this.addSignatairePv(e.nom, e.poste)
+        }
+      });
+    }
+
+
+
+
+
     const dataSignataire = data[3]?.length > 0 ? data[3] : ["", ""]
     for (let index = 0; index < dataSignataire.length; index += 2) {
       this.addSignatairePv(dataSignataire[index], dataSignataire[index + 1])
@@ -350,6 +374,8 @@ export class InventaireComponent implements OnInit {
         fonction: new FormControl(fonction)
       })
     );
+
+
   }
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
@@ -558,7 +584,7 @@ export class InventaireComponent implements OnInit {
   deletCreationPv() {
     this.pvCreer = false
     this.docsPv = []
-    this.initPvForm()
+    this.initPvForm(false)
     this.tabDeliberation = new FormArray([]);
   }
   off() {
@@ -575,7 +601,7 @@ export class InventaireComponent implements OnInit {
     this.pvCreer = true
     this.tabDeliberation = new FormArray([]);
     const valPv = this.getPvValDef()
-    this.initPvForm([valPv[0], valPv[1], valPv[2], []])
+    this.initPvForm(true, [valPv[0], valPv[1], valPv[2], []])
     this.tabDeliberation = new FormArray([]);
     const content = "Les instructions d'inventaire ont été transmises à tous les intervenants. Ces derniers ont attesté avoir pris connaissance de celles-ci."
     const title = "DELIBERATION 1: INSTRUCTIONS D'INVENTAIRE"
@@ -599,6 +625,19 @@ export class InventaireComponent implements OnInit {
     //   console.log(this.urlInst);
     // });
     pdfMake.createPdf(documentDefinition).open();
+  }
+  exportForMobile() {
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.getDataForMobile(localStorage.getItem("currentEse")).then(
+      rep => {
+        const blob = new Blob([JSON.stringify(rep)], { type: 'application/json' });
+        saveAs(blob, 'mobile.json');
+        this.securityServ.showLoadingIndicatior.next(false)
+      }, message => {
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.showNotification('bg-red', message, 'top', 'right')
+      }
+    )
   }
   getStyle() {
     return {
@@ -802,14 +841,17 @@ export class InventaireComponent implements OnInit {
     ]
   }
   doEspace(nom, fnc) {
+    console.log('nom', nom);
+    console.log('fnc', fnc);
+
     let i = 0;
     let espace = '';
     if (nom.length > fnc.length) {
       i = nom.length - fnc.length;
-      for (let index = 0; index < 2*i; index++) {
+      for (let index = 0; index < 2 * i; index++) {
         espace += '  ';
       }
-      fnc = fnc + espace ;
+      fnc = fnc + espace;
     } else {
       i = fnc.length - nom.length;
 
@@ -844,7 +886,7 @@ export class InventaireComponent implements OnInit {
   getOneSignatairePdf(signataires) {
     return [
       { text: signataires[0], margin: [0, 20, 0, 0], fontSize: 10, decoration: '' },
-      { text: this.doEspace(signataires[0], signataires[1])+signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
+      { text: this.doEspace(signataires[0], signataires[1]) + signataires[1], margin: [10, 2, 0, 0], fontSize: 10, decoration: '' },
     ]
   }
   get3SignatairePdf(signataires) {
@@ -882,14 +924,11 @@ export class InventaireComponent implements OnInit {
     let tab = []
     let a = 0
     for (let i = 0; i < signataires.length; i += 4) {
-      console.log('this.doEspace => ',this.doEspace(signataires[i + 0], signataires[i + 1]).length);
-      console.log('this.doEspace => ',this.doEspace(signataires[i + 2], signataires[i + 3]).length);
-
 
       tab.push(
         [
           { text: signataires[i] + '\n' + signataires[i + 1], fontSize: 10, margin: [0, 20, 0, 70], border: [false, false, false, false] },
-          { text: this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 2] + '\n' + this.doEspace(signataires[i + 2], signataires[i + 3])+signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
+          { text: this.doEspace(signataires[i + 2], signataires[i + 3]) + signataires[i + 2] + '\n' + this.doEspace(signataires[i + 2], signataires[i + 3]) + signataires[i + 3], fontSize: 10, margin: [0, 20, 0, 70], alignment: 'right', border: [false, false, false, false] },
         ]
       )
     }
@@ -1035,6 +1074,36 @@ export class InventaireComponent implements OnInit {
   }
   isChecked(id) {
     return this.tabLoc.find(loc => loc.id == id)
+  }
+
+  closeInv() {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger',
+
+      },
+      buttonsStyling: true
+    })
+
+    swalWithBootstrapButtons.fire({
+      title: 'Ê' + 'TES-VOUS SURE ?'.toLowerCase(),
+      text: "de vouloir cloturer l\'inventaire.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, je le veux!',
+      cancelButtonText: 'Non, annuler!',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // do here code for close
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+
+      }
+    })
   }
 }
 

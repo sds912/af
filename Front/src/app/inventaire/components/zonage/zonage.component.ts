@@ -53,7 +53,7 @@ export class ZonageComponent implements OnInit {
   subdivisions = []
   tabOpen = []
   update = false
-  currentImage = 'map3.jpeg'//'font-maps.jpg'
+  currentImage = 'mapdiidk1.jpg'//'font-maps.jpg'
   myId = ""
   titleAdd = ""
   idToOpen = 0
@@ -321,7 +321,7 @@ export class ZonageComponent implements OnInit {
     return valeur
   }
   carrousel() {
-    const images = ['map4.jpg', 'map2.jpeg', 'map3.jpeg']
+    const images = ['mapdiidk1.jpg', 'mapdiidk2.jpg', 'mapdiiabj1.jpg']
     let a = 0
     window.setInterval(() => {
       if (a >= images.length) a = 0

@@ -59,6 +59,17 @@
                                                 </button>
                                             </div>
                                         </li>
+                                        <li *ngIf="!afterAjustement">
+                                            <div class="icon-button-demo  mr-4">
+                                                <button mat-mini-fab color="primary" (click)="fileMo.click()" title="Importer Comptage">
+                                                    <mat-icon class="col-white">file_upload</mat-icon>
+                                                    <!-- <i class="fas icon-download fa-file-pdf fa-2x"></i> -->
+                                                </button>
+                                            <input type="file" #fileMo hidden (change)="importMobileFile($event)" [(ngModel)]="inputMobilFile">
+
+                                            </div>
+                                        
+                                        </li>
                                         <li>
                                             <div class="icon-button-demo">
                                                 <button mat-mini-fab color="primary" (click)="generatePdf()" title="Exporter PDF">
@@ -66,7 +77,9 @@
                                                     <i class="fas icon-download fa-file-pdf fa-2x"></i>
                                                 </button>
                                             </div>
+                                        
                                         </li>
+                                       
                                     </ul>
                                 </div>
                                 <!-- all -->
