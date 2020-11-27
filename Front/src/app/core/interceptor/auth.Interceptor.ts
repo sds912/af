@@ -18,12 +18,9 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    if (!req.headers.has('Content-Type')) {
-      req = req.clone({
-        headers: req.headers.set('Content-Type', 'application/json')
-          .set('Accept', 'application/json')
-      });
-    }
+    req = req.clone({
+      headers: req.headers.set('Accept', 'application/json')
+    });
 
     this.token = this.securityService.getToken();
 
@@ -31,7 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error && error.status === 401) {
+        if (error && error.status === 401 && this.token) {
           // 401 errors are most likely going to be because we have an expired token that we need to refresh.
           if (this.refreshTokenInProgress) {
             // If refreshTokenInProgress is true, we will wait until refreshTokenSubject has a non-null value

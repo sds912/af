@@ -165,12 +165,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private refreshData(): void {
-    this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
-      this.dataZones = data.zones;
-      this.dataInstructions = data.instructions;
-      this.dataInventairesCloses = data.inventairesCloses;
-      this.filterImmos(data.immobilisations);
-    })
+    if (this.idCurrentInv) {
+      this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
+        this.dataZones = data.zones;
+        this.dataInstructions = data.instructions;
+        this.dataInventairesCloses = data.inventairesCloses;
+        this.filterImmos(data.immobilisations);
+      })
+    }
     this.subscribeToData();
   }
 
@@ -183,6 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
       this.inventaires = rep?.reverse();
+      console.log(this.inventaires);
       this.idCurrentInv = this.inventaires[0]?.id;
       this.localites = this.inventaires[0]?.localites;
       this.getPlanningByInv(this.idCurrentInv);

@@ -21,6 +21,7 @@ class AddLocaliteController
     public function __invoke(Localite $data): Localite
     {
         $localite = $this->localiteRepository->findOneBy([
+            'entreprise' => $data->getEntreprise(),
             'level' => $data->getLevel(),
             'nom' => $data->getNom(),
             'parent' => $data->getParent() ? $data->getParent()->getId() : null
