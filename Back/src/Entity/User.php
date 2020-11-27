@@ -118,7 +118,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","inv_read"})
+     * @Groups({"user_read","inv_read","entreprise_read"})
      */
     private $poste;
 

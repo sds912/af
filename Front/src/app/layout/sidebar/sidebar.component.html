@@ -57,26 +57,7 @@
                     </ul>
                 </li>
                 <!-- First level menu -->
-                <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint"
-                    [ngClass]="{'active': showMenu === 'Traitement offline'}" routerLinkActive="" class="menu-item">
-                    <a [routerLink]="" class="menu-toggle ele-menu" #eleMenu (click)="callMenuToggle(eleMenu, 'Traitement offline')">
-                        <i class="fas fa-cubes"></i>
-                        <span class="hide-menu">Traitement offline</span>
-                    </a>
-                    <!-- Second level menu -->
-                    <ul class="ml-menu" >
-                        <li [class.activeSub]="showSubMenu === 'Exporter inventaire'">
-                            <a [routerLink]="" (click)="exportForMobile()">
-                                <span class="hide-menu">Exporter inventaire</span>
-                            </a>
-                        </li>
-                        <li [class.activeSub]="showSubMenu === 'Importer comptage'">
-                            <a [routerLink]="" (click)="fileMo.click()">
-                                <span class="hide-menu">Importer comptage</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+               
                 <li [ngClass]="{'active': showMenu === 'Supports'}" routerLinkActive="active" class="menu-item">
                     <a [routerLink]="['/supports']" class="ele-menu">
                         <i class="fas fa-life-ring"></i>
@@ -93,3 +74,26 @@
     <!-- #END# Left Sidebar -->
 </div>
 
+<!-- 
+
+     <li *ngIf="securityServ.superviseur||securityServ.superviseurGene||securityServ.superviseurAdjoint"
+                    [ngClass]="{'active': showMenu === 'Traitement offline'}" routerLinkActive="" class="menu-item">
+                    <a [routerLink]="" class="menu-toggle ele-menu" #eleMenu (click)="callMenuToggle(eleMenu, 'Traitement offline')">
+                        <i class="fas fa-cubes"></i>
+                        <span class="hide-menu">Traitement offline</span>
+                    </a>
+                     Second level menu 
+                    <ul class="ml-menu" >
+                        <li [class.activeSub]="showSubMenu === 'Exporter inventaire'">
+                            <a [routerLink]="" (click)="exportForMobile()">
+                                <span class="hide-menu">Exporter inventaire</span>
+                            </a>
+                        </li>
+                        <li [class.activeSub]="showSubMenu === 'Importer comptage'">
+                            <a [routerLink]="" (click)="fileMo.click()">
+                                <span class="hide-menu">Importer comptage</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+ -->

@@ -138,6 +138,11 @@
                                                     <i class="material-icons">mode_edit</i>
                                                 </button>
 
+                                                <button class="btn tblActnBtn pointer h-auto"
+                                                    *ngIf="row?.approvStatus==0 && securityServ.superviseurAdjoint " title="immobilisation en approbation">
+                                                    <i class="material-icons">star_half</i>
+                                                </button>
+
                                                 <button class="btn tblActnBtn pointer h-auto text-success ml-3" *ngIf="row.approvStatus==1" title="Ajustement approuvé">
                                                     <i class="material-icons">done_all</i>
                                                 </button>

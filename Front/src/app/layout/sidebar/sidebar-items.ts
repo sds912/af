@@ -32,18 +32,18 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'PRE',
     path: '',
-    title: 'Préparation',
+    title: 'Phase de préparation',
     icon: 'fas fa-star',
     class: 'menu-toggle',
-    roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+    roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
     submenu: [
       {
         id: 'INV',
         path: '/inventaires',
-        title: 'Inventaires',
+        title: 'Dossiers d\'inventaires',
         icon: 'fas fa-barcode',
         class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       },
       {
@@ -52,7 +52,7 @@ export const ROUTES: RouteInfo[] = [
         title: 'Instructions',
         icon: 'fas fa-file-signature',
         class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene'],
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],
         submenu: []
       }
     ]
@@ -63,13 +63,13 @@ export const ROUTES: RouteInfo[] = [
     title: 'Instructions',
     icon: 'fas fa-file-signature',
     class: '',
-    roles: ['ROLE_SuperViseurAdjoint', 'ROLE_MI', 'ROLE_CE'],
+    roles: [ 'ROLE_MI', 'ROLE_CE'],
     submenu: []
   },
   {
     id: 'PLA',
     path: '',
-    title: 'Planification',
+    title: 'Phase de planification',
     icon: 'far fa-calendar-alt',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint', 'ROLE_CE'],
@@ -86,7 +86,7 @@ export const ROUTES: RouteInfo[] = [
       {
         id: 'planing1',
         path: '/affectation',
-        title: 'Affectation',
+        title: 'Affectation des équipes',
         icon: '',
         class: 'ml-menu',
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint', 'ROLE_CE'],
@@ -106,7 +106,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'TRA',
     path: '',
-    title: 'Traitement',
+    title: 'Phase de traitement',
     icon: 'fas fa-cubes',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
@@ -115,8 +115,17 @@ export const ROUTES: RouteInfo[] = [
       {
         id: 'IMMO',
         path: '/immos',
-        title: 'Importer FI',
+        title: 'Fichier des immos initial',
         icon: 'fas fa-cubes',
+        class: '',
+        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
+        submenu: []
+      },
+      {
+        id: 'FCA',
+        path: "/catalogue",
+        title: 'Catalogue',
+        icon: 'fas fa-book-open',
         class: '',
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
         submenu: []
@@ -130,15 +139,7 @@ export const ROUTES: RouteInfo[] = [
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
         submenu: []
       },
-      {
-        id: 'FCA',
-        path: "/catalogue",
-        title: 'Importer Catalogue',
-        icon: 'fas fa-book-open',
-        class: '',
-        roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
-        submenu: []
-      }
+     
     ]
   },
   {
@@ -153,7 +154,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'AJT',
     path: '',
-    title: 'Ajustement',
+    title: 'Phase d\'ajustement',
     icon: 'fas fa-check-double',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],

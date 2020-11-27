@@ -163,3 +163,17 @@
     background-color: #66BB6A;
     color: #fff;
 }
+.sidebar {
+    transition: all 0.5s;
+    font-family: "Poppins";
+    background: #ffffff;
+    width: 278px;
+    overflow: hidden;
+    display: inline-block;
+    height: calc(100vh - 60px);
+    // margin-left: 50px;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    z-index: 999 !important;
+}

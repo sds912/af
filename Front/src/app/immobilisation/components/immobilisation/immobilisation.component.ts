@@ -243,9 +243,10 @@ export class ImmobilisationComponent implements OnInit {
           const element = this.data[index];
 
 
-          const dA = element[6].split('/')[2] + '-' + element[6].split('/')[1] + '-' + element[6].split('/')[0];
-          const dM = element[7].split('/')[2] + '-' + element[7].split('/')[1] + '-' + element[7].split('/')[0];
-          const dU = element[8];if (element.length == 16) {
+            const dA = element[6].split('/')[2] + '-' + element[6].split('/')[1] + '-' + element[6].split('/')[0];
+            const dM = element[7].split('/')[2] + '-' + element[7].split('/')[1] + '-' + element[7].split('/')[0];
+            const dU = element[8];
+          if (element.length == 16) {
             this.verifIfCorrect = true;
             this.is21 = true;
           }
@@ -283,9 +284,9 @@ export class ImmobilisationComponent implements OnInit {
               "compteAmort": element[3],
               "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
               "description": null,
-              "dateAcquisition": dA,
-              "dateMiseServ": dM,
-              "dureeUtilite": dU,
+              "dateAcquisition": "07/11/2019",
+              "dateMiseServ": "07/11/2019",
+              "dureeUtilite": "5",
               "taux": parseFloat(element[9].trim()),
               "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
               "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
@@ -315,9 +316,9 @@ export class ImmobilisationComponent implements OnInit {
               "compteAmort": element[3],
               "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
               "description": null,
-              "dateAcquisition": dA,
-              "dateMiseServ": dM,
-              "dureeUtilite": dU,
+              "dateAcquisition": "07/11/2019",
+              "dateMiseServ": "07/11/2019",
+              "dureeUtilite": "5",
               "taux": parseFloat(element[9].trim()),
               "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
               "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
