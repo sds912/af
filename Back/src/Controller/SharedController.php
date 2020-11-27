@@ -532,8 +532,8 @@ class SharedController extends AbstractController
                 if($im){
                     $immobilisation=$im;
                 }
-                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])
-                    ->setDescription($immo["description"])->setEndDescription($immo["description"])->setInventaire($inventaire);
+                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])->setDescription($immo["description"])
+                ->setEndDescription($immo["description"])->setInventaire($inventaire)->setEntreprise($inventaire->getEntreprise());
             }
             $immobilisation->setLecteur($this->repoUser->find($immo["lecteur"]))
                 ->setEndEtat($immo["etat"])->setStatus($immo["status"])
