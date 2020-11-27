@@ -165,7 +165,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private refreshData(): void {
-    console.log(this.idCurrentInv);
     if (this.idCurrentInv) {
       this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
         this.dataZones = data.zones;

@@ -651,10 +651,14 @@ class SharedController extends AbstractController
     public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository, $id=null){
         $data=Shared::getData($request);
 
-        // $loc = $this->repoLoc->find(1);
-        // dd($this->getLastLevelChilds($loc));
+        $user = $this->getUser();
 
-        $inventaire=$this->repoInv->find($data['id']);
+        $inventaire= $this->repoInv->find($data['id']);
+
+        if (!$user->inEntreprise($inventaire->getEntreprise())) {
+            return $this->json([], 200);
+        }
+
         //si superviseur ou sup gen tous les immos
         $immos=$this->repoImmo->findByInventaire($inventaire);
 
