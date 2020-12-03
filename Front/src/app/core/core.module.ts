@@ -7,6 +7,7 @@ import { AdminGuard } from './guard/admin.guard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SuperviseurAndCE } from './guard/superviseurAndCE.guard ';
 import { AuthInterceptor } from './interceptor/auth.Interceptor';
+import { RoleGuard } from './guard/role.guard';
 
 @NgModule({
   declarations: [],
@@ -16,7 +17,11 @@ import { AuthInterceptor } from './interceptor/auth.Interceptor';
     ReactiveFormsModule
   ],
   providers: [
-    AuthGuard,SupervAdminGuard,AdminGuard,SuperviseurAndCE,
+    AuthGuard,
+    SupervAdminGuard,
+    AdminGuard,
+    SuperviseurAndCE,
+    RoleGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

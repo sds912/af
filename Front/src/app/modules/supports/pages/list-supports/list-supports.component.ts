@@ -16,7 +16,6 @@ export class ListSupportsComponent implements OnInit {
   
   inventaires = [];
   idUser: string;
-  isSuperAdmin: boolean;
 
   constructor(
     private supportService: SupportService,
@@ -26,27 +25,23 @@ export class ListSupportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.tickets = [];
-    this.isSuperAdmin = this.securityService.SupAdmin;
-    if (this.isSuperAdmin) {
-      this.displayedColumns.push('assigne');
-    }
+    console.log(this.securityService.user);
     this.idUser = localStorage.getItem("idUser");
-    this.getTickets();
+    if (this.securityService.admin) {
+      this.getTickets(this.securityService.user.cle);
+    } else {
+      this.adminService.getOneEntreprise(localStorage.getItem("currentEse")).then((entreprise: any) => {
+        this.supportService.lists(entreprise.licenseCle).subscribe((res: any) => {
+          this.tickets = res?.reverse();
+        })
+      });
+    }
   }
 
-  getTickets() {
-    if (this.isSuperAdmin) {
-      this.supportService.lists().subscribe((res: any) => {
-        this.tickets = res?.reverse();
-      });
-      return;
-    }
-    this.adminService.getClients().then((clients: any) => {
-
-      this.supportService.lists(clients[0].cle).subscribe((res: any) => {
-        this.tickets = res?.reverse();
-      })
-    });
+  getTickets(licenseCle: string) {
+    this.supportService.lists(licenseCle).subscribe((res: any) => {
+      this.tickets = res?.reverse();
+    })
   }
 
   filterDatatable(value: string) {

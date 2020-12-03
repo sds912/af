@@ -137,6 +137,7 @@ class Entreprise
 
     /**
      * @ORM\ManyToOne(targetEntity=License::class, inversedBy="entreprises")
+     * @Groups({"entreprise_read","user_read"})
      */
     private $license;
 

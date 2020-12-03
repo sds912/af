@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { diffDates } from '@fullcalendar/core';
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
+import { SecurityService } from 'src/app/shared/service/security.service';
 import { SupportService } from '../../services/support.service';
 
 @Component({
@@ -25,6 +26,7 @@ export class NewSupportComponent implements OnInit {
     private formBuilder: FormBuilder,
     private supportService: SupportService,
     private adminService: AdminService,
+    private securityService: SecurityService,
     private router: Router
   ) { }
 
@@ -52,25 +54,30 @@ export class NewSupportComponent implements OnInit {
     }
     let newTicket = this.ticketForm.value;
 
-    this.adminService.getOneEntreprise(localStorage.getItem("currentEse")).then(rep => {
-      if (!rep || !rep.id) {
-        return;
-      }
-      this.adminService.getClients().then((clients: any) => {
-        newTicket.licence = clients[0].cle;
-        newTicket.client = {id: clients[0].id, denomination: clients[0].denomination, nomContact: clients[0].nomContact, telContact: clients[0].telContact};
-        newTicket.piecesJointes = this.files;
-        newTicket.auteur = {id: localStorage.getItem("idUser"), username: localStorage.getItem("username"), roles: localStorage.getItem("roles")};
-        newTicket.entreprise = {id: rep.id, denomination: rep.denomination};
-        console.log(newTicket);
+    if (this.securityService.admin, newTicket) {
+      newTicket.entreprise = {id: null, denomination: null};
+      this.createTicket(this.securityService.user.cle, newTicket);
+    } else {
+      this.adminService.getOneEntreprise(localStorage.getItem("currentEse")).then((entreprise: any) => {
+        if (!entreprise || !entreprise.id) {
+          return;
+        }
 
-        this.supportService.create(newTicket).subscribe((data: any) => {
-          if (data && data.id) {
-            this.router.navigate(['/supports/lists']);
-          }
-        });
+        newTicket.entreprise = {id: entreprise.id, denomination: entreprise.denomination};
       });
-    });
+    }
+  }
+
+  createTicket(licenseCle: string, newTicket: any) {
+    newTicket.licence = licenseCle;
+      newTicket.piecesJointes = this.files;
+      newTicket.auteur = {id: localStorage.getItem("idUser"), username: localStorage.getItem("username"), roles: localStorage.getItem("roles")};
+
+      this.supportService.create(newTicket).subscribe((data: any) => {
+        if (data && data.id) {
+          this.router.navigate(['/supports/lists']);
+        }
+      });
   }
 
   private buildForm(): void {
