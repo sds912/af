@@ -18,7 +18,6 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $membres=[
-            ["diikaanedev@gmail.com",["ROLE_SuperAdmin"]],
             ["admin",["ROLE_Admin"]]
         ];
         for($i=0;$i<count($membres);$i++){

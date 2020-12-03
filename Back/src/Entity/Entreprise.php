@@ -14,6 +14,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *  normalizationContext={
  *    "groups"={"entreprise_read"}
  *  },
+ *  collectionOperations={
+ *    "GET",
+ *    "POST"={
+ *      "method"="post",
+ *      "controller"="App\Controller\AddEntrepriseController",
+ *      "swagger_context"={
+ *        "summary"="Ajout d'une entreprise",
+ *        "description"="Ajout d'une entreprise"
+ *      }
+ *    }
+ *  },
  *  itemOperations={
  *    "GET",
  *    "PUT",
@@ -123,6 +134,11 @@ class Entreprise
      * 
      */
     private $catalogues;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=License::class, inversedBy="entreprises")
+     */
+    private $license;
 
     public function __construct()
     {
@@ -392,6 +408,18 @@ class Entreprise
                 $catalogue->setEntreprise(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLicense(): ?License
+    {
+        return $this->license;
+    }
+
+    public function setLicense(?License $license): self
+    {
+        $this->license = $license;
 
         return $this;
     }

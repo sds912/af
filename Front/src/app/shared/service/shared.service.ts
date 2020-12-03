@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { AdministrationService } from './administration.service';
 
 
 @Injectable({
@@ -13,7 +14,7 @@ export class SharedService {
   // public baseUrl="https://699869d4e751.ngrok.io"
   public urlBack=this.baseUrl+'/api';
   public baseAsset="assets"
-  constructor(public httpClient: HttpClient,public router:Router) { }
+  constructor(public httpClient: HttpClient,public router:Router, private administrationService: AdministrationService) { }
   capitalize(s){//Maj 1er lettre
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
@@ -56,16 +57,25 @@ export class SharedService {
     })
   }
   decok(base,k){
-    const rdm=parseInt(k.split("-")[2])
-    const frst=this.tabAZ(rdm)
-    const snd=this.tabAZ(rdm+2)
-    const th=this.tabAZ(rdm+5)
-    const n=(parseInt(k.split("-")[1])-parseInt(base.split("-")[1])-9999)/5
-    const isValid=(parseInt(k.split("-")[3])-17)/4==parseInt(k.split("-")[1])
-    if(frst+snd+th==k.split("-")[0] && Number.isInteger(n) && n>0 && isValid){
-      return n
-    }
-    return ''
+    let n = '';
+    this.administrationService.valideLicense(k).then((res: any) => {
+      if (res) {
+        n = res.split('-');
+      }
+    })
+
+    return n;
+
+    // const rdm=parseInt(k.split("-")[2])
+    // const frst=this.tabAZ(rdm)
+    // const snd=this.tabAZ(rdm+2)
+    // const th=this.tabAZ(rdm+5)
+    // const n=(parseInt(k.split("-")[1])-parseInt(base.split("-")[1])-9999)/5
+    // const isValid=(parseInt(k.split("-")[3])-17)/4==parseInt(k.split("-")[1])
+    // if(frst+snd+th==k.split("-")[0] && Number.isInteger(n) && n>0 && isValid){
+    //   return n
+    // }
+    // return ''
   }
   tabAZ(index){
     const tab=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']

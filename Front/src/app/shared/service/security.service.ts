@@ -1,5 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { SharedService } from './shared.service';
+import { AdministrationService } from './administration.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -16,7 +17,7 @@ export class SecurityService {
   activCle=false
   loading=false
   showLoadingIndicatior: Subject<boolean> = new Subject<boolean>();
-  constructor(private injector:Injector,public httpClient: HttpClient,public router:Router) {
+  constructor(private injector:Injector,public httpClient: HttpClient,public router:Router, private administrationService: AdministrationService) {
     this.showLoadingIndicatior.subscribe((value) => {
       setTimeout(()=>this.loading = value,1)//pour eviter l erreur: Expression has changed after it was checked
     })
@@ -153,8 +154,10 @@ export class SecurityService {
       localStorage.setItem('mercureAuthorization',rep[1])
       if(rep[2]==1){
         this.securePwd=false
-      }      
-      this.getNE()//this.securePwd=false
+      }
+      if (this.user.roles[0].search("ROLE_Admin")>=0) {
+        this.getNE()//this.securePwd=false
+      } 
     })
   }
   refreshToken(){
@@ -206,16 +209,24 @@ export class SecurityService {
   updateCurentEse(data){
     return this.sharedService.putElement(data,"/users/"+localStorage.getItem("idUser"))
   }
-  getNE(){
+  async getNE(){
     let cree=0
     this.activCle=false
     if(this.user.entreprises){
       cree=this.user.entreprises.length
     }
-    if(this.user?.cle){
-      this.ne=this.sharedService.decok(this.base,this.user.cle)
+    if(!this.user?.cle) {
+      this.securePwd=true
+      this.activCle=true
+      return false;
     }
-    this.entiteRest=this.ne-cree
+    // this.ne=this.sharedService.decok(this.base,this.user.cle)
+    await this.administrationService.valideLicense(this.user.cle).then((res: any) => {
+      if (res) {
+        this.ne = res.split('-');
+      }
+    })
+    this.entiteRest = this.ne[2] - cree;
     if(this.user && this.user.roles[0].search("ROLE_Admin")>=0 && (!this.user.cle||!this.ne)){
       this.securePwd=true//car l 'activation predomine sur le changement de mdp
       this.activCle=true  
