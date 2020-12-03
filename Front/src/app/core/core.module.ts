@@ -4,7 +4,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthGuard } from './guard/auth.guard';
 import { SupervAdminGuard } from './guard/superv-admin.guard';
 import { AdminGuard } from './guard/admin.guard';
-import { TokenInterceptor } from './interceptor/token.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SuperviseurAndCE } from './guard/superviseurAndCE.guard ';
 import { AuthInterceptor } from './interceptor/auth.Interceptor';
@@ -20,7 +19,6 @@ import { AuthInterceptor } from './interceptor/auth.Interceptor';
     AuthGuard,SupervAdminGuard,AdminGuard,SuperviseurAndCE,
     {
       provide: HTTP_INTERCEPTORS,
-      // useClass: TokenInterceptor,
       useClass: AuthInterceptor,
       multi: true
     }

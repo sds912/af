@@ -3,11 +3,11 @@ import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener } from '
 import { ROUTES } from './sidebar-items';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ImmobilisationService } from 'src/app/immobilisation/services/immobilisation.service';
+import { ImmobilisationService } from 'src/app/modules/immobilisation/services/immobilisation.service';
 
 declare const Waves: any;
 

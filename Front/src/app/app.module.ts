@@ -39,7 +39,7 @@ import {
   PERFECT_SCROLLBAR_CONFIG,
   PerfectScrollbarConfigInterface
 } from 'ngx-perfect-scrollbar';
-import { AdministrationModule } from './administration/administration.module';
+import { AdministrationModule } from './modules/administration/administration.module';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { MAT_DATE_LOCALE,MAT_DATE_FORMATS } from '@angular/material/core';
