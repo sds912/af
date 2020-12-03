@@ -6,6 +6,7 @@ import {
 import { throwError, Observable, BehaviorSubject, of } from "rxjs";
 import { catchError, filter, take, switchMap, finalize } from "rxjs/operators";
 import { SecurityService } from 'src/app/shared/service/security.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -73,9 +74,9 @@ export class AuthInterceptor implements HttpInterceptor {
       return request;
     }
     // If you are calling an outside domain then do not add the token.
-    // if (!request.url.match(/www.mydomain.com\//)) {
-    //   return request;
-    // }
+    if (!request.url.match(environment.apiUrl)) {
+      return request;
+    }
     return request.clone({
       headers: request.headers.set(this.AUTH_HEADER, "Bearer " + this.token)
     });

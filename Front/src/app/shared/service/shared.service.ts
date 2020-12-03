@@ -3,13 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdministrationService } from './administration.service';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
-  public baseUrl="http://127.0.0.1:8000"//image et autre  
+  public baseUrl=environment.apiUrl; //image et autre  
   // public baseUrl="https://8168f2bdbcd4.ngrok.io:8000"//image et autre
   // public baseUrl="https://699869d4e751.ngrok.io"
   public urlBack=this.baseUrl+'/api';
