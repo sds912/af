@@ -24,9 +24,7 @@ import { NgxMaskModule } from 'ngx-mask';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDialogModule } from '@angular/material/dialog';
-import { SimpleDialogComponent } from './ui/modal/simpleDialog.component';
-import { DialogformComponent } from './ui/modal/dialogform/dialogform.component';
-import { BottomSheetOverviewExampleSheet } from './ui/bottom-sheet/bottom-sheet.component';
+
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -36,7 +34,6 @@ import { MatInputModule } from '@angular/material/input';
 import { AgmCoreModule } from '@agm/core';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { HttpClientModule } from '@angular/common/http';
-import { AdvanceTableService } from '../app/tables/advance-table/advance-table.service';
 import {
   PerfectScrollbarModule,
   PERFECT_SCROLLBAR_CONFIG,
@@ -69,9 +66,6 @@ monthYearA11yLabel: 'MMMM YYYY',
     PageLoaderComponent,
     SidebarComponent,
     RightSidebarComponent,
-    SimpleDialogComponent,
-    DialogformComponent,
-    BottomSheetOverviewExampleSheet,
   ],
   imports: [
     BrowserModule,
@@ -113,16 +107,13 @@ monthYearA11yLabel: 'MMMM YYYY',
     },
     DynamicScriptLoaderService,
     RightSidebarService,
-    AdvanceTableService,
     WINDOW_PROVIDERS,
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMAT },
     //{ provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } }
   ],
   entryComponents: [
-    SimpleDialogComponent,
-    DialogformComponent,
-    BottomSheetOverviewExampleSheet,
+    
   ],
   bootstrap: [AppComponent]
 })
