@@ -465,7 +465,7 @@ class SharedController extends AbstractController
                     $filteredBeginned[] = $value;
                 }
             }
-            $beginned = array_unique($beginned);
+            $filteredBeginned = array_unique($filteredBeginned);
         }
         $inventaire->setClosedLoc($closed);
         $inventaire->setBeginnedLoc($filteredBeginned);

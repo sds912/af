@@ -8,3 +8,7 @@
 * Création de la base de donnée: **php bin/console doctrine:database:create**
 * Création des tables avec les migrations: **php bin/console doctrine:migrations:migrate**
 * Ajouter des fackes données avec les fixtures: **php bin/console doctrine:fixtures:load**
+
+### Reinitialiser la base de donnée
+
+* php bin/console doctrine:database:drop --force && php bin/console doctrine:database:create && php bin/console doctrine:schema:update --force && php bin/console doctrine:fixtures:load
