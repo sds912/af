@@ -8,6 +8,7 @@ parameters:
     document_directory: '%kernel.project_dir%/public/documents'
     supports_directory: '%kernel.project_dir%/public/supports'
     administrateur_api_url: '%env(ADMINISTRATEUR_API_URL)%'
+    uploads_directory: '%kernel.project_dir%/public/uploads'
 
 services:
     app.user_checker :
@@ -36,6 +37,11 @@ services:
     App\Service\MercureCookieGenerator:
         arguments:
             $secret: '%env(MERCURE_JWT_KEY)%'
+
+    
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%uploads_directory%'
     
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

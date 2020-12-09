@@ -23,7 +23,47 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *        "summary"="Ajout d'une entreprise",
  *        "description"="Ajout d'une entreprise"
  *      }
- *    }
+ *    },
+ *    "IMPORT_AGENTS"={
+ *      "method"="post",
+ *      "path"="/entreprises/import/users",
+ *      "controller"="App\Controller\ImportController",
+ *       "deserialize"=false,
+ *        "openapi_context"={
+ *          "summary"="Importer la liste des agents",
+ *          "description"="Importer la liste des agents"
+ *        }
+ *     },
+ *     "IMPORT_LOCALITES"={
+ *      "method"="post",
+ *      "path"="/entreprises/import/localites",
+ *      "controller"="App\Controller\ImportController",
+ *       "deserialize"=false,
+ *        "openapi_context"={
+ *          "summary"="Importer la liste des localités",
+ *          "description"="Importer la liste des localités"
+ *        }
+ *     },
+ *     "IMPORT_IMMOBILISATIONS"={
+ *      "method"="post",
+ *      "path"="/entreprises/import/immoblisations",
+ *      "controller"="App\Controller\ImportController",
+ *       "deserialize"=false,
+ *        "openapi_context"={
+ *          "summary"="Importer la liste des immobilisations",
+ *          "description"="Importer la liste des immobilisations"
+ *        }
+ *     },
+ *      "IMPORT_CATALOGUES"={
+ *      "method"="post",
+ *      "path"="/entreprises/import/catalogues",
+ *      "controller"="App\Controller\ImportController",
+ *       "deserialize"=false,
+ *        "openapi_context"={
+ *          "summary"="Importer la liste des catalogues",
+ *          "description"="Importer la liste des catalogues"
+ *        }
+ *     },
  *  },
  *  itemOperations={
  *    "GET",

@@ -137,11 +137,6 @@ class Inventaire
     private $affectations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Immobilisation::class, mappedBy="inventaire")
-     */
-    private $immobilisations;
-
-    /**
      * @ORM\Column(type="json", nullable=true)
      */
     private $closedLoc = [];
@@ -157,7 +152,6 @@ class Inventaire
         $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->affectations = new ArrayCollection();
-        $this->immobilisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -453,37 +447,6 @@ class Inventaire
 
     public function initLocalite(){
         $this->localites = new ArrayCollection();
-    }
-
-    /**
-     * @return Collection|Immobilisation[]
-     */
-    public function getImmobilisations(): Collection
-    {
-        return $this->immobilisations;
-    }
-
-    public function addImmobilisation(Immobilisation $immobilisation): self
-    {
-        if (!$this->immobilisations->contains($immobilisation)) {
-            $this->immobilisations[] = $immobilisation;
-            $immobilisation->setInventaire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImmobilisation(Immobilisation $immobilisation): self
-    {
-        if ($this->immobilisations->contains($immobilisation)) {
-            $this->immobilisations->removeElement($immobilisation);
-            // set the owning side to null (unless already changed)
-            if ($immobilisation->getInventaire() === $this) {
-                $immobilisation->setInventaire(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getClosedLoc(): ?array
