@@ -52,7 +52,9 @@ class UserService
                 continue;
             }
 
-            $agent->addEntreprise($entreprise);
+            if ($entreprise) {
+                $agent->addEntreprise($entreprise);
+            }
             
             $this->entityManager->persist($agent); 
             

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploader;
 use App\Entity\User;
 use App\Message\ImportedFileMessage;
+use App\Utils\Shared;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -55,13 +56,18 @@ class ImportController
     {
         $file = $request->files->get('file');
         $table = $request->request->get('table');
+        $customData = ['entreprise' => ''];
 
         if (!$table || !$file) {
             throw new HttpException(400,'Le nom de la table et le fichier sont obligatoires.');
         }
 
         $entreprise = $request->request->get('entreprise');
-        $this->validateEntreprise($entreprise);
+
+        if ($entreprise != '') {
+            $this->validateEntreprise($entreprise);
+            $customData['entreprise'] = $entreprise->getId();
+        }
 
         try {
             $xlsFileName = $this->fileUploader->upload($file);
@@ -85,7 +91,7 @@ class ImportController
         $this->entityManager->flush();
 
         // Dispatch message imported file created
-        $this->busDispatcher->dispatch(new ImportedFileMessage($importedFile->getId(), ['entreprise' => $entreprise->getId()]));
+        $this->busDispatcher->dispatch(new ImportedFileMessage($importedFile->getId(), $customData));
 
         return ['Fichier importé avec succès'];
     }
@@ -94,8 +100,8 @@ class ImportController
     {
         $entreprise = $this->entityManager->getRepository(Entreprise::class)->find($idEntreprise);
 
-        if (!$entreprise || !$this->user->inEntreprise($entreprise) ) {
-            throw new HttpException(404,'Cette entreprise n\'existe pas ou a été supprimé.');
+        if (!$entreprise || (!$this->user->hasRoles(Shared::ROLE_ADMIN) && !$this->user->inEntreprise($entreprise)) ) {
+            throw new HttpException(404, 'Cette entreprise n\'existe pas ou a été supprimé.');
         }
 
         $idEntreprise = $entreprise;
