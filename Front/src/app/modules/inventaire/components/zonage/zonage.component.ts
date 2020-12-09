@@ -320,6 +320,7 @@ export class ZonageComponent implements OnInit {
     const valeur = parseInt(val.replace('%', ''))
     return valeur
   }
+  // Carroussel and subdivisions
   carrousel() {
     const images = ['mapdiidk1.jpg', 'mapdiidk2.jpg', 'mapdiiabj1.jpg']
     let a = 0
@@ -331,6 +332,9 @@ export class ZonageComponent implements OnInit {
   }
   addSubdivision(nom = "") {
     this.tabSubdivision.push(new FormControl(nom));
+  }
+  removeSubdivision(value: string) {
+    this.tabSubdivision.removeAt(this.tabSubdivision.value.findIndex((nom: string) => nom === value));
   }
   lowerCase(nom: string) {
     return nom.toLowerCase()
@@ -361,6 +365,7 @@ export class ZonageComponent implements OnInit {
     this.subdivisions?.forEach(sub => this.addSubdivision(sub));
     if (!this.subdivisions || this.subdivisions.length == 0) this.addSubdivision("Localité")
   }
+  //@TODO:: Update this method to get parents localites
   firstSub(localites) {
     return localites?.filter(loc => loc.position?.length > 0)
   }
@@ -517,88 +522,3 @@ export class ZonageComponent implements OnInit {
     return 100;
   }
 }
-
- // this.inventaireServ.addLocalite({
-            //   nom: el,
-            //   entreprise: "/api/entreprises/" + this.idCurrentEse,
-            //   createur: "/api/users/" + this.myId,
-            //   level : i ,
-            //   position: i==0 ? this.getPosition() : "",
-            //   lastLevel : i == element.length ,
-            // }).then(rep => {
-            //   this.inventaireServ.addLocalite({
-            //     nom: element[i+1],
-            //     entreprise: "/api/entreprises/" + this.idCurrentEse,
-            //     createur: "/api/users/" + this.myId,
-            //     level : i ,
-            //     parent: "/api/localites/" +rep.id,
-            //     lastLevel : i == element.length
-            //   });
-            // });
-
-// console.log(this.verfiIfDeuxLocIsSame(element[0],element_suivant[0]));
-
-
-
-
-
-
-
-          // if (this.verfiIfDeuxLocIsSame(element[0], element_precedent[0])) {
-
-          // } else {
-          //   const obj = {
-          //     nom: element[0],
-          //     entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //     createur: "/api/users/" + this.myId,
-          //     position: this.getPosition()
-
-          //   };
-          //   this.inventaireServ.addLocalite(obj).then(rep => {
-
-          //     if (rep.id>0) {
-          //       const obj = {
-          //         nom: element[1],
-          //         entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //         createur: "/api/users/" + this.myId,
-          //         parent: "/api/localites/" + rep.id
-          //         // position: this.getPosition()
-
-          //       };
-          //       this.inventaireServ.addLocalite(obj).then(rep1 => {
-          //         if (rep1.id > 0) {
-          //           const obj = {
-          //             nom: element[2],
-          //             entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //             createur: "/api/users/" + this.myId,
-          //             parent: "/api/localites/" + rep1.id
-          //             // position: this.getPosition()
-
-          //           };
-          //           this.inventaireServ.addLocalite(obj).then(rep2 => {
-          //             if (rep2.id > 0) {
-          //               const obj = {
-          //                 nom: element[3],
-          //                 entreprise: "/api/entreprises/" + this.idCurrentEse,
-          //                 createur: "/api/users/" + this.myId,
-          //                 parent: "/api/localites/" + rep2.id
-          //                 // position: this.getPosition()
-
-          //               };
-          //               this.inventaireServ.addLocalite(obj).then(rep3 => {
-          //                 console.log(rep3);
-
-          //               });
-          //             }
-
-          //           });
-          //         }
-          //       });
-          //     }else {
-          //       console.log('not bon');
-
-          //     }
-
-
-          //   });
-          // }
