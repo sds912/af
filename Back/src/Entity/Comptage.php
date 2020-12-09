@@ -5,9 +5,13 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ComptageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *  normalizationContext={"groups"={"comptage_read"}},
+ *  denormalizationContext={"groups"={"comptage_write"}},
+ * )
  * @ORM\Entity(repositoryClass=ComptageRepository::class)
  */
 class Comptage
@@ -16,38 +20,57 @@ class Comptage
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"comptage_read","entreprise_read", "mobile_inv_read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class)
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $inventaire;
 
     /**
      * @ORM\ManyToOne(targetEntity=Immobilisation::class, inversedBy="comptages")
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $immobilisation;
 
     /**
      * @ORM\ManyToOne(targetEntity=Localite::class)
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $localite;
 
     /**
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $etat;
 
     /**
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $statut;
 
     /**
      * @ORM\Column(type="datetime")
+     * 
+     * @Groups({"comptage_read", "comptage_write","entreprise_read", "mobile_inv_read"})
      */
     private $dateCreation;
+
+    public function __construct()
+    {
+        $this->dateCreation = new \DateTime('now');
+    }
 
     public function getId(): ?int
     {

@@ -37,103 +37,103 @@ class Immobilisation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read", "comptage_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read", "comptage_read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read", "comptage_read"})
      */
     private $code;
     
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $compteImmo;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $compteAmort;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"lecture_read","mobile_inv_read","immo_read"})
+     * @Groups({"lecture_read","mobile_inv_read","immo_read", "comptage_read"})
      */
     private $emplacement;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dateAcquisition;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dateMiseServ;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dateSortie;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dureeUtilite;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $taux;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $valOrigine;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dotation;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $cumulAmortiss;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $vnc;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $etat;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"mobile_inv_read","immo_read"})
+     * @Groups({"mobile_inv_read","immo_read", "comptage_read"})
      */
     private $description;
 
@@ -144,55 +144,55 @@ class Immobilisation
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $numeroOrdre;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="scanImmos")
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $lecteur;
 
     /**
      * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="immobilisations")
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $localite;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $endEtat;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $dateLecture;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $isMatched;
 
     /**
      * @ORM\ManyToOne(targetEntity=Immobilisation::class, inversedBy="immobilisations")
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $matchedImmo;
 
@@ -203,25 +203,25 @@ class Immobilisation
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="mesAjustements")
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $ajusteur;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $approvStatus;//0 - pending, 1 - approve, -1 save
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $endDescription;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"immo_read"})
+     * @Groups({"immo_read", "comptage_read"})
      */
     private $endLibelle;
 

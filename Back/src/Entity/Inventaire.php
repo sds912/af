@@ -28,106 +28,106 @@ class Inventaire
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
+     * @Groups({"inv_read", "comptage_read","mobile_inv_read","affectation_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read","mobile_inv_read"})
+     * @Groups({"inv_read", "comptage_read","mobile_inv_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read","mobile_inv_read"})
+     * @Groups({"inv_read", "comptage_read","mobile_inv_read"})
      */
     private $fin;
 
     /**
      * @ORM\Column(type="json", length=255, nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $instruction=[];//[['nom','hashNom'],['nom','hashNom']...]
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $presiComite;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class)
      * @ORM\JoinTable(name="membres_comite")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $membresCom;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $lieuReunion;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $dateReunion;
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $presentsReunionOut = [];
 
     /**
      * @ORM\Column(type="json", length=255, nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $pvReunion=[];
 
     /**
      * @ORM\ManyToMany(targetEntity=Localite::class, inversedBy="inventaires")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $localites;
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="inventaires")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $entreprise;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class)
      * @ORM\JoinTable(name="presents_reunion")
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $presentsReunion;
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $decisionCC = [];
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $localInstructionPv = [];//['creation','creation'] le 1er c est pour les iventaires le 2pour pv 'creation' ou 'download'
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read"})
+     * @Groups({"inv_read", "comptage_read"})
      */
     private $dateInv;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
+     * @Groups({"inv_read", "comptage_read","mobile_inv_read","affectation_read"})
      */
     private $status;/** status : open et close */
     
