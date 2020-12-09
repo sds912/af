@@ -67,6 +67,11 @@ class Comptage
      */
     private $dateCreation;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $lecteur = [];
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime('now');
@@ -145,6 +150,18 @@ class Comptage
     public function setDateCreation(\DateTimeInterface $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    public function getLecteur(): ?array
+    {
+        return $this->lecteur;
+    }
+
+    public function setLecteur(array $lecteur): self
+    {
+        $this->lecteur = $lecteur;
 
         return $this;
     }

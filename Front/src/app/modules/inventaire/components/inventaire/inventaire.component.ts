@@ -6,7 +6,7 @@ import { AdminService } from '../../../administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from '../../service/inventaire.service';
-import { Entreprise } from 'src/app/modules/administration/model/entreprise';
+import { Entreprise } from 'src/app/data/schema/entreprise';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { IMAGE64 } from 'src/app/modules/administration/components/entreprise/image';

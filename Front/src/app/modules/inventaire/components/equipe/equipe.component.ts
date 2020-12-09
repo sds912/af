@@ -5,7 +5,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { AdminService } from '../../../administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { Entreprise } from '../../../administration/model/entreprise';
+import { Entreprise } from 'src/app/data/schema/entreprise';
 import Swal from 'sweetalert2';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import * as $ from 'jquery';

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Entreprise } from '../model/entreprise';
+import { Entreprise } from 'src/app/data/schema/entreprise';
 import { SharedService } from 'src/app/shared/service/shared.service';
 @Injectable({
   providedIn: 'root'
