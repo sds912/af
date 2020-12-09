@@ -85,6 +85,8 @@ export class ZonageComponent implements OnInit {
   ngOnInit() {
     this.myId = localStorage.getItem('idUser')
     this.carrousel()
+    //@TODO::Mettre une api qui permet de filtrer les localités par parent, level et utilisateur connecté. Sachant que level et presque egal au subdivision
+    //@TODO::Inialement récupéré via l'api de filtre tous les localités avec comme level 0, parent null et selon l'utilisateur connecté
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
     this.idCurrentEse = localStorage.getItem("currentEse")
