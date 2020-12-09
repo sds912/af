@@ -54,7 +54,7 @@ export class NewSupportComponent implements OnInit {
     }
     let newTicket = this.ticketForm.value;
 
-    if (this.securityService.admin, newTicket) {
+    if (this.securityService.admin) {
       newTicket.entreprise = {id: null, denomination: null};
       this.createTicket(this.securityService.user.cle, newTicket);
     } else {
@@ -64,6 +64,7 @@ export class NewSupportComponent implements OnInit {
         }
 
         newTicket.entreprise = {id: entreprise.id, denomination: entreprise.denomination};
+        this.createTicket(entreprise.license.licenseCle, newTicket);
       });
     }
   }
