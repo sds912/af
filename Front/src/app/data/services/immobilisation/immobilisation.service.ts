@@ -8,8 +8,8 @@ export class ImmobilisationService {
   approvChange: Subject<boolean> = new Subject<boolean>();
   constructor(private sharedService:SharedService) { }
 
-  getAllImmosByEntreprise(id){
-    return this.sharedService.getElement("/immobilisations?entreprise.id="+id);
+  getAllImmosByEntreprise(id: number, page?: number, count = 20){
+    return this.sharedService.getElement(`/immobilisations?entreprise.id=${id}&pagination=true&page=${page}&count=${count}`);
   }
 
   getAllInventaire() {
@@ -38,6 +38,10 @@ export class ImmobilisationService {
 
   deleteImmoByInventaire(id) {
     return this.sharedService.getElement(`/immobilisations/delete/${id}/inventaire`);
+  }
+
+  deleteImmoByEntreprise(id) {
+    return this.sharedService.getElement(`/immobilisations/delete/${id}/entreprise`);
   }
 }
  

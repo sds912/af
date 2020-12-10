@@ -7,7 +7,7 @@ import { InventaireService } from 'src/app/modules/inventaire/service/inventaire
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ImmobilisationService } from 'src/app/modules/immobilisation/services/immobilisation.service';
+import { ImmobilisationService } from 'src/app/data/services/immobilisation/immobilisation.service';
 
 declare const Waves: any;
 

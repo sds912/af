@@ -44,6 +44,7 @@ class Shared{
     const ENREGISTRER="Enregistré";
     const ALPHAB=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
     const NUMB=['0','1','2','3','4','5','6','7','8','9'];
+    const ROLE_ADMIN = 'ROLE_Admin';
     public static function  getData(Request $request){
         $data=json_decode($request->getContent(),true);
         if(!$data){

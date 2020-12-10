@@ -26,7 +26,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *    },
  *    "IMPORT_AGENTS"={
  *      "method"="post",
- *      "path"="/entreprises/import/users",
+ *      "path"="/entreprises/import/agents",
  *      "controller"="App\Controller\ImportController",
  *       "deserialize"=false,
  *        "openapi_context"={
@@ -46,7 +46,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     },
  *     "IMPORT_IMMOBILISATIONS"={
  *      "method"="post",
- *      "path"="/entreprises/import/immoblisations",
+ *      "path"="/entreprises/import/immobilisations",
  *      "controller"="App\Controller\ImportController",
  *       "deserialize"=false,
  *        "openapi_context"={

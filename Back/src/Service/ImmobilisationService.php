@@ -28,7 +28,7 @@ class ImmobilisationService
         foreach ($sheetData as $row) { 
             $immobilisationExistant = $this->entityManager->getRepository(Immobilisation::class)->findOneBy(['code' => $row['B']]); 
             // make sure that the Immobilisation does not already exists in the db 
-            if (!$row['A'] || $row['B'] || $immobilisationExistant ) {   
+            if (!$row['A'] || !$row['B'] || $immobilisationExistant ) {   
                 continue;
             }
 
@@ -62,7 +62,7 @@ class ImmobilisationService
         $dotation = $row['L'] ?: ''; // store the dotation on each iteration
         $cumulAmortiss = $row['M'] ?: ''; // store the cumulAmortiss on each iteration
         $vnc = $row['N'] ?: ''; // store the vnc on each iteration
-        $etat = $row['N'] ?: ''; // store the etat on each iteration
+        $etat = $row['O'] ?: ''; // store the etat on each iteration
 
         $immobilisation = new Immobilisation(); 
         $immobilisation
@@ -72,8 +72,8 @@ class ImmobilisationService
             ->setCompteAmort($compteAmort)
             ->setEmplacement($emplacement)
             ->setLibelle($libelle)
-            ->setDateAcquisition(new \DateTime($dateAcquisition))
-            ->setDateMiseServ(new \DateTIme($dateMiseServ))
+            ->setDateAcquisition(\DateTime::createFromFormat('d/m/Y', $dateAcquisition))
+            ->setDateMiseServ(\DateTime::createFromFormat('d/m/Y', $dateMiseServ))
             ->setDureeUtilite($dureeUtilite)
             ->setTaux(floatval($taux))
             ->setValOrigine(floatval($valOrigine))

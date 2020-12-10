@@ -266,6 +266,11 @@ class User implements UserInterface
         return $this;
     }
 
+    public function hasRoles(string $roles): bool
+    {
+        return in_array($roles, $this->roles);
+    }
+
     /**
      * @see UserInterface
      */

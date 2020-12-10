@@ -11,6 +11,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import * as $ from 'jquery';
 import { ROUTES } from 'src/app/layout/sidebar/sidebar-items';
 import * as XLSX from 'xlsx';
+import { EntrepriseService } from 'src/app/data/services/entreprise/entreprise.service';
 type AOA = any[][];
 
 @Component({
@@ -76,7 +77,7 @@ export class EquipeComponent implements OnInit {
   tabOpen = []//les subdivisions ouvertes
   openLocalite = null;
   outUsers: [];
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private adminServ: AdminService, private sharedService: SharedService, public securityServ: SecurityService) {
+  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private adminServ: AdminService, private sharedService: SharedService, public securityServ: SecurityService, private entrepriseService: EntrepriseService) {
     this.editForm = this.fb.group({
       id: [0],
       image: [''],
@@ -635,70 +636,16 @@ export class EquipeComponent implements OnInit {
     return change
   }
   getAllAgents(evt: any) {
-
-    const tabdii = [];
-
-    console.log();
-
-
-    const target: DataTransfer = <DataTransfer>(evt.target);
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    const reader: FileReader = new FileReader();
-    reader.onload = async (e: any) => {
-      /* read workbook */
-      const bstr: string = e.target.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-
-      /* grab first sheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      /* save data */
-      this.data_dii = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
-
-
-      for (let index = 1; index < this.data_dii.length; index++) {
-        const element = this.data_dii[index];
-        tabdii.push(element);
-      }
-
-      if (this.idCurrentEse == 0) {
-        this.showNotification('bg-red', 'Selectionner Une Entité', 'top', 'center')
-
-      } else {
-        for await (const iterator of tabdii) {
-          const obj = {
-            id: 0,
-            nom: iterator[0],
-            entreprises: ["api/entreprises/" + this.idCurrentEse],
-            username: iterator[3],
-            poste: iterator[1],
-            departement: iterator[2],
-            password: "azerty",
-            status: "OUT",
-            image: "exemple.jpg"
-          };
-          // console.log(obj);
-          this.securityServ.showLoadingIndicatior.next(true);
-          this.adminServ.addUser(obj).then(rep => {
-            // this.getUsers();
-          });
-
-        }
-        this.securityServ.showLoadingIndicatior.next(false);
-        this.showNotification('bg-success', 'Fichier Enregistré', 'top', 'center')
-      }
-
-
-
-      // console.log(this.data_dii);  
-
-
-
-      // Verification
-
-    };
-    reader.readAsBinaryString(target.files[0]);
+    let fileList: FileList = evt.target.files;
+    let fileUpload: File = fileList[0];
+    const formData = new FormData();
+    formData.append('file', fileUpload, fileUpload.name);
+    formData.append('table', 'agents');
+    formData.append('entreprise', `${this.idCurrentEse || ''}`);
+    this.entrepriseService.importAgents(formData).subscribe((res: any) => {
+      this.showNotification('bg-info', res, 'top', 'center');
+      evt.target.value = '';
+    })
   }
 }
 export interface selectRowInterface {

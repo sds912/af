@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, TemplateRef, OnDestroy } from '@angular/core';
-import { ImmobilisationService } from '../../services/immobilisation.service';
+import { ImmobilisationService } from 'src/app/data/services/immobilisation/immobilisation.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';

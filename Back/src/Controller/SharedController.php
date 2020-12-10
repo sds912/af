@@ -429,10 +429,11 @@ class SharedController extends AbstractController
     }
 
     /**
-    * @Route("/immobilisations/delete/{id}/inventaire", methods={"GET"})
+    * @Route("/immobilisations/delete/{id}/entreprise", methods={"GET"})
     */
-    public function deleteByinventaire($id){
-        $all=$this->repoImmo->findBy(['inventaire'=>$this->repoInv->find($id)]);
+    public function deleteByEntreprise($id){
+        //@TODO::Costumiser cette methode
+        $all=$this->repoImmo->findBy(['entreprise' => $id]);
         foreach ($all as $immo) {
             $this->manager->remove($immo);
         }
@@ -649,7 +650,9 @@ class SharedController extends AbstractController
     /**
     * @Route("/approuve/waitting/{id}", methods={"GET"})
     */
-    public function approuveWaittingByEse($id){
+    public function approuveWaittingByEse($id) {
+        //@TODO::URGENT::Revoir cette fonctionnalité pour permettre les notifications, prévoir la pagination
+        return $this->json(0);
         $entreprise=$this->repoEse->find($id);
         $inv=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $immos=$this->repoImmo->findBy(["inventaire"=>$inv,"approvStatus"=>0]);

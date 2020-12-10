@@ -5,7 +5,7 @@ import { AdminService } from 'src/app/modules/administration/service/admin.servi
 import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
-import { ImmobilisationService } from '../../services/immobilisation.service';
+import { ImmobilisationService } from 'src/app/data/services/immobilisation/immobilisation.service';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { RowHeightCache } from '@swimlane/ngx-datatable';

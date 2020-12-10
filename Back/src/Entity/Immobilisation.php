@@ -20,16 +20,16 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *      "PUT",
  *      "DELETE_BY_INV"={
  *          "method"="get",
- *          "path"="/immobilisations/delete/{id}/inventaire",
+ *          "path"="/immobilisations/delete/{id}/entreprise",
  *           "openapi_context"={
- *              "summary"="Supprimer les immos d'un inventaire",
- *              "description"="Supprime l'ensemble des immobilisations d'un inventaire"
+ *              "summary"="Supprimer les immos d'un entreprise",
+ *              "description"="Supprime l'ensemble des immobilisations d'un entreprise"
  *           }
  *      }
  *  }
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
- * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"entreprise.id": "exact", "status": "exact", "code": "exact"})
  */
 class Immobilisation
 {

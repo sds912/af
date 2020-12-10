@@ -1,17 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef } from '@angular/core';
-import { ImmobilisationService } from '../../services/immobilisation.service';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { ImmobilisationService } from 'src/app/data/services/immobilisation/immobilisation.service';
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import * as XLSX from 'xlsx';
 import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
-import { async } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { IMAGE64 } from 'src/app/modules/administration/components/entreprise/image';
 import Swal from 'sweetalert2';
-import { el } from 'date-fns/locale';
-type AOA = any[][];
+import { EntrepriseService } from 'src/app/data/services/entreprise/entreprise.service';
 
 @Component({
   selector: 'app-immobilisation',
@@ -19,40 +16,23 @@ type AOA = any[][];
   styleUrls: ['./immobilisation.component.sass']
 })
 export class ImmobilisationComponent implements OnInit {
-
-  wopts: XLSX.WritingOptions = { bookType: 'xlsx', type: 'array' };
-  fileName: string = 'SheetJS.xlsx';
   @ViewChild('showImmo', { static: false }) showImmo: TemplateRef<any>;
   @ViewChild('formDirective') private formDirective: NgForm;
-
-
   data = [];
-
   allImmos = [];
-
   verifIfCorrect: boolean = true;
-
-  is21: boolean = true;
-
   idCurrentInv;
-
-  isAllcorrect: boolean = false;
-
   editForm: FormGroup;
-
   selectedRowData: selectRowInterface;
-
   show = false
   imgLink = ""
   image: string = IMAGE64;
   fileToUploadPp: File = null;
   defaultImag = IMAGE64
   details = false
-
-
-
   idCurrentEse;
   inventaires = [];
+  page: number;
 
   columns = [
     { element: 'numero_ordre', name: 'Numéro d\'ordre', width: 100 },
@@ -62,12 +42,12 @@ export class ImmobilisationComponent implements OnInit {
 
 
   constructor(private immoService: ImmobilisationService,
-    private adminServ: AdminService,
     private sharedService: SharedService,
     private securityServ: SecurityService,
     private inventaireServ: InventaireService,
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
+    private entrepriseService: EntrepriseService
   ) {
     this.editForm = this.fb.group({
       id: [0],
@@ -83,8 +63,22 @@ export class ImmobilisationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getInventaireByEse();
+    // this.getInventaireByEse();
+    this.getImmobilisations(1);
+    this.idCurrentEse = localStorage.getItem("currentEse");
     this.securityServ.showLoadingIndicatior.next(false);
+  }
+
+  getImmobilisations(_page: number) {
+    this.page = _page;
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page).then((res: any) => {
+      this.allImmos = res.filter(immo => immo.status == null || immo.status == 1);
+    })
+  }
+
+  setPage(pager: any) {
+    this.page = pager.offset + 1;
+    this.getImmobilisations(this.page);
   }
 
   editRow(row, lock = false) {
@@ -134,45 +128,40 @@ export class ImmobilisationComponent implements OnInit {
     return this.sharedService.longText(text, limit)
   }
 
-  deleteImmoInventaire() {
-    if (this.idCurrentInv == undefined) {
-      this.showNotification('bg-red', 'Selectionner un Inventaire', 'top', 'center')
-    } else {
-      const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'btn btn-success',
-          cancelButton: 'btn btn-danger',
+  deleteAllImmos() {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger',
 
-        },
-        buttonsStyling: true
-      })
+      },
+      buttonsStyling: true
+    })
 
-      swalWithBootstrapButtons.fire({
-        title: 'Ê' + 'TES-VOUS SURE ?'.toLowerCase(),
-        text: "de vouloir supprimer le fichier des immobilisations.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Oui, je le veux!',
-        cancelButtonText: 'Non, annuler!',
-        reverseButtons: true,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.securityServ.showLoadingIndicatior.next(true);
-          this.immoService.deleteImmoByInventaire(this.idCurrentInv).then(e => {
-            this.showNotification('bg-success', 'Supréssion ', 'top', 'center');
-            this.getInventaireByEse();
-            this.securityServ.showLoadingIndicatior.next(false);
-          });
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
+    swalWithBootstrapButtons.fire({
+      title: 'Ê' + 'TES-VOUS SURE ?'.toLowerCase(),
+      text: "de vouloir supprimer le fichier des immobilisations.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, je le veux!',
+      cancelButtonText: 'Non, annuler!',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.securityServ.showLoadingIndicatior.next(true);
+        this.immoService.deleteImmoByEntreprise(this.idCurrentEse).then(e => {
+          this.showNotification('bg-success', 'Supréssion ', 'top', 'center');
+          this.page = 1;
+          this.getImmobilisations(this.page);
+          this.securityServ.showLoadingIndicatior.next(false);
+        });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
 
-        }
-      })
-
-
-    }
+      }
+    })
   }
 
   getInventaireByEse() {
@@ -201,164 +190,25 @@ export class ImmobilisationComponent implements OnInit {
   }
 
   getAllImmos(evt: any) {
-
-    const target: DataTransfer = <DataTransfer>(evt.target);
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
-      /* read workbook */
-      const bstr: string = e.target.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-
-      /* grab first sheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      /* save data */
-      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
-
-      console.log(this.data);
-
-      // Verification
-
-      for (let index = 1; index < this.data.length - 1; index++) {
-        const element = this.data[index];
-
-        if (element.length != 15) {
-          this.verifIfCorrect = false;
-        }
-
-        if (element.length == 21) {
-          this.verifIfCorrect = true;
-          this.is21 = true;
-        }
-
-      }
-
-
-      
-
-      if (this.verifIfCorrect && this.idCurrentInv != undefined) {
-        for (let index = 1; index < this.data.length - 1; index++) {
-          const element = this.data[index];
-
-
-            const dA = element[6].split('/')[2] + '-' + element[6].split('/')[1] + '-' + element[6].split('/')[0];
-            const dM = element[7].split('/')[2] + '-' + element[7].split('/')[1] + '-' + element[7].split('/')[0];
-            const dU = element[8];
-          if (element.length == 16) {
-            this.verifIfCorrect = true;
-            this.is21 = true;
-          }
-
-          if (element.length == 16) {
-            this.verifIfCorrect = true;
-            this.is21 = true;
-          }
-          if (element[18] == " " || element[18]==undefined) {
-            element[18] = "";
-          } else {
-            element[18] = "/api/localites/" + element[18];
-          }
-
-          if (element[6] == undefined) {
-            const dA = new Date();
-            console.log('element[6]==undefined)');
-
-            console.log(dA);
-
-          }
-
-          if (element[7] == undefined) {
-            const dA = new Date().toDateString;
-            console.log(dA);
-
-          }
-
-          if (element[18] == '') {
-            const obj = {
-              "libelle": element[5],
-              "numeroOrdre": element[0],
-              "code": element[1],
-              "compteImmo": element[2],
-              "compteAmort": element[3],
-              "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
-              "description": null,
-              "dateAcquisition": "07/11/2019",
-              "dateMiseServ": "07/11/2019",
-              "dureeUtilite": "5",
-              "taux": parseFloat(element[9].trim()),
-              "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
-              "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
-              "cumulAmortiss": parseFloat(element[12].split(',')[0] + element[12].split(',')[1]),
-              "vnc": parseFloat(element[13].split(',')[0] + element[13].split(',')[1]),
-              "etat": element[14],
-              "inventaire": "/api/inventaires/" + this.idCurrentInv,
-              "entreprise": "/api/entreprises/" + this.idCurrentEse,
-
-            }
-            this.immoService.postImmobilisation(obj).then((e) => {
-              if (e.id != null) {
-                if (index == this.data.length - 2) {
-                  this.showNotification('bg-success', 'Enregistré', 'top', 'center')
-                  this.getImmos();
-                }
-              } else {
-                this.showNotification('bg-red', 'Veuillez entrez un fichier des immobilisation compatible avec notre template', 'top', 'center')
-              }
-            });
-          } else {
-            const obj = {
-              "libelle": element[5],
-              "numeroOrdre": element[0],
-              "code": element[1],
-              "compteImmo": element[2],
-              "compteAmort": element[3],
-              "emplacement": !this.is21 ? element[17].split('-')[element[17].split('-').length - 1] : element[4],
-              "description": null,
-              "dateAcquisition": "07/11/2019",
-              "dateMiseServ": "07/11/2019",
-              "dureeUtilite": "5",
-              "taux": parseFloat(element[9].trim()),
-              "valOrigine": parseFloat(element[10].split(',')[0] + element[10].split(',')[1]),
-              "dotation": parseFloat(element[11].split(',')[0] + element[11].split(',')[1]),
-              "cumulAmortiss": parseFloat(element[12].split(',')[0] + element[12].split(',')[1]),
-              "vnc": parseFloat(element[13].split(',')[0] + element[13].split(',')[1]),
-              "etat": this.is21 ? element[16] : element[14],
-              "inventaire": "/api/inventaires/" + this.idCurrentInv,
-              "entreprise": "/api/entreprises/" + this.idCurrentEse,
-              "localite": element[18]
-
-            }
-            this.immoService.postImmobilisation(obj).then((e) => {
-              if (e.id != null) {
-                if (index == this.data.length - 2) {
-                  this.showNotification('bg-success', 'Enregistré', 'top', 'center')
-                  this.getImmos();
-                }
-              } else {
-                this.showNotification('bg-red', 'Veuillez entrez un fichier des immobilisation compatible avec notre template', 'top', 'center')
-              }
-            });
-          }
-
-
-
-
-
-
-
-        }
-      } else {
-        this.showNotification('bg-red', 'Selectionner un Inventaire', 'top', 'center')
-      }
-
-    };
-    reader.readAsBinaryString(target.files[0]);
+    let fileList: FileList = evt.target.files;
+    let fileUpload: File = fileList[0];
+    const formData = new FormData();
+    formData.append('file', fileUpload, fileUpload.name);
+    formData.append('table', 'immobilisations');
+    formData.append('entreprise', localStorage.getItem("currentEse"));
+    this.entrepriseService.importImmobilisations(formData).subscribe((res: any) => {
+      this.showNotification('bg-info', res, 'top', 'center')
+      evt.target.value = '';
+      setTimeout(() => {
+        this.getImmos();
+      }, 500);
+    })
   }
 
 
 }
+
+//@TOOD::Voir l'utilité de cette interface et essayer de le déplacer si c'est utilisé sinon le supprimé
 export interface selectRowInterface {
   code: String;
   libelle: String;
