@@ -89,13 +89,13 @@ class Entreprise
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","entreprise_read","inv_read", "comptage_read"})
+     * @Groups({"user_read","entreprise_read","inv_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","entreprise_read","inv_read", "comptage_read"})
+     * @Groups({"user_read","entreprise_read","inv_read"})
      */
     private $denomination;
 
@@ -113,7 +113,7 @@ class Entreprise
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"entreprise_read","inv_read", "comptage_read"})
+     * @Groups({"entreprise_read","inv_read"})
      */
     private $image;
 
