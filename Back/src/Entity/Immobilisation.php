@@ -149,6 +149,11 @@ class Immobilisation
     private $numeroOrdre;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
+     */
+    private $inventaire;
+
+    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="scanImmos")
      * @Groups({"immo_read"})
      */
@@ -225,15 +230,9 @@ class Immobilisation
      */
     private $endLibelle;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Comptage::class, mappedBy="immobilisation")
-     */
-    private $comptages;
-
     public function __construct()
     {
         $this->immobilisations = new ArrayCollection();
-        $this->comptages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -457,6 +456,18 @@ class Immobilisation
         return $this;
     }
 
+    public function getInventaire(): ?Inventaire
+    {
+        return $this->inventaire;
+    }
+
+    public function setInventaire(?Inventaire $inventaire): self
+    {
+        $this->inventaire = $inventaire;
+
+        return $this;
+    }
+
     public function getLecteur(): ?User
     {
         return $this->lecteur;
@@ -628,37 +639,6 @@ class Immobilisation
     public function setEndLibelle(?string $endLibelle): self
     {
         $this->endLibelle = $endLibelle;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Comptage[]
-     */
-    public function getComptages(): Collection
-    {
-        return $this->comptages;
-    }
-
-    public function addComptage(Comptage $comptage): self
-    {
-        if (!$this->comptages->contains($comptage)) {
-            $this->comptages[] = $comptage;
-            $comptage->setImmobilisation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComptage(Comptage $comptage): self
-    {
-        if ($this->comptages->contains($comptage)) {
-            $this->comptages->removeElement($comptage);
-            // set the owning side to null (unless already changed)
-            if ($comptage->getImmobilisation() === $this) {
-                $comptage->setImmobilisation(null);
-            }
-        }
 
         return $this;
     }

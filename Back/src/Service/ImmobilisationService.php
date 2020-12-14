@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\Immobilisation;
 use App\Entity\Entreprise;
+use App\Entity\Inventaire;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 class ImmobilisationService
@@ -25,6 +27,11 @@ class ImmobilisationService
          */
         $entreprise = $this->entityManager->getRepository(Entreprise::class)->find($customData['entreprise']);
 
+        /**
+         * @var Inventaire
+         */
+        $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
+
         foreach ($sheetData as $row) { 
             $immobilisationExistant = $this->entityManager->getRepository(Immobilisation::class)->findOneBy(['code' => $row['B']]); 
             // make sure that the Immobilisation does not already exists in the db 
@@ -39,6 +46,8 @@ class ImmobilisationService
             }
 
             $immobilisation->setEntreprise($entreprise);
+
+            $immobilisation->setInventaire($inventaire);
 
             $this->entityManager->persist($immobilisation); 
             

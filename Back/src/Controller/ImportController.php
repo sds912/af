@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\ImportedFile;
 use App\Entity\Entreprise;
+use App\Entity\Inventaire;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploader;
 use App\Entity\User;
@@ -56,7 +57,7 @@ class ImportController
     {
         $file = $request->files->get('file');
         $table = $request->request->get('table');
-        $customData = ['entreprise' => ''];
+        $customData = ['entreprise' => '', 'inventaire' => ''];
 
         if (!$table || !$file) {
             throw new HttpException(400,'Le nom de la table et le fichier sont obligatoires.');
@@ -64,9 +65,16 @@ class ImportController
 
         $entreprise = $request->request->get('entreprise');
 
+        $inventaire = $request->request->get('inventaire');
+
         if ($entreprise != '') {
             $this->validateEntreprise($entreprise);
             $customData['entreprise'] = $entreprise->getId();
+        }
+
+        if ($inventaire != '') {
+            $this->validateInventaire($inventaire);
+            $customData['inventaire'] = $inventaire->getId();
         }
 
         try {
@@ -105,5 +113,16 @@ class ImportController
         }
 
         $idEntreprise = $entreprise;
+    }
+
+    public function validateInventaire(&$idInventaire)
+    {
+        $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($idInventaire);
+
+        if (!$inventaire || (!$this->user->hasRoles(Shared::ROLE_ADMIN) && !$this->user->inEntreprise($inventaire->getEntreprise())) ) {
+            throw new HttpException(404, 'Cette entreprise n\'existe pas ou a été supprimé.');
+        }
+
+        $idInventaire = $inventaire;
     }
 }
