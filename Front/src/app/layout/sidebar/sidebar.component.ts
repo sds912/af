@@ -3,7 +3,7 @@ import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener } from '
 import { ROUTES } from './sidebar-items';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';

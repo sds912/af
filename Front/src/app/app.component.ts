@@ -4,11 +4,12 @@ import {
   Router,
   NavigationStart,
   NavigationEnd,
-  RouterEvent
 } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { SecurityService } from './shared/service/security.service';
+import { AuthenticationService } from './data/services/authentication/authentication.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,9 +18,18 @@ import { SecurityService } from './shared/service/security.service';
 export class AppComponent {
   currentUrl: string;
   showLoadingIndicatior = true;
-  jwtHelper = new JwtHelperService();
   detruit:boolean=false;
-  constructor(public _router: Router, location: PlatformLocation,public securityService: SecurityService,public router:Router) {
+  idCurrentInv: any;
+  inventaires: any[];
+
+  constructor(
+    public _router: Router,
+    location: PlatformLocation,
+    public securityService: SecurityService,
+    public router:Router,
+    private authenticationService: AuthenticationService,
+    private inventaireService: InventaireService
+  ) {
     this._router.events.subscribe((routerEvent: Event) => {
       if (routerEvent instanceof NavigationStart) {
         this.showLoadingIndicatior = true;
@@ -39,19 +49,32 @@ export class AppComponent {
   }
   
   ngOnInit(){
+    this.inventaires = [];
+    this.idCurrentInv = localStorage.getItem('currentInv');
+    if (this.authenticationService.isAuthenticated()) {
+      this.getInventaires();
+    }
     if(localStorage.getItem('token')){
       this.securityService.load();
     }
-    // this.tokenExpire();
-    this.shortWidth()
+    this.shortWidth();
   }
-  tokenExpire(){
-    const token=localStorage.getItem('token')
-    if(localStorage.getItem('token') && this.jwtHelper.isTokenExpired(token)){
-      localStorage.clear();
-      window.location.reload();
-    }
+
+  getInventaires() {
+    this.inventaireService.getInventaireByEse(localStorage.getItem('currentEse')).then((res) => {
+      this.inventaires = res;
+      if (!this.idCurrentInv) {
+        localStorage.setItem('currentInv', this.inventaires[0]?.id);
+        this.idCurrentInv = localStorage.getItem('currentInv');
+      }
+    })
   }
+
+  inventaireChange(value) {
+    localStorage.setItem('currentInv', value);
+    window.location.reload();
+  }
+
   shortWidth(){
     if(window.innerWidth<600){
       this.securityService.logOut();

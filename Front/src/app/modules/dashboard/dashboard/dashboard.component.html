@@ -1,20 +1,5 @@
 <section class="content">
     <div class="container-fluid">
-        <div class="block-header">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <ul class="breadcrumb breadcrumb-style ">
-                        <li class="breadcrumb-item mr-4"> <select [(ngModel)]="idCurrentInv" class="select-trie"
-                                style="width: 215px !important;" (change)="inventaireChange($event.target.value)">
-                                <option *ngFor="let inventaire of inventaires" [value]="inventaire.id"> Inventaire <span
-                                        *ngIf="inventaire.dateInv"> au {{inventaire.dateInv|date:'dd/MM/yyyy'}}</span>
-                                </option>
-                            </select>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
         <div class="page-container">
             <div class="p-grid p-mb-3">
                 <div [ngClass]="{'p-col-12 p-col-md-12 p-col-lg-12': !superviseurGene && !superviseur, 'p-col-9 p-col-md-9 p-col-lg-9':superviseurGene || superviseur}">

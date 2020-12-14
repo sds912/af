@@ -3,7 +3,7 @@ import { ImmobilisationService } from 'src/app/data/services/immobilisation/immo
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { IMAGE64 } from 'src/app/modules/administration/components/entreprise/image';
@@ -177,9 +177,6 @@ export class ImmobilisationComponent implements OnInit {
       console.log(error)
     })
   }
-  inventaireChange(event: any) {
-    this.getImmos();
-  }
 
   showDialogImmo() {
     this.showImmo.elementRef.nativeElement.click();
@@ -196,6 +193,7 @@ export class ImmobilisationComponent implements OnInit {
     formData.append('file', fileUpload, fileUpload.name);
     formData.append('table', 'immobilisations');
     formData.append('entreprise', localStorage.getItem("currentEse"));
+    formData.append('inventaire', localStorage.getItem("currentInv"));
     this.entrepriseService.importImmobilisations(formData).subscribe((res: any) => {
       this.showNotification('bg-info', res, 'top', 'center')
       evt.target.value = '';

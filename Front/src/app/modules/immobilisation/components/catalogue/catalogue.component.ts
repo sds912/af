@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { ImmobilisationService } from 'src/app/data/services/immobilisation/immobilisation.service';

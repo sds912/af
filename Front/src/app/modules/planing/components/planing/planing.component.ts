@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView } from 'angular-calendar';
 import * as $ from "jquery";
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { PlaningService } from '../../services/planing.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SharedService } from 'src/app/shared/service/shared.service';

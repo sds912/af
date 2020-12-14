@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InventaireService } from '../../service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { IMAGE64 } from 'src/app/modules/administration/components/entreprise/image';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -72,10 +72,7 @@ export class InstructionComponent implements OnInit {
       this.generatePdf(this.instructions)
     }
   }
-  inventaireChange(id){
-    this.currentInv=this.inventaires.find(inv=>inv.id==id)
-    this.traitementInst(this.currentInv)
-  }
+
   pageInst(data) {
     const bloc1e1 = data[0][0]
     const bloc1e2 = data[0][1]

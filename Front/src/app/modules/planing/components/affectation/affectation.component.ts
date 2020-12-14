@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { PlaningService } from '../../services/planing.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';

@@ -10,7 +10,7 @@ import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { LayoutService } from '../layout.service';
 const document: any = window.document;
 import { saveAs } from 'file-saver';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { AdministrationService } from 'src/app/shared/service/administration.service';
 @Component({
   selector: 'app-header',

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { DashboardService } from '../services/dashboard.service';
 import { timer, combineLatest } from 'rxjs';
 import { PlaningService } from 'src/app/modules/planing/services/planing.service';
@@ -176,11 +176,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscribeToData();
   }
 
-  inventaireChange(value:string):void{
-    console.log(value);
-  }
-
   getInventaireByEse() {
+    // @TODO:Enveler l'api liste des localites et le mettre dans le back. Ensuite enlever l'api liste inventaire.
     this.securityServ.showLoadingIndicatior.next(true);
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {

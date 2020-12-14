@@ -3,7 +3,7 @@ import { ImmobilisationService } from 'src/app/data/services/immobilisation/immo
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
-import { InventaireService } from 'src/app/modules/inventaire/service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { IMAGE64 } from 'src/app/modules/administration/components/entreprise/image';
@@ -209,12 +209,6 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
   
   getAllLoc(){
     this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites=>this.localites=localites)
-  }
-
-  inventaireChange(id) {
-    this.idCurrentInv=this.inventaires.find(inv=>inv.id==id)?.id   
-    this.getAffectationByInv(this.idCurrentInv); 
-    this.refreshData(true);
   }
 
   showDialogImmo() {

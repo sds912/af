@@ -32,7 +32,7 @@ export class AuthenticationService {
 
       // store user details and jwt token in local storage to keep user logged in between page refreshes
       localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.setItem('accessToken', response['token']);
+      localStorage.setItem('token', response['token']);
       localStorage.setItem('refreshToken', response['refresh_token']);
       this.currentUserSubject.next(user);
       return user;
@@ -60,7 +60,7 @@ export class AuthenticationService {
   }
 
   getToken() {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('token');
   }
 
   getRefreshToken() {

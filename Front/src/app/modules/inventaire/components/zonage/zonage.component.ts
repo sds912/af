@@ -5,7 +5,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { AdminService } from '../../../administration/service/admin.service';
-import { InventaireService } from '../../service/inventaire.service';
+import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { SharedService } from 'src/app/shared/service/shared.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
