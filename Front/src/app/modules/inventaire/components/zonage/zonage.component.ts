@@ -12,8 +12,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormGroup, FormBuilder, FormControl, Validators, NgForm, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import * as XLSX from 'xlsx';
-import { isThisQuarter } from 'date-fns';
+import { EntrepriseService } from 'src/app/data/services/entreprise/entreprise.service';
 type AOA = any[][];
 
 export interface ChipColor {
@@ -57,6 +56,8 @@ export class ZonageComponent implements OnInit {
   myId = ""
   titleAdd = ""
   idToOpen = 0
+  displayedTabs = [];
+  idTabs = [];
   @ViewChild('fruitInput', { static: true }) fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('closeLocaliteModal', { static: false }) closeLocaliteModal;
   @ViewChild('closeSubdivision', { static: false }) closeSubdivision;
@@ -69,8 +70,6 @@ export class ZonageComponent implements OnInit {
     { name: 'Warn', color: 'warn' }
   ];
 
-  // Modif by dii
-
   data = [];
   constructor(private adminServ: AdminService,
     private inventaireServ: InventaireService,
@@ -79,17 +78,20 @@ export class ZonageComponent implements OnInit {
     private sharedService: SharedService,
     public securityServ: SecurityService,
     private route: ActivatedRoute,
-    public router: Router) {
+    public router: Router,
+    private entrepriseService: EntrepriseService
+  ) {
     this.titleAdd = this.securityServ.superviseurAdjoint ? "Demandez au superviseur général d'ajouter une subdivision" : "Ajouter une subdivision"
   }//revoir le delete sous-zone quand on ajout des user à ces sz
   ngOnInit() {
     this.myId = localStorage.getItem('idUser')
     this.carrousel()
-    //@TODO::Mettre une api qui permet de filtrer les localités par parent, level et utilisateur connecté. Sachant que level et presque egal au subdivision
-    //@TODO::Inialement récupéré via l'api de filtre tous les localités avec comme level 0, parent null et selon l'utilisateur connecté
+    //@TODO::Supprimer la clone subdivision  dans le back.
     this.securityServ.showLoadingIndicatior.next(true)
-    this.initForm()
+    this.initForm();
     this.idCurrentEse = localStorage.getItem("currentEse")
+    this.displayedTabs = [];
+    this.idTabs = [];
     this.getOneEntreprise()
     this.addSubdivision("Localité")
     if(this.route.snapshot.params['id']){
@@ -98,6 +100,7 @@ export class ZonageComponent implements OnInit {
     }
     this.sameComponent()
   }
+
   sameComponent() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {//apres changement de la route
@@ -109,20 +112,22 @@ export class ZonageComponent implements OnInit {
       }
     });
   }
-  initForm(localite = { id: 0, nom: '', position: [] }) {
+
+  initForm(localite = { id: 0, nom: '', position: [], level: 0 }) {
     if (this.formDirective1) this.formDirective1.resetForm()
     this.localiteForm = this.fb.group({
       id: [localite.id],
       nom: [localite.nom, [Validators.required]],
       position: [localite.position],
-      level: []
+      level: localite.level
     });
+    console.log(localite);
   }
+
   getOneEntreprise() {
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep=>{
-        this.allLoc=rep.localites//les positions
-        this.localites=rep.localites//all sauf adjoint
+        this.initLocalites();
         if(this.idToOpen && (this.securityServ.superviseurGene || this.securityServ.superviseur || 
           this.securityServ.superviseurAdjoint && this.allLoc.find(loc=>loc.id==this.idToOpen && loc.createur?.id==this.myId))){
           this.openOneById(this.idToOpen)
@@ -138,6 +143,62 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
+
+  initLocalites() {
+    this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
+      this.allLoc = res
+      this.localites = res;
+    });
+  }
+
+  addSubdivision(nom = "") {
+    this.tabSubdivision.push(new FormControl(nom));
+  }
+
+  removeSubdivision(value: string) {
+    this.tabSubdivision.removeAt(this.tabSubdivision.value.findIndex((nom: string) => nom === value));
+  }
+
+  oneSaveSubdiv() {
+    let data = { id: this.idCurrentEse, subdivisions: this.capitalizeAll(this.tabSubdivision.value) }
+    this.adminServ.addEntreprise(data).then(
+      rep => {
+        this.subdivisions = rep.subdivisions
+        this.closeSubdivision.nativeElement.click();
+        this.showNotification('bg-success', "Enregistré", 'top', 'center')
+      },
+      message => this.showNotification('bg-danger', message, 'top', 'center')
+    )
+  }
+
+  initSub() {
+    this.tabSubdivision = new FormArray([]);
+    this.subdivisions?.forEach(sub => this.addSubdivision(sub));
+    if (!this.subdivisions || this.subdivisions.length == 0) this.addSubdivision("Localité")
+  }
+
+  firstSub() {
+    return this.localites?.filter((loc: any) => loc.level === 0)
+  }
+
+  addSub(value, idParent, level) {//l ajout des autres sub
+    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, level: level, createur: "/api/users/" + this.myId }
+    this.securityServ.showLoadingIndicatior.next(true)
+    this.inventaireServ.addLocalite(data).then(
+      rep => {
+        this.securityServ.showLoadingIndicatior.next(false)
+        this.closeLocaliteModal.nativeElement.click();
+        this.localites.push(rep);
+        this.allLoc.push(rep);
+        // this.getOneEntreprise()//update
+      },
+      error => {
+        this.securityServ.showLoadingIndicatior.next(false)
+        console.log(error)
+      }
+    )
+  }
+
   addLocalite(form: FormGroup) {//les premieres subdivisions
     const firstL = this.allLoc.filter(l => l.position?.length > 0)
     const firstExist = this.firstSubNameExiste(this.allLoc, form.value)
@@ -154,6 +215,7 @@ export class ZonageComponent implements OnInit {
       Swal.fire({ title: '', text: "Vous avez atteint le nombre limite de localité.", icon: 'info' })
     }
   }
+
   saveValideLoc(form) {
     let data = form.value
     data.entreprise = "/api/entreprises/" + this.idCurrentEse
@@ -164,8 +226,8 @@ export class ZonageComponent implements OnInit {
       rep => {
         this.securityServ.showLoadingIndicatior.next(false)
         this.closeLocaliteModal.nativeElement.click();
-        if (data.id == 0) this.localites.push(rep)//add
-        else this.getOneEntreprise()//update
+        this.localites.push(rep);
+        this.allLoc.push(rep);
       },
       error => {
         this.securityServ.showLoadingIndicatior.next(false)
@@ -173,21 +235,7 @@ export class ZonageComponent implements OnInit {
       }
     )
   }
-  addSub(value, idParent, level) {//l ajout des autres sub
-    let data = { nom: value, entreprise: "/api/entreprises/" + this.idCurrentEse, parent: "/api/localites/" + idParent, level: level, createur: "/api/users/" + this.myId }
-    this.securityServ.showLoadingIndicatior.next(true)
-    this.inventaireServ.addLocalite(data).then(
-      rep => {
-        this.securityServ.showLoadingIndicatior.next(false)
-        this.closeLocaliteModal.nativeElement.click();
-        this.getOneEntreprise()//update
-      },
-      error => {
-        this.securityServ.showLoadingIndicatior.next(false)
-        console.log(error)
-      }
-    )
-  }
+
   updateOne(form: FormGroup) {//les update
     const data = form.value
     this.securityServ.showLoadingIndicatior.next(true)
@@ -196,21 +244,25 @@ export class ZonageComponent implements OnInit {
         this.update = false
         this.securityServ.showLoadingIndicatior.next(false)
         this.closeLocaliteModal.nativeElement.click();
-        this.getOneEntreprise()
+        // this.getOneEntreprise()
+        const indexDeletedLocalite = this.localites.findIndex((ele: any) => ele.id == data.id);
+        this.localites[indexDeletedLocalite] = rep;
       },
       error => {
         this.securityServ.showLoadingIndicatior.next(false)
         console.log(error)
       })
   }
+
   onSubmit(form: FormGroup) {
     if (!this.update) {
-      form.controls['level'].setValue(0);
+      // form.controls['level'].setValue(0);
       this.addLocalite(form)
     } else {
       this.updateOne(form) // le update de toutes
     }
   }
+
   firstSubNameExiste(tab, localite) {
     const nom = localite.nom.trim()
     return tab.find(
@@ -222,6 +274,7 @@ export class ZonageComponent implements OnInit {
         )
     ) != null
   }
+
   rev(tab) {
     let t = []
     if (tab && tab.length > 0) {
@@ -230,10 +283,12 @@ export class ZonageComponent implements OnInit {
     }
     return t
   }
+
   add(event: MatChipInputEvent, idParent, level): void {
+    console.log('ee')
     const input = event.input;
     const value = event.value;
-    const exist = this.localites.find(loc => loc.nom?.toLowerCase() == value.trim()?.toLowerCase() && loc.idParent == idParent)
+    const exist = this.localites.find(loc => loc.nom?.toLowerCase() == value.trim()?.toLowerCase() && loc.idParent == idParent && loc.level == level)
     // Add our sub
     if ((value || '').trim() && !exist) {
       const v = value.trim()
@@ -250,6 +305,7 @@ export class ZonageComponent implements OnInit {
 
     this.fruitCtrl.setValue(null);
   }
+
   deleteLoc(localite) {
     if (localite.rattacher) {
       this.showNotification('bg-danger', "Impossible de supprimer cet élément car il contient des subdivisions.", 'bottom', 'center', 5000)
@@ -261,6 +317,7 @@ export class ZonageComponent implements OnInit {
       this.supLocPossible(localite)
     }
   }
+
   supLocPossible(localite) {
     Swal.fire({
       title: 'Confirmation',
@@ -277,7 +334,9 @@ export class ZonageComponent implements OnInit {
         this.inventaireServ.deleteLoc(localite.id).then(
           rep => {
             this.securityServ.showLoadingIndicatior.next(false)
-            this.getOneEntreprise()
+            // this.getOneEntreprise()
+            const indexDeletedLocalite = this.localites.findIndex((ele: any) => ele.id == localite.id);
+            this.localites.splice(indexDeletedLocalite, 1);
           },
           error => {
             this.securityServ.showLoadingIndicatior.next(false)
@@ -287,6 +346,7 @@ export class ZonageComponent implements OnInit {
       }
     });
   }
+
   showNotification(colorName, text, placementFrom, placementAlign, duration = 2000) {
     this._snackBar.open(text, '', {
       duration: duration,
@@ -295,9 +355,11 @@ export class ZonageComponent implements OnInit {
       panelClass: [colorName, 'color-white']
     });
   }
+
   longText(text, limit) {
     return this.sharedService.longText(text, limit)
   }
+
   getPosition() {
     let arrond = false
     let l = 2;
@@ -318,10 +380,12 @@ export class ZonageComponent implements OnInit {
     } while (arrond);
     return [l + '%', t + '%']
   }
+
   getValPourcentage(val) {
     const valeur = parseInt(val.replace('%', ''))
     return valeur
   }
+
   // Carroussel and subdivisions
   carrousel() {
     const images = ['mapdiidk1.jpg', 'mapdiidk2.jpg', 'mapdiiabj1.jpg']
@@ -332,18 +396,15 @@ export class ZonageComponent implements OnInit {
       a++
     }, 5000)
   }
-  addSubdivision(nom = "") {
-    this.tabSubdivision.push(new FormControl(nom));
-  }
-  removeSubdivision(value: string) {
-    this.tabSubdivision.removeAt(this.tabSubdivision.value.findIndex((nom: string) => nom === value));
-  }
+
   lowerCase(nom: string) {
     return nom.toLowerCase()
   }
+
   capitalize(nom) {
     return this.sharedService.capitalize(nom)
   }
+
   capitalizeAll(tab) {
     let t = []
     tab.forEach(element => {
@@ -351,56 +412,56 @@ export class ZonageComponent implements OnInit {
     });
     return t
   }
-  oneSaveSubdiv() {
-    let data = { id: this.idCurrentEse, subdivisions: this.capitalizeAll(this.tabSubdivision.value) }
-    this.adminServ.addEntreprise(data).then(
-      rep => {
-        this.subdivisions = rep.subdivisions
-        this.closeSubdivision.nativeElement.click();
-        this.showNotification('bg-success', "Enregistré", 'top', 'center')
-      },
-      message => this.showNotification('bg-danger', message, 'top', 'center')
-    )
-  }
-  initSub() {
-    this.tabSubdivision = new FormArray([]);
-    this.subdivisions?.forEach(sub => this.addSubdivision(sub));
-    if (!this.subdivisions || this.subdivisions.length == 0) this.addSubdivision("Localité")
-  }
-  //@TODO:: Update this method to get parents localites
-  firstSub(localites) {
-    return localites?.filter(loc => loc.position?.length > 0)
-  }
-  getCurrentSubById(id) {
-    let l = this.getOnById(id)?.subdivisions
-    return l ? l : []
-  }
+
   getOnById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
-  openFirst(id) {
-    this.idCurrentLocal = id
-    this.tabOpen[0] = id
-    this.offUnderSub(1)
-  }
-  openOther(e: Event, i, id) {
-    this.tabOpen[i] = id
-    this.offUnderSub(i + 1); //les surdivisions en dessous
-    document.querySelectorAll('.chip-localite-'+i).forEach((ele: HTMLElement) => {
-      ele.classList.remove('active');
-    });
-    (e.target as HTMLElement).closest('.chip-localite-'+i).classList.add('active');
-  }
-  offUnderSub(j) {
-    for (let i = j; i < this.tabOpen.length; i++) {
-      if (this.tabOpen[i]) this.tabOpen[i] = 0
+
+  getChildsLocalites(id: any, level: any, event?: any) {
+    if (level == this.subdivisions.length) {
+      return;
     }
+
+    if (level == 1) {
+      this.idCurrentLocal = id;
+      this.displayedTabs = [];
+    }
+
+    const indexExistTab = this.displayedTabs.findIndex((ele: any) => ele.level == level);
+    
+    this.displayedTabs = this.displayedTabs.filter((ele: any) => ele.level <= level);
+
+    this.inventaireServ.filterLocalites(this.idCurrentEse, level, id).then((res: any) => {
+      if (indexExistTab > -1) {
+        this.displayedTabs[indexExistTab] = {id: id, level: level};
+      } else {
+        this.displayedTabs.push({id: id, level: level});
+      }
+
+      if (res && res.length > 0 && this.idTabs.indexOf(id) == -1) {
+        this.localites = this.localites.concat(res);
+        this.allLoc = this.allLoc.concat(res);
+        this.idTabs.push(id);
+      }
+
+      if (event) {
+        const index = level - 1;
+        document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
+        (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
+      }
+    });
   }
+
+  filterByTab(tab: any) {
+    return this.localites?.filter(loc => loc.idParent == tab.id && loc.level == tab.level);
+  }
+
   updateL(sub) {
     this.update = true
     this.initForm(sub)
   }
+
   openOneById(id) {//on par de id et on recup tous ses parents
     this.tabOpen.push(id)
     this.tabOpen = []
@@ -415,103 +476,24 @@ export class ZonageComponent implements OnInit {
     this.idCurrentLocal = this.tabOpen[0]
   }
 
-  
-
-   getAllLocalite(evt: any) {
-
-    // console.log('this.subdivisions.length => ', this.subdivisions.length);
-
-    const target: DataTransfer = <DataTransfer>(evt.target);
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    const reader: FileReader = new FileReader();
-    reader.onload = async (e: any) => {
-      /* read workbook */
-
-      const bstr: string = e.target.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-
-      /* grab first sheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      /* save data */
-      this.data = await <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
-
-      console.log(this.data);
-
-      for (let index = 1; index < this.data.length; index++) {
-        const element = this.data[index];
-        this.localiteFile.push(element);
-      }
-
-
-      for (let index = 0; index < this.localiteFile.length; index++) {
-        const element = this.localiteFile[index];
-
-        if (element.length > this.subdivisions.length) {
-          this.isValableFileLocalite = false;
-        }
-      }
-
-      if (this.isValableFileLocalite) {
-        let il = 1 ;
-        for await (const iterator of this.localiteFile) {
-          il++ ;
-          const element = iterator;
-          
-          let lastId = 0;
-
-          for (let i = 0; i < element.length; i++) {
-            const el = element[i];
-
-            if (i == 0) {
-            await  this.inventaireServ.addLocalite({
-                nom: el,
-                entreprise: "/api/entreprises/" + this.idCurrentEse,
-                createur: "/api/users/" + this.myId,
-                level: i,
-                position: this.getPosition(),
-                // lastLevel: i == element.length
-              }).then(rep => {
-                lastId = rep.id ;
-                this.securityServ.showLoadingIndicatior.next(true)
-                console.log(rep);
-              });
-            } else {
-             await  this.inventaireServ.addLocalite({
-                nom: el,
-                entreprise: "/api/entreprises/" + this.idCurrentEse,
-                createur: "/api/users/" + this.myId,
-                level: i,
-                parent: "/api/localites/" + lastId,
-                // lastLevel: i == element.length
-              }).then(rep => {
-                lastId = rep.id;
-                this.securityServ.showLoadingIndicatior.next(true)
-                console.log(rep);
-                
-              });
-            }
-          }
-        }
-        this.getOneEntreprise();
-        this.securityServ.showLoadingIndicatior.next(false);
-        // console.log(this.localiteFile);
-
-      } else {
-        this.showNotification('bg-red', 'Fichier uploader pa bon', 'top', 'center')
-      }
-
-
-    };
-    reader.readAsBinaryString(target.files[0]);
-
+  getAllLocalite(evt: any) {
+    let fileList: FileList = evt.target.files;
+    let fileUpload: File = fileList[0];
+    const formData = new FormData();
+    formData.append('file', fileUpload, fileUpload.name);
+    formData.append('table', 'localites');
+    formData.append('entreprise', this.idCurrentEse.toString());
+    this.entrepriseService.importLocalites(formData).subscribe((response) => {
+      this.showNotification('bg-info', response, 'top', 'center');
+      window.location.reload();
+    });
   }
 
   verfiIfDeuxLocIsSame(str1: string, str2: string) {
     if (str1 == str2) return true;
     return false;
   }
+
   isLastChilTab(b, c) {
     for (let index = 0; index < b.length - 1; index++) {
       const element = b[index];

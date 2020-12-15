@@ -20,6 +20,16 @@ export class InventaireService {
   getLocalitesOfEse(id){
     return this.sharedService.getElement("/localites?entreprise.id="+id)
   }
+  filterLocalites(entreprise: any, level = null, parent = null){
+    let filters = '';
+    if (level !== null) {
+      filters = `&level=${level}`
+    }
+    if (parent !== null) {
+      filters = `&parent=${parent}`
+    }
+    return this.sharedService.getElement(`/localites?entreprise.id=${entreprise}${filters}`)
+  }
   deleteLoc(id){
     return this.sharedService.deleteElement("/localites/"+id)
   }

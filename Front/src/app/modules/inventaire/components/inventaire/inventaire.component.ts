@@ -109,6 +109,7 @@ export class InventaireComponent implements OnInit {
       }
     )
   };
+
   getOneEntreprise() {
     const idEse = localStorage.getItem("currentEse")
     this.adminServ.getOneEntreprise(idEse).then(
@@ -116,7 +117,8 @@ export class InventaireComponent implements OnInit {
         let e = rep
         if (e) {
           this.idCurrentEse = e.id
-          this.localites = rep.localites
+          this.initLocalites();
+          // this.localites = rep.localites
           this.getUsers(rep.users)
           this.getInventaireByEse()
           this.subdivisions = e?.subdivisions ? e?.subdivisions : []
@@ -131,6 +133,13 @@ export class InventaireComponent implements OnInit {
       }
     )
   }
+
+  initLocalites() {
+    this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
+      this.localites = res;
+    });
+  }
+
   getInventaireByEse(add = false) {
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(
       rep => {
