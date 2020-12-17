@@ -81,7 +81,7 @@ class ImportController
             $xlsFileName = $this->fileUploader->upload($file);
 
         } catch (\Throwable $th) {
-            return ['Erreur: Le fichier importé n\'est pas un fichier excel ou est invalide.'];
+            return ['Erreur: '.$th->getMessage()];
         }
 
         // Create imported file

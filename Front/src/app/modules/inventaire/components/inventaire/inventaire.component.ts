@@ -81,6 +81,9 @@ export class InventaireComponent implements OnInit {
   titleAdd = "Ajouter un inventaire"
   tabSignataires = new FormArray([]);
   tabSignatairesPv = new FormArray([]);
+  displayedTabs: any[];
+  idTabs: any[];
+  allLocIsChecked: boolean;
   constructor(private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
@@ -94,7 +97,10 @@ export class InventaireComponent implements OnInit {
     this.docLink = this.sharedService.baseUrl + "/documents/"
   }//afficher que la 1ere sub et modifier Localite par sub[0]
   ngOnInit() {
+    this.displayedTabs = [];
+    this.idTabs = [];
     this.myId = localStorage.getItem('idUser')
+    this.allLocIsChecked = false;
     this.securityServ.showLoadingIndicatior.next(true)
     this.initForm()
     this.initInstrucForm()
@@ -105,7 +111,6 @@ export class InventaireComponent implements OnInit {
     this.addFuctionSign = this.fb.group(
       {
         functionSign: ['', [Validators.required]]
-
       }
     )
   };
@@ -203,6 +208,7 @@ export class InventaireComponent implements OnInit {
     if (this.tabOtherPresent.length == 0) this.addOtherPres()
 
     this.tabLoc = []
+    //@TODO::Remove localites in inventaire and update method add localite in add inventaire
     inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
@@ -444,6 +450,7 @@ export class InventaireComponent implements OnInit {
     data.pvReunionCreer = this.getDataPvCreer()
     data.entreprise = this.idCurrentEse
     data.localites = this.getOneLyId(this.tabLoc)
+    data.allLocIsChecked = this.allLocIsChecked
     data.localInstructionPv = [this.invCreer ? 'creation' : 'download', this.pvCreer ? 'creation' : 'download']
     console.log(data)
     return data
@@ -1028,14 +1035,56 @@ export class InventaireComponent implements OnInit {
       this.signatairesInst.splice(index, 1);
     }
   }
+
   firstSub(localites) {
-    return localites?.filter(loc => loc.position?.length > 0)
+    return localites?.filter((loc: any) => loc.level === 0)
   }
-  checkLoc(loc) {
+
+  getChildsLocalites(id: any, level: any, event?: any) {
+    if (level == this.subdivisions.length) {
+      return;
+    }
+
+    if (level == 1 && this.openLocalite != id) {
+      this.openLocalite = id;
+      this.displayedTabs = [];
+    }
+
+    const indexExistTab = this.displayedTabs.findIndex((ele: any) => ele.level == level);
+    
+    this.displayedTabs = this.displayedTabs.filter((ele: any) => ele.level <= level);
+
+    this.inventaireServ.filterLocalites(this.idCurrentEse, level, id).then((res: any) => {
+      if (indexExistTab > -1) {
+        this.displayedTabs[indexExistTab] = {id: id, level: level};
+      } else {
+        this.displayedTabs.push({id: id, level: level});
+      }
+
+      if (res && res.length > 0 && this.idTabs.indexOf(id) == -1) {
+        this.localites = this.localites.concat(res);
+        this.idTabs.push(id);
+      }
+
+      if (event) {
+        const index = level - 1;
+        document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
+        (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
+      }
+
+      setTimeout(() => {
+        document.getElementById('tab-'+level).scrollIntoView();
+      }, 1000);
+    });
+  }
+  checkLoc(loc, checkAllInTab?: any) {
     //** proble avec indexOf qui ne marchait pas */
-    let index = this.tabLoc.find(localite => localite.id == loc.id)
-    if (index) {
-      this.tabLoc = this.tabLoc.filter(localite => localite.id != loc.id)
+    let index = this.tabLoc.findIndex(localite => localite.id == loc.id)
+    if (index != -1) {
+      if (checkAllInTab) {
+        checkAllInTab.checked = false; 
+      }
+      this.tabLoc.splice(index, 1);
     } else {
       this.tabLoc.push(loc)
       const idParent = loc.idParent
@@ -1043,21 +1092,25 @@ export class InventaireComponent implements OnInit {
     }
   }
   checkAllLoc() {
-    const allIsCheck = this.allLocIsChec()
-    if (allIsCheck) {
+    this.allLocIsChecked = !this.allLocIsChecked;
+    if (!this.allLocIsChecked) {
       this.tabLoc = []
       return
     }
-    this.localites.forEach(localite => {
-      if (!this.isChecked(localite.id)) this.checkLoc(localite)
-    })
+    this.tabLoc = this.localites?.filter(loc => loc.level == 0);
   }
-  allLocIsChec() {
-    let bool = true
-    this.localites.forEach(localite => {
-      if (bool) bool = this.isChecked(localite.id)
-    })
-    return bool
+  checkAllLocsTab(checkbox: any, tab: any) {
+    let locsInTab = this.filterByTab(tab);
+    locsInTab.forEach((loc: any) => {
+      const index = this.tabLoc.findIndex(localite => localite.id == loc.id);
+      if (checkbox.checked && index == -1) {
+        this.tabLoc.push(loc);
+      }
+      if (!checkbox.checked && index != -1) {
+        this.tabLoc.splice(index, 1);
+      }
+      if (loc.idParent && !this.isChecked(loc.idParent)) this.checkLoc(this.getOneLocById(loc.idParent));
+    });
   }
   openFirst(id) {
     this.openLocalite = id
@@ -1068,9 +1121,8 @@ export class InventaireComponent implements OnInit {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null
   }
-  getCurrentSubById(id) {
-    let l = this.getOneLocById(id)?.subdivisions
-    return l ? l : []
+  filterByTab(tab: any) {
+    return this.localites?.filter(loc => loc.idParent == tab.id && loc.level == tab.level);
   }
   openOther(i, id) {
     this.tabOpen[i] = id
@@ -1082,6 +1134,7 @@ export class InventaireComponent implements OnInit {
     }
   }
   isChecked(id) {
+    console.log(this.tabLoc);
     return this.tabLoc.find(loc => loc.id == id)
   }
 

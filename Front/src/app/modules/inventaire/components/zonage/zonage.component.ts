@@ -423,7 +423,7 @@ export class ZonageComponent implements OnInit {
       return;
     }
 
-    if (level == 1) {
+    if (level == 1 && this.idCurrentLocal != id) {
       this.idCurrentLocal = id;
       this.displayedTabs = [];
     }

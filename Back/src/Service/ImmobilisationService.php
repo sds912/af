@@ -32,64 +32,60 @@ class ImmobilisationService
          */
         $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
 
-        foreach ($sheetData as $row) { 
-            $immobilisationExistant = $this->entityManager->getRepository(Immobilisation::class)->findOneBy(['code' => $row['B']]); 
-            // make sure that the Immobilisation does not already exists in the db 
-            if (!$row['A'] || !$row['B'] || $immobilisationExistant ) {   
+        $batchSize = 20;
+
+        foreach ($sheetData as $i => $row) {
+            error_log(json_encode([$row['A'], $i]));
+
+            if (!$row['A'] || !$row['B']) {   
                 continue;
             }
 
             $immobilisation = $this->createImmobilisation($row);
 
-            if (!$immobilisation) {
-                continue;
-            }
-
             $immobilisation->setEntreprise($entreprise);
 
             $immobilisation->setInventaire($inventaire);
 
-            $this->entityManager->persist($immobilisation); 
-            
-            $this->entityManager->flush(); 
+            $this->entityManager->persist($immobilisation);
+
+            // flush everything to the database every 20 inserts
+            if (($i % $batchSize) == 0) {
+                try {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear('Immobilisation');
+                } catch (\Throwable $th) {
+                    continue;
+                }
+            }
+        }
+        try {
+            $this->entityManager->flush();
+            $this->entityManager->clear('Immobilisation');
+        } catch (\Throwable $th) {
+            // error
         }
     }
 
     public function createImmobilisation($row)
     {
-        $numeroOrdre = $row['A'] ?: ''; // store the numeroOrdre on each iteration 
-        $code = $row['B'] ?: ''; // store the code on each iteration
-        $compteImmo = $row['C'] ?: ''; // store the compteImmo on each iteration
-        $compteAmort = $row['D'] ?: ''; // store the compteAmort on each iteration
-        $emplacement = $row['E'] ?: ''; // store the emplacement on each iteration
-        $libelle = $row['F'] ?: ''; // store the libelle on each iteration
-        $dateAcquisition = $row['G'] ?: 'now'; // store the dateAcquisition on each iteration
-        $dateMiseServ = $row['H'] ?: 'now'; // store the dateMiseServ on each iteration
-        $dureeUtilite = $row['I'] ?: ''; // store the dureeUtilite on each iteration
-        $taux = $row['J'] ?: ''; // store the taux on each iteration
-        $valOrigine = $row['K'] ?: ''; // store the valOrigine on each iteration
-        $dotation = $row['L'] ?: ''; // store the dotation on each iteration
-        $cumulAmortiss = $row['M'] ?: ''; // store the cumulAmortiss on each iteration
-        $vnc = $row['N'] ?: ''; // store the vnc on each iteration
-        $etat = $row['O'] ?: ''; // store the etat on each iteration
-
         $immobilisation = new Immobilisation(); 
         $immobilisation
-            ->setNumeroOrdre($numeroOrdre)           
-            ->setCode($code)
-            ->setCompteImmo($compteImmo)
-            ->setCompteAmort($compteAmort)
-            ->setEmplacement($emplacement)
-            ->setLibelle($libelle)
-            ->setDateAcquisition(\DateTime::createFromFormat('d/m/Y', $dateAcquisition))
-            ->setDateMiseServ(\DateTime::createFromFormat('d/m/Y', $dateMiseServ))
-            ->setDureeUtilite($dureeUtilite)
-            ->setTaux(floatval($taux))
-            ->setValOrigine(floatval($valOrigine))
-            ->setDotation(floatval($dotation))
-            ->setCumulAmortiss(floatval($cumulAmortiss))
-            ->setVnc(floatval($vnc))
-            ->setEtat($etat)
+            ->setNumeroOrdre($row['A'])           
+            ->setCode($row['B'])
+            ->setCompteImmo($row['C'])
+            ->setCompteAmort($row['D'])
+            ->setEmplacement($row['E'])
+            ->setLibelle($row['F'])
+            ->setDateAcquisition(\DateTime::createFromFormat('d/m/Y', $row['G']?: 'now'))
+            ->setDateMiseServ(\DateTime::createFromFormat('d/m/Y', $row['H'] ?: 'now'))
+            ->setDureeUtilite($row['I'])
+            ->setTaux(floatval($row['J']))
+            ->setValOrigine(floatval($row['K']))
+            ->setDotation(floatval($row['L']))
+            ->setCumulAmortiss(floatval($row['M']))
+            ->setVnc(floatval($row['N']))
+            ->setEtat($row['O'])
             ->setDescription('')
         ;
 

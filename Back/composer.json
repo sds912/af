@@ -19,6 +19,7 @@
         "symfony/http-client": "4.4.*",
         "symfony/mercure-bundle": "^0.2.5",
         "symfony/messenger": "4.4.*",
+        "symfony/monolog-bundle": "^3.6",
         "symfony/swiftmailer-bundle": "^3.5",
         "symfony/yaml": "4.4.*"
     },

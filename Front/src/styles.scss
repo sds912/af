@@ -69,6 +69,21 @@ section.content {
     color: #28a745 !important;
 }
 
+.mat-chip.active {
+    background-color: #ef7711 !important;
+    color: #ffffff  !important;
+    opacity: 1 !important;
+    .mat-checkbox-frame {
+        border-color: #ffffff;
+    }
+    .mat-checkbox-layout .mat-checkbox-label {
+        color: #ffffff !important;
+    }
+    .mat-icon {
+        color: #ffffff !important;
+    }
+}
+
 .breadcrumb > li + li:before{display: none;}
 
 .cal-events .cal-event{display: none !important;}

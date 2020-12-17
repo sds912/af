@@ -215,6 +215,10 @@ class SharedController extends AbstractController
 
         $idLocalites=$this->toArray($data["localites"]);
         $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
+        if ($data['allLocIsChecked'] == true) {
+            $allLocalites = $this->getAllLocalites($localites);
+            $localites = $allLocalites;
+        }
         $inventaire->initLocalite();
         $localInstructionPv=$this->toArray($data["localInstructionPv"]);
         if($localInstructionPv[0]==Shared::CREATION && isset($data['bloc1e1'])){
@@ -736,6 +740,19 @@ class SharedController extends AbstractController
             }
         }
         return $listChilds;
+    }
+
+    public function getAllLocalites($localites) {
+        $listLocalites = [];
+        foreach ($localites as $localite) {
+            $listLocalites[] = $localite;
+
+            $childs = $this->repoLoc->findBy(['parent' => $localite]);
+            if (count($childs) > 0) {
+                $listLocalites = array_merge($listLocalites, $this->getAllLocalites($childs));
+            }
+        }
+        return $listLocalites;
     }
 
     public function getLastLevelChilds($localite) {

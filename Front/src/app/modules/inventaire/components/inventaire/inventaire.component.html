@@ -659,18 +659,18 @@
                         <p class="ml-2">{{subdivisions[0]}}</p>
                         <hr>
                         <mat-chip-list aria-label="Fish selection" class="mt-4">
-                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}"
+                            <mat-chip class="w-100 color-chips chip-localite-0" [ngClass]="{'mt-3': i!=0}"
                                 *ngFor="let localite of firstSub(localites); index as i">
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(localite)" [checked]="isChecked(localite.id)">
+                                            (change)="checkLoc(localite)" [checked]="isChecked(localite.id) || allLocIsChecked">
                                             {{localite.nom}}</mat-checkbox>
                                     </section>
                                 </span>
                                 <span class="col-1">
                                     <mat-icon class="icone-affectation pointer text-info" title="Afficher"
-                                        (click)="openFirst(localite.id)">remove_red_eye</mat-icon>
+                                        (click)="getChildsLocalites(localite.id, 1, $event)">remove_red_eye</mat-icon>
                                 </span>
                             </mat-chip>
                         </mat-chip-list>
@@ -678,28 +678,30 @@
                     <!--1ere subdivision-->
 
                     <!--Autres subdivisions-->
-                    <div *ngFor="let idParent of tabOpen;let i=index" class="p-2 mt-4 pb-4 box-loc"
-                        [hidden]="!openLocalite || !getOneLocById(idParent)">
-                        <p class="mt-3 ml-2">{{getOneLocById(idParent)?.nom}}</p>
+                    <div *ngFor="let displayedTab of displayedTabs" id="tab-{{displayedTab.level}}" class="p-2 mt-4 pb-4 box-loc"
+                        [hidden]="!openLocalite || !getOneLocById(displayedTab.id)">
+                        <p class="mt-3 ml-2">{{getOneLocById(displayedTab.id)?.nom}}</p>
                         <hr>
                         <mat-chip-list aria-label="Fish selection">
-                            <small class="ml-3" style="font-style: italic;">{{subdivisions[i+1]}}</small>
-                            <mat-chip class="w-100 color-chips" [ngClass]="{'mt-3': i!=0}"
-                                *ngFor="let sub of getCurrentSubById(idParent);">
+                            <small class="ml-3" style="font-style: italic;">{{subdivisions[displayedTab.level]}}</small>
+                            <mat-checkbox #checkAllInTab *ngIf="filterByTab(displayedTab).length > 0" class="ml-3 example-margin w-100" (change)="checkAllLocsTab($event, displayedTab)" [checked]="allLocIsChecked">
+                                Séléctionnez tout</mat-checkbox>
+                            <mat-chip class="w-100 color-chips chip-localite-{{displayedTab.level}}" [ngClass]="{'mt-3': displayedTab.level!=1}"
+                                *ngFor="let sub of filterByTab(displayedTab);">
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(sub)" [checked]="isChecked(sub.id)">{{sub.nom}}
+                                            (change)="checkLoc(sub, checkAllInTab)" [checked]="isChecked(sub.id) || allLocIsChecked">{{sub.nom}}
                                         </mat-checkbox>
                                     </section>
                                 </span>
                                 <span class="col-1">
                                     <mat-icon class="icone-affectation pointer text-info" title="Afficher"
-                                        (click)="openOther(i+1,sub.id)">remove_red_eye</mat-icon>
+                                        (click)="getChildsLocalites(sub.id, displayedTab.level + 1, $event)">remove_red_eye</mat-icon>
                                 </span>
                             </mat-chip>
                         </mat-chip-list>
-                        <p *ngIf="getCurrentSubById(idParent).length==0" class="ml-2 mt-2">Cette subdivision est vide
+                        <p *ngIf="filterByTab(displayedTab).length==0" class="ml-2 mt-2">Cette subdivision est vide
                         </p>
                     </div>
                     <!--Autres subdivisions-->
@@ -708,7 +710,7 @@
                 <div class="row pl-4 pr-0 mt-4" *ngIf="showForm">
                     <div class="col-4">
                         <section class="example-section all-height row">
-                            <mat-checkbox class="example-margin" (change)="checkAllLoc()" [checked]="allLocIsChec()">
+                            <mat-checkbox class="example-margin" (change)="checkAllLoc()" [checked]="allLocIsChecked">
                                 Toutes les localités</mat-checkbox>
                         </section>
                     </div>

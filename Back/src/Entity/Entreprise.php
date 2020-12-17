@@ -130,12 +130,6 @@ class Entreprise
     private $ville;
 
     /**
-     * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="entreprise")
-     * @Groups({"entreprise_read","mobile_loc_read"})
-     */
-    private $localites;
-
-    /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="entreprises")
      * @Groups({"entreprise_read","mobile_users_read"})
      */
@@ -263,37 +257,6 @@ class Entreprise
     public function setVille(?string $ville): self
     {
         $this->ville = $ville;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Localite[]
-     */
-    public function getLocalites(): Collection
-    {
-        return $this->localites;
-    }
-
-    public function addLocalite(Localite $localite): self
-    {
-        if (!$this->localites->contains($localite)) {
-            $this->localites[] = $localite;
-            $localite->setEntreprise($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLocalite(Localite $localite): self
-    {
-        if ($this->localites->contains($localite)) {
-            $this->localites->removeElement($localite);
-            // set the owning side to null (unless already changed)
-            if ($localite->getEntreprise() === $this) {
-                $localite->setEntreprise(null);
-            }
-        }
 
         return $this;
     }

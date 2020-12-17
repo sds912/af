@@ -143,6 +143,9 @@
     "markbaker/matrix": {
         "version": "2.0.0"
     },
+    "monolog/monolog": {
+        "version": "1.26.0"
+    },
     "myclabs/php-enum": {
         "version": "1.7.7"
     },
@@ -358,6 +361,24 @@
     },
     "symfony/mime": {
         "version": "v4.4.10"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v4.4.17"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "d7249f7d560f6736115eee1851d02a65826f0a56"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/deprecations.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/options-resolver": {
         "version": "v4.4.10"
