@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\OrSearchFilter;
+
 /**
  * @ApiResource(
  * normalizationContext={
@@ -30,6 +32,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
+ * @ApiFilter(OrSearchFilter::class, properties={"status": "exact"})
  */
 class Immobilisation
 {

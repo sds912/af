@@ -489,14 +489,15 @@ class SharedController extends AbstractController
         }
         $filteredBeginned = [];
         if(isset($data["begin"])) {
-            foreach ($data['begin'] as $value) {
-                // Suppression des localite entamé et close
-                if (!in_array($value, $closed)) {
-                    $filteredBeginned[] = $value;
-                }
-            }
-            $filteredBeginned = array_unique($filteredBeginned);
+            $beginned = array_merge($beginned, $data["begin"]);
         }
+        foreach ($beginned as $value) {
+            // Suppression des localite entamé et close
+            if (!in_array($value, $closed)) {
+                $filteredBeginned[] = $value;
+            }
+        }
+        $filteredBeginned = array_unique($filteredBeginned);
         $inventaire->setClosedLoc($closed);
         $inventaire->setBeginnedLoc($filteredBeginned);
         $this->manager->flush();

@@ -117,10 +117,11 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.getOneEntreprise()
   }
 
-  getImmobilisations(_page: number) {
+  getImmobilisations(_page: number, filters?: any) {
     this.page = _page;
     this.securityServ.showLoadingIndicatior.next(true);
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page).then((res: any) => {
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, filters).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || 
@@ -142,6 +143,11 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   handlePageChange(pager: any) {
     this.page = pager.page;
     this.getImmobilisations(this.page);
+  }
+
+  handleStatusChange(status: any) {
+    this.page = 1;
+    this.getImmobilisations(this.page, `&status=${status}`);
   }
 
   public ngOnDestroy(): void {
