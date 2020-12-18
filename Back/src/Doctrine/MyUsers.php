@@ -33,12 +33,7 @@ class MyUsers implements QueryCollectionExtensionInterface,QueryItemExtensionInt
             $rootAlias = $queryBuilder->getRootAliases()[0];// tableau d'alias ex dans une requete query builder $this->createQueryBuilder('u')->andWhere('u.exampleField = :val') ici u est un alias
             $request = $this->requestStack->getCurrentRequest();
 
-            if (!$this->droit->isGranted('ROLE_SuperAdmin') && $this->droit->isGranted('ROLE_Admin')) {
-                $queryBuilder->join("$rootAlias.entreprises",'entreprise');
-                $queryBuilder->join("entreprise.users",'user')
-                    ->andWhere('user.id = :id')
-                    ->setParameter('id', $this->userCo->getId());
-            } elseif (!$this->droit->isGranted('ROLE_SuperAdmin') && !$this->droit->isGranted('ROLE_Admin')) {
+            if (!$this->droit->isGranted('ROLE_Admin')) {
                 $queryBuilder->join("$rootAlias.entreprises",'entreprise');
                 $queryBuilder->andWhere('entreprise.id = :id')->setParameter('id', $this->getIdCurrentEse());
             }

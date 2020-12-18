@@ -60,6 +60,8 @@ class LocaliteService
 
                 $this->entityManager->flush();
 
+                $this->entityManager->clear('App\Entity\Localite');
+
                 $idParent = $localite->getId();
 
                 $position = [];

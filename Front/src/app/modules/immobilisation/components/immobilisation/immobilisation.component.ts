@@ -33,6 +33,7 @@ export class ImmobilisationComponent implements OnInit {
   idCurrentEse;
   inventaires = [];
   page: number;
+  totalItems: number;
 
   columns = [
     { element: 'numero_ordre', name: 'Numéro d\'ordre', width: 100 },
@@ -64,6 +65,7 @@ export class ImmobilisationComponent implements OnInit {
 
   ngOnInit(): void {
     // this.getInventaireByEse();
+    this.totalItems = 0;
     this.getImmobilisations(1);
     this.idCurrentEse = localStorage.getItem("currentEse");
     this.securityServ.showLoadingIndicatior.next(false);
@@ -71,13 +73,20 @@ export class ImmobilisationComponent implements OnInit {
 
   getImmobilisations(_page: number) {
     this.page = _page;
+    this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page).then((res: any) => {
-      this.allImmos = res.filter(immo => immo.status == null || immo.status == 1);
+      if (res && res['hydra:member']) {
+        this.totalItems = res['hydra:totalItems'];
+        this.allImmos = res['hydra:member'].filter(immo => immo.status == null || immo.status == 1); 
+      }
+      this.securityServ.showLoadingIndicatior.next(false);
+    }, (error: any) => {
+      this.securityServ.showLoadingIndicatior.next(false);
     })
   }
 
-  setPage(pager: any) {
-    this.page = pager.offset + 1;
+  handlePageChange(pager: any) {
+    this.page = pager.page;
     this.getImmobilisations(this.page);
   }
 
@@ -198,7 +207,7 @@ export class ImmobilisationComponent implements OnInit {
       this.showNotification('bg-info', res, 'top', 'center')
       evt.target.value = '';
       setTimeout(() => {
-        this.getImmos();
+        this.getImmobilisations(1);
       }, 500);
     })
   }

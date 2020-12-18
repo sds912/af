@@ -35,7 +35,7 @@
                                 </div>
                                 <ngx-datatable #table class="material" [rows]="allImmos" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20" (page)='setPage($event)'>
+                                    [rowHeight]="'60'" [limit]="20">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="Numéro ordre" sortable="false" prop="numeroOrdre"
@@ -138,7 +138,6 @@
 
                                     <ngx-datatable-footer>
                                         <ng-template ngx-datatable-footer-template
-                                            let-rowCount="rowCount"
                                             let-pageSize="pageSize"
                                             let-selectedCount="selectedCount"
                                             let-curPage="curPage"
@@ -150,7 +149,7 @@
                                                 <span *ngIf="selectedMessage">
                                                     {{selectedCount.toLocaleString()}} {{selectedMessage}} /
                                                 </span>
-                                                {{totalMessage}} {{rowCount.toLocaleString()}}
+                                                {{totalMessage}} {{totalItems.toLocaleString()}}
                                             </div>
                                             <datatable-pager
                                                 [pagerLeftArrowIcon]="'datatable-icon-left'"
@@ -158,9 +157,10 @@
                                                 [pagerPreviousIcon]="'datatable-icon-prev'"
                                                 [pagerNextIcon]="'datatable-icon-skip'"
                                                 [page]="curPage"
-                                                [size]="pageSize" [count]="rowCount"
-                                                [hidden]="!((rowCount / pageSize) > 1)"
-                                                (change)="table.onFooterPage($event)">
+                                                [size]="pageSize"
+                                                [count]="totalItems"
+                                                [hidden]="!((totalItems / pageSize) > 1)"
+                                                (change)="handlePageChange($event)">
                                             </datatable-pager>
                                         </ng-template>
                                     </ngx-datatable-footer>

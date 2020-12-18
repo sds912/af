@@ -42,13 +42,13 @@ class Localite
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","affectation_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","affectation_read","immo_read", "inventaireLocalite_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "affectation_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "affectation_read", "inventaireLocalite_read"})
      */
     private $nom;
 
@@ -64,14 +64,9 @@ class Localite
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"entreprise_read","loc_read","inv_read"})
+     * @Groups({"entreprise_read","loc_read","inv_read", "inventaireLocalite_read"})
      */
     private $position = [];
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Inventaire::class, mappedBy="localites")
-     */
-    private $inventaires;
 
     /**
      * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="subdivisions")
@@ -81,13 +76,13 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Localite::class, mappedBy="parent")
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read", "affectation_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read", "affectation_read", "inventaireLocalite_read"})
      */
     private $subdivisions;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="localitesCrees")
-     * @Groups({"entreprise_read","loc_read","inv_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","inv_read","immo_read", "inventaireLocalite_read"})
      */
     private $createur;
 
@@ -108,9 +103,15 @@ class Localite
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "inventaireLocalite_read"})
      */
     private $level;
+
+    /**
+     * @ORM\OneToMany(targetEntity=InventaireLocalite::class, mappedBy="localite")
+     * @Groups({"loc_read"})
+     */
+    private $inventaireLocalites;
 
     public function __construct()
     {
@@ -119,6 +120,7 @@ class Localite
         $this->subdivisions = new ArrayCollection();
         $this->affectations = new ArrayCollection();
         $this->immobilisations = new ArrayCollection();
+        $this->inventaireLocalites = new ArrayCollection();
     }
     /**
     * @Groups({"user_read"})
@@ -221,34 +223,6 @@ class Localite
     public function setPosition(?array $position): self
     {
         $this->position = $position;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Inventaire[]
-     */
-    public function getInventaires(): Collection
-    {
-        return $this->inventaires;
-    }
-
-    public function addInventaire(Inventaire $inventaire): self
-    {
-        if (!$this->inventaires->contains($inventaire)) {
-            $this->inventaires[] = $inventaire;
-            $inventaire->addLocalite($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInventaire(Inventaire $inventaire): self
-    {
-        if ($this->inventaires->contains($inventaire)) {
-            $this->inventaires->removeElement($inventaire);
-            $inventaire->removeLocalite($this);
-        }
 
         return $this;
     }
@@ -390,6 +364,37 @@ class Localite
     public function setLevel(int $level): self
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InventaireLocalite[]
+     */
+    public function getInventaireLocalites(): Collection
+    {
+        return $this->inventaireLocalites;
+    }
+
+    public function addInventaireLocalite(InventaireLocalite $inventaireLocalite): self
+    {
+        if (!$this->inventaireLocalites->contains($inventaireLocalite)) {
+            $this->inventaireLocalites[] = $inventaireLocalite;
+            $inventaireLocalite->setLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventaireLocalite(InventaireLocalite $inventaireLocalite): self
+    {
+        if ($this->inventaireLocalites->contains($inventaireLocalite)) {
+            $this->inventaireLocalites->removeElement($inventaireLocalite);
+            // set the owning side to null (unless already changed)
+            if ($inventaireLocalite->getLocalite() === $this) {
+                $inventaireLocalite->setLocalite(null);
+            }
+        }
 
         return $this;
     }

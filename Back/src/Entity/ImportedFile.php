@@ -76,6 +76,11 @@ class ImportedFile
      */
     private $dateImport;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $totalItems;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,6 +166,18 @@ class ImportedFile
     public function setDateImport(\DateTimeInterface $dateImport): self
     {
         $this->dateImport = $dateImport;
+
+        return $this;
+    }
+
+    public function getTotalItems(): ?int
+    {
+        return $this->totalItems;
+    }
+
+    public function setTotalItems(int $totalItems): self
+    {
+        $this->totalItems = $totalItems;
 
         return $this;
     }

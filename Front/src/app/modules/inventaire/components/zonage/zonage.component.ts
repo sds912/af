@@ -485,7 +485,9 @@ export class ZonageComponent implements OnInit {
     formData.append('entreprise', this.idCurrentEse.toString());
     this.entrepriseService.importLocalites(formData).subscribe((response) => {
       this.showNotification('bg-info', response, 'top', 'center');
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
     });
   }
 

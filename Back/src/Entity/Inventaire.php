@@ -28,19 +28,19 @@ class Inventaire
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"inv_read","mobile_inv_read","affectation_read"})
+     * @Groups({"inv_read","mobile_inv_read","affectation_read", "inventaireLocalite_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read","mobile_inv_read"})
+     * @Groups({"inv_read","mobile_inv_read", "inventaireLocalite_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"inv_read","mobile_inv_read"})
+     * @Groups({"inv_read","mobile_inv_read", "inventaireLocalite_read"})
      */
     private $fin;
 
@@ -86,12 +86,6 @@ class Inventaire
      * @Groups({"inv_read"})
      */
     private $pvReunion=[];
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Localite::class, inversedBy="inventaires")
-     * @Groups({"inv_read"})
-     */
-    private $localites;
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="inventaires")
@@ -149,7 +143,6 @@ class Inventaire
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
-        $this->localites = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->affectations = new ArrayCollection();
     }
@@ -281,32 +274,6 @@ class Inventaire
         return $this;
     }
 
-    /**
-     * @return Collection|Localite[]
-     */
-    public function getLocalites(): Collection
-    {
-        return $this->localites;
-    }
-
-    public function addLocalite(Localite $localite): self
-    {
-        if (!$this->localites->contains($localite)) {
-            $this->localites[] = $localite;
-        }
-
-        return $this;
-    }
-
-    public function removeLocalite(Localite $localite): self
-    {
-        if ($this->localites->contains($localite)) {
-            $this->localites->removeElement($localite);
-        }
-
-        return $this;
-    }
-
     public function getEntreprise(): ?Entreprise
     {
         return $this->entreprise;
@@ -363,13 +330,7 @@ class Inventaire
         }
         return $this;
     }
-    public function addAllLocalite($localites){
-        $this->localites = new ArrayCollection();
-        for($i=0;$i<count($localites);$i++){
-            $this->addLocalite($localites[$i]);
-        }
-        return $this;
-    }
+
     public function addAllPresentR($membres){
         $this->presentsReunion = new ArrayCollection();
         for($i=0;$i<count($membres);$i++){
@@ -443,10 +404,6 @@ class Inventaire
         }
 
         return $this;
-    }
-
-    public function initLocalite(){
-        $this->localites = new ArrayCollection();
     }
 
     public function getClosedLoc(): ?array

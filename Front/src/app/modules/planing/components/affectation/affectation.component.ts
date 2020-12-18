@@ -63,6 +63,8 @@ export class AffectationComponent implements OnInit {
   idLocError=null
   infoTextError=''
   invIsClose=false
+  displayedTabs: any[];
+  idTabs: any[];
   constructor(private fb: FormBuilder, 
               private _snackBar: MatSnackBar, 
               private adminServ: AdminService, 
@@ -76,6 +78,8 @@ export class AffectationComponent implements OnInit {
   
   //revoir periode de contage quand on click sur un nouveau
   ngOnInit() {
+    this.displayedTabs = [];
+    this.idTabs = [];
     this.myId = localStorage.getItem('idUser')
     this.securityServ.showLoadingIndicatior.next(false)
     this.idCurrentEse=localStorage.getItem("currentEse")
@@ -174,8 +178,10 @@ export class AffectationComponent implements OnInit {
         this.inventaires = rep?.reverse()
         this.currentInv=rep?rep[0]:null
         this.invIsClose=this.currentInv?.status=="close"?true:false
-        this.idCurrentInv=this.currentInv?.id
-        this.localites = this.currentInv?.localites
+        this.idCurrentInv=this.currentInv?.id;
+        this.initLocalites();
+        // this.localites = this.currentInv?.localites
+        
         this.getUsers()
         this.getTabLocAffectation()
       },
@@ -184,6 +190,11 @@ export class AffectationComponent implements OnInit {
         console.log(error)
       }
     )
+  }
+  initLocalites() {
+    this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
+      this.localites = res;
+    });
   }
   getOneEntreprise(id) {
     this.adminServ.getOneEntreprise(id).then(
@@ -428,8 +439,51 @@ export class AffectationComponent implements OnInit {
     this.table.offset = 0;
   }
   firstSub(localites) {
-    return localites?.filter(loc => loc.position?.length > 0)
+    return localites?.filter((loc: any) => loc.level === 0)
   }
+
+  getChildsLocalites(id: any, level: any, event?: any) {
+    if (level == this.subdivisions.length) {
+      return;
+    }
+
+    if (level == 1 && this.openLocalite != id) {
+      this.openLocalite = id;
+      this.displayedTabs = [];
+    }
+
+    const indexExistTab = this.displayedTabs.findIndex((ele: any) => ele.level == level);
+    
+    this.displayedTabs = this.displayedTabs.filter((ele: any) => ele.level <= level);
+
+    this.inventaireServ.filterLocalites(this.idCurrentEse, level, id).then((res: any) => {
+      if (indexExistTab > -1) {
+        this.displayedTabs[indexExistTab] = {id: id, level: level};
+      } else {
+        this.displayedTabs.push({id: id, level: level});
+      }
+
+      if (res && res.length > 0 && this.idTabs.indexOf(id) == -1) {
+        this.localites = this.localites.concat(res);
+        this.idTabs.push(id);
+      }
+
+      if (event) {
+        const index = level - 1;
+        document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
+        (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
+      }
+
+      setTimeout(() => {
+        document.getElementById('tab-'+level).scrollIntoView();
+      }, 1000);
+    });
+  }
+
+  filterByTab(tab: any) {
+    return this.localites?.filter(loc => loc.idParent == tab.id && loc.level == tab.level);
+  }
+
   inInvLoc(id):boolean {
     /** on ne peut pas utiliser inTab car l un sera chercher sur les localites et l autre sur les subdivisions d une localites */
     return this.localites?.find(loc => loc.id == id)!=null;

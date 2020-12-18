@@ -19,9 +19,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    req = req.clone({
-      headers: req.headers.set('Accept', 'application/json')
-    });
+    if (!req.url.match('pagination=true') ) {
+      req = req.clone({
+        headers: req.headers.set('Accept', 'application/json')
+      }); 
+    }
 
     this.token = this.securityService.getToken();
 

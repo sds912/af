@@ -7,6 +7,7 @@ use App\Entity\Entreprise;
 use App\Entity\Inventaire;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 
 class ImmobilisationService
 {
@@ -15,9 +16,15 @@ class ImmobilisationService
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->entityManager = $entityManager;
+        $this->container = $container;
     }
 
     public function saveImportedImmobilisations(array $sheetData, array $customData)
@@ -32,14 +39,21 @@ class ImmobilisationService
          */
         $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
 
-        $batchSize = 20;
+        $batchSize = 40;
+
+        $insertedCodes = '';
+
+        $startDate = new \DateTime('now');
 
         foreach ($sheetData as $i => $row) {
-            error_log(json_encode([$row['A'], $i]));
+            $interval = $startDate->diff(new \DateTime('now'));
+            error_log(json_encode([$row['A'], $i, $startDate->format('H:i:s'), $interval->format('%h')."h ".$interval->format('%i')."m ".$interval->format('%s')."s"]));
 
-            if (!$row['A'] || !$row['B']) {   
+            if (!$row['A'] || !$row['B'] || strpos($insertedCodes, $row['B']) !== false) {   
                 continue;
             }
+
+            $insertedCodes .= '-'.$row['B'];
 
             $immobilisation = $this->createImmobilisation($row);
 
@@ -47,21 +61,28 @@ class ImmobilisationService
 
             $immobilisation->setInventaire($inventaire);
 
-            $this->entityManager->persist($immobilisation);
+            try {
+                $this->entityManager->persist($immobilisation);
 
-            // flush everything to the database every 20 inserts
-            if (($i % $batchSize) == 0) {
-                try {
+                // flush everything to the database every 40 inserts
+                if (($i % $batchSize) == 0) {
                     $this->entityManager->flush();
-                    $this->entityManager->clear('Immobilisation');
-                } catch (\Throwable $th) {
-                    continue;
+                    $this->entityManager->clear('App\Entity\Immobilisation');
                 }
+            } catch (\Throwable $th) {
+                if ($this->entityManager->isOpen() === false) {
+                    $em = $this->container->get('doctrine')->getManager();
+                    $this->entityManager = $em->create(
+                        $em->getConnection(),
+                        $em->getConfiguration()
+                    );
+                }
+                continue;
             }
         }
         try {
             $this->entityManager->flush();
-            $this->entityManager->clear('Immobilisation');
+            $this->entityManager->clear('App\Entity\Immobilisation');
         } catch (\Throwable $th) {
             // error
         }

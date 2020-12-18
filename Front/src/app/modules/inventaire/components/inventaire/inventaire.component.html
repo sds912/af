@@ -335,19 +335,22 @@
                                     <hr>
                                     <p class="row mt-4">
                                         <span class="col-4 bolder"
-                                            [ngClass]="{'pt-3': inventaire.localites && inventaire.localites.length>0}">LOCALITES</span>
+                                            [ngClass]="{'pt-3': tabLoc && tabLoc.length>0}">LOCALITES</span>
                                         <span class="col-8">
                                             <span
-                                                *ngIf="!inventaire.localites ||inventaire.localites && inventaire.localites.length==0">Aucune
+                                                *ngIf="!tabLoc || tabLoc.length==0">Aucune
                                                 localité n'a été ajoutée</span>
-                                            <button *ngFor="let localite of firstSub(inventaire.localites)"
-                                                (click)="detailsLoc(inventaire)" data-toggle="modal"
-                                                data-target="#localiteModal" mat-mini-fab [title]="localite.nom"
-                                                color="primary" aria-label="Example icon-button with a heart icon"
-                                                class="mr-2 " (mouseover)="overLoc(localite)"
-                                                (mouseout)="outHoverLZS()">
-                                                <mat-icon>room</mat-icon>
-                                            </button>
+                                            <ng-container *ngIf="tabLoc && tabLoc.length > 0">
+                                                <button *ngFor="let localite of firstSub(localites)"
+                                                    (click)="detailsLoc(inventaire)" data-toggle="modal"
+                                                    data-target="#localiteModal" mat-mini-fab [title]="localite.nom"
+                                                    color="primary" aria-label="Example icon-button with a heart icon"
+                                                    class="mr-2 " (mouseover)="overLoc(localite)"
+                                                    (mouseout)="outHoverLZS()">
+                                                    <mat-icon>room</mat-icon>
+                                                </button>
+                                            </ng-container>
+                                            
                                         </span>
                                     </p>
                                     <hr>
@@ -664,7 +667,7 @@
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(localite)" [checked]="isChecked(localite.id) || allLocIsChecked">
+                                            (change)="checkLoc(localite)" [checked]="isChecked(localite) || allLocIsChecked">
                                             {{localite.nom}}</mat-checkbox>
                                     </section>
                                 </span>
@@ -691,7 +694,7 @@
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(sub, checkAllInTab)" [checked]="isChecked(sub.id) || allLocIsChecked">{{sub.nom}}
+                                            (change)="checkLoc(sub, checkAllInTab)" [checked]="isChecked(sub) || allLocIsChecked">{{sub.nom}}
                                         </mat-checkbox>
                                     </section>
                                 </span>

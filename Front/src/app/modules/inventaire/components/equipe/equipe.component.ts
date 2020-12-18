@@ -271,7 +271,7 @@ export class EquipeComponent implements OnInit {
     }
   }
   keyUpNomChange(nom: string) {
-    this.adminServ.getUsers(`status=out&nom=${nom}`).then((rep: any) => {
+    this.adminServ.getUsers(`status=OUT&nom=${nom}`).then((rep: any) => {
       this.outUsers = rep;
     });
   }

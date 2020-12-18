@@ -14,6 +14,7 @@ use App\Entity\License;
 use App\Entity\Inventaire;
 use App\Entity\Localite;
 use App\Entity\MobileToken;
+use App\Entity\InventaireLocalite;
 use App\Entity\Notification;
 use App\Entity\User;
 use App\Entity\UserNotif;
@@ -213,13 +214,6 @@ class SharedController extends AbstractController
         $presentsReunionOut=$this->toArray($data["presentsReunionOut"]);
         $entreprise=$this->repoEse->find($data["entreprise"]); 
 
-        $idLocalites=$this->toArray($data["localites"]);
-        $localites=$this->getallByTabId($this->repoLoc,$idLocalites);
-        if ($data['allLocIsChecked'] == true) {
-            $allLocalites = $this->getAllLocalites($localites);
-            $localites = $allLocalites;
-        }
-        $inventaire->initLocalite();
         $localInstructionPv=$this->toArray($data["localInstructionPv"]);
         if($localInstructionPv[0]==Shared::CREATION && isset($data['bloc1e1'])){
             $instructions=[
@@ -245,7 +239,6 @@ class SharedController extends AbstractController
                    ->setPresentsReunionOut($presentsReunionOut)
                    ->setPvReunion($pvReunions)
                    ->setEntreprise($entreprise)
-                   ->addAllLocalite($localites)
                    ->setLocalInstructionPv($localInstructionPv)
                    ->setStatus($status);
 
@@ -253,6 +246,33 @@ class SharedController extends AbstractController
             $this->manager->persist($inventaire);
         }
         $this->manager->flush();
+
+        $idLocalites=$this->toArray($data["localites"]);
+        if ($data['allLocIsChecked'] == true) {
+            $localites = $this->repoLoc->findBy(['entreprise' => $entreprise->getId()]);
+        } else {
+            $localites = $this->getallByTabId($this->repoLoc,$idLocalites);
+        }
+
+        $inventaireLocaliteRepo = $this->manager->getRepository(InventaireLocalite::class);
+        $inventaireLocaliteRepo->deleteMultipleByIventaire($inventaire->getId());
+
+        $batchSize = 50;
+
+        foreach ($localites as $i => $localite) {
+            $inventaireLocalite = new InventaireLocalite();
+            $inventaireLocalite->setInventaire($inventaire)->setLocalite($localite);
+            $this->manager->persist($inventaireLocalite);
+
+            // flush everything to the database every 40 inserts
+            if (($i % $batchSize) == 0) {
+                $this->manager->flush();
+                $this->manager->clear('App\Entity\InventaireLocalite');
+            }
+        }
+        $this->manager->flush();
+        $this->manager->clear('App\Entity\InventaireLocalite');
+
         return $this->json([
             Shared::MESSAGE => Shared::ENREGISTRER,
             Shared::STATUS => $code
@@ -266,13 +286,16 @@ class SharedController extends AbstractController
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** seul les first localites */
-        $locs=$inventaire->getLocalites();
-        $localites=[];
-        foreach ($locs as $loc) {
-            if(!$loc->getParent()){
-                array_push($localites,$loc);
+        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $localites = [];
+
+        foreach ($inventaireLocalites as $inventaireLocalite) {
+            $localite = $inventaireLocalite->getLocalite();
+            if(!$localite->getParent()){
+                array_push($localites,$localite);
             }
         }
+
         $data=[
             "libelles"=>$entreprise->getSubdivisions(),
             "localites"=>$localites,
@@ -314,11 +337,13 @@ class SharedController extends AbstractController
             }
         }
         /** seul les first localites */
-        $locs=$inventaire->getLocalites();
-        $localites=[];
-        foreach ($locs as $loc) {
-            if(!$loc->getParent()){
-                array_push($localites,$loc);
+        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $localites = [];
+
+        foreach ($inventaireLocalites as $inventaireLocalite) {
+            $localite = $inventaireLocalite->getLocalite();
+            if(!$localite->getParent()){
+                array_push($localites,$localite);
             }
         }
 
@@ -695,7 +720,14 @@ class SharedController extends AbstractController
             $immos=$user->getScanImmos();
         }
 
-        $allLocalites = array_unique($this->getChilds($inventaire->getLocalites()));
+        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $localites = [];
+
+        foreach ($inventaireLocalites as $inventaireLocalite) {
+            $localites[] = $inventaireLocalite->getLocalite();
+        }
+
+        $allLocalites = array_unique($this->getChilds($localites));
 
         $_localitesId = [];
 
@@ -740,19 +772,6 @@ class SharedController extends AbstractController
             }
         }
         return $listChilds;
-    }
-
-    public function getAllLocalites($localites) {
-        $listLocalites = [];
-        foreach ($localites as $localite) {
-            $listLocalites[] = $localite;
-
-            $childs = $this->repoLoc->findBy(['parent' => $localite]);
-            if (count($childs) > 0) {
-                $listLocalites = array_merge($listLocalites, $this->getAllLocalites($childs));
-            }
-        }
-        return $listLocalites;
     }
 
     public function getLastLevelChilds($localite) {

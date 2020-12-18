@@ -9,6 +9,7 @@ import { ImmobilisationService } from 'src/app/data/services/immobilisation/immo
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { RowHeightCache } from '@swimlane/ngx-datatable';
+import { EntrepriseService } from 'src/app/data/services/entreprise/entreprise.service';
 type AOA = any[][];
 
 
@@ -47,7 +48,9 @@ export class CatalogueComponent implements OnInit {
     private securityServ: SecurityService,
     private inventaireServ: InventaireService,
     private fb: FormBuilder,
-    private _snackBar: MatSnackBar,) {
+    private _snackBar: MatSnackBar,
+    private entrepriseService: EntrepriseService
+  ) {
     this.editForm = this.fb.group({
       id: [0],
       libelle: [0],
@@ -145,6 +148,7 @@ export class CatalogueComponent implements OnInit {
   }
 
   getCatalogueListe() {
+    // @TODO::Prévoir la pagination back pour avoir la liste des catalogues
     this.securityServ.showLoadingIndicatior.next(true);
     this.idCurrentEse = localStorage.getItem("currentEse");
     this.sharedService.getElement('/catalogues?entreprise=/api/entreprises/' + this.idCurrentEse).then(rep => {
@@ -156,58 +160,18 @@ export class CatalogueComponent implements OnInit {
   }
 
   getAllCatalaogue(evt: any) {
-    const target: DataTransfer = <DataTransfer>(evt.target);
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    const reader: FileReader = new FileReader();
-    reader.onload = async (e: any) => {
-      /* read workbook */
-      const bstr: string = e.target.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-
-      /* grab first sheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      /* save data */
-      this.data = <AOA>(XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }));
-
-      console.log(this.data);
-
-      // Verification
-
-      this.data.shift();
-      console.log(this.data);
-      this.securityServ.showLoadingIndicatior.next(true);
-
-
-      for  (const iterator of this.data) {
-        const obj = {
-          libelle: iterator[0],
-          entreprise: "api/entreprises/" + this.idCurrentEse,
-          marque: iterator[1],
-          reference: iterator[2],
-          specifites: iterator[3],
-          fournisseur: iterator[4]
-        }
-        // console.log(obj);
-
-        this.sharedService.postElement(obj, '/catalogues').then((rep: any) => {
-          console.log(rep);
-          this.allCatalogue.push(rep);
-        })
-
-
-
-      }
-      this.showNotification('bg-success', 'Fichier Enregistré', 'top', 'center')
-      this.getCatalogueListe();
-      this.securityServ.showLoadingIndicatior.next(false);
-
-
-
-    };
-    reader.readAsBinaryString(target.files[0]);
-
+    let fileList: FileList = evt.target.files;
+    let fileUpload: File = fileList[0];
+    const formData = new FormData();
+    formData.append('file', fileUpload, fileUpload.name);
+    formData.append('table', 'catalogues');
+    formData.append('entreprise', this.idCurrentEse.toString());
+    this.entrepriseService.importCatalogues(formData).subscribe((response) => {
+      this.showNotification('bg-info', response, 'top', 'center');
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+    });
   }
 
   showNotification(colorName, text, placementFrom, placementAlign, duree = 2000) {

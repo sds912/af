@@ -48,7 +48,7 @@ class Immobilisation
     private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
      * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $code;

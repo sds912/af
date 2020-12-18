@@ -25,7 +25,11 @@ class CatalogueService
          */
         $entreprise = $this->entityManager->getRepository(Entreprise::class)->find($customData['entreprise']);
 
-        foreach ($sheetData as $row) {
+        $batchSize = 40;
+
+        $insertedKey = '';
+
+        foreach ($sheetData as $i => $row) {
             // make sure that the username is informed
             if (empty($row['A']) || empty($row['B']) || empty($row['C']) || empty($row['D']) || empty($row['E'])) {
                 continue;
@@ -40,42 +44,54 @@ class CatalogueService
                 $entreprise->getId()
             ));
 
-            $catalogueExistant = $this->entityManager->getRepository(Catalogue::class)->findOneBy(['recordKey' => $recordKey]);
-
             // make sure that the catalogue does not already exists in the db 
-            if ($catalogueExistant) {   
+            if (strpos($insertedKey, $recordKey) !== false) {   
                 continue;
             }
+
+            $insertedKey .= '-'.$recordKey;
 
             $catalogue = $this->createCatalogue($row);
 
-            if (!$catalogue) {
+            $catalogue->setEntreprise($entreprise)->setRecordKey($recordKey);
+
+            try {
+                $this->entityManager->persist($catalogue);
+
+                // flush everything to the database every 40 inserts
+                if (($i % $batchSize) == 0) {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear('App\Entity\Catalogue');
+                }
+            } catch (\Throwable $th) {
+                if ($this->entityManager->isOpen() === false) {
+                    $em = $this->container->get('doctrine')->getManager();
+                    $this->entityManager = $em->create(
+                        $em->getConnection(),
+                        $em->getConfiguration()
+                    );
+                }
+                error_log($th->getMessage());
                 continue;
             }
-
-            $catalogue->setEntreprise($entreprise)->setRecordKey($recordKey);
-            
-            $this->entityManager->persist($catalogue); 
-            
-            $this->entityManager->flush(); 
+        }
+        try {
+            $this->entityManager->flush();
+            $this->entityManager->clear('App\Entity\Immobilisation');
+        } catch (\Throwable $th) {
+            // error
         }
     }
 
     public function createCatalogue($row)
     {
-        $libelle = $row['A']; // store the libelle on each iteration 
-        $marque = $row['B']; // store the marque on each iteration 
-        $reference = $row['C']; // store the reference on each iteration
-        $specifites = $row['D']; // store the specifites on each iteration
-        $fournisseur = $row['E']; // store the fournisseur on each iteration
-
         $agent = new Catalogue(); 
         $agent
-            ->setLibelle($libelle) 
-            ->setMarque($marque)           
-            ->setReference($reference)
-            ->setSpecifites($specifites)
-            ->setFournisseur($fournisseur)
+            ->setLibelle($row['A']) 
+            ->setMarque($row['B'])           
+            ->setReference($row['C'])
+            ->setSpecifites($row['D'])
+            ->setFournisseur($row['E'])
         ;
 
         return $agent;

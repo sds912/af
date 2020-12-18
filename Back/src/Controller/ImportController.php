@@ -91,6 +91,7 @@ class ImportController
             ->setTargetTable($table)
             ->setStatut(0)
             ->setProgression(0)
+            ->setTotalItems(0)
             ->setUser($this->user)
             ->setDateImport(new \DateTime('now'))
         ;

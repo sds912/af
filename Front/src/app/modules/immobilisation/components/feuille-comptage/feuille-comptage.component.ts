@@ -77,6 +77,8 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   afterAjustement=false
   timerSubscription: any;
   firstLoad: boolean;
+  page: number;
+  totalItems: number;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -107,10 +109,41 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
-    this.getInventaireByEse();
+    // this.getInventaireByEse();
+    this.totalItems = 0;
+    this.getImmobilisations(1);
+    this.idCurrentEse = localStorage.getItem("currentEse")
     this.sameComponent()
     this.getOneEntreprise()
   }
+
+  getImmobilisations(_page: number) {
+    this.page = _page;
+    this.securityServ.showLoadingIndicatior.next(true);
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page).then((res: any) => {
+      if (res && res['hydra:member']) {
+        this.totalItems = res['hydra:totalItems'];
+        this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || 
+          this.securityServ.superviseur || this.securityServ.superviseurGene || 
+          this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId  ||
+          this.securityServ.chefEquipe && immo?.localite && this.isAffected(immo?.localite?.id)
+        );
+        if (this.data.length != this.allImmos.length) {
+          this.setData(this.allImmos);
+        }
+        this.securityServ.showLoadingIndicatior.next(false);
+      }
+      this.securityServ.showLoadingIndicatior.next(false);
+    }, (error: any) => {
+      this.securityServ.showLoadingIndicatior.next(false);
+    })
+  }
+
+  handlePageChange(pager: any) {
+    this.page = pager.page;
+    this.getImmobilisations(this.page);
+  }
+
   public ngOnDestroy(): void {
     if (this.timerSubscription) {
         this.timerSubscription.unsubscribe();
@@ -121,7 +154,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   }
   private refreshData(): void {
     this.getImmos();
-    this.subscribeToData();
+    // this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {

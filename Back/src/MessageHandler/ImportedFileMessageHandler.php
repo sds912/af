@@ -89,6 +89,9 @@ class ImportedFileMessageHandler implements MessageHandlerInterface
 
         $sheetData = $this->xslxManager->getDataToArray($this->getUploadDirectory().'/'.$importedFile->getFileName());
 
+        $importedFile->setTotalItems(count($sheetData));
+        $this->entityManager->flush();
+
         $customData = $message->getCustomData();
         $customData['user'] = $importedFile->getUser();
 
@@ -113,8 +116,8 @@ class ImportedFileMessageHandler implements MessageHandlerInterface
                 $this->entityManager->remove($importedFile);
                 break;
         }
-        $importedFile->setStatut(1);
 
+        $importedFile->setStatut(1);
         $this->entityManager->flush();
     }
 

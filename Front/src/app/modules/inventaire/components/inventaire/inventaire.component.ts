@@ -99,6 +99,7 @@ export class InventaireComponent implements OnInit {
   ngOnInit() {
     this.displayedTabs = [];
     this.idTabs = [];
+    this.tabLoc = [];
     this.myId = localStorage.getItem('idUser')
     this.allLocIsChecked = false;
     this.securityServ.showLoadingIndicatior.next(true)
@@ -142,6 +143,8 @@ export class InventaireComponent implements OnInit {
   initLocalites() {
     this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
       this.localites = res;
+      this.localites.forEach(loc => {this.isChecked(loc)});
+
     });
   }
 
@@ -209,7 +212,12 @@ export class InventaireComponent implements OnInit {
 
     this.tabLoc = []
     //@TODO::Remove localites in inventaire and update method add localite in add inventaire
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));
+    this.localites.forEach((localite: any) => {
+      const index = localite?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
+      if (index != -1) {
+        this.tabLoc.push(localite.id);
+      }
+    });
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
       this.invCreer = true
@@ -258,7 +266,6 @@ export class InventaireComponent implements OnInit {
       bloc3e3: [data[2][2]],
       bloc3e4: [data[2][3]],
     })
-    console.log(data[3])
     const dataSignataire = data[3]?.length > 0 ? data[3] : ["", ""]
     this.tabSignataires = new FormArray([])
     for (let index = 0; index < dataSignataire.length; index += 2) {
@@ -268,8 +275,7 @@ export class InventaireComponent implements OnInit {
   detailsLoc(inventaire) {
     this.tabLoc = [];
     this.tabOpen == [];
-    inventaire.localites.forEach(localite => this.tabLoc.push(this.getOneLocById(localite.id)));//this.getOneLocById car serialisation fait que l objet n est pas complet
-    console.log(inventaire.localites);
+    this.firstSub(this.localites).forEach(localite => this.isChecked(localite));
     this.subdivisions?.forEach(sub => this.tabOpen.push(0))
   }
   initPvForm(verif = true, data = ["", "", "", []]) {
@@ -428,8 +434,8 @@ export class InventaireComponent implements OnInit {
         //this.securityServ.showLoadingIndicatior.next(false) gerer par getInventaire
         this.showNotification('bg-success', rep.message, 'top', 'center')
         let add = data.id == 0 ? true : false
-        this.getInventaireByEse(add)
         this.showForm = false
+        window.location.reload();
       }, message => {
         console.log(message)
         this.securityServ.showLoadingIndicatior.next(false)
@@ -458,6 +464,7 @@ export class InventaireComponent implements OnInit {
   getOneLyId(localites) {
     let l = []
     localites.forEach(loc => l.push(loc.id));
+    console.log(l);
     return l
   }
   getDataInstCreer() {
@@ -1077,9 +1084,10 @@ export class InventaireComponent implements OnInit {
       }, 1000);
     });
   }
+
   checkLoc(loc, checkAllInTab?: any) {
-    //** proble avec indexOf qui ne marchait pas */
-    let index = this.tabLoc.findIndex(localite => localite.id == loc.id)
+    this.allLocIsChecked = false;
+    let index = this.tabLoc.findIndex(localite => localite.id == loc.id);
     if (index != -1) {
       if (checkAllInTab) {
         checkAllInTab.checked = false; 
@@ -1088,7 +1096,7 @@ export class InventaireComponent implements OnInit {
     } else {
       this.tabLoc.push(loc)
       const idParent = loc.idParent
-      if (idParent && !this.isChecked(idParent)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
+      if (idParent && !this.isChecked(loc)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
     }
   }
   checkAllLoc() {
@@ -1109,7 +1117,7 @@ export class InventaireComponent implements OnInit {
       if (!checkbox.checked && index != -1) {
         this.tabLoc.splice(index, 1);
       }
-      if (loc.idParent && !this.isChecked(loc.idParent)) this.checkLoc(this.getOneLocById(loc.idParent));
+      if (loc.idParent && !this.isChecked(loc)) this.checkLoc(this.getOneLocById(loc.idParent));
     });
   }
   openFirst(id) {
@@ -1133,9 +1141,17 @@ export class InventaireComponent implements OnInit {
       if (this.tabOpen[i]) this.tabOpen[i] = 0
     }
   }
-  isChecked(id) {
-    console.log(this.tabLoc);
-    return this.tabLoc.find(loc => loc.id == id)
+  isChecked(loc) {
+    let isChecked = this.tabLoc.find(loc => loc.id == loc.idParent);
+
+    const index = loc?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
+
+    if (!isChecked && index != -1) {
+      this.tabLoc.push(loc);
+      isChecked = true;
+    }
+
+    return isChecked;
   }
 
   closeInv() {
