@@ -67,6 +67,8 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   confirmationValue = false
   timerSubscription: any;
   firstLoad: boolean;
+  page: number;
+  totalItems: number;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -110,9 +112,45 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     this.myId = localStorage.getItem("idUser")
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.getAllLoc()
-    this.getInventaireByEse();
+    // this.getInventaireByEse();
+    this.totalItems = 0;
+    this.getImmobilisations(1, '&status=0');
     this.sameComponent()
   }
+
+  getImmobilisations(_page: number, filters?: any) {
+    this.page = _page;
+    this.securityServ.showLoadingIndicatior.next(true);
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, filters).then((res: any) => {
+      if (res && res['hydra:member']) {
+        this.totalItems = res['hydra:totalItems'];
+        this.allImmos = res['hydra:member']?.filter(immo => this.securityServ.superviseurAdjoint && immo.localite?.createur.id == this.myId || !this.securityServ.superviseurAdjoint);
+        this.setData(this.allImmos);
+        this.securityServ.showLoadingIndicatior.next(false);
+        if (this.route.snapshot.params["id"]) {
+          const immo = this.allImmos.find(im => im.id == this.sharedService.decodId(this.route.snapshot.params["id"]))
+          this.update(immo)
+          this.openImmo.nativeElement.click();
+        }
+        this.securityServ.showLoadingIndicatior.next(false);
+      }
+      this.securityServ.showLoadingIndicatior.next(false);
+    }, (error: any) => {
+      this.securityServ.showLoadingIndicatior.next(false);
+    })
+  }
+
+  handlePageChange(pager: any) {
+    this.page = pager.page;
+    this.getImmobilisations(this.page);
+  }
+
+  handleStatusChange(status: any) {
+    this.page = 1;
+    this.getImmobilisations(this.page, `&status=${status}`);
+  }
+
   public ngOnDestroy(): void {
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
@@ -123,7 +161,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   }
   private refreshDataT(): void {
     this.getImmos();
-    this.subscribeToData();
+    // this.subscribeToData();
   }
   sameComponent() {
     this.router.events.subscribe((event) => {
@@ -262,7 +300,8 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   }
 
   getAllLoc() {
-    this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites => this.localites = localites)
+    this.localites = [];
+    // this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites => this.localites = localites)
   }
 
   showDialogImmo() {

@@ -13,7 +13,7 @@
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
                                         <li class="dropdown m-l-20 ml-5 mr-3">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="filtreImmoChange()" [(ngModel)]="statusImmo">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;"  (change)="handleStatusChange($event.target.value)">
                                                 <option value="-1">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
                                                 <option value="0">Immobilisations avec code barre non réconciliées</option>
@@ -35,7 +35,7 @@
                                 <!-- non scannées -->
                                 <ngx-datatable #table class="material" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo==-1">
+                                    [rowHeight]="'60'" [limit]="20" *ngIf="statusImmo==-1">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="Code" sortable="false" prop="code" [width]="70">
@@ -126,22 +126,30 @@
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-footer>
-                                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount"
-                                            let-pageSize="pageSize" let-selectedCount="selectedCount"
-                                            let-curPage="curPage" let-offset="offset" let-isVisible="isVisible">
+                                        <ng-template ngx-datatable-footer-template
+                                            let-pageSize="pageSize"
+                                            let-selectedCount="selectedCount"
+                                            let-curPage="curPage"
+                                            let-offset="offset"
+                                            let-isVisible="isVisible"
+                                            let-selectedMessage="selectedMessage"
+                                            let-totalMessage="totalMessage">
                                             <div class="page-count">
                                                 <span *ngIf="selectedMessage">
                                                     {{selectedCount.toLocaleString()}} {{selectedMessage}} /
                                                 </span>
-                                                {{totalMessage}} {{rowCount.toLocaleString()}}
+                                                {{totalMessage}} {{totalItems.toLocaleString()}}
                                             </div>
-                                            <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                                            <datatable-pager
+                                                [pagerLeftArrowIcon]="'datatable-icon-left'"
                                                 [pagerRightArrowIcon]="'datatable-icon-right'"
                                                 [pagerPreviousIcon]="'datatable-icon-prev'"
-                                                [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage"
-                                                [size]="pageSize" [count]="rowCount"
-                                                [hidden]="!((rowCount / pageSize) > 1)"
-                                                (change)="table.onFooterPage($event)" (change)="look($event)">
+                                                [pagerNextIcon]="'datatable-icon-skip'"
+                                                [page]="curPage"
+                                                [size]="pageSize"
+                                                [count]="totalItems"
+                                                [hidden]="!((totalItems / pageSize) > 1)"
+                                                (change)="handlePageChange($event)">
                                             </datatable-pager>
                                         </ng-template>
                                     </ngx-datatable-footer>

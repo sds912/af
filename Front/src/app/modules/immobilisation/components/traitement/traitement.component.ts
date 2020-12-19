@@ -62,6 +62,8 @@ export class TraitementComponent implements OnInit, OnDestroy {
   affectations = [];
   timerSubscription: any;
   firstLoad: boolean;
+  page: number;
+  totalItems: number;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -88,12 +90,52 @@ export class TraitementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {//faire le get status pour les details
     this.firstLoad = true;
-    this.myId=localStorage.getItem("idUser")
-    this.idCurrentEse=localStorage.getItem("currentEse")
+    this.myId = localStorage.getItem("idUser")
+    this.idCurrentEse = localStorage.getItem("currentEse")
+    this.idCurrentInv = localStorage.getItem("currentInv");
     this.getAllLoc()
-    this.getInventaireByEse();
+    this.totalItems = 0;
+    this.getImmobilisations(1, `&status=${this.statusImmo}`);
+    // this.getInventaireByEse();
     this.sameComponent()
   }
+
+  getImmobilisations(_page: number, filters?: any) {
+    this.page = _page;
+    this.securityServ.showLoadingIndicatior.next(true);
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, filters).then((res: any) => {
+      if (res && res['hydra:member']) {
+        this.totalItems = res['hydra:totalItems'];
+        this.allImmos = res['hydra:member'];
+        if (this.data.length != this.allImmos.length) {
+          this.setData(this.allImmos);
+        }
+        this.securityServ.showLoadingIndicatior.next(false);
+      }
+      this.securityServ.showLoadingIndicatior.next(false);
+    }, (error: any) => {
+      this.securityServ.showLoadingIndicatior.next(false);
+    })
+  }
+
+  handlePageChange(pager: any) {
+    this.page = pager.page;
+    this.getImmobilisations(this.page);
+  }
+
+  handleStatusChange(status: any) {
+    this.page = 1;
+    console.log(status);
+    this.statusImmo = status;
+    let filters = `&status=${this.statusImmo}`;
+    if (this.statusImmo == -1) {
+      filters = `&status[]=${this.statusImmo}&status[]=null`;
+      console.log(filters);
+    }
+    this.getImmobilisations(this.page, filters);
+  }
+
   public ngOnDestroy(): void {
     if (this.timerSubscription) {
         this.timerSubscription.unsubscribe();
@@ -104,7 +146,7 @@ export class TraitementComponent implements OnInit, OnDestroy {
   }
   private refreshData(): void {
     this.getImmos();
-    this.subscribeToData();
+    // this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
@@ -210,7 +252,8 @@ export class TraitementComponent implements OnInit, OnDestroy {
   }
   
   getAllLoc(){
-    this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites=>this.localites=localites)
+    this.localites = [];
+    // this.inventaireServ.getLocalitesOfEse(this.idCurrentEse).then(localites=>this.localites=localites)
   }
 
   showDialogImmo() {

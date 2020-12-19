@@ -147,7 +147,12 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
 
   handleStatusChange(status: any) {
     this.page = 1;
-    this.getImmobilisations(this.page, `&status=${status}`);
+    this.statusImmo = status;
+    let filters = `&status=${this.statusImmo}`;
+    if (this.statusImmo == -1) {
+      filters = `&status[null]=true`;
+    }
+    this.getImmobilisations(this.page, filters);
   }
 
   public ngOnDestroy(): void {

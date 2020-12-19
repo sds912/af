@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use App\Filter\OrSearchFilter;
+use App\Filter\NullFilter;
 
 /**
  * @ApiResource(
@@ -33,6 +34,7 @@ use App\Filter\OrSearchFilter;
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"inventaire.id": "exact", "status": "exact", "code": "exact"})
  * @ApiFilter(OrSearchFilter::class, properties={"status": "exact"})
+ * @ApiFilter(NullFilter::class, properties={"status": "exact"})
  */
 class Immobilisation
 {
