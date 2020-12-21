@@ -574,8 +574,11 @@ class SharedController extends AbstractController
                 if($im){
                     $immobilisation=$im;
                 }
-                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setCode($immo["code"])->setDescription($immo["description"])
+                $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setDescription($immo["description"])
                 ->setEndDescription($immo["description"])->setInventaire($inventaire)->setEntreprise($inventaire->getEntreprise());
+                if ($immo['code'] != '') {
+                    $immobilisation->setCode($immo["code"]);
+                }
             }
             $immobilisation->setLecteur($this->repoUser->find($immo["lecteur"]))
                 ->setEndEtat($immo["etat"])->setStatus($immo["status"])
@@ -624,9 +627,9 @@ class SharedController extends AbstractController
     public function ajoutCodeBarre(Request $request){
         $data=Shared::getData($request);
         $immo=$this->repoImmo->find($data["id"]);
+        Shared::isExiste($immo);
         $codeBefore=$immo->getCode();
         $matchedBefore=$immo->getIsMatched();
-        Shared::isExiste($immo);
         $code=$data["code"];
         $immo->setCode($code);
         if($matchedBefore){

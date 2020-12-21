@@ -53,7 +53,7 @@ class Immobilisation
     private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"lecture_read","mobile_inv_read","immo_read"})
      */
     private $code;
@@ -235,6 +235,11 @@ class Immobilisation
      */
     private $endLibelle;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $recordKey;
+
     public function __construct()
     {
         $this->immobilisations = new ArrayCollection();
@@ -243,6 +248,13 @@ class Immobilisation
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getLibelle(): ?string
@@ -644,6 +656,18 @@ class Immobilisation
     public function setEndLibelle(?string $endLibelle): self
     {
         $this->endLibelle = $endLibelle;
+
+        return $this;
+    }
+
+    public function getRecordKey(): ?string
+    {
+        return $this->recordKey;
+    }
+
+    public function setRecordKey(string $recordKey): self
+    {
+        $this->recordKey = $recordKey;
 
         return $this;
     }

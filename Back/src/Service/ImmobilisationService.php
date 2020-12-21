@@ -39,9 +39,18 @@ class ImmobilisationService
          */
         $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
 
+        /**
+         * @var Immobilisation
+         */
+        $lastImmobilisation = $this->entityManager->getRepository(Immobilisation::class)->getLastImportedImmobilisation();
+
         $batchSize = 40;
 
         $insertedCodes = '';
+
+        if (!$lastImmobilisation) {
+            $insertedCodes = $lastImmobilisation->getRecordKey();
+        }
 
         $startDate = new \DateTime('now');
 
@@ -57,9 +66,7 @@ class ImmobilisationService
 
             $immobilisation = $this->createImmobilisation($row);
 
-            $immobilisation->setEntreprise($entreprise);
-
-            $immobilisation->setInventaire($inventaire);
+            $immobilisation->setEntreprise($entreprise)->setInventaire($inventaire)->setRecordKey($insertedCodes);
 
             try {
                 $this->entityManager->persist($immobilisation);

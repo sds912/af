@@ -47,7 +47,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   details = false
   idCurrentEse;
   inventaires = [];
-  statusImmo = 2
+  statusImmo = 0
   typeImmo = ""
   filteredData = [];
   columns = [
@@ -148,6 +148,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
 
   handleStatusChange(status: any) {
     this.page = 1;
+    this.statusImmo = status;
     this.getImmobilisations(this.page, `&status=${status}`);
   }
 
@@ -375,7 +376,8 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     this.immoService.postImmobilisation(data).then(
       () => {
         this.showNotification('bg-success', soumettre ? 'Ajustement soumis pour approbation' : 'Enregistré', 'top', 'center')
-        this.getImmos()
+        // this.getImmos()
+        this.getImmobilisations(this.page, `&status=${this.statusImmo}`);
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeEditModal.nativeElement.click();
       },
@@ -417,7 +419,8 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
         this.securityServ.showLoadingIndicatior.next(false);
         this.closeConfirmModal.nativeElement.click();
         this.router.navigate(["/ajuster/fi"])
-        this.getImmos()
+        // this.getImmos()
+        this.getImmobilisations(this.page, `&status=${this.statusImmo}`);
       },
       error => {
         this.showNotification('bg-danger', error, 'top', 'center');

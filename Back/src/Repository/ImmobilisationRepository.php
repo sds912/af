@@ -52,15 +52,17 @@ class ImmobilisationRepository extends ServiceEntityRepository
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?Immobilisation
+    /**
+     * @return Immobilisation Returns an Immobilisation object
+     */
+    public function getLastImportedImmobilisation(): ?Immobilisation
     {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
+        $qb = $this->createQueryBuilder('i');
+        return $qb->where($qb->expr()->isNotNull("i.recordKey"))
+            ->orderBy("id", "DESC")
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }

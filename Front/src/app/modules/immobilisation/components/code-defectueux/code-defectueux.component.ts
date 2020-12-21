@@ -307,8 +307,9 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.inventaireServ.addCode({id:id,code:code,match:match}).then(
       ()=>{
         this.showNotification('bg-success','Enregistré','top','center')
-        this.refreshData(true);
-        this.securityServ.showLoadingIndicatior.next(false);
+        // this.refreshData(true);
+        // this.securityServ.showLoadingIndicatior.next(false);
+        this.getImmobilisations(this.page);
         this.closeEditModal.nativeElement.click();
         this.closeMatchModal.nativeElement.click();
       },
