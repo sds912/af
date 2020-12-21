@@ -1117,7 +1117,6 @@ export class InventaireComponent implements OnInit {
       if (!checkbox.checked && index != -1) {
         this.tabLoc.splice(index, 1);
       }
-      if (loc.idParent && !this.isChecked(loc)) this.checkLoc(this.getOneLocById(loc.idParent));
     });
   }
   openFirst(id) {
@@ -1142,7 +1141,7 @@ export class InventaireComponent implements OnInit {
     }
   }
   isChecked(loc) {
-    let isChecked = this.tabLoc.find(loc => loc.id == loc.idParent);
+    let isChecked = this.tabLoc.find(localite => localite.id == loc.id);
 
     const index = loc?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
 

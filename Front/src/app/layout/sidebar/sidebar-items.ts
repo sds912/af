@@ -106,7 +106,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'TRA',
     path: '',
-    title: 'Phase de traitement',
+    title: 'Phase d\'exécution',
     icon: 'fas fa-cubes',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene',],
@@ -154,7 +154,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'AJT',
     path: '',
-    title: 'Phase d\'ajustement',
+    title: 'Phase de finalisation',
     icon: 'fas fa-check-double',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],

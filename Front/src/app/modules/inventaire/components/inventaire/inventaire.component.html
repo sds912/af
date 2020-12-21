@@ -687,7 +687,7 @@
                         <hr>
                         <mat-chip-list aria-label="Fish selection">
                             <small class="ml-3" style="font-style: italic;">{{subdivisions[displayedTab.level]}}</small>
-                            <mat-checkbox #checkAllInTab *ngIf="filterByTab(displayedTab).length > 0" class="ml-3 example-margin w-100" (change)="checkAllLocsTab($event, displayedTab)" [checked]="allLocIsChecked">
+                            <mat-checkbox #checkAllInTab *ngIf="filterByTab(displayedTab).length > 0 && showForm" class="ml-3 example-margin w-100" (change)="checkAllLocsTab($event, displayedTab)" [checked]="allLocIsChecked">
                                 Séléctionnez tout</mat-checkbox>
                             <mat-chip class="w-100 color-chips chip-localite-{{displayedTab.level}}" [ngClass]="{'mt-3': displayedTab.level!=1}"
                                 *ngFor="let sub of filterByTab(displayedTab);">
