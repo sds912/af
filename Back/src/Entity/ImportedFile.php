@@ -73,13 +73,30 @@ class ImportedFile
 
     /**
      * @ORM\Column(type="datetime")
+     * 
+     * @Groups({"imported_file_read"})
      */
     private $dateImport;
 
     /**
      * @ORM\Column(type="integer")
+     * 
+     * @Groups({"imported_file_read"})
      */
     private $totalItems;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="importedFiles")
+     * @ORM\JoinColumn(nullable=false)
+     * 
+     * @Groups({"imported_file_read"})
+     */
+    private $entreprise;
+
+    public function __construct()
+    {
+        $this->logs = [];
+    }
 
     public function getId(): ?int
     {
@@ -178,6 +195,18 @@ class ImportedFile
     public function setTotalItems(int $totalItems): self
     {
         $this->totalItems = $totalItems;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): self
+    {
+        $this->entreprise = $entreprise;
 
         return $this;
     }

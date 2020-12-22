@@ -166,6 +166,27 @@
                                     </ngx-datatable-footer>
                                 </ngx-datatable>
 
+                                <div class="circle-progress-loader" *ngIf="loadingPercent >= 0">
+                                    <circle-progress
+                                        [percent]="loadingPercent"
+                                        [radius]="100"
+                                        [outerStrokeColor]="'#f47f38'"
+                                        [backgroundColor]="'#c6cacb'"
+                                        [backgroundPadding]="0"
+                                        [animationDuration]="300"
+                                        [titleFontSize]="36"
+                                        [responsive]="true"
+                                        [outerStrokeWidth]="32"
+                                        [showInnerStroke]="false"
+                                        [showUnits]="true"
+                                        [showSubtitle]="true"
+                                        [subtitleFormat]="formatSubtitle"
+                                        [subtitleColor]="'#616160'"
+                                        [outerStrokeLinecap]="'inherit'"
+                                        [animation]="false"
+                                    ></circle-progress>
+                                </div>
+
                                 <!-- Modal Window -->
 
                                 <!-- Modal Window -->

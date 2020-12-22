@@ -48,4 +48,8 @@ export class EntrepriseService {
   importAgents(formData: FormData) {
     return this.http.post(`${this.apiUrl}/import/agents`, formData);
   }
+
+  importProgession(entreprise: string, table: string) {
+    return this.http.get(`${this.apiUrl}/import/progression?entreprise=${entreprise}&table=${table}`);
+  }
 }

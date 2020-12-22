@@ -67,10 +67,8 @@ class ImportController
 
         $inventaire = $request->request->get('inventaire');
 
-        if ($entreprise != '') {
-            $this->validateEntreprise($entreprise);
+        $this->validateEntreprise($entreprise);
             $customData['entreprise'] = $entreprise->getId();
-        }
 
         if ($inventaire != '') {
             $this->validateInventaire($inventaire);
@@ -94,6 +92,7 @@ class ImportController
             ->setTotalItems(0)
             ->setUser($this->user)
             ->setDateImport(new \DateTime('now'))
+            ->setEntreprise($entreprise)
         ;
 
         $this->entityManager->persist($importedFile);

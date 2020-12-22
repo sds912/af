@@ -35,31 +35,23 @@ class ImmobilisationRepository extends ServiceEntityRepository
         return $immos->getQuery()->getResult();
     }
 
-    // /**
-    //  * @return Immobilisation[] Returns an array of Immobilisation objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getCountImmobilisations(int $idEntreprise)
     {
         return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('i.entreprise = :entreprise')
+            ->setParameter('entreprise', $idEntreprise)
+            ->select('count(i.id)')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getSingleScalarResult();
     }
-    */
 
-    /**
-     * @return Immobilisation Returns an Immobilisation object
-     */
-    public function getLastImportedImmobilisation(): ?Immobilisation
+    public function getLastImportedImmobilisation($idEntreprise): ?Immobilisation
     {
-        $qb = $this->createQueryBuilder('i');
-        return $qb->where($qb->expr()->isNotNull("i.recordKey"))
-            ->orderBy("id", "DESC")
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.recordKey IS NOT NULL')
+            ->andWhere('i.entreprise = :entreprise')
+            ->setParameter('entreprise', $idEntreprise)
+            ->orderBy('i.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()

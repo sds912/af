@@ -34,6 +34,7 @@ export class ImmobilisationComponent implements OnInit {
   inventaires = [];
   page: number;
   totalItems: number;
+  loadingPercent: number;
 
   columns = [
     { element: 'numero_ordre', name: 'Numéro d\'ordre', width: 100 },
@@ -66,6 +67,7 @@ export class ImmobilisationComponent implements OnInit {
   ngOnInit(): void {
     // this.getInventaireByEse();
     this.totalItems = 0;
+    this.loadingPercent = -1;
     this.getImmobilisations(1);
     this.idCurrentEse = localStorage.getItem("currentEse");
     this.securityServ.showLoadingIndicatior.next(false);
@@ -207,12 +209,36 @@ export class ImmobilisationComponent implements OnInit {
       this.showNotification('bg-info', res, 'top', 'center')
       evt.target.value = '';
       setTimeout(() => {
-        this.getImmobilisations(1);
-      }, 500);
+        this.getImportProgression();
+      }, 5000);
     })
   }
 
+  getImportProgression() {
+    this.entrepriseService.importProgession(localStorage.getItem("currentEse"), 'immobilisations').subscribe((res: any) => {
+      this.loadingPercent = res;
+      if (res <= 100) {
+        setTimeout(() => {
+          this.getImportProgression();
+        }, 1000);
+      } else {
+        this.loadingPercent = -1;
+        this.getImmobilisations(1);
+      }
+    })
+  }
 
+  formatSubtitle (percent: number):string {
+    if(percent >= 100){
+      return "Chargement términé!"
+    }else if(percent >= 50){
+      return "Half"
+    }else if(percent > 0){
+      return "Chargement des données"
+    }else {
+      return "Extraction des données"
+    }
+  }
 }
 
 //@TOOD::Voir l'utilité de cette interface et essayer de le déplacer si c'est utilisé sinon le supprimé

@@ -54,7 +54,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "description"="Importer la liste des immobilisations"
  *        }
  *     },
- *      "IMPORT_CATALOGUES"={
+ *     "IMPORT_CATALOGUES"={
  *      "method"="post",
  *      "path"="/entreprises/import/catalogues",
  *      "controller"="App\Controller\ImportController",
@@ -62,6 +62,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *        "openapi_context"={
  *          "summary"="Importer la liste des catalogues",
  *          "description"="Importer la liste des catalogues"
+ *        }
+ *     },
+ *     "IMPORT_PROGRESSION"={
+ *      "method"="get",
+ *      "path"="/entreprises/import/progression",
+ *      "controller"="App\Controller\ImportProgressionController",
+ *        "openapi_context"={
+ *          "summary"="Voir l'état d'avance d'une importation",
+ *          "description"="Voir l'état d'avance d'une importation sur les tables immobilisations, catalogues, localites, agents"
  *        }
  *     },
  *  },
@@ -89,13 +98,13 @@ class Entreprise
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"user_read","entreprise_read","inv_read"})
+     * @Groups({"user_read","entreprise_read","inv_read", "imported_file_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"user_read","entreprise_read","inv_read"})
+     * @Groups({"user_read","entreprise_read","inv_read", "imported_file_read"})
      */
     private $denomination;
 
@@ -175,6 +184,11 @@ class Entreprise
      */
     private $license;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ImportedFile::class, mappedBy="entreprise", orphanRemoval=true)
+     */
+    private $importedFiles;
+
     public function __construct()
     {
         $this->localites = new ArrayCollection();
@@ -182,6 +196,7 @@ class Entreprise
         $this->inventaires = new ArrayCollection();
         $this->immobilisations = new ArrayCollection();
         $this->catalogues = new ArrayCollection();
+        $this->importedFiles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -424,6 +439,37 @@ class Entreprise
     public function setLicense(?License $license): self
     {
         $this->license = $license;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ImportedFile[]
+     */
+    public function getImportedFiles(): Collection
+    {
+        return $this->importedFiles;
+    }
+
+    public function addImportedFile(ImportedFile $importedFile): self
+    {
+        if (!$this->importedFiles->contains($importedFile)) {
+            $this->importedFiles[] = $importedFile;
+            $importedFile->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImportedFile(ImportedFile $importedFile): self
+    {
+        if ($this->importedFiles->contains($importedFile)) {
+            $this->importedFiles->removeElement($importedFile);
+            // set the owning side to null (unless already changed)
+            if ($importedFile->getEntreprise() === $this) {
+                $importedFile->setEntreprise(null);
+            }
+        }
 
         return $this;
     }

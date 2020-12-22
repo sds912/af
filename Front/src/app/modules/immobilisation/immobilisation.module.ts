@@ -46,6 +46,8 @@ import { FeuilleComptageComponent } from './components/feuille-comptage/feuille-
 import { CodeDefectueuxComponent } from './components/code-defectueux/code-defectueux.component';
 import { AjusterFiComponent } from './components/ajuster-fi/ajuster-fi.component';
 import { CatalogueComponent } from './components/catalogue/catalogue.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
@@ -102,7 +104,14 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MaterialFileInputModule,
     MatMenuModule,
     NgxDatatableModule,
-    MatStepperModule
+    MatStepperModule,
+    NgCircleProgressModule.forRoot({
+      // set defaults here
+      radius: 100,
+      outerStrokeWidth: 16,
+      innerStrokeWidth: 8,
+      animationDuration: 300,
+    }),
   ]
 })
 export class ImmobilisationModule { }

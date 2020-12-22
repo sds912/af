@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Immobilisation;
 use App\Entity\Entreprise;
+use App\Entity\ImportedFile;
 use App\Entity\Inventaire;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,18 +40,15 @@ class ImmobilisationService
          */
         $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
 
-        /**
-         * @var Immobilisation
-         */
-        $lastImmobilisation = $this->entityManager->getRepository(Immobilisation::class)->getLastImportedImmobilisation();
+        // $lastImmobilisation = $this->entityManager->getRepository(Immobilisation::class)->getLastImportedImmobilisation($entreprise->getId());
 
         $batchSize = 40;
 
         $insertedCodes = '';
 
-        if (!$lastImmobilisation) {
-            $insertedCodes = $lastImmobilisation->getRecordKey();
-        }
+        // if (!$lastImmobilisation) {
+        //     $insertedCodes = $lastImmobilisation->getRecordKey();
+        // }
 
         $startDate = new \DateTime('now');
 
@@ -118,5 +116,43 @@ class ImmobilisationService
         ;
 
         return $immobilisation;
+    }
+
+    public function getImportProgession($entreprise)
+    {
+        $importedFiles = $this->entityManager->getRepository(ImportedFile::class)->findBy([
+            'entreprise' => $entreprise->getId(),
+            'targetTable' => 'immobilisations'
+        ], ['id'=>'DESC'], 1, 0);
+
+        if (empty($importedFiles)) {
+            return null;
+        }
+
+        /** @var ImportedFile */
+        $importedFile = $importedFiles[0];
+
+        if ($importedFile->getStatut() == 1) {
+
+            $importedFile->setProgression(100);
+
+            $this->entityManager->flush();
+
+            return $importedFile;
+        }
+
+        $totalImmobilisations = $this->entityManager->getRepository(Immobilisation::class)->getCountImmobilisations($entreprise->getId());
+
+        $progression = $importedFile->getProgression();
+
+        if ($importedFile->getTotalItems() != 0) {
+            $progression = floor(((int)$totalImmobilisations / (int)$importedFile->getTotalItems()) * 100);
+        }
+
+        $importedFile->setProgression($progression);
+
+        $this->entityManager->flush();
+
+        return $progression;
     }
 }
