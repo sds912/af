@@ -162,7 +162,7 @@ export const ROUTES: RouteInfo[] = [
       {
         id: 'AJU2',
         path: "/code/defectueux",
-        title: 'Ajout de codes barres',
+        title: 'Ajout de codes',
         icon: '',
         class: 'ml-menu',
         roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene', 'ROLE_SuperViseurAdjoint'],

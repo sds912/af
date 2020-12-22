@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    if (!req.url.match('pagination=true') ) {
+    if (!req.url.match('pagination=true')) {
       req = req.clone({
         headers: req.headers.set('Accept', 'application/json')
       }); 

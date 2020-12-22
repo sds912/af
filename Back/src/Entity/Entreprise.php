@@ -73,6 +73,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "description"="Voir l'état d'avance d'une importation sur les tables immobilisations, catalogues, localites, agents"
  *        }
  *     },
+ *     "EXPORT_IMMOBILISATIONS"={
+ *      "method"="post",
+ *      "path"="/entreprises/export/immobilisations",
+ *      "controller"="App\Controller\ExportController",
+ *        "openapi_context"={
+ *          "summary"="Exporter la liste des immobilisations",
+ *          "description"="Exporter la liste des immobilisations"
+ *        }
+ *     },
  *  },
  *  itemOperations={
  *    "GET",

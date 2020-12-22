@@ -37,6 +37,10 @@ export class EntrepriseService {
     return this.http.post(`${this.apiUrl}/import/immobilisations`, formData);
   }
 
+  exportImmobilisations(data: any) {
+    return this.http.post(`${this.apiUrl}/export/immobilisations`, data);
+  }
+
   importCatalogues(formData: FormData) {
     return this.http.post(`${this.apiUrl}/import/catalogues`, formData);
   }

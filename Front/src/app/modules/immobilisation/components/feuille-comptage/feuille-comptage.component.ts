@@ -17,6 +17,7 @@ import * as Excel from "exceljs/dist/exceljs.min.js";
 import * as ExcelProper from "exceljs";
 import * as fs from 'file-saver';
 import { timer, combineLatest } from 'rxjs';
+import { EntrepriseService } from 'src/app/data/services/entreprise/entreprise.service';
 
 let workbook: ExcelProper.Workbook = new Excel.Workbook();
 @Component({
@@ -89,7 +90,8 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     public router: Router,
     public route:ActivatedRoute,
     private adminServ: AdminService,
-    private planingServ: PlaningService
+    private planingServ: PlaningService,
+    private entrepriseService: EntrepriseService
   ) { 
     this.editForm = this.fb.group({
       id: [0],
@@ -109,10 +111,10 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
+    this.idCurrentInv = localStorage.getItem("currentInv");
     // this.getInventaireByEse();
     this.totalItems = 0;
     this.getImmobilisations(1);
-    this.idCurrentEse = localStorage.getItem("currentEse")
     this.sameComponent()
     this.getOneEntreprise()
   }
@@ -560,7 +562,39 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   numbStr(number){
     return this.sharedService.numStr(number," ")
   }
+
+  convertBase64ToBlobData(base64Data: string, contentType: string='application/octet-stream', sliceSize=512) {
+    const byteCharacters = atob(base64Data);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+  }
   generateExcel(){
+    const dataExport = {
+      table: 'immobilisations',
+      entreprise: this.idCurrentEse,
+      inventaire: this.idCurrentInv
+    }
+    console.log(dataExport);
+    this.entrepriseService.exportImmobilisations(dataExport).subscribe((res: any) => {
+      const blobData = this.convertBase64ToBlobData(res['file']);
+      fs.saveAs(blobData, res['fileName']);
+    });
+    return;
     const data:selectRowInterface[]=this.allImmos
     //https://www.ngdevelop.tech/export-to-excel-in-angular-6/
     let workbook = new Excel.Workbook();
