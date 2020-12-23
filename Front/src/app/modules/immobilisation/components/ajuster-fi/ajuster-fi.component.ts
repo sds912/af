@@ -69,6 +69,8 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   firstLoad: boolean;
   page: number;
   totalItems: number;
+  codeExist: number;
+  matchImmo: any;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -109,6 +111,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {//faire le get status pour les details
     this.firstLoad = true;
+    this.codeExist = -1;
     this.myId = localStorage.getItem("idUser")
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.getAllLoc()
@@ -293,7 +296,6 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   getAffectationByInv(id: number) {
     this.planingServ.getAffectations("?inventaire.id=" + id).then(
       rep => {
-        console.log(rep);
         this.affectations = rep
       },
       error => console.log(error)
@@ -366,6 +368,13 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   }
 
   save(soumettre) {
+    if (this.codeExist == 1) {
+      this.confirmationValue = soumettre
+      this.approuvText = `Ce code correspond à l'immobilisation ${this.matchImmo?.libelle}. Voullez-vous l'ajouter comme immobilisation avec code défectueux ?`;
+      this.closeEditModal.nativeElement.click();
+      this.openConfirm.nativeElement.click();
+      return;
+    }
     const data = this.clearData(this.editForm.value)
     console.log(data);
 
@@ -410,6 +419,25 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     this.openConfirm.nativeElement.click();
   }
   sendConfirmation() {
+    if (this.codeExist == 1 && this.matchImmo) {
+      let immo = this.editForm.value;
+      immo.status = "3";
+      this.immoService.postImmobilisation(immo).then((res: any) => {
+        this.inventaireServ.addCode({id: immo.id, code: this.matchImmo.code, match: true}).then(
+          ()=>{
+            this.showNotification('bg-success','Enregistré','top','center')
+            this.securityServ.showLoadingIndicatior.next(false);
+            this.closeConfirmModal.nativeElement.click();
+            this.router.navigate(["/code/defectueux"]);
+          },
+          error=>{
+            this.showNotification('bg-danger',error,'top','center');
+            this.securityServ.showLoadingIndicatior.next(false);
+          }
+        )
+      })
+      return;
+    }
     const approvStatus = this.confirmationValue ? "1" : "2"
     this.securityServ.showLoadingIndicatior.next(true);
     this.immoService.approveAjustement(this.selectedRowData.id, approvStatus).then(
@@ -437,6 +465,22 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   deleteIdInUrl() {
     if (this.route.snapshot.params["id"]) {
       this.router.navigate(["/ajuster/fi"])
+    }
+  }
+
+  async verifCodeExist(code) {
+    if (!code || this.statusImmo != 2) {
+      return;
+    }
+    this.codeExist = 2;
+    this.matchImmo = null;
+    const match = await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}`)
+    const immo = match[0] ?? null;
+    if (immo) {
+      this.matchImmo = immo;
+      this.codeExist = 1;
+    } else {
+      this.codeExist = 0;
     }
   }
 }

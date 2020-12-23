@@ -324,7 +324,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.matchLibelle=""
     const code=this.editForm.value.code
     const id=this.editForm.value.id
-    const match=await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}`)
+    const match=await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}&status[null]=true`)
     const immo=match[0] ?? null
     if(immo && immo.id!=id){
       this.matchLibelle=immo.libelle
@@ -332,7 +332,8 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
       this.openConfirm.nativeElement.click();
       return ''
     }
-    this.save()
+    this.showNotification('bg-danger','Ce code n\'existe pas ou appartient à une immobilisation déjà scannée.','top','center');
+    // this.save()
   }
 
   offMatchedImmo(){

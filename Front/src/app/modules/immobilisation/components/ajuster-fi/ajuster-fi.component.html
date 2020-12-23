@@ -205,7 +205,11 @@
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.code || isUpdate">
                         <mat-form-field class="example-full-width" appearance="outline">
                             <mat-label class="color-black"> Code : </mat-label>
-                            <input matInput  class="color-black" formControlName="code" class="color-black">
+                            <input matInput  class="color-black" formControlName="code" (blur)="verifCodeExist($event.target.value)" class="color-black">
+                            <mat-spinner *ngIf="codeExist == 2" matSuffix [diameter]="18" style="float: right; margin-left: 8px"></mat-spinner>
+                            <em *ngIf="codeExist == 0" class="material-icons" style="position: absolute; right: 0px; top: 5px;">done</em>
+                            <em *ngIf="codeExist == 1" class="material-icons text-danger" style="position: absolute; right: 0px; top: 5px;">close</em>
+                            <mat-hint *ngIf="codeExist == 1" class="text-danger">Ce code appartient déjà à une immobilisation.</mat-hint>
                         </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-2" *ngIf="selectedRowData?.numeroOrdre || isUpdate">

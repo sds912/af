@@ -162,6 +162,10 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     if (this.statusImmo == -1) {
       filters = `&status[null]=true`;
     }
+
+    if (this.statusImmo == -2) {
+      filters = null;
+    }
     this.getImmobilisations(this.page, filters);
   }
 
@@ -599,8 +603,10 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     }
     console.log(dataExport);
     this.entrepriseService.exportImmobilisations(dataExport).subscribe((res: any) => {
-      const blobData = this.convertBase64ToBlobData(res['file']);
-      fs.saveAs(blobData, res['fileName']);
+      if (res && res != null) {
+        const blobData = this.convertBase64ToBlobData(res['file']);
+        fs.saveAs(blobData, res['fileName']);
+      }
     });
     return;
     const data:selectRowInterface[]=this.allImmos

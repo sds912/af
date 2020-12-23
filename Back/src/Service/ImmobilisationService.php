@@ -165,7 +165,7 @@ class ImmobilisationService
         $immobilisations = $this->entityManager->getRepository(Immobilisation::class)->findBy([
             'entreprise' => $entreprise->getId(),
             'inventaire' => $inventaire->getId()
-        ], ['id' => 'ASC'], 1000, 0);
+        ]);
 
         $head = ["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date de comptage"];
         $alphabets = range('A', 'Z');
@@ -183,13 +183,16 @@ class ImmobilisationService
             $sheet->getColumnDimension($letter)->setAutoSize(true);
         }
         $sheet->getStyle('A:U')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("A1:U1")->getFont()->setBold(true);
 
         $row = 1;
         foreach ($immobilisations as $immobilisation) {
             $row++;
             $this->addRow($sheet, $row, $immobilisation);
-            // $sheet->getStyle('A'.$row.':U'.$row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF0000FF');
             $sheet->getStyle('A'.$row.':U'.$row)->getFont()->getColor()->setARGB($sheetColor::COLOR_BLACK);
+            if ($immobilisation->getStatus() && (in_array($immobilisation->getStatus(), [0, 2, 3]) || ($immobilisation->getStatus() == 1 && $immobilisation->getIsMatched()))) {
+                $sheet->getStyle('A'.$row.':U'.$row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($sheetColor::COLOR_YELLOW);
+            }
         }
         
         // Create your Office 2007 Excel (XLSX Format)
@@ -213,8 +216,8 @@ class ImmobilisationService
         $sheet->setCellValue('D'.$row, $immobilisation->getCompteAmort());
         $sheet->setCellValue('E'.$row, $immobilisation->getEmplacement());
         $sheet->setCellValue('F'.$row, $immobilisation->getEndLibelle());
-        $sheet->setCellValue('G'.$row, $immobilisation->getDateAcquisition()->format('dd/M/Y'));
-        $sheet->setCellValue('H'.$row, $immobilisation->getDateMiseServ()->format('dd/M/Y'));
+        $sheet->setCellValue('G'.$row, $immobilisation->getDateAcquisition() ? $immobilisation->getDateAcquisition()->format('d/m/Y') : '');
+        $sheet->setCellValue('H'.$row, $immobilisation->getDateMiseServ() ? $immobilisation->getDateMiseServ()->format('d/m/Y') : '');
         $sheet->setCellValue('I'.$row, $immobilisation->getDureeUtilite());
         $sheet->setCellValue('J'.$row, $immobilisation->getTaux() ?? 0);
         $sheet->setCellValue('K'.$row, $immobilisation->getValOrigine() ?? 0);
@@ -223,11 +226,11 @@ class ImmobilisationService
         $sheet->setCellValue('N'.$row, $immobilisation->getVnc() ?? 0);
         $sheet->setCellValue('O'.$row, $immobilisation->getEtat());
         $sheet->setCellValue('P'.$row, $this->getStatus($immobilisation->getStatus()));
-        $sheet->setCellValue('Q'.$row, $immobilisation->getEndEtat() == 0 ? 'Mauvais état' : 'Bon état');
-        $sheet->setCellValue('R'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getName() : "");
+        $sheet->setCellValue('Q'.$row, $this->getEtat($immobilisation->getEndEtat()));
+        $sheet->setCellValue('R'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getNom() : "");
         $sheet->setCellValue('S'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getId() : "");
         $sheet->setCellValue('T'.$row, $immobilisation->getLecteur() ? $immobilisation->getLecteur()->getNom() : "");
-        $sheet->setCellValue('U'.$row, $immobilisation->getDateLecture() ? $immobilisation->getDateLecture()->format('dd/M/Y') : "");
+        $sheet->setCellValue('U'.$row, $immobilisation->getDateLecture() ? $immobilisation->getDateLecture()->format('d/m/Y') : "");
     }
 
     public function getStatus($status)
@@ -254,5 +257,13 @@ class ImmobilisationService
                 break;
         }
         return $text;
+    }
+
+    public function getEtat($etat)
+    {
+        if ($etat == null) {
+            return '';
+        }
+        return $etat == 0 ? 'Mauvais état' : 'Bon état';
     }
 }
