@@ -700,9 +700,11 @@ class SharedController extends AbstractController
 
         $user = $this->getUser();
 
-        $inventaire= $this->repoInv->find($data['id']);
+        $inventaire = $this->repoInv->find($data['inventaire']);
 
-        if (!$user->inEntreprise($inventaire->getEntreprise())) {
+        $entreprise = $this->repoEse->find($data['entreprise']);
+
+        if (!$user->inEntreprise($entreprise) || $inventaire->getEntreprise()->getId() != $entreprise->getId()) {
             return $this->json([], 200);
         }
 
@@ -755,10 +757,10 @@ class SharedController extends AbstractController
         $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
-        $allUsers = $inventaire->getEntreprise()->getUsers();
+        $allUsers = $this->repoUser->findBy(['currentEse' => $inventaire->getEntreprise()->getId(), 'status' => 'actif']);
         $prisConnaissance = count($approv);
 
-        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => (count($allUsers) - 1) - $prisConnaissance];
+        $instructions = ['prisConnaissance' => $prisConnaissance, 'pasPrisConnaissance' => count($allUsers) - $prisConnaissance];
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);

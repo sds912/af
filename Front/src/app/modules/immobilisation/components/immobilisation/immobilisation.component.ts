@@ -217,13 +217,15 @@ export class ImmobilisationComponent implements OnInit {
   getImportProgression() {
     this.entrepriseService.importProgession(localStorage.getItem("currentEse"), 'immobilisations').subscribe((res: any) => {
       this.loadingPercent = res;
-      if (res <= 100) {
+      if (res < 100) {
         setTimeout(() => {
           this.getImportProgression();
         }, 1000);
       } else {
-        this.loadingPercent = -1;
-        this.getImmobilisations(1);
+        setTimeout(() => {
+          this.loadingPercent = -1;
+          this.getImmobilisations(1);
+        }, 2000);
       }
     })
   }
@@ -231,8 +233,6 @@ export class ImmobilisationComponent implements OnInit {
   formatSubtitle (percent: number):string {
     if(percent >= 100){
       return "Chargement términé!"
-    }else if(percent >= 50){
-      return "Half"
     }else if(percent > 0){
       return "Chargement des données"
     }else {

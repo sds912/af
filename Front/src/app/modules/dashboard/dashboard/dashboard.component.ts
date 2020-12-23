@@ -165,8 +165,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private refreshData(): void {
-    if (this.idCurrentInv) {
-      this.dashboardService.getData(this.idCurrentInv).then((data: any) => {
+    if (this.idCurrentInv && this.idCurrentEse) {
+      this.dashboardService.getData(this.idCurrentInv, this.idCurrentEse).then((data: any) => {
         this.dataZones = data.zones;
         this.dataInstructions = data.instructions;
         this.dataInventairesCloses = data.inventairesCloses;
@@ -182,8 +182,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.idCurrentEse = localStorage.getItem("currentEse")
     this.inventaireServ.getInventaireByEse(this.idCurrentEse).then(rep => {
       this.inventaires = rep?.reverse();
-      console.log(this.inventaires);
       this.idCurrentInv = this.inventaires[0]?.id;
+      const inv = this.inventaires[0];
+      if (!inv || (inv && inv.entreprise.id != this.idCurrentEse)) {
+        this.securityServ.showLoadingIndicatior.next(false);
+        return;
+      }
       this.localites = this.inventaires[0]?.localites;
       this.getPlanningByInv(this.idCurrentInv);
       this.refreshData();
@@ -309,7 +313,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   getPlanningByInv(id:number){
-    this.planingService.getAffectations("?inventaire.id="+id).then((rep: any) => {
+    if (!this.idCurrentEse) {
+      return false;
+    }
+    this.planingService.getAffectations(`?inventaire.id=${id}`).then((rep: any) => {
         if (!rep || rep.length <= 0) {
           return;
         }

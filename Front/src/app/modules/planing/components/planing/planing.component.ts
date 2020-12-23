@@ -106,6 +106,7 @@ export class PlaningComponent implements OnInit {
     public securityServ: SecurityService,) {}
 
   ngOnInit(): void {
+    this.localites = [];
     this.imgLink = this.sharedService.baseUrl + "/images/"
     this.myId = localStorage.getItem('idUser')
     this.idCurrentEse=localStorage.getItem("currentEse")
@@ -316,7 +317,7 @@ export class PlaningComponent implements OnInit {
         this.inventaires = rep?.reverse()
         this.currentInv=rep?rep[0]:null
         this.idCurrentInv=this.currentInv?.id
-        this.localites = this.currentInv?.localites
+        // this.localites = this.currentInv?.localites
         if(this.idCurrentInv){
           this.getAffectationByInv(this.idCurrentInv)
         }
@@ -334,6 +335,9 @@ export class PlaningComponent implements OnInit {
         console.log(rep);
         this.affectations=this.lastAffectationLoc(rep)
         console.log(this.affectations);
+        this.affectations.forEach((aff: any) => {
+          this.localites.push(aff.localite);
+        })
         
         this.affectationsTampo=this.affectations
         this.mapToEvent(this.affectations);

@@ -8,7 +8,7 @@ export class DashboardService {
 
   constructor(private sharedService: SharedService) { }
 
-  getData(idInventaire: string) {
-    return this.sharedService.postElement({id: idInventaire}, '/dashbord');
+  getData(idInventaire: string, idEntreprise: string) {
+    return this.sharedService.postElement({inventaire: idInventaire, entreprise: idEntreprise}, '/dashbord');
   }
 }

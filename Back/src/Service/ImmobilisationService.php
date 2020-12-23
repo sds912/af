@@ -142,7 +142,7 @@ class ImmobilisationService
 
             $this->entityManager->flush();
 
-            return $importedFile;
+            return $importedFile->getProgression();
         }
 
         $totalImmobilisations = $this->entityManager->getRepository(Immobilisation::class)->getCountImmobilisations($entreprise->getId());
