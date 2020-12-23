@@ -80,6 +80,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   firstLoad: boolean;
   page: number;
   totalItems: number;
+  currentFilters: any;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -114,16 +115,23 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.idCurrentInv = localStorage.getItem("currentInv");
     // this.getInventaireByEse();
     this.totalItems = 0;
-    this.getImmobilisations(1);
+    this.page = 1;
+    this.currentFilters = null;
+    this.refreshData();
     this.sameComponent()
     this.getOneEntreprise()
   }
 
   getImmobilisations(_page: number, filters?: any) {
-    this.page = _page;
-    this.securityServ.showLoadingIndicatior.next(true);
+    if (this.firstLoad) {
+      this.securityServ.showLoadingIndicatior.next(true);
+      this.firstLoad = false;
+    }
 
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, filters).then((res: any) => {
+    this.page = _page;
+    this.currentFilters = filters;
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, this.currentFilters).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || 
@@ -163,11 +171,11 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     }
   }
   private subscribeToData(): void {
-    this.timerSubscription = combineLatest(timer(2000)).subscribe(() => this.refreshData());
+    this.timerSubscription = combineLatest(timer(3000)).subscribe(() => this.refreshData());
   }
   private refreshData(): void {
-    this.getImmos();
-    // this.subscribeToData();
+    this.getImmobilisations(this.page, this.currentFilters);
+    this.subscribeToData();
   }
   sameComponent(){
     this.router.events.subscribe((event) => {
