@@ -58,7 +58,7 @@ class ImmobilisationService
 
         foreach ($sheetData as $i => $row) {
             $interval = $startDate->diff(new \DateTime('now'));
-            error_log(json_encode([$row['A'], $i, $startDate->format('H:i:s'), $interval->format('%h')."h ".$interval->format('%i')."m ".$interval->format('%s')."s"]));
+            // error_log(json_encode([$row['A'], $i, $startDate->format('H:i:s'), $interval->format('%h')."h ".$interval->format('%i')."m ".$interval->format('%s')."s"]));
 
             if (!$row['A'] || !$row['B'] || strpos($insertedCodes, $row['B']) !== false) {   
                 continue;
@@ -160,6 +160,7 @@ class ImmobilisationService
         return $progression;
     }
 
+    /** @TOTO::REFACTORE */
     public function exportImmobilisations($entreprise, $inventaire, $data)
     {
         $immobilisations = $this->entityManager->getRepository(Immobilisation::class)->findBy([
@@ -176,22 +177,37 @@ class ImmobilisationService
         /** @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle("Immobilisations");
+        $styleArray = [
+            'borders' => [
+                  'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, //fine border
+                    // 'color' => array('argb' => 'FFFF0000'),
+                ]
+            ]
+        ];
+
+        $sheet->getStyle('A:U')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('A:U')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
         foreach ($head as $key => $value) {
             $letter = $alphabets[$key];
             $sheet->setCellValue($letter.'1', $value);
             $sheet->getColumnDimension($letter)->setAutoSize(true);
+            $sheet->getRowDimension('1')->setRowHeight(20);
         }
-        $sheet->getStyle('A:U')->getAlignment()->setHorizontal('center');
         $sheet->getStyle("A1:U1")->getFont()->setBold(true);
+        $sheet->getStyle('A1:U1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('eeeeee');
+
 
         $row = 1;
         foreach ($immobilisations as $immobilisation) {
             $row++;
             $this->addRow($sheet, $row, $immobilisation);
+            $sheet->getRowDimension($row)->setRowHeight(20);
             $sheet->getStyle('A'.$row.':U'.$row)->getFont()->getColor()->setARGB($sheetColor::COLOR_BLACK);
             if ($immobilisation->getStatus() && (in_array($immobilisation->getStatus(), [0, 2, 3]) || ($immobilisation->getStatus() == 1 && $immobilisation->getIsMatched()))) {
                 $sheet->getStyle('A'.$row.':U'.$row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($sheetColor::COLOR_YELLOW);
+                $sheet->getStyle('A'.$row.':U'.$row)->applyFromArray($styleArray);
             }
         }
         
@@ -227,7 +243,7 @@ class ImmobilisationService
         $sheet->setCellValue('O'.$row, $immobilisation->getEtat());
         $sheet->setCellValue('P'.$row, $this->getStatus($immobilisation->getStatus()));
         $sheet->setCellValue('Q'.$row, $this->getEtat($immobilisation->getEndEtat()));
-        $sheet->setCellValue('R'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getNom() : "");
+        $sheet->setCellValue('R'.$row, $this->getLocaliteAsPath($immobilisation->getLocalite()));
         $sheet->setCellValue('S'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getId() : "");
         $sheet->setCellValue('T'.$row, $immobilisation->getLecteur() ? $immobilisation->getLecteur()->getNom() : "");
         $sheet->setCellValue('U'.$row, $immobilisation->getDateLecture() ? $immobilisation->getDateLecture()->format('d/m/Y') : "");
@@ -265,5 +281,19 @@ class ImmobilisationService
             return '';
         }
         return $etat == 0 ? 'Mauvais état' : 'Bon état';
+    }
+
+    public function getLocaliteAsPath($localite)
+    {
+        if (!$localite) {
+            return '';
+        }
+        $nom = $localite->getNom();
+        while ($localite->getParent()) {
+            $localite = $localite->getParent();
+            $nom = $localite->getNom()." - ".$nom;
+        }
+
+        return $nom;
     }
 }

@@ -477,7 +477,6 @@ class SharedController extends AbstractController
     * @Route("/mobile/data", methods={"POST"})
     */
     public function treatmentMobileFile(Request $request,MobileTokenRepository $tokenRepo){
-        error_log(json_encode(Shared::getData($request)));
         $data=Shared::getData($request)['inventaire'];
         $inventaire=$this->repoInv->find($data['id']);
         $this->treatmentNewLoc($data,$inventaire,$tokenRepo);

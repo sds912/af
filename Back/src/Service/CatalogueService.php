@@ -71,7 +71,7 @@ class CatalogueService
                         $em->getConfiguration()
                     );
                 }
-                error_log($th->getMessage());
+                // error_log($th->getMessage());
                 continue;
             }
         }
