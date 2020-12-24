@@ -105,9 +105,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);
-        if (this.data.length != this.allImmos.length) {
-          this.setData(this.allImmos);
-        }
+        this.setData(this.allImmos);
         this.securityServ.showLoadingIndicatior.next(false);
       }
       this.securityServ.showLoadingIndicatior.next(false);

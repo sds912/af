@@ -230,6 +230,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     this.details = false
     this.showPhoto = false
     this.isUpdate = true
+    this.codeExist == -1;
     this.editRow(row, false)
   }
 

@@ -570,12 +570,13 @@ class SharedController extends AbstractController
                 }
             }
             else{
-                $im=$this->repoImmo->findOneBy(['libelle'=>$immo["libelle"],'code'=>$immo["code"],'description'=>$immo["description"],'inventaire'=>$inventaire]);
+                $recordKey = $immo["libelle"].'-'.$immo["code"].'-'.$immo["description"].$inventaire->getId();
+                $im=$this->repoImmo->findOneBy(['recordKey'=>$recordKey]);
                 if($im){
                     $immobilisation=$im;
                 }
                 $immobilisation->setLibelle($immo["libelle"])->setEndLibelle($immo["libelle"])->setDescription($immo["description"])
-                ->setEndDescription($immo["description"])->setInventaire($inventaire)->setEntreprise($inventaire->getEntreprise());
+                ->setEndDescription($immo["description"])->setInventaire($inventaire)->setEntreprise($inventaire->getEntreprise())->setRecordKey($recordKey);
                 if ($immo['code'] != '') {
                     $immobilisation->setCode($immo["code"]);
                 }
@@ -594,7 +595,9 @@ class SharedController extends AbstractController
               $loc->setIdTampon(null);/** init because other phone can take the same */ 
               $immobilisation->setLocalite($loc);
             }
-            $this->manager->persist($immobilisation);
+            if ($immobilisation->getId() == null) {
+                $this->manager->persist($immobilisation);
+            }
         }
     }
     public function notiSG($newLoc,$data){
