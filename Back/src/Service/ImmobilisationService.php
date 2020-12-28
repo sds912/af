@@ -201,13 +201,15 @@ class ImmobilisationService
 
         $row = 1;
         foreach ($immobilisations as $immobilisation) {
-            $row++;
-            $this->addRow($sheet, $row, $immobilisation);
-            $sheet->getRowDimension($row)->setRowHeight(20);
-            $sheet->getStyle('A'.$row.':U'.$row)->getFont()->getColor()->setARGB($sheetColor::COLOR_BLACK);
-            if ($immobilisation->getStatus() && (in_array($immobilisation->getStatus(), [0, 2, 3]) || ($immobilisation->getStatus() == 1 && $immobilisation->getIsMatched()))) {
-                $sheet->getStyle('A'.$row.':U'.$row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($sheetColor::COLOR_YELLOW);
-                $sheet->getStyle('A'.$row.':U'.$row)->applyFromArray($styleArray);
+            if (!$immobilisation->getStatus() || $immobilisation->getStatus()!=3 && $immobilisation->getStatus()!=2 && $immobilisation->getStatus()!=0 || $immobilisation->getStatus()==3 && !$immobilisation->getIsMatched() || ($immobilisation->getStatus()==2||$immobilisation->getStatus()==0) && $immobilisation->getApprovStatus()==1) {
+                $row++;
+                $this->addRow($sheet, $row, $immobilisation);
+                $sheet->getRowDimension($row)->setRowHeight(20);
+                $sheet->getStyle('A'.$row.':U'.$row)->getFont()->getColor()->setARGB($sheetColor::COLOR_BLACK);
+                if ($immobilisation->getStatus() != null && (in_array($immobilisation->getStatus(), [0, 2, 3]) || ($immobilisation->getStatus() == 1 && $immobilisation->getIsMatched()))) {
+                    $sheet->getStyle('A'.$row.':U'.$row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($sheetColor::COLOR_YELLOW);
+                    $sheet->getStyle('A'.$row.':U'.$row)->applyFromArray($styleArray);
+                }
             }
         }
         
@@ -241,7 +243,7 @@ class ImmobilisationService
         $sheet->setCellValue('M'.$row, $immobilisation->getCumulAmortiss() ?? 0);
         $sheet->setCellValue('N'.$row, $immobilisation->getVnc() ?? 0);
         $sheet->setCellValue('O'.$row, $immobilisation->getEtat());
-        $sheet->setCellValue('P'.$row, $this->getStatus($immobilisation->getStatus()));
+        $sheet->setCellValue('P'.$row, $this->getStatus($immobilisation));
         $sheet->setCellValue('Q'.$row, $this->getEtat($immobilisation->getEndEtat()));
         $sheet->setCellValue('R'.$row, $this->getLocaliteAsPath($immobilisation->getLocalite()));
         $sheet->setCellValue('S'.$row, $immobilisation->getLocalite() ? $immobilisation->getLocalite()->getId() : "");
@@ -249,10 +251,16 @@ class ImmobilisationService
         $sheet->setCellValue('U'.$row, $immobilisation->getDateLecture() ? $immobilisation->getDateLecture()->format('d/m/Y') : "");
     }
 
-    public function getStatus($status)
+    public function getStatus($immobilisation)
     {
+        $status = $immobilisation->getStatus();
+
         if ($status == null) {
             return "Immobilisations non scannées";
+        }
+
+        if ($status==1 && $immobilisation->getIsMatched()) {
+            $status = 3;
         }
 
         switch ($status) {
