@@ -67,11 +67,11 @@ class ExportController
             $customData['inventaire'] = $inventaire->getId();
         }
 
-        if ($downloadKey) {
+        if ($downloadKey != '') {
             return $this->downloadFile($downloadKey);
         }
+
         $bytes = random_bytes(15);
-        // Create imported file
         $exportedFile = new ExportedFile();
         $exportedFile
             ->setCle(bin2hex($bytes))

@@ -209,9 +209,9 @@ export class ImmobilisationComponent implements OnInit {
     this.entrepriseService.importImmobilisations(formData).subscribe((res: any) => {
       this.showNotification('bg-info', res, 'top', 'center')
       evt.target.value = '';
-      setTimeout(() => {
-        this.getImportProgression();
-      }, 5000);
+      // setTimeout(() => {
+      //   this.getImportProgression();
+      // }, 5000);
     })
   }
 
