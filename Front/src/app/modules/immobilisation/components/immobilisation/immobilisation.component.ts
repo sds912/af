@@ -205,6 +205,7 @@ export class ImmobilisationComponent implements OnInit {
     formData.append('table', 'immobilisations');
     formData.append('entreprise', localStorage.getItem("currentEse"));
     formData.append('inventaire', localStorage.getItem("currentInv"));
+    this.loadingPercent = 0;
     this.entrepriseService.importImmobilisations(formData).subscribe((res: any) => {
       this.showNotification('bg-info', res, 'top', 'center')
       evt.target.value = '';

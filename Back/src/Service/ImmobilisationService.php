@@ -161,8 +161,21 @@ class ImmobilisationService
     }
 
     /** @TOTO::REFACTORE */
-    public function exportImmobilisations($entreprise, $inventaire, $data)
+    public function exportImmobilisations($_entreprise, $_inventaire)
     {
+        /**
+         * @var Entreprise
+         */
+        $entreprise = $this->entityManager->getRepository(Entreprise::class)->find($_entreprise);
+
+        /**
+         * @var Inventaire
+         */
+        $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($_inventaire);
+
+        /**
+         * @var Immobilisation[]
+         */
         $immobilisations = $this->entityManager->getRepository(Immobilisation::class)->findBy([
             'entreprise' => $entreprise->getId(),
             'inventaire' => $inventaire->getId()
@@ -173,31 +186,12 @@ class ImmobilisationService
 
         $spreadsheet = new Spreadsheet();
         $sheetColor = new Color();
-        
-        /** @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle("Immobilisations");
         $styleArray = [
-            'borders' => [
-                  'allBorders' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, //fine border
-                    // 'color' => array('argb' => 'FFFF0000'),
-                ]
-            ]
+            'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]]
         ];
 
-        $sheet->getStyle('A:U')->getAlignment()->setHorizontal('center');
-        $sheet->getStyle('A:U')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-
-        foreach ($head as $key => $value) {
-            $letter = $alphabets[$key];
-            $sheet->setCellValue($letter.'1', $value);
-            $sheet->getColumnDimension($letter)->setAutoSize(true);
-            $sheet->getRowDimension('1')->setRowHeight(20);
-        }
-        $sheet->getStyle("A1:U1")->getFont()->setBold(true);
-        $sheet->getStyle('A1:U1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('eeeeee');
-
+        /** @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $this->initSpreadsheet($spreadsheet, $head, $alphabets);
 
         $row = 1;
         foreach ($immobilisations as $immobilisation) {
@@ -223,7 +217,29 @@ class ImmobilisationService
         // Create the excel file in the tmp directory of the system
         $writer->save($temp_file);
 
-        return ['fileName' => $fileName, 'temp_file' => $temp_file];
+        return ['fileName' => $fileName, 'tempFile' => $temp_file];
+    }
+
+    public function initSpreadsheet($spreadsheet, $head, $alphabets)
+    {
+        /** @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setTitle("Immobilisations");
+
+        $sheet->getStyle('A:U')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('A:U')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        foreach ($head as $key => $value) {
+            $letter = $alphabets[$key];
+            $sheet->setCellValue($letter.'1', $value);
+            $sheet->getColumnDimension($letter)->setAutoSize(true);
+            $sheet->getRowDimension('1')->setRowHeight(20);
+        }
+        $sheet->getStyle("A1:U1")->getFont()->setBold(true);
+        $sheet->getStyle('A1:U1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('eeeeee');
+
+        return $sheet;
     }
 
     public function addRow(&$sheet, $row, $immobilisation)

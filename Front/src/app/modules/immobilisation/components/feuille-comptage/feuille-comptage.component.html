@@ -35,7 +35,7 @@
                                     <ul class="header-buttons m-r-20">
                                         <li *ngIf="afterAjustement">
                                             <div class="icon-button-demo">
-                                                <button mat-mini-fab color="success"  class="mr-4" (click)="generateExcel()" title="Exporter le fichier des immobilisations ajusté au {{ getExcelDate() }}">
+                                                <button [disabled]="dowloadLoading" mat-mini-fab color="success"  class="mr-4" (click)="generateExcel()" title="Exporter le fichier des immobilisations ajusté au {{ getExcelDate() }}">
                                                     <!-- <mat-icon class="col-white">file_upload</mat-icon> -->
                                                     <i class="fas icon-download fa-file-excel fa-2x"></i>
                                                 </button>

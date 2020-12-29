@@ -81,6 +81,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   page: number;
   totalItems: number;
   currentFilters: any;
+  dowloadLoading: boolean;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -595,91 +596,39 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
-  generateExcel(){
+
+  subscribeDownload(dataExport) {
+    this.entrepriseService.exportImmobilisations(dataExport).subscribe((res: any) => {
+      if (res && res['file'] != '') {
+        const blobData = this.convertBase64ToBlobData(res['file']);
+        this.dowloadLoading = false;
+        this._snackBar.dismiss();
+        fs.saveAs(blobData, res['fileName']);
+      } else {
+        setTimeout(() => {
+          this.subscribeDownload(dataExport);
+        }, 3000);
+      }
+    });
+  }
+  
+  generateExcel() {
     const dataExport = {
       table: 'immobilisations',
       entreprise: this.idCurrentEse,
-      inventaire: this.idCurrentInv
+      inventaire: this.idCurrentInv,
+      cle: ''
     }
-    console.log(dataExport);
+    this.dowloadLoading = true;
+    this._snackBar.open('Téléchargement en cours... ', '', {
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+    });
     this.entrepriseService.exportImmobilisations(dataExport).subscribe((res: any) => {
-      if (res && res != null) {
-        const blobData = this.convertBase64ToBlobData(res['file']);
-        fs.saveAs(blobData, res['fileName']);
+      if (res && res['status'] == 1) {
+        dataExport.cle = res['cle'];
+        this.subscribeDownload(dataExport);
       }
-    });
-    return;
-    const data:selectRowInterface[]=this.allImmos
-    //https://www.ngdevelop.tech/export-to-excel-in-angular-6/
-    let workbook = new Excel.Workbook();
-    let worksheet = workbook.addWorksheet('Immobilisations'); //nouvelle feuille
-    let headerRow = worksheet.addRow(["Numéro d'ordre","Code","Compte d'immobilisation","Compte d'amortissement","Emplacement théorique","Description","Date d'acquisition","Date de mise en service","Durée d'utilité","Taux","Valeur d'origine","Dotation de l'exercice","Amortissements cumulés","VNC","Etat du bien théorique","Statut du bien","Etat réel du bien","Emplacement réel","ID localité","Lecteur","Date de comptage"]);//une ligne et les colonnes
-    worksheet.getColumn('A').width = 20;
-    worksheet.getColumn('C').width = 30;
-    worksheet.getColumn('B').width = 30;
-    worksheet.getColumn('D').width = 30;
-    worksheet.getColumn('E').width = 30;
-    worksheet.getColumn('F').width = 40;
-    worksheet.getColumn('G').width = 20;
-    worksheet.getColumn('H').width = 27;
-    worksheet.getColumn('I').width = 15;
-    worksheet.getColumn('J').width = 15;
-    worksheet.getColumn('K').width = 20;
-    worksheet.getColumn('L').width = 30;
-    worksheet.getColumn('M').width = 30;
-    worksheet.getColumn('N').width = 20;
-    worksheet.getColumn('O').width = 27;
-    worksheet.getColumn('P').width = 50;
-    worksheet.getColumn('Q').width = 20;
-    worksheet.getColumn('R').width = 50;
-    worksheet.getColumn('S').width = 15;
-    worksheet.getColumn('T').width = 25;
-    worksheet.getColumn('U').width = 20;
-    headerRow.eachCell((cell, number) => {//pour chaque cellules de l'entete
-       cell.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: { argb: 'eeeeee' },
-         bgColor: { argb: 'eeeeee' }
-         //https://www.colorhexa.com/d5d5cf
-       }
-       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }//pour la bordure
-       cell.font = {size: 13, bold: true };
-    });
-    data.forEach(d => {
-      if(!d.status || d.status!=3 && d.status!=2 && d.status!=0 || d.status==3 && !d.isMatched || (d.status==2||d.status==0) && d.approvStatus==1){
-        let status=this.getStatus(d.status)//si match avec immo code def changer
-        if(d.status==1 && d.isMatched){
-          status=this.getStatus(3)
-          //le colorier
-        }
-        let row = worksheet.addRow([
-          d.numeroOrdre??" ",d.code??" ",d.compteImmo??" ",d.compteAmort??" ",d.emplacement??" ",d.endLibelle??" ",this.formattedDate(d.dateAcquisition)??" ",this.formattedDate(d.dateMiseServ)??" ",d.dureeUtilite??" ",d.taux??0,
-          d.valOrigine??0,d.dotation??0,d.cumulAmortiss??0,d.vnc??0,d.etat??" ",d.status?status:"Immobilisations non scannées",d.status?this.getEtat(d.endEtat):" ",d.localite?this.locName(d.localite?.id):" ",
-          d.localite?.id??" ",d.lecteur?.nom??" ",d.dateLecture?this.formattedDate(d.dateLecture):" "]
-        );
-        row.eachCell((cell, number) =>cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } })
-        const cas0=d.status==0
-        const cas1=d.status==1 && d.isMatched
-        const cas2=d.status==2
-        const cas3=d.status==3
-        if(cas0 || cas1 || cas2 || cas3){
-          row.eachCell((cell, number) => {//pour chaque cellules de l'entete
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFFFFF00' },
-              bgColor: { argb: 'FF0000FF' }
-            }
-          });
-        }
-      
-      }
-    });
-    
-    workbook.xlsx.writeBuffer().then((data) => {
-       let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });       
-       fs.saveAs(blob, `Fichier des immobilisations ajusté au ${this.getExcelDate()}.xlsx`);
     });    
   }
   getExcelDate():string{

@@ -111,7 +111,7 @@
                                 <li class="list-group-item bolder entete">{{getOneById(displayedTab.id)?.nom}}</li>
                                 <li class="list-group-item italic" *ngIf="subdivisions[displayedTab.level]">{{subdivisions[displayedTab.level]}} :</li>
                                 <li class="list-group-item pl-2 pick-loc pic-localite-{{displayedTab.level}} chip-localite-{{displayedTab.level}}" *ngFor="let sub of filterByTab(displayedTab);" [hidden]="!inInvLoc(sub.id) || hiddenLoc(sub)" [ngClass]="{'error-row': idLocError==sub.id}">
-                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="inTab(sub.id,tabLoc)">
+                                    <mat-checkbox [disabled]="!update || securityServ.superviseurGene" class="example-margin pt-2" (change)="checkLoc(sub)" [checked]="isChecked(sub)">
                                         {{sub.nom}}
                                     </mat-checkbox>
                                     <button mat-mini-fab class="pull-right bg-white text-primary" title="Définir une période" (click)="openAffectation(sub.id)" *ngIf="inTab(sub.id,tabLoc) && !securityServ.superviseurGene">

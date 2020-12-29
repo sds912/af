@@ -68,7 +68,7 @@ class ImportController
         $inventaire = $request->request->get('inventaire');
 
         $this->validateEntreprise($entreprise);
-            $customData['entreprise'] = $entreprise->getId();
+        $customData['entreprise'] = $entreprise->getId();
 
         if ($inventaire != '') {
             $this->validateInventaire($inventaire);

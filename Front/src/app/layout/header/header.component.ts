@@ -437,6 +437,7 @@ export class HeaderComponent implements OnInit {
       const mercureAuthorization=localStorage.getItem('mercureAuthorization')
       const eventSource = new EventSourcePolyfill(url.toString(), {headers: {Authorization: mercureAuthorization} });
       eventSource.onmessage = e => {
+        console.log(e);
         if(type=="notification") {
           this.getNotif()
           this.getCountNew()

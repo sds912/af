@@ -39,22 +39,22 @@
 
 # 4) Ajouter le virtualhost front (angular)
 	
-<VirtualHost *:80>
-	ServerName front-test.inventaire.asma-technologies.fr
-	DocumentRoot "/var/www/projet_01/test/html/Front/dist/light"
-	ErrorLog "/var/www/projet_01/test/html/Front/dist/light/projet_01_test-error.log"
-	CustomLog "/var/www/projet_01/test/html/Front/dist/light/projet_01_test-access.log" common
-	<Directory /var/www/projet_01/test/html/Front/dist/light>
-	    RewriteEngine On
-	    # If an existing asset or directory is requested go to it as it is
-	    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
-	    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
-	    RewriteRule ^ - [L]
+	<VirtualHost *:80>
+		ServerName front-test.inventaire.asma-technologies.fr
+		DocumentRoot "/var/www/projet_01/test/html/Front/dist/light"
+		ErrorLog "/var/www/projet_01/test/html/Front/dist/light/projet_01_test-error.log"
+		CustomLog "/var/www/projet_01/test/html/Front/dist/light/projet_01_test-access.log" common
+		<Directory /var/www/projet_01/test/html/Front/dist/light>
+			RewriteEngine On
+			# If an existing asset or directory is requested go to it as it is
+			RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+			RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+			RewriteRule ^ - [L]
 
-	    # If the requested resource doesn't exist, use index.html
-	    RewriteRule ^ /index.html
-	</Directory>
-</VirtualHost>
+			# If the requested resource doesn't exist, use index.html
+			RewriteRule ^ /index.html
+		</Directory>
+	</VirtualHost>
 
 
 	

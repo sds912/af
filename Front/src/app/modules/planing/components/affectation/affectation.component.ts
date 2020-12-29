@@ -491,6 +491,23 @@ export class AffectationComponent implements OnInit {
   inTab(valeur, tab) {
     return tab?.find(id => id == valeur);
   }
+  isChecked(loc) {
+    if (!('affectations' in loc)) {
+      return false;
+    }
+    let isChecked = this.tabLoc.find(idLoc => idLoc == loc.id);
+
+    const index = loc?.affectations.findIndex(
+      (affectation: any) => affectation.inventaire == `/api/inventaires/${this.idCurrentInv}` && affectation.user.id == this.currentUser.id
+    );
+
+    if (!isChecked && index != -1) {
+      this.tabLoc.push(loc.id);
+      isChecked = true;
+    }
+
+    return isChecked;
+  }
   getOneById(id) {
     let l = this.localites?.find(loc => loc.id == id)
     return l ? l : null

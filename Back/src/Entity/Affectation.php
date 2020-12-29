@@ -25,32 +25,32 @@ class Affectation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"affectation_read"})
+     * @Groups({"affectation_read", "loc_read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="affectations")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"affectation_read"})
+     * @Groups({"affectation_read", "loc_read"})
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="affectations")
-     * @Groups({"affectation_read"})
+     * @Groups({"affectation_read", "loc_read"})
      */
     private $inventaire;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"affectation_read"})
+     * @Groups({"affectation_read", "loc_read"})
      */
     private $debut;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"affectation_read"})
+     * @Groups({"affectation_read", "loc_read"})
      */
     private $fin;
 

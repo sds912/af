@@ -3,14 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Entreprise;
+use App\Entity\ExportedFile;
 use App\Entity\Inventaire;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
-use App\Service\ImmobilisationService;
+use App\Message\ExportedFileMessage;
 use App\Utils\Shared;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ExportController
 {
@@ -25,21 +27,21 @@ class ExportController
     private $user;
 
     /**
-     * @var ImmobilisationService
+     * @var MessageBusInterface
      */
-    private $immobilisationService;
+    private $busDispatcher;
 
 
     public function __construct(
         EntityManagerInterface $entityManager,
         TokenStorageInterface $tokenStorage,
-        ImmobilisationService $immobilisationService
+        MessageBusInterface $busDispatcher
     ) {
         $this->entityManager = $entityManager;
 
         $this->user = $tokenStorage->getToken()->getUser();
 
-        $this->immobilisationService = $immobilisationService;
+        $this->busDispatcher = $busDispatcher;
     }
 
     public function __invoke(Request $request)
@@ -55,32 +57,38 @@ class ExportController
 
         $inventaire = $data['inventaire'];
 
+        $downloadKey = $data['cle'];
+
         $this->validateEntreprise($entreprise);
+        $customData['entreprise'] = $entreprise->getId();
 
         if ($inventaire != '') {
             $this->validateInventaire($inventaire);
+            $customData['inventaire'] = $inventaire->getId();
         }
 
-        try {
-            switch ($table) {
-                case 'immobilisations':
-                    $file = $this->immobilisationService->exportImmobilisations($entreprise, $inventaire, $data);
-                    break;
-    
-                default:
-                    $file = null;
-                    break;
-            }
-
-            $fileName = $file['fileName'];
-
-            $temp_file = $file['temp_file'];
-
-        } catch (\Throwable $th) {
-            return ['Erreur: '.$th->getMessage()];
+        if ($downloadKey) {
+            return $this->downloadFile($downloadKey);
         }
+        $bytes = random_bytes(15);
+        // Create imported file
+        $exportedFile = new ExportedFile();
+        $exportedFile
+            ->setCle(bin2hex($bytes))
+            ->setTargetTable($table)
+            ->setStatus(0)
+            ->setOwner($this->user)
+            ->setDateExport(new \DateTime('now'))
+            ->setEntreprise($entreprise)
+        ;
 
-        return ['file' => base64_encode(file_get_contents($temp_file)), 'fileName' => $fileName];
+        $this->entityManager->persist($exportedFile);
+        $this->entityManager->flush();
+
+        // Dispatch message exported file created
+        $this->busDispatcher->dispatch(new ExportedFileMessage($exportedFile->getId(), $customData));
+
+        return ['status' => 1, 'cle' => $exportedFile->getCle()];
     }
 
     public function validateEntreprise(&$idEntreprise)
@@ -103,5 +111,28 @@ class ExportController
         }
 
         $idInventaire = $inventaire;
+    }
+
+    public function downloadFile($downloadKey) {
+        $exportedFile = $this->entityManager->getRepository(ExportedFile::class)->findOneBy(['cle' => $downloadKey]);
+
+        if (!$exportedFile) {
+            throw new HttpException(404, 'Cette exportation n\'existe pas ou a été supprimé.');
+        }
+
+        if ($exportedFile->getStatus() == 1) {
+            $fileName = $exportedFile->getFileName();
+            $tempFile = $exportedFile->getTmpFile();
+            $this->entityManager->remove($exportedFile);
+            $this->entityManager->flush();
+
+            $content_file = file_get_contents($tempFile);
+
+            unlink($tempFile);
+
+            return ['file' => base64_encode($content_file), 'fileName' => $fileName];
+        }
+
+        return ['file' => '', 'fileName' => ''];
     }
 }

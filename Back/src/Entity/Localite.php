@@ -88,6 +88,7 @@ class Localite
 
     /**
      * @ORM\OneToMany(targetEntity=Affectation::class, mappedBy="localite")
+     * @Groups({"loc_read"})
      */
     private $affectations;
 
