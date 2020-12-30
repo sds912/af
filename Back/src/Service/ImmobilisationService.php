@@ -44,21 +44,15 @@ class ImmobilisationService
          */
         $inventaire = $this->entityManager->getRepository(Inventaire::class)->find($customData['inventaire']);
 
-        // $lastImmobilisation = $this->entityManager->getRepository(Immobilisation::class)->getLastImportedImmobilisation($entreprise->getId());
-
         $batchSize = 40;
 
         $insertedCodes = '';
-
-        // if (!$lastImmobilisation) {
-        //     $insertedCodes = $lastImmobilisation->getRecordKey();
-        // }
 
         $startDate = new \DateTime('now');
 
         foreach ($sheetData as $i => $row) {
             $interval = $startDate->diff(new \DateTime('now'));
-            // error_log(json_encode([$row['A'], $i, $startDate->format('H:i:s'), $interval->format('%h')."h ".$interval->format('%i')."m ".$interval->format('%s')."s"]));
+            error_log(json_encode([$row['A'], $i, $startDate->format('H:i:s'), $interval->format('%h')."h ".$interval->format('%i')."m ".$interval->format('%s')."s"]));
 
             if (!$row['A'] || !$row['B'] || strpos($insertedCodes, $row['B']) !== false) {   
                 continue;
@@ -68,7 +62,7 @@ class ImmobilisationService
 
             $immobilisation = $this->createImmobilisation($row);
 
-            $immobilisation->setEntreprise($entreprise)->setInventaire($inventaire)->setRecordKey($insertedCodes);
+            $immobilisation->setEntreprise($entreprise)->setInventaire($inventaire);
 
             try {
                 $this->entityManager->persist($immobilisation);

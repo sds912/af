@@ -729,6 +729,8 @@ class SharedController extends AbstractController
             $immos=$user->getScanImmos();
         }
 
+        $immosStatus = $this->filterImmos($immos);
+
         $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
         $localites = [];
 
@@ -767,7 +769,68 @@ class SharedController extends AbstractController
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
-        return $this->json(['zones' => $zones, 'immobilisations' => $immos, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
+        return $this->json(['zones' => $zones, 'immobilisations' => $immosStatus, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
+    }
+
+    public function filterImmos($immos)
+    {
+        $totalImmos = count($immos) ?? 0;
+        $dataImmobilisations = [
+            'nonRetrouvees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+            'reconciliees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+            'nonReconciliees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+            'rajoutees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+            'codeBarreDefectueux' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+        ];
+
+        foreach ($immos as $immo) {
+            switch (true) {
+                case $immo->getStatus() == null || $immo->getStatus() == -1: // Immobilisations non retrouvés
+                    $dataImmobilisations['nonRetrouvees']['count'] = $dataImmobilisations['nonRetrouvees']['count'] + 1;
+                    // $dataImmobilisations['nonRetrouvees']['taux'] = floor(($dataImmobilisations['nonRetrouvees']['count'] * 100) / $totalImmos);
+                    $dataImmobilisations['nonRetrouvees']['bon'] = $dataImmobilisations['nonRetrouvees']['bon'] + 1;
+                    break;
+
+                case $immo->getStatus() == 1: // Immobilisations scannées réconciliées
+                    $dataImmobilisations['reconciliees']['count'] = $dataImmobilisations['reconciliees']['count'] + 1;
+                    // $dataImmobilisations['reconciliees']['taux'] = floor(($dataImmobilisations['reconciliees']['count'] * 100) / $totalImmos);
+                    $this->getStatusImmo($dataImmobilisations['reconciliees'], $immo->getEndEtat());
+                    break;
+
+                case $immo->getStatus() == null || $immo->getStatus() == 0: // Immobilisations scannées non réconciliées
+                    $dataImmobilisations['nonReconciliees']['count'] = $dataImmobilisations['nonReconciliees']['count'] + 1;
+                    // $dataImmobilisations['nonReconciliees']['taux'] = floor(($dataImmobilisations['nonReconciliees']['count'] * 100) / $totalImmos);
+                    $this->getStatusImmo($dataImmobilisations['nonReconciliees'], $immo->getEndEtat());
+                    break;
+
+                case $immo->getStatus() == 2: // Immobilisations rajoutées
+                    $dataImmobilisations['rajoutees']['count'] = $dataImmobilisations['rajoutees']['count'] + 1;
+                    // $dataImmobilisations['rajoutees']['taux'] = floor(($dataImmobilisations['rajoutees']['count'] * 100) / $totalImmos);
+                    $this->getStatusImmo($dataImmobilisations['rajoutees'], $immo->getEndEtat());
+                    break;
+
+                case $immo->getStatus() == 3: // Immobilisations avec un code barre défectueux
+                    $dataImmobilisations['codeBarreDefectueux']['count'] = $dataImmobilisations['codeBarreDefectueux']['count'] + 1;
+                    // $dataImmobilisations['codeBarreDefectueux']['taux'] = floor(($dataImmobilisations['codeBarreDefectueux']['count'] * 100) / $totalImmos);
+                    $this->getStatusImmo($dataImmobilisations['codeBarreDefectueux'], $immo->getEndEtat()); 
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        return $dataImmobilisations;
+    }
+
+    public function getStatusImmo(&$data, $etat)
+    {
+        if ($etat == 0) {
+            $data['mauvais'] = $data['mauvais'] + 1;
+        } else {
+            $data['bon'] = $data['bon'] + 1;
+        }
     }
 
     public function getChilds($localites) {

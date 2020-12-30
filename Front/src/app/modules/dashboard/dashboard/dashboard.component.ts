@@ -70,23 +70,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.superviseurAdjoint=this.securityServ.superviseurAdjoint
     this.chefEquipe=this.securityServ.chefEquipe
     this.membreInv=this.securityServ.membreInv
-    this.dataEtat = {
-      labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
-      datasets: [
-        {
-          label: 'Bon état',
-          backgroundColor: '#46b75c',
-          borderColor: '#46b75c',
-          data: [28, 48, 40, 19]
-        },
-        {
-          label: 'Mauvais état',
-          backgroundColor: '#ef474b',
-          borderColor: '#ef474b',
-          data: [65, 59, 80, 81]
-        }
-      ]
-    }
+    // this.dataEtat = {
+    //   labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
+    //   datasets: [
+    //     {
+    //       label: 'Bon état',
+    //       backgroundColor: '#46b75c',
+    //       borderColor: '#46b75c',
+    //       data: [28, 48, 40, 19]
+    //     },
+    //     {
+    //       label: 'Mauvais état',
+    //       backgroundColor: '#ef474b',
+    //       borderColor: '#ef474b',
+    //       data: [65, 59, 80, 81]
+    //     }
+    //   ]
+    // }
 
     this.dataEtatOptions = {
       legend: {
@@ -170,10 +170,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.dataZones = data.zones;
         this.dataInstructions = data.instructions;
         this.dataInventairesCloses = data.inventairesCloses;
+        console.log(data.immobilisations);
         this.filterImmos(data.immobilisations);
       })
     }
-    this.subscribeToData();
+    // this.subscribeToData();
   }
 
   getInventaireByEse() {
@@ -198,118 +199,53 @@ export class DashboardComponent implements OnInit, OnDestroy {
     })
   }
 
-  filterImmos(immos: any[]) {
+  filterImmos(immos: any) {
     this.dataImmobilisations = {
-      nonRetrouvees: {count: 0, bon: 0, mauvais: 0},
-      scannees: {count: 0, bon: 0, mauvais: 0},
-      nonScannees: {count: 0, bon: 0, mauvais: 0},
-      nonReconciliees: {count: 0, bon: 0, mauvais: 0},
-      reconciliees: {count: 0, bon: 0, mauvais: 0},
-      rajoutees: {count: 0, bon: 0, mauvais: 0},
-      codeBarreDefectueux: {count: 0, bon: 0, mauvais: 0}
+      nonRetrouvees: immos.nonRetrouvees,
+      reconciliees: immos.reconciliees,
+      nonReconciliees: immos.nonReconciliees,
+      rajoutees: immos.rajoutees,
+      codeBarreDefectueux: immos.codeBarreDefectueux,
+      scannees: {
+        count: immos.reconciliees.count + immos.nonReconciliees.count + immos.rajoutees.count + immos.codeBarreDefectueux.count,
+        bon: immos.reconciliees.bon + immos.nonReconciliees.bon + immos.rajoutees.bon + immos.codeBarreDefectueux.bon,
+        mauvais: immos.reconciliees.mauvais + immos.nonReconciliees.mauvais + immos.rajoutees.mauvais + immos.codeBarreDefectueux.mauvais,
+      },
     };
-    immos.forEach((immo: any) => {
-      if (immo.status == null) {
-        // Immobilisations non retrouvés
-        this.dataImmobilisations.nonRetrouvees.count ++;
-        this.dataImmobilisations.nonRetrouvees.bon ++;
-        // this.dataImmobilisations.nonRetrouvees.mauvais ++;
-      } else {
-        // Immobilisations scannées
-        this.dataImmobilisations.scannees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.scannees.bon ++;
-        } else {
-          this.dataImmobilisations.scannees.mauvais ++;
-        }
-      }
-      
-      if (immo.status == -1) {
-        // Immobilisations non scannées
-        this.dataImmobilisations.nonScannees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.nonScannees.bon ++;
-        } else {
-          this.dataImmobilisations.nonScannees.mauvais ++;
-        }
-      } else if(immo.status == 0) {
-        // Immobilisations scannées non réconciliées
-        this.dataImmobilisations.nonReconciliees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.nonReconciliees.bon ++;
-        } else {
-          this.dataImmobilisations.nonReconciliees.mauvais ++;
-        }
-      } else if(immo.status == 1) {
-        // Immobilisations scannées réconciliées
-        this.dataImmobilisations.reconciliees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.reconciliees.bon ++;
-        } else {
-          this.dataImmobilisations.reconciliees.mauvais ++;
-        }
-      } else if(immo.status == 2) {
-        // Immobilisations rajoutées
-        this.dataImmobilisations.rajoutees.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.rajoutees.bon ++;
-        } else {
-          this.dataImmobilisations.rajoutees.mauvais ++;
-        }
-      } else if(immo.status == 3) {
-        // Immobilisations avec un code barre défectueux
-        this.dataImmobilisations.codeBarreDefectueux.count ++;
-        if (immo.etat) {
-          this.dataImmobilisations.codeBarreDefectueux.bon ++;
-        } else {
-          this.dataImmobilisations.codeBarreDefectueux.mauvais ++;
-        }
-      }
-    })
 
-    const data1 = [
+    const dataBon = [
       this.dataImmobilisations.scannees.bon,
       this.dataImmobilisations.rajoutees.bon,
       this.dataImmobilisations.codeBarreDefectueux.bon,
       this.dataImmobilisations.nonRetrouvees.bon
     ];
 
-    const data2 = [
+    const dataMauvais = [
       this.dataImmobilisations.scannees.mauvais,
       this.dataImmobilisations.rajoutees.mauvais,
       this.dataImmobilisations.codeBarreDefectueux.mauvais,
       this.dataImmobilisations.nonRetrouvees.mauvais
     ];
 
-    // console.log(data1, data2);
+    console.log(dataBon, dataMauvais);
 
-    // this.dataEtat = {
-    //   labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
-    //   datasets: [
-    //     {
-    //       label: 'Bon état',
-    //       backgroundColor: '#46b75c',
-    //       borderColor: '#46b75c',
-    //       data: [
-    //         this.dataImmobilisations.scannees.bon,
-    //         this.dataImmobilisations.rajoutees.bon,
-    //         this.dataImmobilisations.codeBarreDefectueux.bon,
-    //         this.dataImmobilisations.nonRetrouvees.bon
-    //       ]
-    //     },
-    //     {
-    //       label: 'Mauvais état',
-    //       backgroundColor: '#ef474b',
-    //       borderColor: '#ef474b',
-    //       data: [
-    //         this.dataImmobilisations.scannees.mauvais,
-    //         this.dataImmobilisations.rajoutees.mauvais,
-    //         this.dataImmobilisations.codeBarreDefectueux.mauvais,
-    //         this.dataImmobilisations.nonRetrouvees.mauvais
-    //       ]
-    //     }
-    //   ]
-    // }
+    this.dataEtat = {
+      labels: ['(IS)', '(IR)', '(ICD)', '(ISNR)'],
+      datasets: [
+        {
+          label: 'Bon état',
+          backgroundColor: '#46b75c',
+          borderColor: '#46b75c',
+          data: dataBon
+        },
+        {
+          label: 'Mauvais état',
+          backgroundColor: '#ef474b',
+          borderColor: '#ef474b',
+          data: dataMauvais
+        }
+      ]
+    }
   }
 
   getPlanningByInv(id:number){
