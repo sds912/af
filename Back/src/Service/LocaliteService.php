@@ -55,7 +55,7 @@ class LocaliteService
                 ;
                 if ($idParent != null) {
                     $parent = $this->entityManager->getRepository(Localite::class)->find($idParent);
-                    $localite->setArborescence($parent->getArborescence().'-'.$row[$i])->setParent($parent);
+                    $localite->setArborescence($parent->getArborescence().' - '.$row[$i])->setParent($parent);
                 }
 
                 $this->entityManager->persist($localite); 

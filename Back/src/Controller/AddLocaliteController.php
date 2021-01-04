@@ -33,7 +33,7 @@ class AddLocaliteController
 
         $data->setArborescence($data->getNom());
         if ($data->getParent()) {
-            $data->setArborescence($data->getParent()->getArborescence().'-'.$data->getNom());
+            $data->setArborescence($data->getParent()->getArborescence().' - '.$data->getNom());
         }
 
         return $data;
