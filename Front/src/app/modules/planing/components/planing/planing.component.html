@@ -195,7 +195,7 @@
                                             {{ getRole(affectation?.user?.roles) }}
                                           </td>
                                           <td>
-                                            {{ getOneById(affectation?.localite?.id)?.nom }}
+                                            {{ getOneById(affectation?.localite?.id)?.arborescence }}
                                           </td>
                                           <td>
                                             {{affectation.debut|date:'dd/MM/yyyy'}}
@@ -267,13 +267,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let event of dayEvents"  (click)="handleEvent('Clicked',event)" class="pointer">
-            <td>{{ event?.user?.nom }}</td>
-            <td>{{ getRole(event?.user?.roles) }}</td>
-            <td>{{ getOneById(event?.idLoc)?.nom }}</td>
-            <td>{{event.start|date:'dd/MM/yyyy'}}</td>
-            <td>{{event.end|date:'dd/MM/yyyy'}}</td>
-          </tr>
+          <ng-container *ngFor="let event of dayEvents">
+            <tr *ngIf="!hasChild(event?.idLoc)" (click)="handleEvent('Clicked',event)" class="pointer">
+              <td>{{ event?.user?.nom }}</td>
+              <td>{{ getRole(event?.user?.roles) }}</td>
+              <td>{{ getOneById(event?.idLoc)?.arborescence }}</td>
+              <td>{{event.start|date:'dd/MM/yyyy'}}</td>
+              <td>{{event.end|date:'dd/MM/yyyy'}}</td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>

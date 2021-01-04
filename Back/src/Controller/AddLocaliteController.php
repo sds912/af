@@ -31,6 +31,11 @@ class AddLocaliteController
             return $localite;
         }
 
+        $data->setArborescence($data->getNom());
+        if ($data->getParent()) {
+            $data->setArborescence($data->getParent()->getArborescence().'-'.$data->getNom());
+        }
+
         return $data;
     }
 }

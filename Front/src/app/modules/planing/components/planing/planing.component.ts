@@ -129,7 +129,6 @@ export class PlaningComponent implements OnInit {
         this.modal.open(this.modalContentDay, { size: 'lg' });
       }
       this.viewDate = date;
-      console.log(date,events);
     }
   }
   openTheDayModal(){
@@ -335,7 +334,6 @@ export class PlaningComponent implements OnInit {
       rep=>{
         console.log(rep);
         this.affectations=this.lastAffectationLoc(rep)
-        console.log(this.affectations);
         this.affectations.forEach((aff: any) => {
           this.localites.push(aff.localite);
         })
@@ -345,6 +343,14 @@ export class PlaningComponent implements OnInit {
       },
       error=>console.log(error)
     )
+  }
+
+  hasChild(idLoc: any) {
+    const index = this.localites.findIndex((loc: any) => loc.idParent == idLoc);
+    if (index != -1) {
+      return true;
+    }
+    return false;
   }
 
   mapToEvent(affectations:any[]){

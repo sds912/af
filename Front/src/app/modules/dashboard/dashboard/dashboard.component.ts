@@ -266,6 +266,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     )
   }
 
+  hasChild(idLoc: any) {
+    const index = this.localites.findIndex((loc: any) => loc.idParent == idLoc);
+    if (index != -1) {
+      return true;
+    }
+    return false;
+  }
+
   canSeePlanning(affectation: any):boolean{
     
     const service=this.securityServ

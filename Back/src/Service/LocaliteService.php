@@ -51,9 +51,11 @@ class LocaliteService
                     ->setCreateur($customData['user'])
                     ->setLevel($i)
                     ->setPosition($position)
+                    ->setArborescence($row[$i])
                 ;
                 if ($idParent != null) {
-                    $localite->setParent($this->entityManager->getRepository(Localite::class)->find($idParent));
+                    $parent = $this->entityManager->getRepository(Localite::class)->find($idParent);
+                    $localite->setArborescence($parent->getArborescence().'-'.$row[$i])->setParent($parent);
                 }
 
                 $this->entityManager->persist($localite); 

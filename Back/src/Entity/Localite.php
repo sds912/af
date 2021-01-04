@@ -70,7 +70,6 @@ class Localite
 
     /**
      * @ORM\ManyToOne(targetEntity=Localite::class, inversedBy="subdivisions")
-     * @Groups({"affectation_read"})
      */
     private $parent;
 
@@ -114,6 +113,13 @@ class Localite
      */
     private $inventaireLocalites;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * 
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "affectation_read", "inventaireLocalite_read"})
+     */
+    private $arborescence;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -148,7 +154,7 @@ class Localite
         return count($this->users)>0;
     }
     /**
-    * @Groups({"entreprise_read","loc_read","inv_read"})
+    * @Groups({"entreprise_read","loc_read","inv_read", "affectation_read"})
     */
     public function getIdParent(){//utilisé ne pas sup
         $p=$this->parent;
@@ -402,5 +408,17 @@ class Localite
 
     public function __toString() {
         return strval($this->id);
+    }
+
+    public function getArborescence(): ?string
+    {
+        return $this->arborescence;
+    }
+
+    public function setArborescence(?string $arborescence): self
+    {
+        $this->arborescence = $arborescence;
+
+        return $this;
     }
 }
