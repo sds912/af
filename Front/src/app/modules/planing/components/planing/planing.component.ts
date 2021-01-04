@@ -318,7 +318,8 @@ export class PlaningComponent implements OnInit {
         this.currentInv=rep?rep[0]:null
         this.idCurrentInv=this.currentInv?.id
         // this.localites = this.currentInv?.localites
-        if(this.idCurrentInv){
+        if(this.idCurrentInv) {
+          this.viewDate = new Date(this.currentInv.debut || 'now');
           this.getAffectationByInv(this.idCurrentInv)
         }
       },
