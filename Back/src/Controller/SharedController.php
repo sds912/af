@@ -255,7 +255,16 @@ class SharedController extends AbstractController
         }
 
         $inventaireLocaliteRepo = $this->manager->getRepository(InventaireLocalite::class);
-        $inventaireLocaliteRepo->deleteMultipleByIventaire($inventaire->getId());
+
+        if (in_array('deleteLocalites', $data) && !empty($data['deleteLocalites'])) {
+            $deleteLocalites = $data['deleteLocalites'];
+            foreach ($deleteLocalites as $idLoc) {
+                $deleteInventaireLocalite = $inventaireLocaliteRepo->findBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
+                if ($deleteInventaireLocalite) {
+                    $this->manager->remove($deleteInventaireLocalite);
+                }
+            }
+        }
 
         $batchSize = 50;
 

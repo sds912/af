@@ -19,14 +19,14 @@ class InventaireLocaliteRepository extends ServiceEntityRepository
         parent::__construct($registry, InventaireLocalite::class);
     }
 
-    public function deleteMultipleByIventaire($idInventaire): void
+    public function deleteByLocalites($ids): void
     {
-        $qb = $this->createQueryBuilder('i');
-        $qb->delete();
-        $qb->where('i.inventaire = :idInventaire');
-        $qb->setParameter('idInventaire', $idInventaire);
-
-        $qb->getQuery()->execute();
+        $this->createQueryBuilder('i')
+            ->where('i.localite in (:ids)')
+            ->setParameter('ids', $ids)
+            ->delete()
+            ->getQuery()
+            ->execute();
     }
 
     // /**

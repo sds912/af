@@ -667,7 +667,7 @@
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(localite)" [checked]="isChecked(localite) || allLocIsChecked">
+                                            (change)="checkLoc(localite, $event)" [checked]="isChecked(localite) || allLocIsChecked">
                                             {{localite.nom}}</mat-checkbox>
                                     </section>
                                 </span>
@@ -694,7 +694,7 @@
                                 <span class="col-11 pl-0">
                                     <section class="example-section pick-loc">
                                         <mat-checkbox [disabled]="!showForm" class="example-margin pt-2"
-                                            (change)="checkLoc(sub, checkAllInTab)" [checked]="isChecked(sub) || allLocIsChecked">{{sub.nom}}
+                                            (change)="checkLoc(sub, $event, checkAllInTab)" [checked]="isChecked(sub) || allLocIsChecked">{{sub.nom}}
                                         </mat-checkbox>
                                     </section>
                                 </span>
@@ -717,9 +717,9 @@
                                 Toutes les localités</mat-checkbox>
                         </section>
                     </div>
-                    <div class="col-5"></div>
-                    <button type="submit" class="col-2 btn btn-outline-success btn-border-radius"
-                        (click)="closeLoc()">Fermer</button>
+                    <div class="col-4"></div>
+                    <button type="submit" class="col-3 btn btn-outline-success btn-border-radius"
+                        (click)="closeLoc()">Enregistrer</button>
                 </div>
             </div>
         </form>

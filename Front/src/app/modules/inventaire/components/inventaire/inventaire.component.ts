@@ -84,6 +84,8 @@ export class InventaireComponent implements OnInit {
   displayedTabs: any[];
   idTabs: any[];
   allLocIsChecked: boolean;
+  isUpdating: boolean;
+  deleteLoc: any[];
   constructor(private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
@@ -100,6 +102,8 @@ export class InventaireComponent implements OnInit {
     this.displayedTabs = [];
     this.idTabs = [];
     this.tabLoc = [];
+    this.isUpdating = false;
+    this.deleteLoc = [];
     this.myId = localStorage.getItem('idUser')
     this.allLocIsChecked = false;
     this.securityServ.showLoadingIndicatior.next(true)
@@ -218,6 +222,9 @@ export class InventaireComponent implements OnInit {
         this.tabLoc.push(localite.id);
       }
     });
+    setTimeout(() => {
+      this.isUpdating = true;
+    }, 3000);
     this.invCreer = false
     if (inventaire.localInstructionPv[0] == 'creation') {
       this.invCreer = true
@@ -456,6 +463,7 @@ export class InventaireComponent implements OnInit {
     data.pvReunionCreer = this.getDataPvCreer()
     data.entreprise = this.idCurrentEse
     data.localites = this.getOneLyId(this.tabLoc)
+    data.deleteLocalites = this.deleteLoc
     data.allLocIsChecked = this.allLocIsChecked
     data.localInstructionPv = [this.invCreer ? 'creation' : 'download', this.pvCreer ? 'creation' : 'download']
     console.log(data)
@@ -1047,10 +1055,11 @@ export class InventaireComponent implements OnInit {
     return localites?.filter((loc: any) => loc.level === 0)
   }
 
-  getChildsLocalites(id: any, level: any, event?: any) {
-    if (level == this.subdivisions.length) {
+  getChildsLocalites(id: any, level: any, event: any) {
+    if ((level == this.subdivisions.length) || event.target.disabled) {
       return;
     }
+    event.target.disabled = true;
 
     if (level == 1 && this.openLocalite != id) {
       this.openLocalite = id;
@@ -1061,8 +1070,9 @@ export class InventaireComponent implements OnInit {
     
     this.displayedTabs = this.displayedTabs.filter((ele: any) => ele.level <= level);
 
+    this.isUpdating = false;
     this.inventaireServ.filterLocalites(this.idCurrentEse, level, id).then((res: any) => {
-      if (indexExistTab > -1) {
+      if (indexExistTab != -1) {
         this.displayedTabs[indexExistTab] = {id: id, level: level};
       } else {
         this.displayedTabs.push({id: id, level: level});
@@ -1073,27 +1083,45 @@ export class InventaireComponent implements OnInit {
         this.idTabs.push(id);
       }
 
-      if (event) {
-        const index = level - 1;
-        document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
-        (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
-      }
+      const index = level - 1;
+      document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
+      (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
+
+      event.target.disabled = false;
 
       setTimeout(() => {
         document.getElementById('tab-'+level).scrollIntoView();
       }, 1000);
+
+      setTimeout(() => {
+        this.isUpdating = true;
+      }, 2000);
     });
   }
 
-  checkLoc(loc, checkAllInTab?: any) {
+  checkLoc(loc, event?: any, checkAllInTab?: any) {
     this.allLocIsChecked = false;
     let index = this.tabLoc.findIndex(localite => localite.id == loc.id);
     if (index != -1) {
       if (checkAllInTab) {
         checkAllInTab.checked = false; 
       }
+      const index2 = loc?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
+      const index3 = loc?.affectations.findIndex((affectation: any) => affectation.inventaire == `/api/inventaires/${this.idCurrentInv}`);
+      if (this.isUpdating && index2 != -1 && index3 == -1) {
+        this.deleteLoc.push(loc.id);
+      }
+      if (this.isUpdating && index2 != -1 && index3 != -1) {
+        event.source.checked = true;
+        this.showNotification('bg-danger', 'Cette localité contient des affectations.', 'top', 'center');
+        return;
+      }
       this.tabLoc.splice(index, 1);
     } else {
+      const indexDelLoc = this.deleteLoc.indexOf(loc.id);
+      if (indexDelLoc != -1) {
+        this.deleteLoc.splice(indexDelLoc, 1);
+      }
       this.tabLoc.push(loc)
       const idParent = loc.idParent
       if (idParent && !this.isChecked(loc)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
@@ -1145,7 +1173,7 @@ export class InventaireComponent implements OnInit {
 
     const index = loc?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
 
-    if (!isChecked && index != -1) {
+    if (!this.isUpdating && index != -1 && !isChecked) {
       this.tabLoc.push(loc);
       isChecked = true;
     }
