@@ -19,22 +19,22 @@ class AffectationRepository extends ServiceEntityRepository
         parent::__construct($registry, Affectation::class);
     }
 
-    // /**
-    //  * @return Affectation[] Returns an array of Affectation objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return Affectation[] Returns an array of Affectation objects
+     */
+    public function findByInventaireAndLevel($inventaire, $level)
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('a.inventaire = :inventaire')
+            ->setParameter('inventaire', $inventaire)
+            ->leftJoin('a.localite','l')
+            ->andWhere('l.level = :level')
+            ->setParameter('level', $level)
+            ->distinct()
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Affectation

@@ -45,6 +45,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.localites = [];
     this.dataZones = {pended: null, beginned: null, closed: null};
     this.dataInstructions = {prisConnaissance: null, pasPrisConnaissance: null};
     this.dataImmobilisations = {
@@ -61,7 +62,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.router.navigate(["/admin/entreprise"]);
       return;
     }
-    this.localites = [];
     this.affectations = [];
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.getInventaireByEse()
@@ -167,6 +167,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private refreshData(): void {
     if (this.idCurrentInv && this.idCurrentEse) {
       this.dashboardService.getData(this.idCurrentInv, this.idCurrentEse).then((data: any) => {
+        console.log(data);
         this.dataZones = data.zones;
         this.dataInstructions = data.instructions;
         this.dataInventairesCloses = data.inventairesCloses;
@@ -189,7 +190,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.securityServ.showLoadingIndicatior.next(false);
         return;
       }
-      this.localites = this.inventaires[0]?.localites;
+      // this.localites = this.inventaires[0]?.localites;
       this.getPlanningByInv(this.idCurrentInv);
       this.refreshData();
       this.securityServ.showLoadingIndicatior.next(false);
@@ -260,6 +261,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           if (this.canSeePlanning(planning)) {
             this.affectations.push(planning);
           }
+          this.localites.push(planning.localite);
         });
       },
       error=>console.log(error)
@@ -267,7 +269,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   hasChild(idLoc: any) {
-    const index = this.localites.findIndex((loc: any) => loc.idParent == idLoc);
+    const index = this.localites?.findIndex((loc: any) => loc.idParent == idLoc);
     if (index != -1) {
       return true;
     }

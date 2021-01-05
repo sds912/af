@@ -168,7 +168,7 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-affectation>
-                                <tr *ngIf="!hasChild(affectation.idLoc)" >
+                                <tr *ngIf="!hasChild(affectation.localite.id)">
                                     <td>{{affectation.user?.nom}}</td>
                                     <td>{{affectation.debut | date:'dd/MM/yyyy'}}</td>
                                     <td [title]="locName(affectation.localite.id)">{{ affectation.localite.arborescence }}</td>

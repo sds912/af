@@ -740,18 +740,18 @@ class SharedController extends AbstractController
 
         $immosStatus = $this->filterImmos($immos);
 
-        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $level = count($entreprise->getSubdivisions()) - 1;
+
+        $affectedLocalites = $this->manager->getRepository(Affectation::class)->findByInventaireAndLevel($inventaire->getId(), $level);
         $localites = [];
 
-        foreach ($inventaireLocalites as $inventaireLocalite) {
-            $localites[] = $inventaireLocalite->getLocalite();
+        foreach ($affectedLocalites as $affectedLocalite) {
+            $localites[] = $affectedLocalite->getLocalite();
         }
-
-        $allLocalites = array_unique($this->getChilds($localites));
 
         $_localitesId = [];
 
-        foreach ($allLocalites as $value) {
+        foreach ($localites as $value) {
             $_localitesId[] = $value->getId();
         }
 
@@ -768,7 +768,7 @@ class SharedController extends AbstractController
 
         // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
 
-        $inventairesCloses = $this->repoInv->findBy(['status' => 'close']);
+        $inventairesCloses = $this->repoInv->findBy(['entreprise' => $entreprise, 'status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
         $allUsers = $this->repoUser->findBy(['currentEse' => $inventaire->getEntreprise()->getId(), 'status' => 'actif']);
