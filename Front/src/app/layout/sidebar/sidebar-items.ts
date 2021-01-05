@@ -28,6 +28,15 @@ export const ROUTES: RouteInfo[] = [
     roles: ['ROLE_Admin'],
     submenu: []
   },
+  {
+    id: 'PERSONNEL',
+    path: '/personnels',
+    title: 'Personnels',
+    icon: 'fas fa-users',
+    class: '',
+    roles: ['ROLE_Admin'],
+    submenu: []
+  },
   // Admin
   {
     id: 'PRE',

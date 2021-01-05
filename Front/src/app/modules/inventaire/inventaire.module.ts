@@ -45,6 +45,8 @@ import { SafeUrlPipe } from 'src/app/shared/pipe/safe-url.pipe';
 import { MatStepperModule } from '@angular/material/stepper';
 import { InstructionComponent } from './components/instruction/instruction.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
@@ -100,7 +102,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MaterialFileInputModule,
     MatMenuModule,
     NgxDatatableModule,
-    MatStepperModule
+    MatStepperModule,
+    DragDropModule
   ]
 })
 export class InventaireModule { }

@@ -26,13 +26,15 @@ import { MatMenuModule } from '@angular/material/menu';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { PersonnelsComponent } from './components/personnels/personnels.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
 };
 @NgModule({
   declarations: [
-    EntrepriseComponent
+    EntrepriseComponent,
+    PersonnelsComponent
     ],
   imports: [
     CommonModule,

@@ -71,6 +71,10 @@ export class ZonageComponent implements OnInit {
   ];
 
   data = [];
+  pos1: number;
+  pos2: number;
+  pos3: any;
+  pos4: any;
   constructor(private adminServ: AdminService,
     private inventaireServ: InventaireService,
     private fb: FormBuilder,

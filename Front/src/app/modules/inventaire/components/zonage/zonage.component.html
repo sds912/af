@@ -34,8 +34,8 @@
                     </div>
                     <div class="body">
                         <div class="map-localite mb-2" [ngStyle]="{background: 'url(./assets/images/image-gallery/'+currentImage+') no-repeat center center'}">
-                            <div class="pointer-localite pointer" *ngFor="let localite of rev(firstSub())" [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
-                                <span (click)="idCurrentLocal=localite.id" class="pl-1">{{longText(localite.nom,11)}}</span>
+                            <div class="pointer-localite pointer text-center" *ngFor="let localite of rev(firstSub())" cdkDragBoundary=".map-localite" cdkDrag [ngStyle]="{'left': localite.position[0],'top':localite.position[1],'width':'10%'}">
+                                <span (click)="idCurrentLocal=localite.id">{{longText(localite.nom,11)}}</span>
                                 <img src="assets/images/image-gallery/pointer.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal!=localite.id && !localite.rattacher"  (click)="getChildsLocalites(localite.id, 1)" alt="">
                                 <img src="assets/images/image-gallery/pointer4.png" [title]="localite.nom" style="width:40%;" *ngIf="idCurrentLocal!=localite.id && localite.rattacher"  (click)="getChildsLocalites(localite.id, 1)" alt="">
                                 <img src="assets/images/image-gallery/pointer2.png" [title]="localite.nom" style="width:50%;" *ngIf="idCurrentLocal==localite.id" alt="">

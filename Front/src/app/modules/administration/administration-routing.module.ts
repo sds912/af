@@ -3,9 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { EntrepriseComponent } from './components/entreprise/entreprise.component';
 import { AdminGuard } from 'src/app/core/guard/admin.guard';
 import { SupervAdminGuard } from 'src/app/core/guard/superv-admin.guard';
+import { PersonnelsComponent } from './components/personnels/personnels.component';
 const routes: Routes = [
   {path: 'entreprise',canActivate:[SupervAdminGuard],component: EntrepriseComponent},
-  //{path: 'user',canActivate:[AdminGuard],component: UserComponent}
+  {path: 'personnels',canActivate:[AdminGuard],component: PersonnelsComponent}
 ]; 
 
 @NgModule({
