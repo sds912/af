@@ -187,23 +187,25 @@
                                       </thead>
                                   
                                       <tbody>
-                                        <tr *ngFor="let affectation of affectations" (click)="showDetails(affectation)" class="pointer">
-                                          <td>
-                                            {{ affectation?.user?.nom }}
-                                          </td>
-                                          <td>
-                                            {{ getRole(affectation?.user?.roles) }}
-                                          </td>
-                                          <td>
-                                            {{ getOneById(affectation?.localite?.id)?.arborescence }}
-                                          </td>
-                                          <td>
-                                            {{affectation.debut|date:'dd/MM/yyyy'}}
-                                          </td>
-                                          <td>
-                                            {{affectation.fin|date:'dd/MM/yyyy'}}
-                                          </td>
-                                        </tr>
+                                        <ng-container *ngFor="let affectation of affectations">
+                                          <tr *ngIf="!hasChild(affectation.localite.id)" (click)="showDetails(affectation)" class="pointer">
+                                            <td>
+                                              {{ affectation?.user?.nom }}
+                                            </td>
+                                            <td>
+                                              {{ getRole(affectation?.user?.roles) }}
+                                            </td>
+                                            <td>
+                                              {{ getOneById(affectation?.localite?.id)?.arborescence }}
+                                            </td>
+                                            <td>
+                                              {{affectation.debut|date:'dd/MM/yyyy'}}
+                                            </td>
+                                            <td>
+                                              {{affectation.fin|date:'dd/MM/yyyy'}}
+                                            </td>
+                                          </tr>
+                                        </ng-container>
                                       </tbody>
                                     </table>
                                   </div>

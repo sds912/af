@@ -511,4 +511,15 @@ export class ZonageComponent implements OnInit {
     }
     return 100;
   }
+
+  onDragEnded(event: any, localite: any) {
+    console.log(event, localite);
+    // let elmnt = event.source.element.nativeElement;
+    // elmnt.style.top = event.distance.x;
+    // elmnt.style.left = event.distance.y;
+    // localite.position = [`${event.distance.x}%`, `${event.distance.y}%`];
+    // this.inventaireServ.updateLocalite(localite.id, localite).then((res: any) => {
+    //   console.log(res);
+    // });
+  }
 }
