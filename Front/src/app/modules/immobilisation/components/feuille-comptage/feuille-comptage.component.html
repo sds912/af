@@ -13,7 +13,7 @@
                                             <input placeholder="Rechercher une immobilisation" type="text" class="browser-default search-field" aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
                                         </li>
                                         <li class="dropdown m-l-20 ml-5 mr-3">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="handleStatusChange($event.target.value)">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 340px;background-color: #ebebee;"  (change)="handleStatusChange($event.target.value, etat)">
                                                 <option value="-2">Toutes les immobilisations</option>
                                                 <option value="-1" *ngIf="afterAjustement">Immobilisations non scannées</option>
                                                 <option value="1">Immobilisations scannées réconciliées</option>
@@ -23,9 +23,9 @@
                                             </select>
                                         </li>
                                         <li class="dropdown m-l-20 ml-5" *ngIf="statusImmo!=-1">
-                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="filtreImmoChange()" [(ngModel)]="typeImmo">
+                                            <select class="form-control select-trie pl-0 pr-0" style="width: 250px;background-color: #ebebee;" (change)="handleStatusChange(statusImmo, $event.target.value)">
                                                 <option value="" *ngIf="typeImmo==''" selected hidden>Etat du bien</option>
-                                                <option value="" *ngIf="typeImmo!=''">Tous</option>
+                                                <option value="">Tous</option>
 
                                                 <option value="1">Bon état</option>
                                                 <option value="0">Mauvais état</option>

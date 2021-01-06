@@ -82,6 +82,8 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   totalItems: number;
   currentFilters: any;
   dowloadLoading: boolean;
+  etat: any;
+  subscription: boolean; 
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -110,24 +112,29 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {//faire le get status pour les details
     this.firstLoad = true;
+    this.subscription = false;
     this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
     this.idCurrentInv = localStorage.getItem("currentInv");
     // this.getInventaireByEse();
+    this.getAffectationByInv(this.idCurrentInv);
     this.totalItems = 0;
     this.page = 1;
     this.currentFilters = null;
+    this.etat = '';
     this.refreshData();
     this.sameComponent()
     this.getOneEntreprise()
   }
 
   getImmobilisations(_page: number, filters?: any) {
+    this.subscription = true;
     if (this.firstLoad) {
       this.securityServ.showLoadingIndicatior.next(true);
       this.firstLoad = false;
     }
+    this.allImmos = [];
 
     this.page = _page;
     this.currentFilters = filters;
@@ -137,27 +144,26 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || 
           this.securityServ.superviseur || this.securityServ.superviseurGene || 
-          this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId  ||
-          this.securityServ.chefEquipe && immo?.localite && this.isAffected(immo?.localite?.id)
+          (this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId) ||
+          (this.securityServ.chefEquipe && immo?.localite && this.isAffected(immo?.localite?.id))
         );
-        if (this.data.length != this.allImmos.length) {
-          this.setData(this.allImmos);
-        }
-        this.securityServ.showLoadingIndicatior.next(false);
+        this.setData(this.allImmos);
       }
+      this.subscription = false;
       this.securityServ.showLoadingIndicatior.next(false);
     }, (error: any) => {
+      this.subscription = false;
       this.securityServ.showLoadingIndicatior.next(false);
     })
   }
 
   handlePageChange(pager: any) {
     this.page = pager.page;
-    this.getImmobilisations(this.page);
+    this.handleStatusChange(this.statusImmo, this.etat, this.page);
   }
 
-  handleStatusChange(status: any) {
-    this.page = 1;
+  handleStatusChange(status: any, etat?: any, _page = 1) {
+    this.page = _page;
     this.statusImmo = status;
     let filters = `&status=${this.statusImmo}`;
     if (this.statusImmo == -1) {
@@ -167,6 +173,11 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     if (this.statusImmo == -2) {
       filters = null;
     }
+
+    if (etat != '') {
+      filters = `&endEtat=${etat}`
+    }
+    this.etat = etat;
     this.getImmobilisations(this.page, filters);
   }
 
@@ -179,7 +190,9 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.timerSubscription = combineLatest(timer(3000)).subscribe(() => this.refreshData());
   }
   private refreshData(): void {
-    this.getImmobilisations(this.page, this.currentFilters);
+    if (!this.subscription) {
+      this.getImmobilisations(this.page, this.currentFilters); 
+    }
     this.subscribeToData();
   }
   sameComponent(){
@@ -192,7 +205,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   getOneEntreprise() {
     this.adminServ.getOneEntreprise(this.idCurrentEse).then(
       rep => {
-        this.localites = rep?.localites ?? []
+        // this.localites = rep?.localites ?? []
         this.entreprise = rep
         this.users= rep?.users        
       },
@@ -202,17 +215,18 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
       }
     )
   }
-  getStatus(status):string{
+  getStatus(status: any):string{
     let text=""
-    if(status==-1){
-      text="Immobilisations non scannées"
-    }else if(status==0){
+    if (status == '' || status == -1) {
+      return 'Immobilisations non scannées';
+    }
+    if (status==0) {
       text="Immobilisations scannées non réconciliées"
-    }else if(status==1){
+    } else if(status==1) {
       text="Immobilisations scannées réconciliées"
-    }else if(status==2){
+    } else if(status==2) {
       text="Immobilisations rajoutées"
-    }else if(status==3){
+    } else if(status==3) {
       text="Immobilisations avec un code barre défectueux"
     }
     return text
@@ -299,6 +313,9 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.planingServ.getAffectations("?inventaire.id="+id).then(
       rep=>{
         this.affectations=rep
+        this.affectations.forEach((affectation: any) => {
+          this.localites.push(affectation?.localite);
+        })
       },
       error=>console.log(error)
     )
@@ -650,7 +667,6 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     }
   }
   saveData(data){
-    console.log(data);
     this.getInventaireById(data.inventaire.id,data)
   }
   getInventaireById(id,data){
@@ -672,7 +688,6 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   thraitement(rep,data){
     this.dateInv=rep.dateInv
     this.idCurrentEse = localStorage.getItem("currentEse")//laisser ici
-    console.log(rep,this.idCurrentEse);
     if(rep.entreprise.id!=this.idCurrentEse){
       this.showNotification('bg-red',"Cet inventaire n'est pas rattaché à l'entité dans lequel vous êtes connecté.",'top','center',7000)
     }else if(rep.status=='close'){
