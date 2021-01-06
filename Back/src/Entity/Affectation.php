@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * )
  * @ORM\Entity(repositoryClass=AffectationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={
- *     "user.id": "exact","inventaire.id": "exact"
+ *     "user.id": "exact","inventaire.id": "exact", "localite.level": "exact"
  * })
  */
 class Affectation

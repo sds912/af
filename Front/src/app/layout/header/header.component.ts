@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener, ViewChild, TemplateRef } from '@angular/core';
+import { Component, Inject, ElementRef, OnInit, Renderer2, HostListener, ViewChild, TemplateRef, AfterViewInit } from '@angular/core';
 import { RightSidebarService } from '../../services/rightsidebar.service';
 import { WINDOW } from '../../services/window.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
@@ -12,12 +12,13 @@ const document: any = window.document;
 import { saveAs } from 'file-saver';
 import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
 import { AdministrationService } from 'src/app/shared/service/administration.service';
+import { AdminService } from 'src/app/modules/administration/service/admin.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.sass']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild('roleTemplate', { static: true }) roleTemplate: TemplateRef<any>;
   @ViewChild('closePasswordModal', { static: false }) closePasswordModal;
   @ViewChild('openPasswordModal', { static: true }) openPasswordModal;
@@ -57,6 +58,8 @@ export class HeaderComponent implements OnInit {
   inv= null
   showCode=false
   unLockCode=""
+  idCurrentEse: string;
+  idCurrentInv: string;
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
@@ -69,7 +72,8 @@ export class HeaderComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private layouteSev:LayoutService,
     private inventaireServ:InventaireService,
-    private administrationService: AdministrationService
+    private administrationService: AdministrationService,
+    private adminService: AdminService
     ){
       
   }
@@ -156,14 +160,38 @@ export class HeaderComponent implements OnInit {
     },1000);
   }
 
+  ngAfterViewInit() {
+    if(this.securityServ.isAuth){
+      this.idCurrentEse = localStorage.getItem("currentEse");
+      this.idCurrentInv = localStorage.getItem("currentInv");
+      if (this.idCurrentEse && this.idCurrentInv) {
+        this.getInv();
+        this.getLastLoc(); 
+      }
+    }
+  }
+
   getCode(){
     this.showCode=true
     this.unLockCode=this.codeK(this.inv+"-"+this.loc,1)
   }
 
-  getLastLoc(localites){
-    localites=localites.filter(loc=>loc.subdivisions.length==0)
-    return localites
+  getLastLoc() {
+    this.adminService.getOneEntreprise(this.idCurrentEse).then(
+      rep => {
+        const level = rep.subdivisions.length - 1;
+        this.inventaireServ.getAffectedLocalites(this.idCurrentInv, level).then((affectations) => {
+          if (affectations && affectations.length > 0) {
+            affectations.forEach((affectation: any) => {
+              this.localites.push(affectation.localite);
+            });
+          }
+        });         
+      },
+      error => {
+        console.log(error)
+      }
+    )
   }
 
   codeK(base,nmbr){//ne pas mettre dans shared car il ne doit pas faire partie des modules lors d'un deploiement
@@ -175,12 +203,12 @@ export class HeaderComponent implements OnInit {
     return frst+snd+th+"-"+n+"-"+rdm+"-"+(n*4+17)
   }
 
-  getInv(){
+  getInv() {
     const id=localStorage.getItem("currentEse")
     if(id && (this.securityServ.superviseur || this.securityServ.superviseurGene)){
       this.inventaireServ.getInventaireByEse(id).then(rep=>{
         this.inventaires=rep?.reverse()
-        this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
+        // this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
         this.inv=this.inventaires?.length>0?this.inventaires[0].id:null
       })
     }
@@ -188,7 +216,7 @@ export class HeaderComponent implements OnInit {
 
   invChange(idInv){
     const inventaire=this.inventaires.find(inv=>inv.id==idInv)
-    this.localites=inventaire?inventaire.localites:[]
+    // this.localites=inventaire?inventaire.localites:[]
   }
 
   exportForMobile(){

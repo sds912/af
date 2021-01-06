@@ -206,6 +206,7 @@ class Entreprise
         $this->immobilisations = new ArrayCollection();
         $this->catalogues = new ArrayCollection();
         $this->importedFiles = new ArrayCollection();
+        $this->setSubdivisions([]);
     }
 
     public function getId(): ?int

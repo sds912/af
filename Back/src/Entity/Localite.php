@@ -103,7 +103,7 @@ class Localite
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "inventaireLocalite_read"})
+     * @Groups({"entreprise_read","loc_read","user_read","inv_read","mobile_loc_read","immo_read", "inventaireLocalite_read", "affectation_read"})
      */
     private $level;
 

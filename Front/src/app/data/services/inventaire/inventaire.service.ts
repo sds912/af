@@ -135,4 +135,12 @@ export class InventaireService {
   addCode(data){
     return this.sharedService.postElement(data,"/code/defectueux")
   }
+
+  getAffectedLocalites(inventaire, level?: number) {
+    let filters = `inventaire.id=${inventaire}`
+    if (level) {
+      filters = `${filters}&localite.level=${level}`;
+    }
+    return this.sharedService.getElement(`/affectations?${filters}`)
+  }
 }

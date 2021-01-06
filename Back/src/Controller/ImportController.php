@@ -75,6 +75,10 @@ class ImportController
             $customData['inventaire'] = $inventaire->getId();
         }
 
+        if ($table == 'localites' && count($entreprise->getSubdivisions()) < 1) {
+            throw new HttpException(400,'Les subdivions n\'existent pas encore.');
+        }
+
         try {
             $xlsFileName = $this->fileUploader->upload($file);
 

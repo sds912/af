@@ -85,7 +85,7 @@
                                     </a>
                                 </li>
                                 <li *ngIf="securityServ.superviseurGene||securityServ.superviseur">
-                                    <a href="#" onClick="return false;" (click)="getInv()" data-toggle="modal" data-target="#unLockModal" data-backdrop="static" data-keyboard="false" (click)="initForm3()" #openEseModal>
+                                    <a href="#" onClick="return false;" data-toggle="modal" data-target="#unLockModal" data-backdrop="static" data-keyboard="false" (click)="initForm3()" #openEseModal>
                                         <mat-icon aria-hidden="false" class="mr-2">lock_open</mat-icon>Code déverrouillage
                                     </a>
                                 </li>
@@ -371,7 +371,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 p-0 mt-4">
                         <select name="" id="" [(ngModel)]="loc" [ngModelOptions]="{standalone: true}" class="form-control">
                             <option value=""></option>
-                            <option *ngFor="let localite of getLastLoc(localites)" [value]="localite.id">{{localite.nom}}</option>
+                            <option *ngFor="let localite of localites" [value]="localite.id">{{localite.nom}}</option>
                         </select>
                     </div>
                     <div class="modal-footer pr-0 pt-0">
