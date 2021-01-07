@@ -71,6 +71,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   totalItems: number;
   codeExist: number;
   matchImmo: any;
+  loadingIndicator: boolean = false;
 
   constructor(private immoService: ImmobilisationService,
     private sharedService: SharedService,
@@ -114,6 +115,7 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     this.codeExist = -1;
     this.myId = localStorage.getItem("idUser")
     this.idCurrentEse = localStorage.getItem("currentEse")
+    this.idCurrentInv = localStorage.getItem("currentInv")
     this.getAllLoc()
     // this.getInventaireByEse();
     this.totalItems = 0;
@@ -123,24 +125,27 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
 
   getImmobilisations(_page: number, filters?: any) {
     this.page = _page;
-    this.securityServ.showLoadingIndicatior.next(true);
+    this.loadingIndicator = true;
 
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, filters).then((res: any) => {
+    if (this.idCurrentInv == 'undefined' || this.idCurrentInv == null || this.idCurrentInv == '') {
+      this.loadingIndicator = false;
+      return;
+    }
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 20, filters).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo => this.securityServ.superviseurAdjoint && immo.localite?.createur.id == this.myId || !this.securityServ.superviseurAdjoint);
         this.setData(this.allImmos);
-        this.securityServ.showLoadingIndicatior.next(false);
         if (this.route.snapshot.params["id"]) {
           const immo = this.allImmos.find(im => im.id == this.sharedService.decodId(this.route.snapshot.params["id"]))
           this.update(immo)
           this.openImmo.nativeElement.click();
         }
-        this.securityServ.showLoadingIndicatior.next(false);
       }
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     }, (error: any) => {
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     })
   }
 

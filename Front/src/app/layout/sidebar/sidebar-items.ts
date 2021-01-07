@@ -41,7 +41,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: 'PRE',
     path: '',
-    title: 'Phase de préparation',
+    title: 'Phase de préparatoire',
     icon: 'fas fa-star',
     class: 'menu-toggle',
     roles: ['ROLE_Superviseur', 'ROLE_SuperViseurGene','ROLE_SuperViseurAdjoint'],

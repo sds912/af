@@ -534,9 +534,19 @@ class User implements UserInterface
     /**
      * @return Collection|Immobilisation[]
      */
-    public function getScanImmos(): Collection
+    public function getScanImmos($inventaire = null): Collection
     {
-        return $this->scanImmos;
+        $immos = $this->scanImmos;
+
+        if($inventaire) {
+            return $immos->filter(function($value) use($inventaire) {
+                if ($value->getInventaire()->getId() == $inventaire) {
+                    return $value;
+                }
+            });
+        }
+
+        return $immos;
     }
 
     public function addScanImmo(Immobilisation $scanImmo): self

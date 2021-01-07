@@ -492,6 +492,8 @@ export class ZonageComponent implements OnInit {
       setTimeout(() => {
         window.location.reload();
       }, 5000);
+    }, (httpErrorResponse: any) => {
+      this.showNotification('bg-danger', httpErrorResponse?.error?.detail, 'top', 'center');
     });
   }
 

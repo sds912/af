@@ -33,7 +33,6 @@ use App\Filter\NullFilter;
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"entreprise.id": "exact", "inventaire.id": "exact", "endEtat": "exact", "status": "exact", "code": "exact"})
- * @ApiFilter(OrSearchFilter::class, properties={"status": "exact"})
  * @ApiFilter(NullFilter::class, properties={"status": "exact"})
  */
 class Immobilisation
@@ -144,6 +143,7 @@ class Immobilisation
 
     /**
      * @ORM\ManyToOne(targetEntity=Entreprise::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
      */
     private $entreprise;
 
@@ -155,6 +155,7 @@ class Immobilisation
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class, inversedBy="immobilisations")
+     * @Groups({"immo_read"})
      */
     private $inventaire;
 

@@ -63,7 +63,7 @@ export class AppComponent {
   getInventaires() {
     this.inventaireService.getInventaireByEse(localStorage.getItem('currentEse')).then((res) => {
       this.inventaires = res;
-      if (!this.idCurrentInv) {
+      if ((this.idCurrentInv == 'undefined' || this.idCurrentInv == null) && this.inventaires && this.inventaires.length == 1) {
         localStorage.setItem('currentInv', this.inventaires[0]?.id);
         this.idCurrentInv = localStorage.getItem('currentInv');
       }

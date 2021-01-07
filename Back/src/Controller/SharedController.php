@@ -727,7 +727,7 @@ class SharedController extends AbstractController
 
         if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
             //si sup adjoint les immos de sa loc
-           $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo); 
+           $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo, $inventaire->getId()); 
         }elseif($this->droit->isGranted('ROLE_CE')){
             //si chef equipes les immos ou il est
             $affectations=$repoAff->findBy(['user'=>$this->userCo, 'inventaire'=>$inventaire]);
@@ -735,7 +735,7 @@ class SharedController extends AbstractController
         }elseif($this->droit->isGranted('ROLE_MI')){
             //mi les immos qu ils a scannees
             $user=$this->repoUser->find($this->userCo->getId());
-            $immos=$user->getScanImmos();
+            $immos=$user->getScanImmos($inventaire->getId());
         }
 
         $immosStatus = $this->filterImmos($immos);
@@ -743,17 +743,14 @@ class SharedController extends AbstractController
         $level = count($entreprise->getSubdivisions()) - 1;
 
         $affectedLocalites = $this->manager->getRepository(Affectation::class)->findByInventaireAndLevel($inventaire->getId(), $level);
-        $localites = [];
-
-        foreach ($affectedLocalites as $affectedLocalite) {
-            $localites[] = $affectedLocalite->getLocalite();
-        }
 
         $_localitesId = [];
 
-        foreach ($localites as $value) {
-            $_localitesId[] = $value->getId();
+        foreach ($affectedLocalites as $affectedLocalite) {
+            $_localitesId[] = $affectedLocalite->getLocalite()->getId();
         }
+
+        $_localitesId = array_unique($_localitesId);
 
         $localitesId = $this->filtreByAffectation($_localitesId, $affectations);
 

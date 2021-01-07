@@ -33,7 +33,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <ngx-datatable #table class="material" [rows]="allImmos" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="allImmos" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
                                     [rowHeight]="'60'" [limit]="20">
                                     <!-- user image -->
@@ -167,24 +167,26 @@
                                 </ngx-datatable>
 
                                 <div class="circle-progress-loader" *ngIf="loadingPercent >= 0">
-                                    <circle-progress
-                                        [percent]="loadingPercent"
-                                        [radius]="100"
-                                        [outerStrokeColor]="'#f47f38'"
-                                        [backgroundColor]="'#c6cacb'"
-                                        [backgroundPadding]="0"
-                                        [animationDuration]="300"
-                                        [titleFontSize]="36"
-                                        [responsive]="true"
-                                        [outerStrokeWidth]="32"
-                                        [showInnerStroke]="false"
-                                        [showUnits]="true"
-                                        [showSubtitle]="true"
-                                        [subtitleFormat]="formatSubtitle"
-                                        [subtitleColor]="'#616160'"
-                                        [outerStrokeLinecap]="'inherit'"
-                                        [animation]="false"
-                                    ></circle-progress>
+                                    <div class="loader">
+                                        <circle-progress
+                                            [percent]="loadingPercent"
+                                            [radius]="100"
+                                            [outerStrokeColor]="'#f47f38'"
+                                            [backgroundColor]="'#c6cacb'"
+                                            [backgroundPadding]="0"
+                                            [animationDuration]="300"
+                                            [titleFontSize]="36"
+                                            [responsive]="true"
+                                            [outerStrokeWidth]="32"
+                                            [showInnerStroke]="false"
+                                            [showUnits]="true"
+                                            [showSubtitle]="true"
+                                            [subtitleFormat]="formatSubtitle"
+                                            [subtitleColor]="'#616160'"
+                                            [outerStrokeLinecap]="'inherit'"
+                                            [animation]="false"
+                                        ></circle-progress>
+                                    </div>
                                 </div>
 
                                 <!-- Modal Window -->

@@ -90,6 +90,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.firstLoad = true;
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
+    this.idCurrentInv = localStorage.getItem("currentInv")
     this.getAllLoc()
     // this.getInventaireByEse();
     this.totalItems = 0;
@@ -101,7 +102,12 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.page = _page;
     this.securityServ.showLoadingIndicatior.next(true);
 
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page, 20, '&status=3').then((res: any) => {
+    if (this.idCurrentInv == 'undefined' || this.idCurrentInv == null || this.idCurrentInv == '') {
+      this.securityServ.showLoadingIndicatior.next(false);
+      return;
+    }
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 20, '&status=3').then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || !this.securityServ.superviseurAdjoint || this.securityServ.superviseurAdjoint && immo.localite?.createur?.id==this.myId);

@@ -32,9 +32,11 @@ export class ImmobilisationComponent implements OnInit {
   details = false
   idCurrentEse;
   inventaires = [];
+  loadingIndicator: boolean = false;
   page: number;
   totalItems: number;
   loadingPercent: number;
+  extractTime: number;
 
   columns = [
     { element: 'numero_ordre', name: 'Numéro d\'ordre', width: 100 },
@@ -68,22 +70,32 @@ export class ImmobilisationComponent implements OnInit {
     // this.getInventaireByEse();
     this.totalItems = 0;
     this.loadingPercent = -1;
-    this.getImmobilisations(1);
+    this.extractTime = 0;
     this.idCurrentEse = localStorage.getItem("currentEse");
+    this.idCurrentInv = localStorage.getItem("currentInv");
+    this.getImmobilisations(1);
     this.securityServ.showLoadingIndicatior.next(false);
   }
 
   getImmobilisations(_page: number) {
     this.page = _page;
-    this.securityServ.showLoadingIndicatior.next(true);
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.page).then((res: any) => {
+    if (this.loadingPercent == -1) {
+      this.loadingIndicator = true;
+    }
+
+    if (this.idCurrentInv == 'undefined' || this.idCurrentInv == null || this.idCurrentInv == '') {
+      this.loadingIndicator = false;
+      return;
+    }
+
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member'].filter(immo => immo.status == null || immo.status == 1); 
       }
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     }, (error: any) => {
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     })
   }
 
@@ -198,6 +210,10 @@ export class ImmobilisationComponent implements OnInit {
   }
 
   getAllImmos(evt: any) {
+    if (this.idCurrentInv == 'undefined' || this.idCurrentInv == null || this.idCurrentInv == '') {
+      return;
+    }
+
     let fileList: FileList = evt.target.files;
     let fileUpload: File = fileList[0];
     const formData = new FormData();
@@ -217,17 +233,28 @@ export class ImmobilisationComponent implements OnInit {
 
   getImportProgression() {
     this.entrepriseService.importProgession(localStorage.getItem("currentEse"), 'immobilisations').subscribe((res: any) => {
-      this.loadingPercent = res;
-      if (res < 100) {
+      if (res <= 10) {
+        this.extractTime ++;
+        if (this.extractTime % 2 == 0 && this.extractTime <=20) {
+          this.loadingPercent++;
+        }
         setTimeout(() => {
+          if (res > 0) {
+            this.getImmobilisations(1);
+          }
+          this.getImportProgression();
+        }, 5000);
+      } else if(res > 10 && res < 100) {
+        this.loadingPercent = res;
+        setTimeout(() => {
+          this.getImmobilisations(1);
           this.getImportProgression();
         }, 1000);
       } else {
-        setTimeout(() => {
-          this.loadingPercent = -1;
-          this.getImmobilisations(1);
-        }, 2000);
+        this.loadingPercent = -1;
+        this.getImmobilisations(1);
       }
+      console.log(this.extractTime, this.loadingPercent);
     })
   }
 

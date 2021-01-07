@@ -205,7 +205,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   getInv() {
     const id=localStorage.getItem("currentEse")
-    if(id && (this.securityServ.superviseur || this.securityServ.superviseurGene)){
+    if(id && (this.securityServ.superviseur || this.securityServ.superviseurAdjoint)){
       this.inventaireServ.getInventaireByEse(id).then(rep=>{
         this.inventaires=rep?.reverse()
         // this.localites=this.inventaires?.length>0?this.inventaires[0].localites:[]
@@ -350,6 +350,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         //this.showNotification('bg-success',"Enregistrer",'top','center')
         this.closeEseModal.nativeElement.click();
         localStorage.setItem("currentEse",id)
+        localStorage.removeItem('currentInv');
+        this.getInv();
         setTimeout(()=>{window.location.reload()},1000);
       },message=>{
         this.securityServ.showLoadingIndicatior.next(false)

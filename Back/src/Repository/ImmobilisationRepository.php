@@ -27,11 +27,17 @@ class ImmobilisationRepository extends ServiceEntityRepository
     /**
      * @return Immobilisation[] Returns an array of Immobilisation objects
      */
-    public function findImmoSupAdjoint(User $user){
+    public function findImmoSupAdjoint(User $user, $inventaire = null){
         $immos= $this->createQueryBuilder('i')
-        ->join("i.localite",'localite')->
-        andWhere('localite.createur = :user')
+        ->join("i.localite",'localite')
+        ->andWhere('localite.createur = :user')
         ->setParameter('user', $user);
+        if ($inventaire) {
+            $immos->join("i.inventaire",'inventaire')
+                ->andWhere('inventaire.id = :inventaire')
+                ->setParameter('inventaire', $inventaire);
+        }
+
         return $immos->getQuery()->getResult();
     }
 
