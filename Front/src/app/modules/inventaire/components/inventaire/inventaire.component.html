@@ -863,10 +863,15 @@
                                             </mat-form-field>
                                         </div>
 
-                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary"
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-primary" title="Ajouter une nouvelle ligne"
                                             [hidden]="i!=(tabSignataires.length-1)" (click)="addSignataire()" style="position: absolute;right:-2px;">
                                             add_circle_outline
                                         </mat-icon>
+                                        <mat-icon matSuffix class="pointer pl-2 pt-3 text-danger" style="position: absolute;right:-2px;" title="Supprimer cette ligne"
+                                            [hidden]="i==(tabSignataires.length-1) && oneForm.controls.nom != ''" (click)="removeSignataire(oneForm.controls, 'instruction')">
+                                            remove_circle_outline
+                                        </mat-icon>
+
 
                                     </div>
                                 </mat-step>
@@ -968,6 +973,10 @@
 
                         <mat-icon matSuffix class="pointer pt-3 text-primary mt-3 ml-5"
                             [hidden]="i!=(tabSignatairesPv.length-1)" (click)="addSignatairePv()" style="position: absolute;right: 12px;">add_circle_outline
+                        </mat-icon>
+                        <mat-icon matSuffix class="pointer pt-3 mt-3 ml-5 text-danger" style="position: absolute;right: 12px;" title="Supprimer cette ligne"
+                            [hidden]="i==(tabSignatairesPv.length-1) && oneForm.controls.nom != ''" (click)="removeSignataire(oneForm.controls, 'pv')">
+                            remove_circle_outline
                         </mat-icon>
                     </div>
                 </div>

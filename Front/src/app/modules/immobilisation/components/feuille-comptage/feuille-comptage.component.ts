@@ -114,6 +114,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {//faire le get status pour les details
     this.firstLoad = true;
     this.subscription = false;
+    this.loadingIndicator = false;
     this.afterAjustement=this.route.snapshot.params["type"]=="ajustees"?true:false
     this.myId=localStorage.getItem("idUser")
     this.idCurrentEse=localStorage.getItem("currentEse")
@@ -124,28 +125,25 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.currentFilters = null;
     this.etat = '';
-    this.refreshData();
+    this.refreshData(true);
     this.sameComponent()
     this.getOneEntreprise()
   }
 
-  getImmobilisations(_page: number, filters?: any) {
+  getImmobilisations(_page: number, filters?: any, _loadingIndicator = false) {
     this.subscription = true;
-    if (this.firstLoad) {
-      this.securityServ.showLoadingIndicatior.next(true);
-      this.firstLoad = false;
-    }
+    this.loadingIndicator = _loadingIndicator;
     this.allImmos = [];
 
     this.page = _page;
     this.currentFilters = filters;
 
     if (this.idCurrentInv == 'undefined' || this.idCurrentInv == null || this.idCurrentInv == '') {
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
       return;
     }
 
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 20, this.currentFilters).then((res: any) => {
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 10, this.currentFilters).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member']?.filter(immo=>immo.localite==null || 
@@ -156,10 +154,10 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
         this.setData(this.allImmos);
       }
       this.subscription = false;
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     }, (error: any) => {
       this.subscription = false;
-      this.securityServ.showLoadingIndicatior.next(false);
+      this.loadingIndicator = false;
     })
   }
 
@@ -184,7 +182,7 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
       filters = `&endEtat=${etat}`
     }
     this.etat = etat;
-    this.getImmobilisations(this.page, filters);
+    this.getImmobilisations(this.page, filters, true);
   }
 
   public ngOnDestroy(): void {
@@ -195,9 +193,9 @@ export class FeuilleComptageComponent implements OnInit, OnDestroy {
   private subscribeToData(): void {
     this.timerSubscription = combineLatest(timer(3000)).subscribe(() => this.refreshData());
   }
-  private refreshData(): void {
+  private refreshData(_loadingIndicator = false): void {
     if (!this.subscription) {
-      this.getImmobilisations(this.page, this.currentFilters); 
+      this.getImmobilisations(this.page, this.currentFilters, _loadingIndicator); 
     }
     this.subscribeToData();
   }

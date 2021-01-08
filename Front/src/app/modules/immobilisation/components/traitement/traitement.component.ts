@@ -109,7 +109,7 @@ export class TraitementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 20, filters).then((res: any) => {
+    this.immoService.getAllImmosByEntreprise(this.idCurrentEse, this.idCurrentInv, this.page, 10, filters).then((res: any) => {
       if (res && res['hydra:member']) {
         this.totalItems = res['hydra:totalItems'];
         this.allImmos = res['hydra:member'];

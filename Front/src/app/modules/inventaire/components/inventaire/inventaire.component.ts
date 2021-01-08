@@ -395,6 +395,19 @@ export class InventaireComponent implements OnInit {
       })
     );
   }
+  removeSignataire(signataire: any, type: string): void {
+    if (type == 'instruction') {
+      this.tabSignataires.removeAt(this.tabSignataires.controls.findIndex(
+        (_signataire: any) => _signataire.controls.nom === signataire.nom && _signataire.controls.fonction === signataire.fonction)
+      );
+    }
+
+    if (type == 'pv') {
+      this.tabSignatairesPv.removeAt(this.tabSignatairesPv.controls.findIndex(
+        (_signataire: any) => _signataire.controls.nom === signataire.nom && _signataire.controls.fonction === signataire.fonction)
+      );
+    }
+  }
   addSignatairePv(nom = "", fonction = "") {
     this.tabSignatairesPv.push(
       new FormGroup({
@@ -402,8 +415,6 @@ export class InventaireComponent implements OnInit {
         fonction: new FormControl(fonction)
       })
     );
-
-
   }
   valideDif(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {

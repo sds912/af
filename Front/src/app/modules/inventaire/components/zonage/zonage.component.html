@@ -178,8 +178,8 @@
                                 <input matInput [formControl]="control">
                                 <mat-icon matSuffix>room</mat-icon>
                             </mat-form-field>
-                            <mat-icon matSuffix [hidden]="i==(tabSubdivision.controls.length-1) && control.value != ''" (click)="removeSubdivision(control.value)" class="pointer text-danger" title="Ajouter un membre">remove_circle_outline</mat-icon>
-                            <mat-icon matSuffix [hidden]="i!=(tabSubdivision.controls.length-1) || !control.value" (click)="addSubdivision()" class="pointer" title="Ajouter un membre">add_circle_outline</mat-icon>
+                            <mat-icon matSuffix [hidden]="i==(tabSubdivision.controls.length-1) && control.value != ''" (click)="removeSubdivision(control.value)" class="pointer text-danger" title="Supprimer cette ligne">remove_circle_outline</mat-icon>
+                            <mat-icon matSuffix [hidden]="i!=(tabSubdivision.controls.length-1) || !control.value" (click)="addSubdivision()" class="pointer" title="Ajouter une ligne">add_circle_outline</mat-icon>
                         </div>
                     </div>
 
