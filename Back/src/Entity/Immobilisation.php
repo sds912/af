@@ -33,7 +33,7 @@ use App\Filter\NullFilter;
  * )
  * @ORM\Entity(repositoryClass=ImmobilisationRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"entreprise.id": "exact", "inventaire.id": "exact", "endEtat": "exact", "status": "exact", "code": "exact"})
- * @ApiFilter(NullFilter::class, properties={"status": "exact"})
+ * @ApiFilter(NullFilter::class, properties={"status": "exact", "isMatched": "exact"})
  */
 class Immobilisation
 {

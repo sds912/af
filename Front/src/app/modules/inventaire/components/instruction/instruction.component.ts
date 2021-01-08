@@ -65,10 +65,9 @@ export class InstructionComponent implements OnInit {
   }
 
   traitementInst(inventaire){
-    console.log(inventaire);
     this.entreprise=inventaire?.entreprise
     this.creation=inventaire?.localInstructionPv[0]=="creation"
-    this.uploadInstructions = inventaire?.uploadInstructions;
+    this.uploadInstructions = inventaire?.uploadInstructions || [];
     this.instructions=inventaire?.instruction;
     if(this.creation){
       this.generatePdf(this.instructions)

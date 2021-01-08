@@ -328,7 +328,7 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     this.matchLibelle=""
     const code=this.editForm.value.code
     const id=this.editForm.value.id
-    const match=await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}&status[null]=true`)
+    const match=await this.immoService.getImmobilisationByInventaire(this.idCurrentInv,`code=${code}&status[null]=true&isMatched[null]=true`)
     const immo=match[0] ?? null
     if(immo && immo.id!=id){
       this.matchLibelle=immo.libelle
