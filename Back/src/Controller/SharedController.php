@@ -184,10 +184,16 @@ class SharedController extends AbstractController
         }
         $status=$inventaire->getStatus()?$inventaire->getStatus():Shared::OPEN;
         $requestFile=$request->files->all();
+        $uploadInstructions = [];
         $instructions=[];
         if(isset($data["countInstruction"])){
             $countInstruction=$data["countInstruction"];
             $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
+            foreach ($instructions as $value) {
+                if (count($value) == 3 && $value[2] == 'file') {
+                    $uploadInstructions[] = $value;
+                }
+            }
         }
 
         $decisionCCs=[];
@@ -232,6 +238,7 @@ class SharedController extends AbstractController
                    ->setLieuReunion($data["lieuReunion"])
                    ->setDateReunion(new DateTime($data["dateReunion"]))
                    ->setInstruction($instructions)
+                   ->setUploadInstructions($uploadInstructions)
                    ->setDecisionCC($decisionCCs)
                    ->setPresiComite($presiComite)
                    ->addAllMembreCom($membresCom)
@@ -951,7 +958,7 @@ class SharedController extends AbstractController
                 $file->move($this->getParameter(Shared::DOC_DIR),$fileName);
                 
                 $nom_fichier=$file->getClientOriginalName();
-                array_push($fichiers,[$nom_fichier,$fileName]);//["nom fichier","nom fichier hasher"]
+                array_push($fichiers,[$nom_fichier,$fileName, 'file']);//["nom fichier","nom fichier hasher"]
                 
             }
         }

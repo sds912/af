@@ -144,6 +144,13 @@
                                                     data-target="#instrucModal">
                                                     <mat-icon>create</mat-icon>
                                                 </button>
+                                                <button mat-mini-fab color="primary" title="Importer des instructions" style="position: relative; left: 50px; bottom: 19px;"
+                                                    aria-label="Example icon-button with a heart icon"
+                                                    (click)="docInst.click()">
+                                                    <mat-icon>file_upload</mat-icon>
+                                                </button>
+                                                <input type="file" id="doc" (change)="handleFileInput($event.target.files)"
+                                                    hidden #docInst multiple>
                                             </span>
                                         </span>
                                     </p>
@@ -361,24 +368,25 @@
                                         <span class="col-8"
                                             *ngIf="!inventaire.instruction||inventaire.instruction.length==0">Aucune
                                             instruction n'a été ajoutée</span>
-                                        <span class="col-8"
-                                            *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]!='creation'">
-                                            <span *ngFor="let instruction of inventaire.instruction">
-                                                <mat-icon class="mr-4 pointer" [title]="instruction[0]"
-                                                    style="font-size: 50px;color: #3f51b5;" (click)="openInv.click()">
-                                                    insert_drive_file</mat-icon>
-                                                <a [href]="docLink + instruction[1]" [download]="instruction[0]"
-                                                    target="_blank" rel="noopener noreferrer" #openInv hidden>open</a>
-                                            </span>
-                                        </span>
-                                        <span class="col-8"
-                                            *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]=='creation'">
-                                            <span>
-                                                <mat-icon class="mr-4 pointer" title="Instruction"
-                                                    style="font-size: 50px;color: #3f51b5;"
-                                                    (click)="generatePdf(inventaire.instruction,0)">assignment
-                                                </mat-icon>
-                                            </span>
+                                        <span class="col-8">
+                                            <ng-container *ngIf="inventaire.instruction && inventaire.instruction.length>0 && inventaire.localInstructionPv[0]=='creation'">
+                                                <span>
+                                                    <mat-icon class="mr-4 pointer" title="Télécharger le modèle d'instruction"
+                                                        style="font-size: 50px;color: #ef7711;"
+                                                        (click)="generatePdf(inventaire.instruction,0)">assignment
+                                                    </mat-icon>
+                                                </span>
+                                            </ng-container>
+
+                                            <ng-container *ngIf="inventaire.uploadInstructions && inventaire.uploadInstructions.length>0">
+                                                <span *ngFor="let instruction of inventaire.uploadInstructions">
+                                                    <mat-icon class="mr-4 pointer" [title]="instruction[0]"
+                                                        style="font-size: 50px;color: #3f51b5;" (click)="openInv.click()">
+                                                        insert_drive_file</mat-icon>
+                                                    <a [href]="docLink + instruction[1]" [download]="instruction[0]"
+                                                        target="_blank" rel="noopener noreferrer" #openInv hidden>open</a>
+                                                </span>
+                                            </ng-container>
                                         </span>
                                     </p>
                                     <hr>

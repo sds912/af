@@ -10,6 +10,7 @@
 /var/
 /vendor/
 /public/uploads/
+/public/documents/
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###

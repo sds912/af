@@ -19,6 +19,7 @@ export class InstructionComponent implements OnInit {
   idCurrentInv=null
   show=false
   instructions=[]
+  uploadInstructions=[];
   creation=false
   entreprise=null
   urlInst=null
@@ -67,7 +68,8 @@ export class InstructionComponent implements OnInit {
     console.log(inventaire);
     this.entreprise=inventaire?.entreprise
     this.creation=inventaire?.localInstructionPv[0]=="creation"
-    this.instructions=inventaire?.instruction
+    this.uploadInstructions = inventaire?.uploadInstructions;
+    this.instructions=inventaire?.instruction;
     if(this.creation){
       this.generatePdf(this.instructions)
     }

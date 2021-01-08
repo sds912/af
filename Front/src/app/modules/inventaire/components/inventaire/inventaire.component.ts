@@ -196,6 +196,7 @@ export class InventaireComponent implements OnInit {
     this.initForm()
   }
   updateOne(inventaire) {
+    console.log(inventaire);
     this.showForm = true
     this.idPresiComite = inventaire.presiComite?.id
     this.instructions = inventaire.instruction

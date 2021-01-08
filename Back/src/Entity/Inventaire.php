@@ -140,11 +140,20 @@ class Inventaire
      */
     private $beginnedLoc = [];
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * 
+     * @Groups({"inv_read"})
+     */
+    private $uploadInstructions = []; // [['nom','hashNom'],['nom','hashNom']...]
+
+
     public function __construct()
     {
         $this->membresCom = new ArrayCollection();
         $this->presentsReunion = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->uploadInstructions = [];
     }
 
     public function getId(): ?int
@@ -432,6 +441,18 @@ class Inventaire
     public function setBeginnedLoc(?array $beginnedLoc): self
     {
         $this->beginnedLoc = $beginnedLoc;
+
+        return $this;
+    }
+
+    public function getUploadInstructions(): ?array
+    {
+        return $this->uploadInstructions;
+    }
+
+    public function setUploadInstructions(?array $uploadInstructions): self
+    {
+        $this->uploadInstructions = $uploadInstructions;
 
         return $this;
     }

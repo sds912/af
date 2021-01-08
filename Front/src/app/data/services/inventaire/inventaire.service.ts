@@ -87,7 +87,9 @@ export class InventaireService {
       formData.append('bloc3e3',instrucCreer.bloc3e3)
       formData.append('bloc3e4',instrucCreer.bloc3e4)
       formData.append('signataireInst',instrucCreer.signataire)
-    }else{
+    }
+
+    if (data.instructions && data.instructions.length > 0) {
       const instructions=data.instructions
       for(let i=1;i<=instructions.length;i++){
         formData.append('instruction'+i,instructions[i-1])
@@ -118,6 +120,7 @@ export class InventaireService {
     if(data.id && data.id!=0) {
       return this.sharedService.postElement(formData,"/inventaires/"+data.id)//si put avec form data tableau
     }
+    console.log(formData);
     return this.sharedService.postElement(formData,"/inventaires")
   }
   getDataForMobile(id){
