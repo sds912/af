@@ -587,6 +587,9 @@ class SharedController extends AbstractController
             
             if($immo['status']=='1'){
                 $immobilisation=$this->repoImmo->find($immo["id"]);
+                if(!$immobilisation) {
+                    continue;
+                }
                 if($immobilisation->getInventaire()->getId()!=$data['id']){
                     throw new HttpException(403,"Une des immobilisations n'appartient pas à cette inventaire.");
                 }

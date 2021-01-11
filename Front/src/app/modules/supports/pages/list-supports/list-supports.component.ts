@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { AdminService } from 'src/app/modules/administration/service/admin.service';
 import { SecurityService } from 'src/app/shared/service/security.service';
 import { SupportService } from '../../services/support.service';
@@ -11,6 +12,7 @@ import { SupportService } from '../../services/support.service';
 export class ListSupportsComponent implements OnInit {
 
   tickets: any[];
+  ticket: any;
   
   displayedColumns: string[] = ['numero', 'startDate', 'type', 'objet', 'entreprise', 'auteur', 'status'];
   
@@ -20,27 +22,29 @@ export class ListSupportsComponent implements OnInit {
   constructor(
     private supportService: SupportService,
     private adminService: AdminService,
-    private securityService: SecurityService
+    private securityService: SecurityService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.tickets = [];
-    console.log(this.securityService.user);
+    this.ticket = null;
     this.idUser = localStorage.getItem("idUser");
     if (this.securityService.admin) {
       this.getTickets(this.securityService.user.cle);
     } else {
       this.adminService.getOneEntreprise(localStorage.getItem("currentEse")).then((entreprise: any) => {
-        this.supportService.lists(entreprise.licenseCle).subscribe((res: any) => {
-          this.tickets = res?.reverse();
-        })
+        this.getTickets(entreprise?.license?.licenseCle);
       });
     }
   }
 
   getTickets(licenseCle: string) {
     this.supportService.lists(licenseCle).subscribe((res: any) => {
-      this.tickets = res?.reverse();
+      if (res && res.length > 0) {
+        let entrepriseTickets = res.filter((_ticket: any) => {return _ticket?.entreprise?.id == localStorage.getItem("currentEse")});
+        this.tickets = entrepriseTickets?.reverse();
+      }
     })
   }
 
@@ -48,7 +52,13 @@ export class ListSupportsComponent implements OnInit {
     console.log(value);
   }
 
-  getTicketStatus(ticket: any) {
-    return this.supportService.getTicketStatus(ticket);
+  getTicketStatus(_ticket: any) {
+    return this.supportService.getTicketStatus(_ticket);
+  }
+
+  viewDetail(detailTicket: any, _ticket: any) {
+    console.log(detailTicket, _ticket);
+    this.ticket = _ticket;
+    this.dialog.open(detailTicket);
   }
 }

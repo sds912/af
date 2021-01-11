@@ -1,214 +1,204 @@
-<section class="content">
-    <div class="container-fluid" *ngIf="ticket">
-        <div class="block-header">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <ul class="breadcrumb breadcrumb-style ">
-                        <li class="breadcrumb-item mr-4">
-                            <h4 class="page-title">Suivis ticket No {{ticket.numero}}</h4>
-                        </li>
-                    </ul>
-                </div>
+<div class="container-fluid" *ngIf="ticket">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="breadcrumb breadcrumb-style ">
+                    <li class="breadcrumb-item mr-4">
+                        <h4 class="page-title">Suivis ticket No {{ticket.numero}}</h4>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="bg-header">
-                            &nbsp;
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="bg-header">
+                        &nbsp;
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title text-center">Progression</h4>
+                    <div class="container-progressions">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mdl-card mdl-shadow--2dp">
+                                    <div class="mdl-card__supporting-text">
+                                        <div class="mdl-stepper-horizontal-alternative">
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 0, 'step-done': ticket.status > 0}">
+                                                <div class="mdl-stepper-title">Ouvert</div>
+                                                <div class="mdl-stepper-arrow-left"></div>
+                                                <div class="mdl-stepper-arrow"><span>01</span></div>
+                                                <div class="mdl-stepper-arrow-right"></div>
+                                            </div>
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 1, 'step-done': ticket.status > 1}">
+                                                <div class="mdl-stepper-title">Pris en charge</div>
+                                                <div class="mdl-stepper-arrow-left"></div>
+                                                <div class="mdl-stepper-arrow"><span>02</span></div>
+                                                <div class="mdl-stepper-arrow-right"></div>
+                                            </div>
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 2, 'step-done': ticket.status > 2}">
+                                                <div class="mdl-stepper-title">En traitement</div>
+                                                <div class="mdl-stepper-arrow-left"></div>
+                                                <div class="mdl-stepper-arrow"><span>03</span></div>
+                                                <div class="mdl-stepper-arrow-right"></div>
+                                            </div>
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 3 && !ticket.closed, 'step-done': ticket.closed}">
+                                                <div class="mdl-stepper-title">Traité</div>
+                                                <div class="mdl-stepper-arrow-left"></div>
+                                                <div class="mdl-stepper-arrow"><span>04</span></div>
+                                                <div class="mdl-stepper-arrow-right"></div>
+                                            </div>
+                                            <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 4, 'step-done': ticket.closed}">
+                                                <div class="mdl-stepper-title">Clôturé</div>
+                                                <div class="mdl-stepper-arrow-left"></div>
+                                                <div class="mdl-stepper-arrow"><span>05</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="container-infos">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                        <div class="row">
+                                            <div class="col-md-3 my-auto">
+                                                <mat-label>Type de ticket</mat-label>
+                                            </div>
+                                            <div class="col-md-5 mb-0">
+                                                <mat-form-field appearance="outline">
+                                                    <input matInput id="type" value="{{ticket.type}}" readonly="">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                        <div class="row">
+                                            <div class="col-md-3 my-auto">
+                                                <mat-label>Objet</mat-label>
+                                            </div>
+                                            <div class="col-md-5 mb-0">
+                                                <mat-form-field appearance="outline">
+                                                    <input matInput id="objet" value="{{ticket.objet}}" readonly="">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                                        <div class="row">
+                                            <div class="col-md-3 my-auto">
+                                                <mat-label>Description</mat-label>
+                                            </div>
+                                            <div class="col-md-9 mb-0">
+                                                <mat-form-field appearance="outline">
+                                                    <textarea matInput id="description" readonly="" rows="8">{{ticket.description}}</textarea>
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="row" *ngIf="ticket.piecesJointes.length > 0">
+                                    <div class="col-md-6" *ngFor="let file of ticket.piecesJointes">
+                                        <img class="img-thumbnail pointer" [src]="file" (click)="showImage(file)" alt="">
+                                    </div>
+                                </div>
+                                <div style="visibility: hidden" id="container-progegress-bar">
+                                    <div id="border" class="active-border">
+                                        <div id="circle" class="circle">
+                                            <div id="needle" class="needle"></div> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h4 class="card-title text-center mb-5">
-                            <span *ngIf="currentContainer == 1">Détail du ticket</span>
-                            <span *ngIf="currentContainer == 2">Progression</span>
-                        </h4>
-                        <div class="container-infos" *ngIf="currentContainer == 1">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <div class="row">
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                                            <div class="row">
-                                                <div class="col-md-3 my-auto">
-                                                    <mat-label>Type de ticket</mat-label>
-                                                </div>
-                                                <div class="col-md-5 mb-0">
-                                                    <mat-form-field appearance="outline">
-                                                        <input matInput id="type" value="{{ticket.type}}" readonly="">
-                                                    </mat-form-field>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                                            <div class="row">
-                                                <div class="col-md-3 my-auto">
-                                                    <mat-label>Objet</mat-label>
-                                                </div>
-                                                <div class="col-md-5 mb-0">
-                                                    <mat-form-field appearance="outline">
-                                                        <input matInput id="objet" value="{{ticket.objet}}" readonly="">
-                                                    </mat-form-field>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                                            <div class="row">
-                                                <div class="col-md-3 my-auto">
-                                                    <mat-label>Description</mat-label>
-                                                </div>
-                                                <div class="col-md-9 mb-0">
-                                                    <mat-form-field appearance="outline">
-                                                        <textarea matInput id="description" readonly="" rows="8">{{ticket.description}}</textarea>
-                                                    </mat-form-field>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                                            <div class="row">
-                                                <div class="col-md-9 ml-auto">
-                                                    <button class="btn btn-orange" (click)="currentContainer = 2">Voir l'état d'avancement</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="row" *ngIf="ticket.piecesJointes.length > 0">
-                                        <div class="col-md-6" *ngFor="let file of ticket.piecesJointes">
-                                            <img class="img-thumbnail" [src]="file" alt="">
-                                        </div>
-                                    </div>
-                                    <div style="visibility: hidden" id="container-progegress-bar">
-                                        <div id="border" class="active-border">
-                                            <div id="circle" class="circle">
-                                                <div id="needle" class="needle"></div> 
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row band-orange mb-5" *ngIf="wantClose || ticket.closed">
+                        <div class="col-md-4 my-auto">
+                            <p *ngIf="!ticket.closed">Quelle est votre niveau <br> de satisfaction sur une échelle de 1 à 5 ?</p>
+                            <p *ngIf="ticket.closed">Votre niveau de satisfaction sur une échelle de 1 à 5 </p>
                         </div>
-                        <div class="container-progressions" *ngIf="currentContainer == 2">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mdl-card mdl-shadow--2dp">
-                                        <div class="mdl-card__supporting-text">
-                                            <div class="mdl-stepper-horizontal-alternative">
-                                                <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 0, 'step-done': ticket.status > 0}">
-                                                    <div class="mdl-stepper-title">Ouvert</div>
-                                                    <div class="mdl-stepper-arrow-left"></div>
-                                                    <div class="mdl-stepper-arrow"><span>01</span></div>
-                                                    <div class="mdl-stepper-arrow-right"></div>
-                                                </div>
-                                                <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 1, 'step-done': ticket.status > 1}">
-                                                    <div class="mdl-stepper-title">Pris en charge</div>
-                                                    <div class="mdl-stepper-arrow-left"></div>
-                                                    <div class="mdl-stepper-arrow"><span>02</span></div>
-                                                    <div class="mdl-stepper-arrow-right"></div>
-                                                </div>
-                                                <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 2, 'step-done': ticket.status > 2}">
-                                                    <div class="mdl-stepper-title">En traitement</div>
-                                                    <div class="mdl-stepper-arrow-left"></div>
-                                                    <div class="mdl-stepper-arrow"><span>03</span></div>
-                                                    <div class="mdl-stepper-arrow-right"></div>
-                                                </div>
-                                                <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 3 && !ticket.closed, 'step-done': ticket.closed}">
-                                                    <div class="mdl-stepper-title">Traité</div>
-                                                    <div class="mdl-stepper-arrow-left"></div>
-                                                    <div class="mdl-stepper-arrow"><span>04</span></div>
-                                                    <div class="mdl-stepper-arrow-right"></div>
-                                                </div>
-                                                <div class="mdl-stepper-step" [ngClass]="{'active-step editable-step': ticket.status == 4, 'step-done': ticket.closed}">
-                                                    <div class="mdl-stepper-title">Clôturé</div>
-                                                    <div class="mdl-stepper-arrow-left"></div>
-                                                    <div class="mdl-stepper-arrow"><span>05</span></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> 
+                        <div class="col-md-8">
+                            <ul class="satisfaction-notation d-flex justify-content-between legend">
+                                <li *ngFor="let _niveauSatisfaction of niveauSatisfactions">
+                                    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="niveauSatisfaction">
+                                        <mat-radio-button class="example-radio-button" [value]="_niveauSatisfaction" [disabled]="ticket.closed">
+                                            {{_niveauSatisfaction}}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="row band-orange mb-5" *ngIf="currentContainer == 2 && (wantClose || ticket.closed)">
-                            <div class="col-md-4 my-auto">
-                                <p *ngIf="!ticket.closed">Quelle est votre niveau <br> de satisfaction sur une échelle de 1 à 5 ?</p>
-                                <p *ngIf="ticket.closed">Votre niveau de satisfaction sur une échelle de 1 à 5 </p>
-                            </div>
-                            <div class="col-md-8">
-                                <ul class="satisfaction-notation d-flex justify-content-between legend">
-                                    <li *ngFor="let _niveauSatisfaction of niveauSatisfactions">
-                                        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="niveauSatisfaction">
-                                            <mat-radio-button class="example-radio-button" [value]="_niveauSatisfaction" [disabled]="ticket.closed">
-                                                {{_niveauSatisfaction}}
-                                            </mat-radio-button>
-                                        </mat-radio-group>
-                                    </li>
-                                </ul>
-                            </div>
+                    <div class="row band-gray" *ngIf="currentContainer == 1">
+                        <div class="col-md-3 my-auto">
+                            <!-- <mat-icon>file_upload</mat-icon>  -->
+                            <span class="card-info bg-red">   
+                                {{ticket.entreprise.denomination}}
+                            </span> 
                         </div>
-                        <div class="row band-gray" *ngIf="currentContainer == 1">
-                            <div class="col-md-3 my-auto">
-                                <!-- <mat-icon>file_upload</mat-icon>  -->
-                                <span class="card-info bg-red">   
-                                    {{ticket.entreprise.denomination}}
-                                </span> 
-                            </div>
-                            <div class="col-md-3 my-auto">
-                                <!-- <mat-icon>file_upload</mat-icon>  -->
-                                <span class="card-info bg-orange">   
-                                    {{ticket.auteur?.username}}
-                                </span>
-                            </div>
-                            <div class="col-md-3 my-auto" *ngIf="ticket.auteur.nom && isSuperAdmin">
-                                <!-- <mat-icon>file_upload</mat-icon>  -->
-                                <span class="card-info bg-gray">   
-                                    {{ticket.assigne.nom}}
-                                </span> 
-                            </div>
-                            <div class="col-md-3 ml-auto my-auto">
-                                <ul class="legend-card">
-                                    <li>
-                                        <span class="card-info bg-red">&nbsp;</span> Entité
-                                    </li>
-                                    <li>
-                                        <span class="card-info bg-orange">&nbsp;</span> Initiateur
-                                    </li>
-                                    <li *ngIf="isSuperAdmin">
-                                        <span class="card-info bg-gray">&nbsp;</span> Support team
-                                    </li>
-                                </ul>
-                            </div>
+                        <div class="col-md-3 my-auto">
+                            <!-- <mat-icon>file_upload</mat-icon>  -->
+                            <span class="card-info bg-orange">   
+                                {{ticket.auteur?.username}}
+                            </span>
                         </div>
-                        <div class="row band-gray mt-5" *ngIf="currentContainer == 2 && !ticket.closed && (isAuteur || isSuperAdmin)">
-                            <div class="col-md-12 text-right div-close">
-                                <span class="mr-5" *ngIf="!wantClose">Voulez-vous clôturer le ticket ? </span>
-                                <button type="button" *ngIf="!wantClose" (click)="wantClose = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
-                                <button type="button" *ngIf="!wantClose" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
-                                <button type="button" *ngIf="wantClose" (click)="closeTicket()" class="btn btn-lg btn-success mr-3">Confirmer</button>
-                                <button type="button" *ngIf="wantClose" (click)="wantClose = false" class="btn btn-lg btn-secondary">Annuler</button>
-                            </div>
+                        <div class="col-md-3 my-auto" *ngIf="ticket.auteur.nom && isSuperAdmin">
+                            <!-- <mat-icon>file_upload</mat-icon>  -->
+                            <span class="card-info bg-gray">   
+                                {{ticket.assigne.nom}}
+                            </span> 
                         </div>
-                        <div class="row band-gray mt-5" *ngIf="currentContainer == 2 && isSuperAdmin && !ticket.closed && ticket.status != 3">
-                            <div class="col-md-12 text-right div-close">
-                                <span class="mr-5" *ngIf="!goToNextStep">Voulez-vous passer à l'étape suivante ? </span>
-                                <button type="button" *ngIf="!goToNextStep" (click)="goToNextStep = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
-                                <button type="button" *ngIf="!goToNextStep" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
-                                <button type="button" *ngIf="goToNextStep" (click)="nextStep()" class="btn btn-lg btn-success mr-3">Confirmer</button>
-                                <button type="button" *ngIf="goToNextStep" (click)="goToNextStep = false"class="btn btn-lg btn-secondary">Annuler</button>
-                            </div>
+                        <div class="col-md-3 ml-auto my-auto">
+                            <ul class="legend-card">
+                                <li>
+                                    <span class="card-info bg-red">&nbsp;</span> Entité
+                                </li>
+                                <li>
+                                    <span class="card-info bg-orange">&nbsp;</span> Initiateur
+                                </li>
+                                <li *ngIf="isSuperAdmin">
+                                    <span class="card-info bg-gray">&nbsp;</span> Support team
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row band-gray mt-5" *ngIf="!ticket.closed && (isAuteur || isSuperAdmin)">
+                        <div class="col-md-12 text-right div-close">
+                            <span class="mr-5" *ngIf="!wantClose">Voulez-vous clôturer le ticket ? </span>
+                            <button type="button" *ngIf="!wantClose" (click)="wantClose = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
+                            <button type="button" *ngIf="!wantClose" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
+                            <button type="button" *ngIf="wantClose" (click)="closeTicket()" class="btn btn-lg btn-success mr-3">Confirmer</button>
+                            <button type="button" *ngIf="wantClose" (click)="wantClose = false" class="btn btn-lg btn-secondary">Annuler</button>
+                        </div>
+                    </div>
+                    <div class="row band-gray mt-5" *ngIf="isSuperAdmin && !ticket.closed && ticket.status != 3">
+                        <div class="col-md-12 text-right div-close">
+                            <span class="mr-5" *ngIf="!goToNextStep">Voulez-vous passer à l'étape suivante ? </span>
+                            <button type="button" *ngIf="!goToNextStep" (click)="goToNextStep = true" class="btn btn-lg btn-orange-gradient mr-3">Oui</button>
+                            <button type="button" *ngIf="!goToNextStep" (click)="currentContainer = 1" class="btn btn-lg btn-secondary">Non</button>
+                            <button type="button" *ngIf="goToNextStep" (click)="nextStep()" class="btn btn-lg btn-success mr-3">Confirmer</button>
+                            <button type="button" *ngIf="goToNextStep" (click)="goToNextStep = false"class="btn btn-lg btn-secondary">Annuler</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<div id="overlay" (click)="hideImage()">
+    <div id="overlay-image"></div>
+</div>

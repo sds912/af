@@ -24,12 +24,8 @@ export class SupportService {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
-  lists(licence?: string) {
-    let url = `${this.apiUrl}`;
-    if (licence) {
-      url += `?licence=${licence}`;
-    }
-    return this.http.get(url);
+  lists(licence: string) {
+    return this.http.get(`${this.apiUrl}?licence=${licence}`);
   }
 
   getTicketStatus(ticket: any) {
