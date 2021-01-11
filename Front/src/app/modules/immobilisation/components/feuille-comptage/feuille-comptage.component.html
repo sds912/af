@@ -65,9 +65,9 @@
                                     </ul>
                                 </div>
                                 <!-- all -->
-                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="data" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20" *ngIf="statusImmo==-2">
+                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo==-2">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="Code" sortable="false" prop="code" [width]="70">
@@ -154,9 +154,9 @@
                                 <!-- all -->
 
                                 <!-- non scannées -->
-                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="data" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20" *ngIf="statusImmo==-1">
+                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo==-1">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="Code" sortable="false" prop="code" [width]="70">
@@ -278,9 +278,9 @@
                                 <!-- non scannées -->
 
                                 <!-- matcher -->
-                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="data" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20" *ngIf="statusImmo>-1 && statusImmo<2">
+                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo>-1 && statusImmo<2">
                                     <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
@@ -396,9 +396,9 @@
                                 <!-- matcher -->
 
                                 <!-- other -->
-                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="data" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="data" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20" *ngIf="statusImmo>=2">
+                                    [rowHeight]="'60'" [limit]="10" *ngIf="statusImmo>=2">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">

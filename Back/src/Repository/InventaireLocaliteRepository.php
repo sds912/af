@@ -29,22 +29,22 @@ class InventaireLocaliteRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    // /**
-    //  * @return InventaireLocalite[] Returns an array of InventaireLocalite objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return InventaireLocalite[] Returns an array of InventaireLocalite objects
+     */
+    public function findByInventaireAndLevel($inventaire, $level)
     {
         return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('i.inventaire = :inventaire')
+            ->setParameter('inventaire', $inventaire)
+            ->leftJoin('i.localite','l')
+            ->andWhere('l.level = :level')
+            ->setParameter('level', $level)
+            ->distinct()
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?InventaireLocalite

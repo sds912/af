@@ -37,7 +37,7 @@
                                     </ul>
                                 </div>
 
-                                <ngx-datatable #table class="material" [rows]="allCatalogue" [columns]="columns"
+                                <ngx-datatable #table class="material" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="allCatalogue" [columns]="columns"
                                 [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
                                 [rowHeight]="'60'" [limit]="10">
                                 <!-- user image -->                     

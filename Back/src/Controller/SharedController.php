@@ -302,13 +302,15 @@ class SharedController extends AbstractController
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** seul les first localites */
-        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findByInventaireAndLevel($inventaire->getId(), 0);
         $localites = [];
+        $idLocalites = [];
 
         foreach ($inventaireLocalites as $inventaireLocalite) {
             $localite = $inventaireLocalite->getLocalite();
-            if(!$localite->getParent()){
-                array_push($localites,$localite);
+            if(!in_array($localite->getId(), $idLocalites)){
+                array_push($localites, $localite);
+                array_push($idLocalites, $localite->getId());
             }
         }
 
@@ -344,7 +346,8 @@ class SharedController extends AbstractController
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         /** chef equipe et membre inventaire seulement */
         $users=[];
-        $all=$entreprise->getUsers();
+        $all = $this->repoUser->findBy(['currentEse' => $entreprise->getId(), 'status' => 'actif']);
+
         foreach ($all as $user) {
             if( in_array('ROLE_CE',$user->getRoles()) || in_array('ROLE_MI',$user->getRoles())){
                 $t=$this->getAffectLocOf($user,$inventaire,$repoAff);
@@ -353,13 +356,16 @@ class SharedController extends AbstractController
             }
         }
         /** seul les first localites */
-        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findBy(['inventaire' => $inventaire->getId()]);
+        $inventaireLocalites = $this->manager->getRepository(InventaireLocalite::class)->findByInventaireAndLevel($inventaire->getId(), 0);
         $localites = [];
+        $idLocalites = [];
+
 
         foreach ($inventaireLocalites as $inventaireLocalite) {
             $localite = $inventaireLocalite->getLocalite();
-            if(!$localite->getParent()){
-                array_push($localites,$localite);
+            if(!in_array($localite->getId(), $idLocalites)){
+                array_push($localites, $localite);
+                array_push($idLocalites, $localite->getId());
             }
         }
 

@@ -312,18 +312,19 @@
                                     (click)="panelHL._toggle()">
                                     <mat-panel-title class="pl-0 col-11 pt-5 pb-4 mr-0" (click)="panelHL._toggle()">
                                         <p>
+                                            <mat-icon *ngIf="inventaire.status == 'close'" class="mr-4" title="Inventaire clôturé">done_all</mat-icon>
                                             Inventaire <span *ngIf="inventaire.dateInv"> au
                                                 {{inventaire.dateInv|date:'dd/MM/yyyy'}} </span>
                                         </p>
                                     </mat-panel-title>
-                                    <mat-panel-description class="mr-0">
+                                    <mat-panel-description class="mr-0" *ngIf="inventaire.status == 'open'">
                                         <div class="pt-5 pb-4" >
                                             <mat-icon data-toggle="modal" *ngIf="!securityServ.superviseurAdjoint" class="mr-4 icone-loc"
                                                 (click)="updateOne(inventaire)" title="Modifier Inventaire">edit</mat-icon>
 
                                             <mat-icon class="mr-4 icone-loc" (click)="exportForMobile()" title="Exporter Inventaire">file_upload</mat-icon>
 
-                                            <mat-icon class="icone-loc" (click)="closeInv()" *ngIf="!securityServ.superviseurAdjoint" title="Fermer Inventaire">close</mat-icon>
+                                            <mat-icon class="icone-loc" (click)="closeInv(dialogCloseInventaire)" *ngIf="securityServ.superviseurGene || securityServ.superviseur" title="Clôturer l'inventaire">close</mat-icon>
                                         </div>
                                     </mat-panel-description>
                                 </mat-expansion-panel-header>
@@ -999,3 +1000,31 @@
     </div>
 </div>
 <!-- PV -->
+
+<ng-template #dialogCloseInventaire>
+    <h1 mat-dialog-title >Liste des localités non cloturés
+        <button type="button" mat-dialog-close class="btn text-danger float-right">
+            <em class="material-icons">clear</em>
+        </button>
+    </h1>
+    <div mat-dialog-content>
+        <p class="text-danger">Vous devez clotûrer ces localités avant de clôturer l'inventaire.</p>
+        <table class="table" aria-describedby="">
+            <thead>
+                <tr>
+                    <th id="index">#</th>
+                    <th id="nom">Nom</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of notCloseLocs; let i = index" >
+                    <td>{{i + 1}}</td>
+                    <td>{{item.arborescence}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div mat-dialog-actions style="position:relative;">
+    <button mat-button mat-dialog-close style="position:absolute; right: 0;" class="btn btn-info">Fermer</button>
+    </div>
+</ng-template>

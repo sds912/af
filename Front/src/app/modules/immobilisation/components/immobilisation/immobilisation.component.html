@@ -33,9 +33,9 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [rows]="allImmos" [columns]="columns"
+                                <ngx-datatable #table class="material" [loadingIndicator]="loadingIndicator" [messages]="{emptyMessage:'Aucun résultat trouvé.'}" [rows]="allImmos" [columns]="columns"
                                     [sortType]="'multi'" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-                                    [rowHeight]="'60'" [limit]="20">
+                                    [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
 
                                     <ngx-datatable-column name="Numéro ordre" sortable="false" prop="numeroOrdre"

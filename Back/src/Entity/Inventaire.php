@@ -15,6 +15,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *   normalizationContext={
  *      "groups"={"inv_read"}
+ *  },
+ *  itemOperations={
+ *    "GET",
+ *    "PUT",
+ *    "DELETE",
+ *    "PATCH",
+ *    "CLOSE_INVENTAIRE"={
+ *      "method"="get",
+ *      "path"="/inventaires/close/{id}",
+ *      "controller"="App\Controller\CloseInventaireController",
+ *      "swagger_context"={
+ *        "summary"="Clôturer un inventaire",
+ *        "description"="Clôturer un inventaire"
+ *      }
+ *    }
  *  }
  * )
  * @ApiFilter(SearchFilter::class, properties={

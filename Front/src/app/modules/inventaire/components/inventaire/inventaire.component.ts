@@ -86,6 +86,7 @@ export class InventaireComponent implements OnInit {
   allLocIsChecked: boolean;
   isUpdating: boolean;
   deleteLoc: any[];
+  notCloseLocs: any[];
   constructor(private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
@@ -1193,7 +1194,7 @@ export class InventaireComponent implements OnInit {
     return isChecked;
   }
 
-  closeInv() {
+  closeInv(dialogCloseInventaire: any) {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -1214,6 +1215,14 @@ export class InventaireComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // do here code for close
+        this.inventaireServ.close(this.idCurrentInv).then((res: any) => {
+          if (Array.isArray(res) && res.length > 0) {
+            this.notCloseLocs = res;
+            this.dialog.open(dialogCloseInventaire);
+          } else {
+            window.location.reload();
+          }
+        });
       } else if (
         /* Read more about handling dismissals below */
         result.dismiss === Swal.DismissReason.cancel

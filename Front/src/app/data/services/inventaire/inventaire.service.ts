@@ -30,6 +30,9 @@ export class InventaireService {
     }
     return this.sharedService.getElement(`/localites?entreprise.id=${entreprise}${filters}`)
   }
+  close(inventaire: any){
+    return this.sharedService.getElement("/inventaires/close/"+inventaire);
+  }
   updateLocalite(id: number, localite: any) {
     return this.sharedService.putElement(localite,"/localites/"+id);
   }
