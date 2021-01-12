@@ -100,6 +100,17 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
+                                    <!--status-->
+                                    <ngx-datatable-column name="status" sortable="false" [width]="130">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span *ngIf="currentRole === SG">à valider</span>
+                                            <span *ngIf="currentRole === SA">à ajuster</span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <!--end status-->
+
                                     <!-- action buttons -->
                                     <ngx-datatable-column name="Actions" sortable="false" [width]="130">
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"

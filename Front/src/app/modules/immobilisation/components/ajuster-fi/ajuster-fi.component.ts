@@ -25,6 +25,10 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
   @ViewChild('openConfirm', { static: false }) openConfirm;
   @ViewChild('openImmo', { static: false }) openImmo;
 
+  SG: String = "ROLE_SuperViseurGene";
+  SA: String = "ROLE_SuperViseurAdjoint";
+  currentRole: String;
+
   data = [];
 
   allImmos = [];
@@ -120,7 +124,9 @@ export class AjusterFiComponent implements OnInit, OnDestroy {
     // this.getInventaireByEse();
     this.totalItems = 0;
     this.getImmobilisations(1, '&status=0');
-    this.sameComponent()
+    this.sameComponent();
+    this.currentRole = localStorage.getItem('roles');
+
   }
 
   getImmobilisations(_page: number, filters?: any) {

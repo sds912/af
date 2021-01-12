@@ -37,6 +37,7 @@ export class InventaireComponent implements OnInit {
   docLink = ""
   inventaires = []
   idCurrentInv = 0
+  instEdit: string;
   show = false
   editForm: FormGroup;
   instForm: FormGroup;
@@ -100,6 +101,7 @@ export class InventaireComponent implements OnInit {
     this.docLink = this.sharedService.baseUrl + "/documents/"
   }//afficher que la 1ere sub et modifier Localite par sub[0]
   ngOnInit() {
+    this.instEdit = localStorage.getItem('instEdit') !== null ? localStorage.getItem('instEdit') : "0";
     this.displayedTabs = [];
     this.idTabs = [];
     this.tabLoc = [];
@@ -198,6 +200,7 @@ export class InventaireComponent implements OnInit {
   }
   updateOne(inventaire) {
     console.log(inventaire);
+   
     this.showForm = true
     this.idPresiComite = inventaire.presiComite?.id
     this.instructions = inventaire.instruction
@@ -205,8 +208,14 @@ export class InventaireComponent implements OnInit {
     this.docsDc = inventaire.decisionCC
 
     this.tabComite = new FormArray([]);
-    inventaire.membresCom.forEach(membre => this.addComMembre(membre.id));
-    if (this.tabComite.length == 0) this.addComMembre()
+
+    if(this.instEdit !== "0" ){
+      
+    }else{
+      inventaire.membresCom.forEach(membre => this.addComMembre(membre.id));
+      if (this.tabComite.length == 0) this.addComMembre()
+    }
+    
 
     this.tabPresents = new FormArray([]);
     inventaire.presentsReunion.forEach(membre => this.addPresentMembre(membre.id));
@@ -1172,6 +1181,9 @@ export class InventaireComponent implements OnInit {
   filterByTab(tab: any) {
     return this.localites?.filter(loc => loc.idParent == tab.id && loc.level == tab.level);
   }
+
+  
+
   openOther(i, id) {
     this.tabOpen[i] = id
     this.offUnderSub(i + 1)//les surdivisions en dessous

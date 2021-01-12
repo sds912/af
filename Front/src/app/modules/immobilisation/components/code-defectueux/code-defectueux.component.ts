@@ -11,6 +11,7 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PlaningService } from 'src/app/modules/planing/services/planing.service';
 import { timer, combineLatest } from 'rxjs';
+import { User } from 'src/app/data/schema/user';
 
 @Component({
   selector: 'app-code-defectueux',
@@ -39,6 +40,11 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
   editForm: FormGroup;
 
   selectedRowData: selectRowInterface;
+
+  currentRole: string;
+
+  SG = "ROLE_SuperViseurGene";
+  SA = "ROLE_SuperViseurAdjoint";
 
   show=false
   imgLink=""
@@ -95,7 +101,9 @@ export class CodeDefectueuxComponent implements OnInit, OnDestroy {
     // this.getInventaireByEse();
     this.totalItems = 0;
     this.getImmobilisations(1);
-    this.sameComponent()
+    this.sameComponent();
+    this.currentRole = localStorage.getItem('roles');
+    
   }
 
   getImmobilisations(_page: number) {

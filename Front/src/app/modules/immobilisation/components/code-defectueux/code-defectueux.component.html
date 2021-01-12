@@ -27,7 +27,7 @@
                                     [rowHeight]="'60'" [limit]="10">
                                     <!-- user image -->
 
-                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50">
+                                    <ngx-datatable-column name="" sortable="false" prop="image" [width]="50" >
                                         <ng-template let-row="data" let-value="value" let-i="index" ngx-datatable-cell-template>
                                             <td class="table-img padding-0">
                                                 <img width="40" height="40" [src]="value" *ngIf="value" alt="image"/>
@@ -92,17 +92,29 @@
                                             </td>
                                         </ng-template>
                                     </ngx-datatable-column>
+                                    <!--status-->
+                                    <ngx-datatable-column name="status" sortable="false" [width]="130">
+                                        <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <span *ngIf="currentRole === SG">à valider</span>
+                                            <span *ngIf="currentRole === SA">à ajuster</span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <!--end status-->
 
                                     <!-- action buttons -->
                                     <ngx-datatable-column name="Actions" sortable="false" [width]="130">
                                         <ng-template let-value="value" let-row="row" let-rowIndex="rowIndex"
                                             ngx-datatable-cell-template>
                                             <span>
+                                            
                                                 <button class="btn tblActnBtn pointer h-auto text-info"
                                                     data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#showImmo" (click)="showDetails(row)">
                                                     <i class="material-icons">remove_red_eye</i>
                                                 </button>
+                                                
                                                 <button class="btn tblActnBtn pointer h-auto text-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                     data-target="#showImmo" (click)="update(row)" *ngIf="!this.securityServ.superviseurGene">
                                                     <i class="material-icons">mode_edit</i>

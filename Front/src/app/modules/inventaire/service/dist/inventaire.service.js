@@ -19,6 +19,8 @@ var InventaireService = /** @class */ (function () {
         delete data.id;
         return this.sharedService.postElement(data, "/localites");
     };
+
+    
     InventaireService.prototype.getLocalite = function (id) {
         return this.sharedService.getElement("/localites/" + id);
     };

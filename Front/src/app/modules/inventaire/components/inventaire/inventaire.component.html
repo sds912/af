@@ -319,7 +319,8 @@
                                     </mat-panel-title>
                                     <mat-panel-description class="mr-0" *ngIf="inventaire.status == 'open'">
                                         <div class="pt-5 pb-4" >
-                                            <mat-icon data-toggle="modal" *ngIf="!securityServ.superviseurAdjoint" class="mr-4 icone-loc"
+
+                                            <mat-icon data-toggle="modal" *ngIf="!securityServ.superviseurAdjoint || instEdit !== '0'" class="mr-4 icone-loc"
                                                 (click)="updateOne(inventaire)" title="Modifier Inventaire">edit</mat-icon>
 
                                             <mat-icon class="mr-4 icone-loc" (click)="exportForMobile()" title="Exporter Inventaire">file_upload</mat-icon>
