@@ -3,11 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+
 use App\Repository\ApproveInstRepository;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource()
+ * 
+ * @ApiFilter(SearchFilter::class, properties={
+ *   "user.id": "exact",
+ * "inventaire.id": "exact"
+ * })
  * @ORM\Entity(repositoryClass=ApproveInstRepository::class)
  */
 class ApproveInst
