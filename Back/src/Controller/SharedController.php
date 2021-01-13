@@ -1007,7 +1007,7 @@ class SharedController extends AbstractController
         $back=[];
         for($i=0;$i<count($oldFichiers);$i++){
             for($j=1;$j<=$count;$j++){
-                if(isset($data["{$name}{$j}"]) && $oldFichiers[$i][1]==$data["{$name}{$j}"]){//si update instruction1: 349257a8657b2f6ac73542aabb60281d.png et non objet de type file
+                if(isset($data["{$name}{$j}"]) && array_key_exists(1, $oldFichiers[$i]) && $oldFichiers[$i][1]==$data["{$name}{$j}"]){//si update instruction1: 349257a8657b2f6ac73542aabb60281d.png et non objet de type file
                     array_push($back,$oldFichiers[$i]);
                 }
             }
