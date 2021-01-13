@@ -1,12 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SharedService } from 'src/app/shared/service/shared.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventaireService {
 
-  constructor(private sharedService:SharedService) { }
+  constructor(private sharedService:SharedService,private htt:  HttpClient) { }
   addLocalite(data){
     if(data.id && data.id!=0){
       return this.sharedService.putElement(data,"/localites/"+data.id)
@@ -47,8 +49,19 @@ export class InventaireService {
   }
   getInventaireByEse(id){
     return this.sharedService.getElement("/inventaires?entreprise.id="+id)
+
   }
+
   addInventaire(data){
+    let invt = parseInt(localStorage.getItem('currentInv'));
+      this.sharedService.getElement(`/approve_insts?inventaire.id=${invt}`).then((val: any[]) => {
+          val.forEach((approuvInst)=>{
+           if(approuvInst.status === true){
+            approuvInst.status = false;
+            this.sharedService.putElement(approuvInst, `/approve_insts/${approuvInst.id}`)
+           }})
+        })
+ 
     const formData:FormData=new FormData();
     formData.append('dateInv',data.dateInv)
     formData.append('debut',data.debut)
@@ -67,7 +80,7 @@ export class InventaireService {
     formData.append('presentsReunion',data.presentsReunion)
     formData.append('presentsReunionOut',data.presentsReunionOut)
 
-    
+      localStorage.setItem('datains', JSON.stringify(data.membresCom))
     
     formData.append('entreprise',data.entreprise)
     formData.append('localites',data.localites)
@@ -91,9 +104,12 @@ export class InventaireService {
       formData.append('bloc3e4',instrucCreer.bloc3e4)
       formData.append('signataireInst',instrucCreer.signataire)
     }
+    
+    
 
     if (data.instructions && data.instructions.length > 0) {
-      const instructions=data.instructions
+      const instructions=data.instructions;
+      
       for(let i=1;i<=instructions.length;i++){
         formData.append('instruction'+i,instructions[i-1])
       }
