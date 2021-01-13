@@ -11,4 +11,8 @@ export class DashboardService {
   getData(idInventaire: string, idEntreprise: string) {
     return this.sharedService.postElement({inventaire: idInventaire, entreprise: idEntreprise}, '/dashbord');
   }
+
+  getDataImmos(idInventaire: string, idEntreprise: string) {
+    return this.sharedService.postElement({inventaire: idInventaire, entreprise: idEntreprise}, '/dashbord/immobilisations');
+  }
 }

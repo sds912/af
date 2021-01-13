@@ -167,11 +167,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private refreshData(): void {
     if (this.idCurrentInv && this.idCurrentEse) {
       this.dashboardService.getData(this.idCurrentInv, this.idCurrentEse).then((data: any) => {
-        console.log(data);
         this.dataZones = data.zones;
         this.dataInstructions = data.instructions;
         this.dataInventairesCloses = data.inventairesCloses;
-        console.log(data.immobilisations);
+      })
+      this.dashboardService.getDataImmos(this.idCurrentInv, this.idCurrentEse).then((data: any) => {
+        console.log(data);
         this.filterImmos(data.immobilisations);
       })
     }
