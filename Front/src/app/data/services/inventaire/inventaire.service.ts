@@ -85,7 +85,7 @@ export class InventaireService {
     formData.append('entreprise',data.entreprise)
     formData.append('localites',data.localites)
     formData.append('allLocIsChecked',data.allLocIsChecked)
-    formData.append('deleteLocalites',data.deleteLocalites)
+    formData.append('deleteLocalites',data.deleteLocalites.join(','))
     formData.append('localInstructionPv',data.localInstructionPv)
     let instrucCreer=data.instrucCreer
 

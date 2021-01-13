@@ -174,7 +174,7 @@ class SharedController extends AbstractController
     * @Route("/inventaires", methods={"POST"})
     * @Route("/inventaires/{id}", methods={"POST"})
     */
-    public function addInventaire(Request $request,$id=null){//si put tableau vide
+    public function addInventaire(Request $request, AffectationRepository $repoAffectation, $id=null){//si put tableau vide
         $data=Shared::getData($request);
         $code=201;
         $inventaire=new Inventaire();
@@ -186,6 +186,7 @@ class SharedController extends AbstractController
         $requestFile=$request->files->all();
         $uploadInstructions = [];
         $instructions=[];
+        $deleteLocalites = [];
         if(isset($data["countInstruction"])){
             $countInstruction=$data["countInstruction"];
             $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
@@ -255,27 +256,27 @@ class SharedController extends AbstractController
         $this->manager->flush();
 
         $idLocalites=$this->toArray($data["localites"]);
-        if ($data['allLocIsChecked'] == true) {
+        if ($data['allLocIsChecked'] == 1) {
             $localites = $this->repoLoc->findBy(['entreprise' => $entreprise->getId()]);
         } else {
-            $localites = $this->getallByTabId($this->repoLoc,$idLocalites);
+            $localites = $this->getallByTabId($this->repoLoc, $idLocalites); 
+        }
+        if (isset($data['deleteLocalites'])) {
+            $deleteLocalites = $this->toArray($data["deleteLocalites"]); 
         }
 
         $inventaireLocaliteRepo = $this->manager->getRepository(InventaireLocalite::class);
 
-        if (in_array('deleteLocalites', $data) && !empty($data['deleteLocalites'])) {
-            $deleteLocalites = $data['deleteLocalites'];
-            foreach ($deleteLocalites as $idLoc) {
-                $deleteInventaireLocalite = $inventaireLocaliteRepo->findBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
-                if ($deleteInventaireLocalite) {
-                    $this->manager->remove($deleteInventaireLocalite);
-                }
-            }
-        }
-
         $batchSize = 50;
 
         foreach ($localites as $i => $localite) {
+            if (in_array($localite->getId(), $deleteLocalites)) {
+                continue;
+            }
+            $inventaireLocalite = $inventaireLocaliteRepo->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $localite->getId()]);
+            if ($inventaireLocalite) {
+                continue;
+            }
             $inventaireLocalite = new InventaireLocalite();
             $inventaireLocalite->setInventaire($inventaire)->setLocalite($localite);
             $this->manager->persist($inventaireLocalite);
@@ -286,6 +287,15 @@ class SharedController extends AbstractController
                 $this->manager->clear('App\Entity\InventaireLocalite');
             }
         }
+
+        foreach ($deleteLocalites as $idLoc) {
+            $deleteInventaireLocalite = $inventaireLocaliteRepo->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
+            $affectation = $repoAffectation->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
+            if ($deleteInventaireLocalite && !$affectation) {
+                $this->manager->remove($deleteInventaireLocalite);
+            }
+        }
+
         $this->manager->flush();
         $this->manager->clear('App\Entity\InventaireLocalite');
 

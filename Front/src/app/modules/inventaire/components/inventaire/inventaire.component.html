@@ -76,12 +76,12 @@
                                     <p class="row mt-4">
                                         <span class="col-4 pt-3 bolder">LOCALITES</span>
                                         <span class="col-8">
-                                            <button *ngFor="let loc of firstSub(noNull(tabLoc))" mat-mini-fab
+                                            <button *ngFor="let loc of firstSub(noNull(tabLoc))" mat-fab
                                                 [title]="loc.nom" color="primary"
                                                 aria-label="Example icon-button with a heart icon" class="mr-2"
                                                 data-toggle="modal" data-backdrop="static" data-keyboard="false"
                                                 data-target="#localiteModal">
-                                                <mat-icon>room</mat-icon>
+                                                {{loc.nom}}
                                             </button>
                                             <button mat-mini-fab title="Ajouter une localité" color="primary"
                                                 aria-label="Example icon-button with a heart icon" class="mr-2"
@@ -350,13 +350,13 @@
                                                 *ngIf="!tabLoc || tabLoc.length==0">Aucune
                                                 localité n'a été ajoutée</span>
                                             <ng-container *ngIf="tabLoc && tabLoc.length > 0">
-                                                <button *ngFor="let localite of firstSub(localites)"
+                                                <button *ngFor="let localite of firstSub(localites, true)"
                                                     (click)="detailsLoc(inventaire)" data-toggle="modal"
-                                                    data-target="#localiteModal" mat-mini-fab [title]="localite.nom"
+                                                    data-target="#localiteModal" mat-fab [title]="localite.nom"
                                                     color="primary" aria-label="Example icon-button with a heart icon"
                                                     class="mr-2 " (mouseover)="overLoc(localite)"
                                                     (mouseout)="outHoverLZS()">
-                                                    <mat-icon>room</mat-icon>
+                                                    {{localite.nom}}
                                                 </button>
                                             </ng-container>
                                             

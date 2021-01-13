@@ -148,11 +148,21 @@ export class InventaireComponent implements OnInit {
   }
 
   initLocalites() {
-    this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
-      this.localites = res;
-      this.localites.forEach(loc => {this.isChecked(loc)});
+    this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res: any) => {
+      // this.localites = res;
+      // this.localites.forEach(loc => {this.isChecked(loc)});
+      this.getAllLocalites(res);
 
     });
+  }
+
+  getAllLocalites(_localites: any[]) {
+    _localites.forEach((_localite: any) => {
+      this.localites.push(_localite);
+      if ('subdivisions' in _localite && _localite.subdivisions.length > 0) {
+        this.getAllLocalites(_localite.subdivisions);
+      }
+    })
   }
 
   getInventaireByEse(add = false) {
@@ -486,14 +496,20 @@ export class InventaireComponent implements OnInit {
     data.entreprise = this.idCurrentEse
     data.localites = this.getOneLyId(this.tabLoc)
     data.deleteLocalites = this.deleteLoc
-    data.allLocIsChecked = this.allLocIsChecked
+    data.allLocIsChecked = this.allLocIsChecked ? 1 : 0
     data.localInstructionPv = [this.invCreer ? 'creation' : 'download', this.pvCreer ? 'creation' : 'download']
     console.log(data)
     return data
   }
   getOneLyId(localites) {
     let l = []
-    localites.forEach(loc => l.push(loc.id));
+    localites.forEach((loc: any) => {
+      if (typeof loc === 'object' && loc !== null) {
+        l.push(loc.id)
+      } else {
+        l.push(loc);
+      }
+    });
     console.log(l);
     return l
   }
@@ -1073,8 +1089,11 @@ export class InventaireComponent implements OnInit {
     }
   }
 
-  firstSub(localites) {
-    return localites?.filter((loc: any) => loc.level === 0)
+  firstSub(localites: any[], verifIsChecked = false) {
+    if (verifIsChecked) {
+      return localites?.filter((loc: any) => loc.level === 0 && this.isChecked(loc));
+    }
+    return localites?.filter((loc: any) => loc.level === 0);
   }
 
   getChildsLocalites(id: any, level: any, event: any) {
@@ -1093,32 +1112,30 @@ export class InventaireComponent implements OnInit {
     this.displayedTabs = this.displayedTabs.filter((ele: any) => ele.level <= level);
 
     this.isUpdating = false;
-    this.inventaireServ.filterLocalites(this.idCurrentEse, level, id).then((res: any) => {
-      if (indexExistTab != -1) {
-        this.displayedTabs[indexExistTab] = {id: id, level: level};
-      } else {
-        this.displayedTabs.push({id: id, level: level});
-      }
+    
+    if (indexExistTab != -1) {
+      this.displayedTabs[indexExistTab] = {id: id, level: level};
+    } else {
+      this.displayedTabs.push({id: id, level: level});
+    }
 
-      if (res && res.length > 0 && this.idTabs.indexOf(id) == -1) {
-        this.localites = this.localites.concat(res);
-        this.idTabs.push(id);
-      }
+    if (this.idTabs.indexOf(id) == -1) {
+      this.idTabs.push(id);
+    }
 
-      const index = level - 1;
-      document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
-      (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
+    const index = level - 1;
+    document.querySelectorAll('.chip-localite-'+index).forEach((ele: HTMLElement) => ele.classList.remove('active'));
+    (event.target as HTMLElement).closest('.chip-localite-'+index).classList.add('active');
 
-      event.target.disabled = false;
+    event.target.disabled = false;
 
-      setTimeout(() => {
-        document.getElementById('tab-'+level).scrollIntoView();
-      }, 1000);
+    setTimeout(() => {
+      document.getElementById('tab-'+level).scrollIntoView();
+    }, 1000);
 
-      setTimeout(() => {
-        this.isUpdating = true;
-      }, 2000);
-    });
+    setTimeout(() => {
+      this.isUpdating = true;
+    }, 2000);
   }
 
   checkLoc(loc, event?: any, checkAllInTab?: any) {
@@ -1126,7 +1143,7 @@ export class InventaireComponent implements OnInit {
     let index = this.tabLoc.findIndex(localite => localite.id == loc.id);
     if (index != -1) {
       if (checkAllInTab) {
-        checkAllInTab.checked = false; 
+        checkAllInTab.checked = false;
       }
       const index2 = loc?.inventaireLocalites.findIndex((inventaireLocalite: any) => inventaireLocalite.inventaire == `/api/inventaires/${this.idCurrentInv}`);
       const index3 = loc?.affectations.findIndex((affectation: any) => affectation.inventaire == `/api/inventaires/${this.idCurrentInv}`);
@@ -1146,7 +1163,7 @@ export class InventaireComponent implements OnInit {
       }
       this.tabLoc.push(loc)
       const idParent = loc.idParent
-      if (idParent && !this.isChecked(loc)) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
+      // if (idParent && !this.isChecked(this.getOneLocById(idParent))) this.checkLoc(this.getOneLocById(idParent))//cocher les parents recursif
     }
   }
   checkAllLoc() {
