@@ -1,0 +1,458 @@
+
+
+<div class="ngxTableHeader pl-0 pb-0" style="min-width: 700px; margin-left: -1.2em; margin-top: -0.5em; position: relative;">
+    <span style="position: absolute; margin-left: 5em;margin-top: -.2em " class="text-white">Affectations</span>
+    <div class="btn-group mb-3 pull-right" role="group" aria-label="Basic example" style="position: absolute;right: 1em;">
+        <button class="affectBtn mr-4" (click)="save()" [disabled]="getAffectationToSave()?.length === 0">
+            <i class="pi pi-save"></i> Enrégistrer
+        </button>
+        <button class="affectBtn" style="background-color: yellow;" (click)="back()">
+            Annuler
+            <i class="pi pi-angle-right"></i>
+        </button>
+    </div>
+</div>
+
+
+
+
+<div *ngFor="let l0 of localities" class="card p-0 mt-5" >
+    <div class="card-header px-5" style="background-color: #16697a !important; color:#ffffff;" >
+        <div class="row p-0">
+  
+            <div class="col-sm-5 p-0">
+                <input type="checkbox" class="mr-2" [disabled]="l0.disabled" (change)="getSelectedLocality(l0, $event)" [checked]="l0.selected" />
+                 <span class="text-muted mr-2">{{subdivisions[0] +':'}}</span>
+                 <span>{{l0.nom}}</span>
+            </div>
+            <div class="col-sm-7 p-0">
+             <div class="row">
+                <div class="col-sm-10 ">
+                 <span>
+                     <label class="text-muted">Début: </label>
+                     <input type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l0.level, l0.id, 'd')"  />
+                 </span>
+                 <span>
+                     <label class="text-muted">Fin: </label>
+                     <input  type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l0.level, l0.id, 'f')"  />
+                 </span>
+  
+                </div>
+                <div class="col-sm-2" *ngIf="subdivisions.length > 1">
+                 <i *ngIf="l0.opened " class="pi pi-chevron-down mr-2" (click)="close(l0.level, l0.id)"></i>
+                 <i *ngIf="!l0.opened " class="pi pi-chevron-up mr-2" (click)="open(l0.level, l0.id, l0.idParent)"></i>
+                </div>
+             </div>
+             
+            </div>
+            
+  
+        </div>
+         
+    </div>
+
+    <div class="card-body mcontainer" *ngIf="l0.opened">
+
+        <div class="card" *ngIf="l0.subdivisions.length == 0">
+            <p-progressSpinner size="20"></p-progressSpinner>
+        </div>
+
+        <div  *ngFor="let l1 of l0.subdivisions" class="card p-0" >
+            <div class="card-header px-5" style="background-color: #c7753d !important; color:#ffffff;" >
+                <div class="row p-0">
+          
+                    <div class="col-sm-5 p-0">
+                        <input type="checkbox" class="mr-2" [disabled]="l1.disabled" (change)="getSelectedLocality(l1, $event)" [checked]="l1.selected"  />
+                         <span class="text-muted mr-2">{{subdivisions[1] +':'}}</span>
+                         <span>{{l1.nom}}</span>
+                    </div>
+                    <div class="col-sm-7 p-0">
+                     <div class="row">
+                        <div class="col-sm-10 ">
+                         <span>
+                             <label class="text-muted">Début: </label>
+                             <input type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l1.level, l1.id, 'd')"  />
+                         </span>
+                         <span>
+                             <label class="text-muted">Fin: </label>
+                             <input  type="date"  min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l1.level, l1.id, 'f')"  />
+                         </span>
+          
+                        </div>
+                        <div class="col-sm-2" *ngIf="subdivisions.length > 2">
+                         <i *ngIf="l1.opened" class="pi pi-chevron-down mr-2" (click)="close(l1.level, l1.id)"></i>
+                         <i *ngIf="!l1.opened" class="pi pi-chevron-up mr-2" (click)="open(l1.level, l1.id, l1.idParent)"></i>
+                        </div>
+                     </div>
+                     
+                    </div>
+                    
+          
+                </div>
+                 
+            </div>
+            
+            <div class="card-body mcontainer" *ngIf="l1.opened">
+
+                <div class="card" *ngIf="l1.subdivisions.length == 0">
+                    <p-progressSpinner size="20"></p-progressSpinner>
+                </div>
+                <div *ngFor="let l2 of l1.subdivisions" class="card p-0" >
+                    <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
+                        <div class="row p-0">
+                  
+                            <div class="col-sm-5 p-0">
+                                <input type="checkbox" class="mr-2" [disabled]="l2.disabled" (change)="getSelectedLocality(l2, $event)" [checked]="l2.selected" />
+                                 <span class="text-muted mr-2">{{subdivisions[2] +':'}}</span>
+                                 <span>{{l2.nom}}</span>
+                            </div>
+                            <div class="col-sm-7 p-0">
+                             <div class="row">
+                                <div class="col-sm-10 ">
+                                 <span>
+                                     <label class="text-muted">Début: </label>
+                                     <input type="date"  min="{{l1.debut  | date:'yyyy-MM-dd'}}" max="{{l1.fin | date:'yyyy-MM-dd' }}" value="{{ l2.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l2.level, l2.id, 'd')"  />
+                                 </span>
+                                 <span>
+                                     <label class="text-muted">Fin: </label>
+                                     <input  type="date"  min="{{l1.debut  | date:'yyyy-MM-dd'}}" max="{{l1.fin | date:'yyyy-MM-dd' }}"  value="{{ l2.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l2.level, l2.id, 'f')"  />
+                                 </span>
+                  
+                                </div>
+                                <div class="col-sm-2" *ngIf="subdivisions.length > 3">
+                                 <i *ngIf="l2.opened" class="pi pi-chevron-down mr-2" (click)="close(l2.level, l2.id)"></i>
+                                 <i *ngIf="!l2.opened" class="pi pi-chevron-up mr-2" (click)="open(l2.level, l2.id, l2.idParent)"></i>
+                                </div>
+                             </div>
+                             
+                            </div>
+                            
+                  
+                        </div>
+                         
+                    </div>
+                
+                    <div class="card-body mcontainer" *ngIf="l2.opened">
+
+                        <div class="card" *ngIf="l2.subdivisions.length == 0">
+                            <p-progressSpinner size="20"></p-progressSpinner>
+                        </div>
+                        <div *ngFor="let l3 of l2.subdivisions" class="card p-0" >
+                            <div class="card-header px-5" style="background-color: #556052 !important; color:#ffffff;" >
+                                <div class="row p-0">
+                          
+                                    <div class="col-sm-5 p-0">
+                                        <input type="checkbox" class="mr-2" [disabled]="l3.disabled" (change)="getSelectedLocality(l3, $event)" [checked]="l3.selected"  />
+                                         <span class="text-muted mr-2">{{subdivisions[3] +':'}}</span>
+                                         <span>{{l3.nom}}</span>
+                                    </div>
+                                    <div class="col-sm-7 p-0">
+                                     <div class="row">
+                                        <div class="col-sm-10 ">
+                                         <span>
+                                             <label class="text-muted">Début: </label>
+                                             <input type="date" min="{{l2.debut  | date:'yyyy-MM-dd'}}" max="{{l2.fin | date:'yyyy-MM-dd' }}" value="{{ l3.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l3.level, l3.id, 'd')"  />
+                                         </span>
+                                         <span>
+                                             <label class="text-muted">Fin: </label>
+                                             <input  type="date" min="{{l2.debut  | date:'yyyy-MM-dd'}}" max="{{l2.fin | date:'yyyy-MM-dd' }}"  value="{{ l3.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l3.level, l3.id, 'f')"  />
+                                         </span>
+                          
+                                        </div>
+                                        <div class="col-sm-2" *ngIf="subdivisions.length > 4">
+                                         <i *ngIf="l3.opened" class="pi pi-chevron-down mr-2" (click)="close(l3.level, l3.id)"></i>
+                                         <i *ngIf="!l3.opened" class="pi pi-chevron-up mr-2" (click)="open(l3.level, l3.id, l3.idParent)"></i>
+                                        </div>
+                                     </div>
+                                     
+                                    </div>
+                                    
+                          
+                                </div>
+                                 
+                            </div>
+                        
+                            <div class="card-body mcontainer" *ngIf="l3.opened">
+
+
+                                <div class="card" *ngIf="l3.subdivisions.length == 0">
+                                    <p-progressSpinner size="20"></p-progressSpinner>
+                                </div>
+                                <div *ngFor="let l4 of l3.subdivisions" class="card p-0" >
+                                    <div class="card-header px-5" style="background-color: #21209c !important; color:#ffffff;" >
+                                        <div class="row p-0">
+                                  
+                                            <div class="col-sm-5 p-0">
+                                                <input type="checkbox" class="mr-2" [disabled]="l4.disabled" (change)="getSelectedLocality(l4, $event)" [checked]="l4.selected"  />
+                                                 <span class="text-muted mr-2">{{subdivisions[4] +':'}}</span>
+                                                 <span>{{l4.nom}}</span>
+                                            </div>
+                                            <div class="col-sm-7 p-0">
+                                             <div class="row">
+                                                <div class="col-sm-10 ">
+                                                 <span>
+                                                     <label class="text-muted">Début: </label>
+                                                     <input type="date"  min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}" value="{{ l3.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'd')"  />
+                                                 </span>
+                                                 <span>
+                                                     <label class="text-muted">Fin: </label>
+                                                     <input  type="date" min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}"  value="{{ l3.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'f')"    />
+                                                 </span>
+                                  
+                                                </div>
+                                                <div class="col-sm-2" *ngIf="subdivisions.length > 5">
+                                                 <i *ngIf="l4.opened" class="pi pi-chevron-down mr-2" (click)="close(l4.level, l4.id)"></i>
+                                                 <i *ngIf="!l4.opened" class="pi pi-chevron-up mr-2" (click)="open(l4.level, l4.id, l4.idParent)"></i>
+                                                </div>
+                                             </div>
+                                             
+                                            </div>
+                                            
+                                  
+                                        </div>
+                                         
+                                    </div>
+                                
+                                    <div class="card-body mcontainer" *ngIf="l4.opened">
+
+                                        <div class="card" *ngIf="l4.subdivisions.length == 0">
+                                            <p-progressSpinner size="20"></p-progressSpinner>
+                                        </div>
+                                        <div *ngFor="let l5 of l4.subdivisions" class="card p-0" >
+                                            <div class="card-header px-5" style="background-color: #682c0e !important; color:#ffffff;" >
+                                                <div class="row p-0">
+                                          
+                                                    <div class="col-sm-5 p-0">
+                                                        <input type="checkbox" class="mr-2" [disabled]="l5.disabled" (change)="getSelectedLocality(l5, $event)" [checked]="l5.selected"   />
+                                                         <span class="text-muted mr-2">{{subdivisions[5] +':'}}</span>
+                                                         <span>{{l5.nom}}</span>
+                                                    </div>
+                                                    <div class="col-sm-7 p-0">
+                                                     <div class="row">
+                                                        <div class="col-sm-10 ">
+                                                         <span>
+                                                             <label class="text-muted">Début: </label>
+                                                             <input type="date" min="{{l4.debut  | date:'yyyy-MM-dd'}}" max="{{l4.fin | date:'yyyy-MM-dd' }}" value="{{ l4.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l5.level, l5.id, 'd')"  />
+                                                         </span>
+                                                         <span>
+                                                             <label class="text-muted">Fin: </label>
+                                                             <input  type="date" min="{{l4.debut  | date:'yyyy-MM-dd'}}" max="{{l4.fin | date:'yyyy-MM-dd' }}"  value="{{ l4.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l5.level, l5.id, 'f')"  />
+                                                         </span>
+                                          
+                                                        </div>
+                                                        <div class="col-sm-2" *ngIf="subdivisions.length > 6">
+                                                         <i *ngIf="l5.opened" class="pi pi-chevron-down mr-2" (click)="close(l5.level, l5.id)"></i>
+                                                         <i *ngIf="!l5.opened" class="pi pi-chevron-up mr-2" (click)="open(l5.level, l5.id, l5.idParent)"></i>
+                                                        </div>
+                                                     </div>
+                                                     
+                                                    </div>
+                                                    
+                                          
+                                                </div>
+                                                 
+                                            </div>
+                                        
+                                            <div class="card-body mcontainer" *ngIf="l5.opened">
+                                                <div class="card" *ngIf="l1.subdivisions.length == 0">
+                                                    <p-progressSpinner size="20"></p-progressSpinner>
+                                                </div>
+                                                <div *ngFor="let l6 of l5.subdivisions" class="card p-0" >
+                                                    <div class="card-header px-5" style="background-color: #30475e !important; color:#ffffff;" >
+                                                        <div class="row p-0">
+                                                  
+                                                            <div class="col-sm-5 p-0">
+                                                                <input type="checkbox" class="mr-2" [disabled]="l6.disabled"  (change)="getSelectedLocality(l6, $event)" [checked]="l6.selected"  />
+                                                                 <span class="text-muted mr-2">{{subdivisions[6] +':'}}</span>
+                                                                 <span>{{l6.nom}}</span>
+                                                            </div>
+                                                            <div class="col-sm-7 p-0">
+                                                             <div class="row">
+                                                                <div class="col-sm-10 ">
+                                                                 <span>
+                                                                     <label class="text-muted">Début: </label>
+                                                                     <input type="date" min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}" value="{{ l5.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l6.level, l6.id, 'd')"   />
+                                                                 </span>
+                                                                 <span>
+                                                                     <label class="text-muted">Fin: </label>
+                                                                     <input  type="date"  min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}"  value="{{ l5.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l6.level, l6.id, 'f')"   />
+                                                                 </span>
+                                                  
+                                                                </div>
+                                                                <div class="col-sm-2" *ngIf="subdivisions.length > 7">
+                                                                 <i *ngIf="l6.opened" class="pi pi-chevron-down mr-2" (click)="close(l6.level, l6.id)"></i>
+                                                                 <i *ngIf="!l6.opened" class="pi pi-chevron-up mr-2" (click)="open(l6.level, l6.id, l6.idParent)"></i>
+                                                                </div>
+                                                             </div>
+                                                             
+                                                            </div>
+                                                            
+                                                  
+                                                        </div>
+                                                         
+                                                    </div>
+                                                
+                                                    <div class="card-body mcontainer" *ngIf="l6.opened">
+
+                                                        <div class="card" *ngIf="l6.subdivisions.length == 0">
+                                                            <p-progressSpinner size="20"></p-progressSpinner>
+                                                        </div>
+                                                        <div *ngFor="let l7 of l6.subdivisions" class="card p-0" >
+                                                            <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
+                                                                <div class="row p-0">
+                                                          
+                                                                    <div class="col-sm-5 p-0">
+                                                                        <input type="checkbox" class="mr-2"  [disabled]="l7.disabled"  (change)="getSelectedLocality(l7, $event)"  [checked]="l7.selected"  />
+                                                                         <span class="text-muted mr-2">{{subdivisions[7] +':'}}</span>
+                                                                         <span>{{l7.nom}}</span>
+                                                                    </div>
+                                                                    <div class="col-sm-7 p-0">
+                                                                     <div class="row">
+                                                                        <div class="col-sm-10 ">
+                                                                         <span>
+                                                                             <label class="text-muted">Début: </label>
+                                                                             <input type="date" min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}"  value="{{ l6.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'd')"   />
+                                                                         </span>
+                                                                         <span>
+                                                                             <label class="text-muted">Fin: </label>
+                                                                             <input  type="date"  min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}" value="{{ l6.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'f')"   />
+                                                                         </span>
+                                                          
+                                                                        </div>
+                                                                        <div class="col-sm-2" *ngIf="subdivisions.length > 8">
+                                                                         <i *ngIf="l7.opened" class="pi pi-chevron-down mr-2" (click)="close(l7.level, l7.id)"></i>
+                                                                         <i *ngIf="!l7.opened" class="pi pi-chevron-up mr-2" (click)="open(l7.level, l7.id, l7.idParent)"></i>
+                                                                        </div>
+                                                                     </div>
+                                                                     
+                                                                    </div>
+                                                                    
+                                                          
+                                                                </div>
+                                                                 
+                                                            </div>
+                                                        
+                                                            <div class="card-body mcontainer" *ngIf="l7.opened">
+
+
+                                                                <div class="card" *ngIf="l7.subdivisions.length == 0">
+                                                                    <p-progressSpinner size="20"></p-progressSpinner>
+                                                                </div>
+                                                                <div *ngFor="let l8 of l7.subdivisions" class="card p-0" >
+                                                                    <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
+                                                                        <div class="row p-0">
+                                                                  
+                                                                            <div class="col-sm-5 p-0">
+                                                                                <input type="checkbox" class="mr-2" [disabled]="l8.disabled"  (change)="getSelectedLocality(l8, $event)" [checked]="l8.selected"  />
+                                                                                 <span class="text-muted mr-2">{{subdivisions[8] +':'}}</span>
+                                                                                 <span>{{l8.nom}}</span>
+                                                                            </div>
+                                                                            <div class="col-sm-7 p-0">
+                                                                             <div class="row">
+                                                                                <div class="col-sm-10 ">
+                                                                                 <span>
+                                                                                     <label class="text-muted">Début: </label>
+                                                                                     <input type="date"  min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}" value="{{ l7.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'd')"  />
+                                                                                 </span>
+                                                                                 <span>
+                                                                                     <label class="text-muted">Fin: </label>
+                                                                                     <input  type="date" min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}"  value="{{ l7.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'f')"   />
+                                                                                 </span>
+                                                                  
+                                                                                </div>
+                                                                                <div class="col-sm-2" *ngIf="subdivisions.length > 9">
+                                                                                 <i *ngIf="l8.opened" class="pi pi-chevron-down mr-2" (click)="close(l8.level, l8.id)"></i>
+                                                                                 <i *ngIf="!l8.opened" class="pi pi-chevron-up mr-2" (click)="open(l8.level, l8.id, l8.idParent)"></i>
+                                                                                </div>
+                                                                             </div>
+                                                                             
+                                                                            </div>
+                                                                            
+                                                                  
+                                                                        </div>
+                                                                         
+                                                                    </div>
+                                                                
+                                                                    <div class="card-body mcontainer" *ngIf="l8.opened">
+
+                                                                        <div class="card" *ngIf="l8.subdivisions.length == 0">
+                                                                            <p-progressSpinner size="20"></p-progressSpinner>
+                                                                        </div>
+                                                                        <div *ngFor="let l9 of l8.subdivisions" class="card p-0" >
+                                                                            <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
+                                                                                <div class="row p-0">
+                                                                          
+                                                                                    <div class="col-sm-5 p-0">
+                                                                                        <input type="checkbox" class="mr-2"  [disabled]="l9.disabled"  (change)="getSelectedLocality(l9, $event)" [checked]="l9.selected"   />
+                                                                                         <span class="text-muted mr-2">{{subdivisions[9] +':'}}</span>
+                                                                                         <span>{{l9.nom}}</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-7 p-0">
+                                                                                     <div class="row">
+                                                                                        <div class="col-sm-10 ">
+                                                                                         <span>
+                                                                                             <label class="text-muted">Début: </label>
+                                                                                             <input type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}" value="{{ l8.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l9.level, l9.id, 'd')"  />
+                                                                                         </span>
+                                                                                         <span>
+                                                                                             <label class="text-muted">Fin: </label>
+                                                                                             <input  type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}"  value="{{ l8.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l9.level, l9.id, 'f')"   />
+                                                                                         </span>
+                                                                          
+                                                                                        </div>
+                                                                                        <div class="col-sm-2" *ngIf="subdivisions.length > 10">
+                                                                                         <i *ngIf="l9.opened" class="pi pi-chevron-down mr-2" (click)="close(l9.level, l9.id)"></i>
+                                                                                         <i *ngIf="!l9.opened" class="pi pi-chevron-up mr-2" (click)="open(l9.level, l9.id, l9.idParent)"></i>
+                                                                                        </div>
+                                                                                     </div>
+                                                                                     
+                                                                                    </div>
+                                                                                    
+                                                                          
+                                                                                </div>
+                                                                                 
+                                                                            </div>
+                                                                        
+                                                                            <div class="card-body mcontainer" *ngIf="l9.opened"></div>
+                                                                        
+                                                                        
+                                                                            </div>
+                                                                    </div>
+                                                                
+                                                                
+                                                                    </div>
+                                                            </div>
+                                                        
+                                                        
+                                                            </div>
+                                                    </div>
+                                                
+                                                
+                                                    </div>
+
+                                            </div>
+                                        
+                                        
+                                            </div>
+                                    </div>
+                                
+                                
+                                    </div>
+                            </div>
+                        
+                        
+                            </div>
+                    </div>
+                
+                
+                    </div>
+            </div>
+        
+        
+            </div>
+    </div>
+
+
+    </div>
+
+

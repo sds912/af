@@ -1,0 +1,116 @@
+import { Affectation } from './../../../data/schema/Affectation';
+import { PlaningModule } from './../planing.module';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { User } from 'src/app/data/schema/user';
+
+@Injectable({ providedIn: 'root' })
+export class AffectationService {
+  // Make _puppiesSource private so it's not accessible from the outside, 
+  // expose it as puppies$ observable (read-only) instead.
+  // Write to _puppiesSource only through specified store methods below.
+  private readonly _userSource = new BehaviorSubject<User[]>([]);
+
+  private readonly _userDataSource = new BehaviorSubject<User[]>([]);
+
+
+  private readonly _myAffectsSource = new BehaviorSubject<any[]>([]);
+
+
+  private readonly _openedSource = new BehaviorSubject<boolean>(false);
+
+  private readonly _editSource = new BehaviorSubject<boolean>(false);
+
+
+  private readonly _DataToSaveSource = new BehaviorSubject<any>(null);
+
+
+  // Exposed observable (read-only).
+  readonly users$ = this._userSource.asObservable();
+  readonly opened$ = this._openedSource.asObservable();
+  readonly data$ = this._DataToSaveSource.asObservable();
+  readonly edit$ = this._DataToSaveSource.asObservable();
+  readonly myAffects$ = this._myAffectsSource.asObservable();
+  readonly userData$ = this._userDataSource.asObservable();
+
+
+
+
+
+  constructor() {}
+
+  // Get last value without subscribing to the puppies$ observable (synchronously).
+  getUsers(): User[] {
+    return this._userSource.getValue();
+  }
+
+  private _setUsers(users: User[]): void {
+    this._userSource.next(users);
+  }
+
+  private _setUserData(users: User[]): void {
+    this._userDataSource.next(users);
+  }
+
+
+
+  private _setAffect(affects: any[]): void {
+    this._myAffectsSource.next(affects);
+  }
+
+  private _setOpened(state: boolean): void {
+    this._openedSource.next(state);
+  }
+
+  private _setEdit(state: boolean): void {
+    this._openedSource.next(state);
+  }
+
+  private _setData(data): void {
+    this._DataToSaveSource.next(data);
+  }
+
+  addUser(users: User[]): void {
+    this._setUsers(users);
+    
+  }
+
+
+  editUsers(user: User){
+   
+  }
+
+
+  addUserData(users: User[]): void {
+    this._setUserData(users);
+    
+  }
+
+  toogle(state: boolean){
+    this._setOpened(state);
+  }
+
+  editing(state: boolean){
+    this._setEdit(state);
+  }
+
+  addAffect(affects: any[]){
+    this._setAffect(affects);
+  }
+
+  setData(data: any){
+    this._setData(data);
+  }
+
+  removeUser(user: User): void {
+    const users = this.getUsers().filter(p => p.id !== user.id);
+    this._setUsers(users);
+  }
+
+  adoptUser(user: User): void {
+    const users = this.getUsers().map(p =>
+      p.id === user.id ? { ...p, ...{ selected: true } } : p
+    );
+    this._setUsers(users);
+  }
+}

@@ -11,4 +11,7 @@ export interface User {
     action?: string;
     image?: string;
     entreprises?: any[];
+    selected?: boolean;
+    affected?: boolean;
+    
 }
