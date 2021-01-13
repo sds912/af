@@ -1,0 +1,37 @@
+<section class="content mt-5">
+    <div class="container-fluid">
+     <div class="row">
+        <div class="col-sm-4" style="margin-top: 33px !important">
+            <div class="card">
+                    <div class="ngxTableHeader pl-0 pb-0 text-center text-white pl-5" style="min-width:220px ; border-top-left-radius: 8px;border-top-right-radius: 8px;">
+                        <p class="text-center">{{selectedUsers.length}} Utilisateur(s) séléctionné(s)</p>
+                    </div>
+                <div class="card-body">
+                    <div class="row mt-2" *ngFor="let user of selectedUsers" [ngStyle]="{'border-bottom': '1px solid gray'}">
+                        <div class="col-3 mr-0">
+                            <img [src]="'/assets/images/user/user'+user.id+'.jpg'" alt="image" class="img-circle avatar2"  />
+                        </div>
+                        <div class="col-9 ml-0">
+                            <h6 class="name">{{user.nom}}</h6>
+                            <p class="roles">{{getRole(user.roles)}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer" *ngIf="selectedUsers.length != 0 && !isAffecting">
+                  <button class="affectBtn" (click)="affecting()">Affecter</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 px-0">
+            <div class="mb-3">Période d'inventaire du <strong>{{currentInv?.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv?.fin|date:'dd/MM/yyyy'}}</strong> </div>
+
+            <div class="card card-body affectBody py-2 px-0">
+                <app-user-list  *ngIf="!isAffecting" [inventaire]="currentInv" ></app-user-list>
+                <app-locality-planning *ngIf="isAffecting || isEditing" [localities]="localites" [subdivisions]="subdivisions" [inventaire]="currentInv"></app-locality-planning>
+            </div>
+        </div>
+     </div>
+    </div>
+</section>
+
+

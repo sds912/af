@@ -1,0 +1,52 @@
+
+<div class="container fluid mb-4">
+    <div class="ngxTableHeader pl-0 pb-0" style="min-width: 700px; margin-left: -1.2em; margin-top: -0.5em">
+        <ul class="header-buttons-left ml-0">
+            <li class="dropdown m-l-20">
+                <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                <input placeholder="Recherche" type="text" class="browser-default search-field"  aria-label="Search box" (keyup)="filterDatatable($event.target.value)">
+            </li>
+        </ul>
+    </div>
+    <p-table [value]="filteredUsers.length != 0 ? filteredUsers : users ">
+        <ng-template pTemplate="header">
+            <tr>
+                <th> </th>
+                <th>Profile</th>
+                <th>Prénom et Nom</th>
+                <th>Rôle(s)</th>
+                <th>Département</th>
+                <th>Status</th>
+            </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="body" let-user >
+        
+            
+            <tr *ngIf="users.length != 0 && filterByRole(user.roles[0]) != false" > 
+                <td>
+                    <i *ngIf="user.affected" class="pi pi-user-edit" (click)="edit(user)" ></i>
+                    <p-checkbox *ngIf="!user.affected"    name="groupname" checcked  value="user" [value]="user" [(ngModel)]="selectedUsers" [inputId]="user.id" (click)="getSelected(user.id)"></p-checkbox>
+                </td>
+                <td><img [src]="'/assets/images/user/user'+user.id+'.jpg'" class="img-circle" class="avatar" /></td>
+                <td>{{user.nom}}</td>
+                <td>{{getRole(user.roles)}}</td>
+                <td>{{user.departement}}</td>
+                <td>
+                    <span class="status" [ngStyle]="{'background-color':  !user.affected ?'red': 'green', 'cursor': user.affected? 'pointer': 'none'}" title="Afficher"  (click) ="user.affected ? getAffectationOf(user): ''">
+                        
+                    </span>
+                </td>
+
+               
+            </tr>
+        </ng-template>
+    </p-table>
+    <div class="progress-spinner" *ngIf="users.length == 0">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+
+</div>
+
+
+
