@@ -21,7 +21,7 @@
         <div class="row p-0">
   
             <div class="col-sm-5 p-0">
-                <input type="checkbox" class="mr-2" [disabled]="l0.disabled" (change)="getSelectedLocality(l0, $event)" [checked]="l0.selected" />
+                <input type="checkbox" class="mr-2" [disabled]="l0.disabled" (change)="getSelectedLocality(l0, $event)" [checked]="l0.selected || isChecked(l0)" />
                  <span class="text-muted mr-2">{{subdivisions[0] +':'}}</span>
                  <span>{{l0.nom}}</span>
             </div>
@@ -30,17 +30,17 @@
                 <div class="col-sm-10 ">
                  <span>
                      <label class="text-muted">Début: </label>
-                     <input type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l0.level, l0.id, 'd')"  />
+                     <input type="date" min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l0.level, l0.id, 'd')"  />
                  </span>
                  <span>
                      <label class="text-muted">Fin: </label>
-                     <input  type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l0.level, l0.id, 'f')"  />
+                     <input  type="date" min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"   value="{{ l0.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l0.level, l0.id, 'f')"  />
                  </span>
   
                 </div>
                 <div class="col-sm-2" *ngIf="subdivisions.length > 1">
-                 <i *ngIf="l0.opened " class="pi pi-chevron-down mr-2" (click)="close(l0.level, l0.id)"></i>
-                 <i *ngIf="!l0.opened " class="pi pi-chevron-up mr-2" (click)="open(l0.level, l0.id, l0.idParent)"></i>
+                 <i *ngIf="l0.opened " class="pi pi-chevron-down mr-2" (click)="l0.opened = false"></i>
+                 <i *ngIf="!l0.opened " class="pi pi-chevron-up mr-2" (click)="l0.opened = true"></i>
                 </div>
              </div>
              
@@ -51,7 +51,7 @@
          
     </div>
 
-    <div class="card-body mcontainer" *ngIf="l0.opened">
+    <div class="card-body mcontainer" *ngIf="l0.opened" >
 
         <div class="card" *ngIf="l0.subdivisions.length == 0">
             <p-progressSpinner size="20"></p-progressSpinner>
@@ -62,7 +62,7 @@
                 <div class="row p-0">
           
                     <div class="col-sm-5 p-0">
-                        <input type="checkbox" class="mr-2" [disabled]="l1.disabled" (change)="getSelectedLocality(l1, $event)" [checked]="l1.selected"  />
+                        <input type="checkbox" class="mr-2" [disabled]="l1.disabled" (change)="getSelectedLocality(l1, $event)" [checked]="l1.selected || isChecked(l1)"  />
                          <span class="text-muted mr-2">{{subdivisions[1] +':'}}</span>
                          <span>{{l1.nom}}</span>
                     </div>
@@ -71,17 +71,17 @@
                         <div class="col-sm-10 ">
                          <span>
                              <label class="text-muted">Début: </label>
-                             <input type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l1.level, l1.id, 'd')"  />
+                             <input type="date" min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l1.level, l1.id, 'd')"  />
                          </span>
                          <span>
                              <label class="text-muted">Fin: </label>
-                             <input  type="date"  min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l1.level, l1.id, 'f')"  />
+                             <input  type="date"  min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l1.level, l1.id, 'f')"  />
                          </span>
           
                         </div>
                         <div class="col-sm-2" *ngIf="subdivisions.length > 2">
-                         <i *ngIf="l1.opened" class="pi pi-chevron-down mr-2" (click)="close(l1.level, l1.id)"></i>
-                         <i *ngIf="!l1.opened" class="pi pi-chevron-up mr-2" (click)="open(l1.level, l1.id, l1.idParent)"></i>
+                         <i *ngIf="l1.opened" class="pi pi-chevron-down mr-2" (click)="l1.opened = false"></i>
+                         <i *ngIf="!l1.opened" class="pi pi-chevron-up mr-2" (click)="l1.opened = true"></i>
                         </div>
                      </div>
                      
@@ -102,7 +102,7 @@
                         <div class="row p-0">
                   
                             <div class="col-sm-5 p-0">
-                                <input type="checkbox" class="mr-2" [disabled]="l2.disabled" (change)="getSelectedLocality(l2, $event)" [checked]="l2.selected" />
+                                <input type="checkbox" class="mr-2" [disabled]="l2.disabled" (change)="getSelectedLocality(l2, $event)" [checked]="l2.selected || isChecked(l2)" />
                                  <span class="text-muted mr-2">{{subdivisions[2] +':'}}</span>
                                  <span>{{l2.nom}}</span>
                             </div>
@@ -120,8 +120,8 @@
                   
                                 </div>
                                 <div class="col-sm-2" *ngIf="subdivisions.length > 3">
-                                 <i *ngIf="l2.opened" class="pi pi-chevron-down mr-2" (click)="close(l2.level, l2.id)"></i>
-                                 <i *ngIf="!l2.opened" class="pi pi-chevron-up mr-2" (click)="open(l2.level, l2.id, l2.idParent)"></i>
+                                 <i *ngIf="l2.opened" class="pi pi-chevron-down mr-2" (click)="l2.opened = false"></i>
+                                 <i *ngIf="!l2.opened" class="pi pi-chevron-up mr-2" (click)="l2.opened = true"></i>
                                 </div>
                              </div>
                              
@@ -142,7 +142,7 @@
                                 <div class="row p-0">
                           
                                     <div class="col-sm-5 p-0">
-                                        <input type="checkbox" class="mr-2" [disabled]="l3.disabled" (change)="getSelectedLocality(l3, $event)" [checked]="l3.selected"  />
+                                        <input type="checkbox" class="mr-2" [disabled]="l3.disabled" (change)="getSelectedLocality(l3, $event)" [checked]="l3.selected || isChecked(l3)"  />
                                          <span class="text-muted mr-2">{{subdivisions[3] +':'}}</span>
                                          <span>{{l3.nom}}</span>
                                     </div>
@@ -160,8 +160,8 @@
                           
                                         </div>
                                         <div class="col-sm-2" *ngIf="subdivisions.length > 4">
-                                         <i *ngIf="l3.opened" class="pi pi-chevron-down mr-2" (click)="close(l3.level, l3.id)"></i>
-                                         <i *ngIf="!l3.opened" class="pi pi-chevron-up mr-2" (click)="open(l3.level, l3.id, l3.idParent)"></i>
+                                         <i *ngIf="l3.opened" class="pi pi-chevron-down mr-2" (click)="l3.opened = false"></i>
+                                         <i *ngIf="!l3.opened" class="pi pi-chevron-up mr-2" (click)="l3.opened = true"></i>
                                         </div>
                                      </div>
                                      
@@ -172,7 +172,7 @@
                                  
                             </div>
                         
-                            <div class="card-body mcontainer" *ngIf="l3.opened">
+                            <div class="card-body mcontainer" *ngIf="l3.opened" >
 
 
                                 <div class="card" *ngIf="l3.subdivisions.length == 0">
@@ -183,7 +183,7 @@
                                         <div class="row p-0">
                                   
                                             <div class="col-sm-5 p-0">
-                                                <input type="checkbox" class="mr-2" [disabled]="l4.disabled" (change)="getSelectedLocality(l4, $event)" [checked]="l4.selected"  />
+                                                <input type="checkbox" class="mr-2" [disabled]="l4.disabled" (change)="getSelectedLocality(l4, $event)" [checked]="l4.selected || isChecked(l4)"  />
                                                  <span class="text-muted mr-2">{{subdivisions[4] +':'}}</span>
                                                  <span>{{l4.nom}}</span>
                                             </div>
@@ -201,8 +201,8 @@
                                   
                                                 </div>
                                                 <div class="col-sm-2" *ngIf="subdivisions.length > 5">
-                                                 <i *ngIf="l4.opened" class="pi pi-chevron-down mr-2" (click)="close(l4.level, l4.id)"></i>
-                                                 <i *ngIf="!l4.opened" class="pi pi-chevron-up mr-2" (click)="open(l4.level, l4.id, l4.idParent)"></i>
+                                                 <i *ngIf="l4.opened" class="pi pi-chevron-down mr-2" (click)="l4.opened = false"></i>
+                                                 <i *ngIf="!l4.opened" class="pi pi-chevron-up mr-2" (click)="l4.opened = true"></i>
                                                 </div>
                                              </div>
                                              
@@ -223,7 +223,7 @@
                                                 <div class="row p-0">
                                           
                                                     <div class="col-sm-5 p-0">
-                                                        <input type="checkbox" class="mr-2" [disabled]="l5.disabled" (change)="getSelectedLocality(l5, $event)" [checked]="l5.selected"   />
+                                                        <input type="checkbox" class="mr-2" [disabled]="l5.disabled" (change)="getSelectedLocality(l5, $event)" [checked]="l5.selected || isChecked(l5)"   />
                                                          <span class="text-muted mr-2">{{subdivisions[5] +':'}}</span>
                                                          <span>{{l5.nom}}</span>
                                                     </div>
@@ -241,8 +241,8 @@
                                           
                                                         </div>
                                                         <div class="col-sm-2" *ngIf="subdivisions.length > 6">
-                                                         <i *ngIf="l5.opened" class="pi pi-chevron-down mr-2" (click)="close(l5.level, l5.id)"></i>
-                                                         <i *ngIf="!l5.opened" class="pi pi-chevron-up mr-2" (click)="open(l5.level, l5.id, l5.idParent)"></i>
+                                                         <i *ngIf="l5.opened" class="pi pi-chevron-down mr-2" (click)="l5.opened = false"></i>
+                                                         <i *ngIf="!l5.opened" class="pi pi-chevron-up mr-2" (click)="l5.opened = true"></i>
                                                         </div>
                                                      </div>
                                                      
@@ -262,7 +262,7 @@
                                                         <div class="row p-0">
                                                   
                                                             <div class="col-sm-5 p-0">
-                                                                <input type="checkbox" class="mr-2" [disabled]="l6.disabled"  (change)="getSelectedLocality(l6, $event)" [checked]="l6.selected"  />
+                                                                <input type="checkbox" class="mr-2" [disabled]="l6.disabled"  (change)="getSelectedLocality(l6, $event)" [checked]="l6.selected || isChecked(l6)"  />
                                                                  <span class="text-muted mr-2">{{subdivisions[6] +':'}}</span>
                                                                  <span>{{l6.nom}}</span>
                                                             </div>
@@ -280,8 +280,8 @@
                                                   
                                                                 </div>
                                                                 <div class="col-sm-2" *ngIf="subdivisions.length > 7">
-                                                                 <i *ngIf="l6.opened" class="pi pi-chevron-down mr-2" (click)="close(l6.level, l6.id)"></i>
-                                                                 <i *ngIf="!l6.opened" class="pi pi-chevron-up mr-2" (click)="open(l6.level, l6.id, l6.idParent)"></i>
+                                                                 <i *ngIf="l6.opened" class="pi pi-chevron-down mr-2" (click)="l6.opened = false"></i>
+                                                                 <i *ngIf="!l6.opened" class="pi pi-chevron-up mr-2" (click)="l6.opened = true"></i>
                                                                 </div>
                                                              </div>
                                                              
@@ -302,7 +302,7 @@
                                                                 <div class="row p-0">
                                                           
                                                                     <div class="col-sm-5 p-0">
-                                                                        <input type="checkbox" class="mr-2"  [disabled]="l7.disabled"  (change)="getSelectedLocality(l7, $event)"  [checked]="l7.selected"  />
+                                                                        <input type="checkbox" class="mr-2"  [disabled]="l7.disabled"  (change)="getSelectedLocality(l7, $event)"  [checked]="l7.selected || isChecked(l7)"  />
                                                                          <span class="text-muted mr-2">{{subdivisions[7] +':'}}</span>
                                                                          <span>{{l7.nom}}</span>
                                                                     </div>
@@ -320,8 +320,8 @@
                                                           
                                                                         </div>
                                                                         <div class="col-sm-2" *ngIf="subdivisions.length > 8">
-                                                                         <i *ngIf="l7.opened" class="pi pi-chevron-down mr-2" (click)="close(l7.level, l7.id)"></i>
-                                                                         <i *ngIf="!l7.opened" class="pi pi-chevron-up mr-2" (click)="open(l7.level, l7.id, l7.idParent)"></i>
+                                                                         <i *ngIf="l7.opened" class="pi pi-chevron-down mr-2" (click)="l7.opened = false"></i>
+                                                                         <i *ngIf="!l7.opened" class="pi pi-chevron-up mr-2" (click)="l7.opened = true"></i>
                                                                         </div>
                                                                      </div>
                                                                      
@@ -343,7 +343,7 @@
                                                                         <div class="row p-0">
                                                                   
                                                                             <div class="col-sm-5 p-0">
-                                                                                <input type="checkbox" class="mr-2" [disabled]="l8.disabled"  (change)="getSelectedLocality(l8, $event)" [checked]="l8.selected"  />
+                                                                                <input type="checkbox" class="mr-2" [disabled]="l8.disabled"  (change)="getSelectedLocality(l8, $event)" [checked]="l8.selected || isChecked(l8)"  />
                                                                                  <span class="text-muted mr-2">{{subdivisions[8] +':'}}</span>
                                                                                  <span>{{l8.nom}}</span>
                                                                             </div>
@@ -361,8 +361,8 @@
                                                                   
                                                                                 </div>
                                                                                 <div class="col-sm-2" *ngIf="subdivisions.length > 9">
-                                                                                 <i *ngIf="l8.opened" class="pi pi-chevron-down mr-2" (click)="close(l8.level, l8.id)"></i>
-                                                                                 <i *ngIf="!l8.opened" class="pi pi-chevron-up mr-2" (click)="open(l8.level, l8.id, l8.idParent)"></i>
+                                                                                 <i *ngIf="l8.opened" class="pi pi-chevron-down mr-2" (click)="l8.opened = false"></i>
+                                                                                 <i *ngIf="!l8.opened" class="pi pi-chevron-up mr-2" (click)="l8.opened = true"></i>
                                                                                 </div>
                                                                              </div>
                                                                              
@@ -383,7 +383,7 @@
                                                                                 <div class="row p-0">
                                                                           
                                                                                     <div class="col-sm-5 p-0">
-                                                                                        <input type="checkbox" class="mr-2"  [disabled]="l9.disabled"  (change)="getSelectedLocality(l9, $event)" [checked]="l9.selected"   />
+                                                                                        <input type="checkbox" class="mr-2"  [disabled]="l9.disabled"  (change)="getSelectedLocality(l9, $event)" [checked]="l9.selected || isChecked(l9)"   />
                                                                                          <span class="text-muted mr-2">{{subdivisions[9] +':'}}</span>
                                                                                          <span>{{l9.nom}}</span>
                                                                                     </div>
@@ -401,8 +401,8 @@
                                                                           
                                                                                         </div>
                                                                                         <div class="col-sm-2" *ngIf="subdivisions.length > 10">
-                                                                                         <i *ngIf="l9.opened" class="pi pi-chevron-down mr-2" (click)="close(l9.level, l9.id)"></i>
-                                                                                         <i *ngIf="!l9.opened" class="pi pi-chevron-up mr-2" (click)="open(l9.level, l9.id, l9.idParent)"></i>
+                                                                                         <i *ngIf="l9.opened" class="pi pi-chevron-down mr-2" (click)="l9.opened = false"></i>
+                                                                                         <i *ngIf="!l9.opened" class="pi pi-chevron-up mr-2" (click)="l9.opened = true"></i>
                                                                                         </div>
                                                                                      </div>
                                                                                      

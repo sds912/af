@@ -455,6 +455,7 @@ class SharedController extends AbstractController
     public function makeAffectation(Request $request,AffectationRepository $repo){
         $data=Shared::getData($request);
         $user=$this->repoUser->find($data['user']);
+        $user->setAffected(true);
         $inventaire=$this->repoInv->find($data['inventaire']);
         $affectations=$repo->findBy(['user'=>$user,'inventaire'=>$inventaire]);
         if($data['remove']){

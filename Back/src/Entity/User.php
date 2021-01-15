@@ -203,6 +203,12 @@ class User implements UserInterface
      */
     private $mesAjustements;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"user_read"})
+     */
+    private $affected;
+
     public function __construct()
     {
         $this->roles = ['ROLE_USER'];
@@ -641,6 +647,18 @@ class User implements UserInterface
                 $mesAjustement->setAjusteur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAffected(): ?bool
+    {
+        return $this->affected;
+    }
+
+    public function setAffected(bool $affected): self
+    {
+        $this->affected = $affected;
 
         return $this;
     }

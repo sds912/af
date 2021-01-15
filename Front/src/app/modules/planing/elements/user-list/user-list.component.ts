@@ -17,8 +17,12 @@ export class UserListComponent implements OnInit {
   display: boolean = false;
   displayeduser: User;
   @Input() inventaire: any;
+  @Input() subdivisions: string[];
   myAffectations: any[];
   currentRoles: string;
+  myAffectToString: string[] = [];
+  EditingUserNameAndRole: string = "";
+  
 
 
 r3: string[] = ['ROLE_MC', 'ROLE_MI', 'ROLE_ME'];
@@ -32,6 +36,7 @@ r3: string[] = ['ROLE_MC', 'ROLE_MI', 'ROLE_ME'];
   ngOnInit(): void {
     this.filteredUsers = [];
     this.currentRoles = localStorage.getItem('roles');
+    
     this.affectationService.userData$.subscribe((users) => {
       this.users = users;
     })
@@ -97,6 +102,12 @@ edit(user: any) {
  this.affectationService.addUser([user]);
  this.affectationService.editing(true);
  this.getAffectationOf(user);
+ this.affectationService.myAffects$.subscribe((val) => {
+   let list: any[] = [];
+   val.forEach((item) => list.push(item.localite));
+
+   this.affectationService.addSelectedLoc(list);
+ })
 }
 
 
@@ -145,6 +156,8 @@ filterByRole(role: string): boolean {
 }
 
 
+
+
 getAffectationOf(user){
   /** L'affectation d'un utilisateur */
   this.planningService.getAffectations(`?user.id=${user.id}&inventaire.id=${this.inventaire?.id}`).then(
@@ -160,31 +173,18 @@ getAffectationOf(user){
 }
 
 
-displayLevel(users: any[]){
- let str: string = "";
+displayLevel(users: any[]) {
+ this.EditingUserNameAndRole = "Affectations de " + users[0].user.nom + " " + this.getRole(users[0].user.roles);
+  this.myAffectToString = [];
   users.forEach((item) => {
-    if(item.localite.level === 0){
-      str += item.localite.nom + ' , '
-    }
+    if(item.localite.level === this.subdivisions.length - 1)  {
+      this.myAffectToString.push(item.localite.arborescence);
+      this.display = true;
 
-    if(item.localite.level === 1){
-      str += item.localite.nom + ' , '
-    }
-    if(item.localite.level === 3){
-      str += item.localite.nom + ' , '
-    }
+    }})
+  
 
-    if(item.localite.level === 4){
-      str += item.localite.nom + ' , '
-    }
 
-    if(item.localite.level === 5){
-      
-      str += item.localite.nom + ' , '
-    }
-  })
-
-  console.log(str)
 }
 
 

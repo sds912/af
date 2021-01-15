@@ -26,7 +26,7 @@
             <div class="mb-3">Période d'inventaire du <strong>{{currentInv?.debut|date:'dd/MM/yyyy'}}</strong>  au <strong> {{currentInv?.fin|date:'dd/MM/yyyy'}}</strong> </div>
 
             <div class="card card-body affectBody py-2 px-0">
-                <app-user-list  *ngIf="!isAffecting" [inventaire]="currentInv" ></app-user-list>
+                <app-user-list  *ngIf="!isAffecting" [inventaire]="currentInv" [subdivisions]="subdivisions" ></app-user-list>
                 <app-locality-planning *ngIf="isAffecting || isEditing" [localities]="localites" [subdivisions]="subdivisions" [inventaire]="currentInv"></app-locality-planning>
             </div>
         </div>

@@ -2,6 +2,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableModule } from 'primeng/table';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {OverlayPanelModule} from 'primeng/overlaypanel';
 
 
 import { PlaningRoutingModule } from './planing-routing.module';
@@ -25,6 +26,9 @@ import {AccordionModule} from 'primeng/accordion';
 import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
 import {DialogModule} from 'primeng/dialog';
+import {TooltipModule} from 'primeng/tooltip';
+
+
 
 
 
@@ -75,7 +79,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ProgressSpinnerModule,
     ReactiveFormsModule,
     ToastModule,
-    DialogModule
+    DialogModule,
+    OverlayPanelModule,
+    TooltipModule
   
     
     
