@@ -21,7 +21,7 @@
         <div class="row p-0">
   
             <div class="col-sm-5 p-0">
-                <input type="checkbox" class="mr-2" [disabled]="l0.disabled" (change)="getSelectedLocality(l0, $event)" [checked]="l0.selected || isChecked(l0)" />
+                <input type="checkbox" class="mr-2" [disabled]="l0.disabled" (change)="getSelectedLocality(l0, $event)" [checked]="l0.selected " />
                  <span class="text-muted mr-2">{{subdivisions[0] +':'}}</span>
                  <span>{{l0.nom}}</span>
             </div>
@@ -53,16 +53,12 @@
 
     <div class="card-body mcontainer" *ngIf="l0.opened" >
 
-        <div class="card" *ngIf="l0.subdivisions.length == 0">
-            <p-progressSpinner size="20"></p-progressSpinner>
-        </div>
-
         <div  *ngFor="let l1 of l0.subdivisions" class="card p-0" >
             <div class="card-header px-5" style="background-color: #c7753d !important; color:#ffffff;" >
                 <div class="row p-0">
           
                     <div class="col-sm-5 p-0">
-                        <input type="checkbox" class="mr-2" [disabled]="l1.disabled" (change)="getSelectedLocality(l1, $event)" [checked]="l1.selected || isChecked(l1)"  />
+                        <input type="checkbox" class="mr-2" [disabled]="l1.disabled" (change)="getSelectedLocality(l1, $event)" [checked]="l1.selected "  />
                          <span class="text-muted mr-2">{{subdivisions[1] +':'}}</span>
                          <span>{{l1.nom}}</span>
                     </div>
@@ -71,11 +67,11 @@
                         <div class="col-sm-10 ">
                          <span>
                              <label class="text-muted">Début: </label>
-                             <input type="date" min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l1.level, l1.id, 'd')"  />
+                             <input type="date" min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l1.level, l1.id, 'd')"  />
                          </span>
                          <span>
                              <label class="text-muted">Fin: </label>
-                             <input  type="date"  min="{{inventaire.debut  | date:'yyyy-MM-dd'}}" max="{{inventaire.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l1.level, l1.id, 'f')"  />
+                             <input  type="date"  min="{{l0.debut  | date:'yyyy-MM-dd'}}" max="{{l0.fin | date:'yyyy-MM-dd' }}"  value="{{ l1.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l1.level, l1.id, 'f')"  />
                          </span>
           
                         </div>
@@ -93,16 +89,12 @@
             </div>
             
             <div class="card-body mcontainer" *ngIf="l1.opened">
-
-                <div class="card" *ngIf="l1.subdivisions.length == 0">
-                    <p-progressSpinner size="20"></p-progressSpinner>
-                </div>
                 <div *ngFor="let l2 of l1.subdivisions" class="card p-0" >
                     <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
                         <div class="row p-0">
                   
                             <div class="col-sm-5 p-0">
-                                <input type="checkbox" class="mr-2" [disabled]="l2.disabled" (change)="getSelectedLocality(l2, $event)" [checked]="l2.selected || isChecked(l2)" />
+                                <input type="checkbox" class="mr-2" [disabled]="l2.disabled" (change)="getSelectedLocality(l2, $event)" [checked]="l2.selected " />
                                  <span class="text-muted mr-2">{{subdivisions[2] +':'}}</span>
                                  <span>{{l2.nom}}</span>
                             </div>
@@ -134,15 +126,12 @@
                 
                     <div class="card-body mcontainer" *ngIf="l2.opened">
 
-                        <div class="card" *ngIf="l2.subdivisions.length == 0">
-                            <p-progressSpinner size="20"></p-progressSpinner>
-                        </div>
                         <div *ngFor="let l3 of l2.subdivisions" class="card p-0" >
                             <div class="card-header px-5" style="background-color: #556052 !important; color:#ffffff;" >
                                 <div class="row p-0">
                           
                                     <div class="col-sm-5 p-0">
-                                        <input type="checkbox" class="mr-2" [disabled]="l3.disabled" (change)="getSelectedLocality(l3, $event)" [checked]="l3.selected || isChecked(l3)"  />
+                                        <input type="checkbox" class="mr-2" [disabled]="l3.disabled" (change)="getSelectedLocality(l3, $event)" [checked]="l3.selected "  />
                                          <span class="text-muted mr-2">{{subdivisions[3] +':'}}</span>
                                          <span>{{l3.nom}}</span>
                                     </div>
@@ -175,15 +164,12 @@
                             <div class="card-body mcontainer" *ngIf="l3.opened" >
 
 
-                                <div class="card" *ngIf="l3.subdivisions.length == 0">
-                                    <p-progressSpinner size="20"></p-progressSpinner>
-                                </div>
                                 <div *ngFor="let l4 of l3.subdivisions" class="card p-0" >
                                     <div class="card-header px-5" style="background-color: #21209c !important; color:#ffffff;" >
                                         <div class="row p-0">
                                   
                                             <div class="col-sm-5 p-0">
-                                                <input type="checkbox" class="mr-2" [disabled]="l4.disabled" (change)="getSelectedLocality(l4, $event)" [checked]="l4.selected || isChecked(l4)"  />
+                                                <input type="checkbox" class="mr-2" [disabled]="l4.disabled" (change)="getSelectedLocality(l4, $event)" [checked]="l4.selected "  />
                                                  <span class="text-muted mr-2">{{subdivisions[4] +':'}}</span>
                                                  <span>{{l4.nom}}</span>
                                             </div>
@@ -192,11 +178,11 @@
                                                 <div class="col-sm-10 ">
                                                  <span>
                                                      <label class="text-muted">Début: </label>
-                                                     <input type="date"  min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}" value="{{ l3.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'd')"  />
+                                                     <input type="date"  min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}" value="{{ l4.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'd')"  />
                                                  </span>
                                                  <span>
                                                      <label class="text-muted">Fin: </label>
-                                                     <input  type="date" min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}"  value="{{ l3.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'f')"    />
+                                                     <input  type="date" min="{{l3.debut  | date:'yyyy-MM-dd'}}" max="{{l3.fin | date:'yyyy-MM-dd' }}"  value="{{ l4.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l4.level, l4.id, 'f')"    />
                                                  </span>
                                   
                                                 </div>
@@ -215,15 +201,12 @@
                                 
                                     <div class="card-body mcontainer" *ngIf="l4.opened">
 
-                                        <div class="card" *ngIf="l4.subdivisions.length == 0">
-                                            <p-progressSpinner size="20"></p-progressSpinner>
-                                        </div>
                                         <div *ngFor="let l5 of l4.subdivisions" class="card p-0" >
                                             <div class="card-header px-5" style="background-color: #682c0e !important; color:#ffffff;" >
                                                 <div class="row p-0">
                                           
                                                     <div class="col-sm-5 p-0">
-                                                        <input type="checkbox" class="mr-2" [disabled]="l5.disabled" (change)="getSelectedLocality(l5, $event)" [checked]="l5.selected || isChecked(l5)"   />
+                                                        <input type="checkbox" class="mr-2" [disabled]="l5.disabled" (change)="getSelectedLocality(l5, $event)" [checked]="l5.selected "   />
                                                          <span class="text-muted mr-2">{{subdivisions[5] +':'}}</span>
                                                          <span>{{l5.nom}}</span>
                                                     </div>
@@ -232,7 +215,7 @@
                                                         <div class="col-sm-10 ">
                                                          <span>
                                                              <label class="text-muted">Début: </label>
-                                                             <input type="date" min="{{l4.debut  | date:'yyyy-MM-dd'}}" max="{{l4.fin | date:'yyyy-MM-dd' }}" value="{{ l4.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l5.level, l5.id, 'd')"  />
+                                                             <input type="date" min="{{l4.debut  | date:'yyyy-MM-dd'}}" max="{{l4.fin | date:'yyyy-MM-dd' }}" value="{{ l5.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l5.level, l5.id, 'd')"  />
                                                          </span>
                                                          <span>
                                                              <label class="text-muted">Fin: </label>
@@ -254,15 +237,13 @@
                                             </div>
                                         
                                             <div class="card-body mcontainer" *ngIf="l5.opened">
-                                                <div class="card" *ngIf="l1.subdivisions.length == 0">
-                                                    <p-progressSpinner size="20"></p-progressSpinner>
-                                                </div>
+                                          
                                                 <div *ngFor="let l6 of l5.subdivisions" class="card p-0" >
                                                     <div class="card-header px-5" style="background-color: #30475e !important; color:#ffffff;" >
                                                         <div class="row p-0">
                                                   
                                                             <div class="col-sm-5 p-0">
-                                                                <input type="checkbox" class="mr-2" [disabled]="l6.disabled"  (change)="getSelectedLocality(l6, $event)" [checked]="l6.selected || isChecked(l6)"  />
+                                                                <input type="checkbox" class="mr-2" [disabled]="l6.disabled"  (change)="getSelectedLocality(l6, $event)" [checked]="l6.selected "  />
                                                                  <span class="text-muted mr-2">{{subdivisions[6] +':'}}</span>
                                                                  <span>{{l6.nom}}</span>
                                                             </div>
@@ -271,11 +252,11 @@
                                                                 <div class="col-sm-10 ">
                                                                  <span>
                                                                      <label class="text-muted">Début: </label>
-                                                                     <input type="date" min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}" value="{{ l5.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l6.level, l6.id, 'd')"   />
+                                                                     <input type="date" min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}" value="{{ l6.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l6.level, l6.id, 'd')"   />
                                                                  </span>
                                                                  <span>
                                                                      <label class="text-muted">Fin: </label>
-                                                                     <input  type="date"  min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}"  value="{{ l5.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l6.level, l6.id, 'f')"   />
+                                                                     <input  type="date"  min="{{l5.debut  | date:'yyyy-MM-dd'}}" max="{{l5.fin | date:'yyyy-MM-dd' }}"  value="{{ l6.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l6.level, l6.id, 'f')"   />
                                                                  </span>
                                                   
                                                                 </div>
@@ -294,15 +275,12 @@
                                                 
                                                     <div class="card-body mcontainer" *ngIf="l6.opened">
 
-                                                        <div class="card" *ngIf="l6.subdivisions.length == 0">
-                                                            <p-progressSpinner size="20"></p-progressSpinner>
-                                                        </div>
                                                         <div *ngFor="let l7 of l6.subdivisions" class="card p-0" >
                                                             <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
                                                                 <div class="row p-0">
                                                           
                                                                     <div class="col-sm-5 p-0">
-                                                                        <input type="checkbox" class="mr-2"  [disabled]="l7.disabled"  (change)="getSelectedLocality(l7, $event)"  [checked]="l7.selected || isChecked(l7)"  />
+                                                                        <input type="checkbox" class="mr-2"  [disabled]="l7.disabled"  (change)="getSelectedLocality(l7, $event)"  [checked]="l7.selected "  />
                                                                          <span class="text-muted mr-2">{{subdivisions[7] +':'}}</span>
                                                                          <span>{{l7.nom}}</span>
                                                                     </div>
@@ -311,11 +289,11 @@
                                                                         <div class="col-sm-10 ">
                                                                          <span>
                                                                              <label class="text-muted">Début: </label>
-                                                                             <input type="date" min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}"  value="{{ l6.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'd')"   />
+                                                                             <input type="date" min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}"  value="{{ l7.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'd')"   />
                                                                          </span>
                                                                          <span>
                                                                              <label class="text-muted">Fin: </label>
-                                                                             <input  type="date"  min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}" value="{{ l6.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'f')"   />
+                                                                             <input  type="date"  min="{{l6.debut  | date:'yyyy-MM-dd'}}" max="{{l6.fin | date:'yyyy-MM-dd' }}" value="{{ l7.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l7.level, l7.id, 'f')"   />
                                                                          </span>
                                                           
                                                                         </div>
@@ -334,16 +312,12 @@
                                                         
                                                             <div class="card-body mcontainer" *ngIf="l7.opened">
 
-
-                                                                <div class="card" *ngIf="l7.subdivisions.length == 0">
-                                                                    <p-progressSpinner size="20"></p-progressSpinner>
-                                                                </div>
                                                                 <div *ngFor="let l8 of l7.subdivisions" class="card p-0" >
                                                                     <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
                                                                         <div class="row p-0">
                                                                   
                                                                             <div class="col-sm-5 p-0">
-                                                                                <input type="checkbox" class="mr-2" [disabled]="l8.disabled"  (change)="getSelectedLocality(l8, $event)" [checked]="l8.selected || isChecked(l8)"  />
+                                                                                <input type="checkbox" class="mr-2" [disabled]="l8.disabled"  (change)="getSelectedLocality(l8, $event)" [checked]="l8.selected "  />
                                                                                  <span class="text-muted mr-2">{{subdivisions[8] +':'}}</span>
                                                                                  <span>{{l8.nom}}</span>
                                                                             </div>
@@ -352,11 +326,11 @@
                                                                                 <div class="col-sm-10 ">
                                                                                  <span>
                                                                                      <label class="text-muted">Début: </label>
-                                                                                     <input type="date"  min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}" value="{{ l7.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'd')"  />
+                                                                                     <input type="date"  min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}" value="{{ l8.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'd')"  />
                                                                                  </span>
                                                                                  <span>
                                                                                      <label class="text-muted">Fin: </label>
-                                                                                     <input  type="date" min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}"  value="{{ l7.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'f')"   />
+                                                                                     <input  type="date" min="{{l7.debut  | date:'yyyy-MM-dd'}}" max="{{l7.fin | date:'yyyy-MM-dd' }}"  value="{{ l8.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l8.level, l8.id, 'f')"   />
                                                                                  </span>
                                                                   
                                                                                 </div>
@@ -375,15 +349,12 @@
                                                                 
                                                                     <div class="card-body mcontainer" *ngIf="l8.opened">
 
-                                                                        <div class="card" *ngIf="l8.subdivisions.length == 0">
-                                                                            <p-progressSpinner size="20"></p-progressSpinner>
-                                                                        </div>
                                                                         <div *ngFor="let l9 of l8.subdivisions" class="card p-0" >
                                                                             <div class="card-header px-5" style="background-color: #583d72 !important; color:#ffffff;" >
                                                                                 <div class="row p-0">
                                                                           
                                                                                     <div class="col-sm-5 p-0">
-                                                                                        <input type="checkbox" class="mr-2"  [disabled]="l9.disabled"  (change)="getSelectedLocality(l9, $event)" [checked]="l9.selected || isChecked(l9)"   />
+                                                                                        <input type="checkbox" class="mr-2"  [disabled]="l9.disabled"  (change)="getSelectedLocality(l9, $event)" [checked]="l9.selected "   />
                                                                                          <span class="text-muted mr-2">{{subdivisions[9] +':'}}</span>
                                                                                          <span>{{l9.nom}}</span>
                                                                                     </div>
@@ -392,11 +363,11 @@
                                                                                         <div class="col-sm-10 ">
                                                                                          <span>
                                                                                              <label class="text-muted">Début: </label>
-                                                                                             <input type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}" value="{{ l8.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l9.level, l9.id, 'd')"  />
+                                                                                             <input type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}" value="{{ l9.debut | date:'yyyy-MM-dd' }}" style="border: 0px;outline: none; width: 120px; color: #ffffff; background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2" (change)="onDateChange($event.target.value, l9.level, l9.id, 'd')"  />
                                                                                          </span>
                                                                                          <span>
                                                                                              <label class="text-muted">Fin: </label>
-                                                                                             <input  type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}"  value="{{ l8.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l9.level, l9.id, 'f')"   />
+                                                                                             <input  type="date"  min="{{l8.debut  | date:'yyyy-MM-dd'}}" max="{{l8.fin | date:'yyyy-MM-dd' }}"  value="{{ l9.fin | date:'yyyy-MM-dd' }}"  style="border: 0px;outline: none; width: 120px;color:#ffffff;background-color: transparent; border-bottom: 1px solid #2a2b2a"  class="mx-2"  (change)="onDateChange($event.target.value, l9.level, l9.id, 'f')"   />
                                                                                          </span>
                                                                           
                                                                                         </div>
@@ -454,5 +425,7 @@
 
 
     </div>
+
+    <p-toast></p-toast>
 
 

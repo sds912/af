@@ -27,6 +27,8 @@ import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
 import {DialogModule} from 'primeng/dialog';
 import {TooltipModule} from 'primeng/tooltip';
+import {MessagesModule} from 'primeng/messages';
+import {MessageModule} from 'primeng/message';
 
 
 
@@ -81,7 +83,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ToastModule,
     DialogModule,
     OverlayPanelModule,
-    TooltipModule
+    TooltipModule,
+    MessageModule,
+    MessagesModule
   
     
     

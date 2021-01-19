@@ -1,13 +1,14 @@
-import { Affectation } from './../../../../data/schema/Affectation';
 import { AffectationService } from './../../services/affectation.service';
 import { User } from './../../../../data/schema/user';
 import { Component, Input, OnInit } from '@angular/core';
 import { PlaningService } from '../../services/planing.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.sass']
+  styleUrls: ['./user-list.component.sass'],
+  providers: [MessageService]
 })
 export class UserListComponent implements OnInit {
 
@@ -22,6 +23,8 @@ export class UserListComponent implements OnInit {
   currentRoles: string;
   myAffectToString: string[] = [];
   EditingUserNameAndRole: string = "";
+  done: boolean = false;
+  msgs1: any;
   
 
 
@@ -29,17 +32,33 @@ r3: string[] = ['ROLE_MC', 'ROLE_MI', 'ROLE_ME'];
 
 
 
-  constructor(private affectationService: AffectationService, private planningService: PlaningService) { 
+  constructor(private affectationService: AffectationService, private planningService: PlaningService, private messageService: MessageService) { 
   
   }
 
+
+
+
   ngOnInit(): void {
+
+    this.msgs1 = [
+      {severity:'success', summary:'Bravo !', detail:'Enrégistré avec succès'}];
     this.filteredUsers = [];
     this.currentRoles = localStorage.getItem('roles');
     
     this.affectationService.userData$.subscribe((users) => {
       this.users = users;
     })
+
+    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
+
+   this.affectationService.done$.subscribe((state) => {
+      this.done = state;
+
+      
+     
+     
+   })
 }
 
 
@@ -104,9 +123,13 @@ edit(user: any) {
  this.getAffectationOf(user);
  this.affectationService.myAffects$.subscribe((val) => {
    let list: any[] = [];
-   val.forEach((item) => list.push(item.localite));
-
+   val.forEach((item) =>{ 
+     let loc: any = item.localite;
+     loc.debut = item.debut
+     loc.fin = item.fin;
+     list.push(loc)});
    this.affectationService.addSelectedLoc(list);
+   this.affectationService.isEditing(true);
  })
 }
 
@@ -160,7 +183,7 @@ filterByRole(role: string): boolean {
 
 getAffectationOf(user){
   /** L'affectation d'un utilisateur */
-  this.planningService.getAffectations(`?user.id=${user.id}&inventaire.id=${this.inventaire?.id}`).then(
+  this.planningService.getAffectations(`?user.id=${user?.id}&inventaire.id=${this.inventaire?.id}`).then(
     res=>{
       this.myAffectations = res;
       this.affectationService.addAffect(res);
@@ -174,7 +197,7 @@ getAffectationOf(user){
 
 
 displayLevel(users: any[]) {
- this.EditingUserNameAndRole = "Affectations de " + users[0].user.nom + " " + this.getRole(users[0].user.roles);
+ this.EditingUserNameAndRole = "Affectations de " + users[0]?.user.nom + " " + this.getRole(users[0]?.user.roles);
   this.myAffectToString = [];
   users.forEach((item) => {
     if(item.localite.level === this.subdivisions.length - 1)  {

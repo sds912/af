@@ -23,6 +23,7 @@ export class InventaireService {
     return this.sharedService.getElement("/localites?entreprise.id="+id)
   }
   filterLocalites(entreprise: any, level = null, parent = null){
+    let url = '';
     let filters = '';
     if (level !== null) {
       filters = `&level=${level}`
@@ -30,7 +31,15 @@ export class InventaireService {
     if (parent !== null) {
       filters = `&parent=${parent}`
     }
-    return this.sharedService.getElement(`/localites?entreprise.id=${entreprise}${filters}`)
+    if(localStorage.getItem('roles') === "ROLE_SuperViseurAdjoint"){
+      url = `/localites?entreprise.id=${entreprise}${filters}&createur.id=${localStorage.getItem('idUser')}`
+    } else if(localStorage.getItem('roles') === "ROLE_SuperViseurGene"){
+      url = `/localites?entreprise.id=${entreprise}${filters}`
+    }
+    else{
+      url = `/affectations?inventaire.id=${localStorage.getItem('currentInv')}&user.id=${localStorage.getItem('idUser')}`
+    }
+    return this.sharedService.getElement(url);
   }
   close(inventaire: any){
     return this.sharedService.getElement("/inventaires/close/"+inventaire);

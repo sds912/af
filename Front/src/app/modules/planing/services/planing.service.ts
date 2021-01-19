@@ -31,7 +31,6 @@ export class PlaningService {
     let url: string = '';
     if(parent !== undefined){
        url = `/localites?entreprise.id=${idCurrentEse}&level=${level}&parent=${parent}`;
-       console.log('url 1')
     }else{
       url = `/localites?entreprise.id=${idCurrentEse}&level=${level}`;
     }

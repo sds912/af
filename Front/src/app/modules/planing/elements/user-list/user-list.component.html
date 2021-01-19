@@ -52,3 +52,8 @@
 <p-dialog header="{{EditingUserNameAndRole}}" [(visible)]="display" [style]="{width: '50vw'}" [baseZIndex]="10000">
    <div *ngFor="let loc of myAffectToString" style="background-color: #d4a50a; color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: .8em; padding: .2em .8em">{{loc}}</div>
 </p-dialog>
+
+<p-messages *ngIf="done" [(value)]="msgs1" [enableService]="false"></p-messages>
+
+
+

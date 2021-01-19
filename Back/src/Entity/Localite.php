@@ -33,7 +33,9 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *     "entreprise.id": "exact",
  *     "nom": "exact",
  *     "parent": "exact",
- *     "level": "exact"
+ *     "level": "exact",
+ *     "createur.id": "exact"
+ *     
  * })
  */
 class Localite

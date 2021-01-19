@@ -1,7 +1,6 @@
-import { FormBuilder, FormGroup } from '@angular/forms';
 import {Component, Input} from '@angular/core';
 import { InventaireService } from 'src/app/data/services/inventaire/inventaire.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { AffectationService } from '../../services/affectation.service';
 import { User } from 'src/app/data/schema/user';
 import { PlaningService } from '../../services/planing.service';
@@ -59,35 +58,55 @@ export class LocalityPlanningComponent {
 
 
 
-  inventForm: FormGroup;
     
     constructor(
       private inventaireService: InventaireService,
       private messageService: MessageService,
+      private primengConfig: PrimeNGConfig,
       private affectationService: AffectationService,
       private planningService: PlaningService) { }
 
     ngOnInit() {
-      this.affectationService.selectedLocData$.subscribe((locs) => this.selectedLocalities = locs)
+      this.primengConfig.ripple = true;
+      this.affectationService.selectedLocData$.subscribe((locs) =>{ 
+        this.selectedLocalities = locs
+      })
       this.idCurrentEse=localStorage.getItem("currentEse");
       this.inventaireService.getInventaireByEse(this.idCurrentEse).then((res) => {
-      this.affectationService.users$.subscribe((users) => {this.users = users});
-      this.affectationService.userData$.subscribe((users) => {this.userData = users});
-
       this.formater();
-      
-      }); 
+      this.formatForEdit();
+      this.affectationService.users$.subscribe((users) => {this.users = users});
+      this.affectationService.userData$.subscribe((users) => {this.userData = users}); }); 
       this.affectationService.myAffects$.subscribe((affects: any[]) => {
         this.myAffectations = affects;
+
+        
       })
 
       this.debut = this.inventaire.debut;
       this.fin = this.inventaire.fin;
-      this.affectationService.edit$.subscribe((mode) => this.mode = mode);
+      this.affectationService.edit$.subscribe((mode) => {this.mode = mode});
+
+      
+     /*
+     this.affectationService.myAffects$.subscribe((v) => {
+       if(v.length > 0){
+         this.affectationService.editing$.subscribe( (v) => {
+           if(v == true){
+             this.formatForEdit();
+             this.affectationService.isEditing(false);
+           }
+         })
+       }
+     })
+
+     */
     }
+  
 
-
-    
+    showSuccess() {
+      this.messageService.add({severity:'success', summary: 'Success', detail: 'Message Content'});
+  }
 
 
 
@@ -203,7 +222,6 @@ formater(){
 
 
   save():void{
-
     this.users.forEach((user) => {
 
       this.saveOneByOne(user);
@@ -218,10 +236,13 @@ formater(){
     })
 
     this.affectationService.addUser([]);
+    this.affectationService.toogle(false);
+    this.affectationService.isDone(true);
   }
 
     back(){
       this.affectationService.addUser([]);
+      this.affectationService.isEditing(false);
     this.affectationService.addSelectedLoc([]);
       this.formater();
       this.affectationService.toogle(false);
@@ -237,8 +258,7 @@ formater(){
     }
     this.planningService.addAfectation(data).then(
       rep=>{
-        this.messageService.add({severity:'success', summary:'Brovo!', detail:'Affectations enrégistrées avec succes'});
-        this.affectationService.toogle(false);
+        
       },error=>{
         console.log(error);
        
@@ -254,6 +274,7 @@ formater(){
 
 
   getSelectedLocality(locality: LocalityEdit, event: any){
+   // console.log(locality.selected)
     if(event.target.checked){
 
       switch(locality.level){
@@ -431,6 +452,8 @@ formater(){
       
     }else{
 
+      console.log('ok youre here')
+
       switch(locality.level){
         case 0:
           this.localities.forEach((item)=> {
@@ -606,14 +629,19 @@ formater(){
                               item.selected = false;
                               this.removeLocFromSelectedLocs(item);})})})})})}})})})})})
         break;
-      }}}
+      }
+
+     
+    }
+   console.log(this.selectedLocalities);
+  } 
 
  
 
 
   removeLocFromSelectedLocs(locality: LocalityEdit){
     this.selectedLocalities.forEach( (item, index) => {
-      if(item === locality) this.selectedLocalities.splice(index,1);
+      if(item.id === locality.id) this.selectedLocalities.splice(index,1);
     });
  }
 
@@ -623,6 +651,7 @@ formater(){
    let affectations: any[] = [];
    this.users?.forEach((user) => {
     this.selectedLocalities.forEach((item) => {
+     // console.log(item)
       affectations.push({
         debut: item.debut,
         fin: item.fin,
@@ -633,7 +662,7 @@ formater(){
       })
    })
    })
-   
+   //console.log(affectations)
    return affectations;
  }
 
@@ -682,8 +711,129 @@ isChecked(loc: LocalityEdit): boolean{
   return state;
 }
 
+
+formatForEdit (){
+
+  this.localities.forEach((l) =>{
+   // console.log(this.myAffectations);
+    let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+    // console.log(loc0);
+    if(loc0 != undefined ){
+      l.opened = true;
+      l.selected = true;
+      l.disabled = false;
+      l.debut = l.debut;
+      l.fin = l.fin;
+      this.addLocInSelectedLocs(l);
+      
+      
+      l.subdivisions.forEach((l) =>{
+        // console.log(this.myAffectations);
+         let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+         // console.log(loc0);
+         if(loc0 != undefined ){
+           l.opened = true;
+           l.selected = true;
+           l.disabled = false;
+           l.debut = this.formattedDate(loc0.localite.debut);
+           l.fin = this.formattedDate(loc0.localite.fin);
+           this.addLocInSelectedLocs(l);
+           
+          
+           l.subdivisions.forEach((l) =>{
+            // console.log(this.myAffectations);
+             let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+             // console.log(loc0);
+             if(loc0 != undefined ){
+               l.opened = true;
+               l.selected = true;
+               l.disabled = false;
+               l.debut = this.formattedDate(loc0.localite.debut);
+               l.fin = this.formattedDate(loc0.localite.fin);
+               this.addLocInSelectedLocs(l);
+             
+               l.subdivisions.forEach((l) =>{
+                // console.log(this.myAffectations);
+                 let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+                 // console.log(loc0);
+                 if(loc0 != undefined ){
+                   l.opened = true;
+                   l.selected = true;
+                   l.disabled = false;
+                   l.debut = this.formattedDate(loc0.localite.debut);
+                   l.fin = this.formattedDate(loc0.localite.fin);
+                   this.addLocInSelectedLocs(l);
+                   
+                   l.subdivisions.forEach((l) =>{
+                    // console.log(this.myAffectations);
+                     let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+                     // console.log(loc0);
+                     if(loc0 != undefined ){
+                       l.opened = true;
+                       l.selected = true;
+                       l.disabled = false;
+                       l.debut = this.formattedDate(loc0.localite.debut);
+                       l.fin = this.formattedDate(loc0.localite.fin);
+                       this.addLocInSelectedLocs(l);
+                       l.subdivisions.forEach((l) =>{
+                        // console.log(this.myAffectations);
+                         let loc0 = this.myAffectations.find((item) => item.localite.id === l.id);
+                         // console.log(loc0);
+                         if(loc0 != undefined ){
+                           l.opened = true;
+                           l.selected = true;
+                           l.disabled = false;
+                           l.debut = this.formattedDate(loc0.localite.debut);
+                           l.fin = this.formattedDate(loc0.localite.fin);
+                           this.addLocInSelectedLocs(l);
+                          
+                         }
+                         
+                         
+                     
+                        
+                       });
+                      
+                     }
+                     
+                     
+                 
+                    
+                   });
+                 }
+                 
+                 
+             
+                
+               });
+             }
+             
+             
+         
+            
+           });
+         }
+         
+         
+     
+        
+       });
+    }
+    
+    
+
+   
+  });
+
+}
+
   
 
+
+formattedDate(d = new Date) {
+  d = new Date(d)
+  return [d.getFullYear(),d.getMonth() + 1, d.getDate()].map(n => n < 10 ? `0${n}` : `${n}`).join('-');
+}
 
 
 
@@ -696,6 +846,13 @@ if(mloc === undefined){
 
 
 onDateChange(date: string, level: number, id: number, label: string): void{
+
+  let sectedLoc = this.selectedLocalities.find((item) => item.id === id  );
+
+  if(sectedLoc !== undefined) {
+    sectedLoc.debut = label === 'd' ? date : sectedLoc.debut;
+    sectedLoc.fin = label === 'f' ? date : sectedLoc.fin;
+  }
  
   switch(level){
     case 0:
@@ -852,7 +1009,8 @@ onDateChange(date: string, level: number, id: number, label: string): void{
     break;
   }
   
-console.log(date);
+//console.log(date);
+//console.log(this.localities);
 
   
 };

@@ -233,7 +233,55 @@ export class AffectationNewModelComponent implements OnInit {
   }
   initLocalites() {
     this.inventaireServ.filterLocalites(this.idCurrentEse, 0, null).then((res) => {
-      this.localites = res;
+      let result = []
+      if(localStorage.getItem('roles') != 'ROLE_SuperViseurAdjoint' && localStorage.getItem('roles') != 'ROLE_SuperViseurGene'){
+        
+        res.forEach((item) => {
+           result.push(item.localite);
+        })
+
+        result.forEach((l0) => {
+          if(l0.level === 0){
+            l0.subdivisions = [];
+            result.forEach((l1) => {
+              if(l1.level === 1 && l1.idParent === l0.id){
+                l0.subdivisions.push(l1)
+                l1.subdivisions = [];
+                result.forEach((l2) => {
+                  if(l2.level === 2 && l2.idParent === l1.id){
+                    l1.subdivisions.push(l2)
+                    l2.subdivisions = [];
+                    result.forEach((l3) => {
+                      if(l3.level === 3 && l3.idParent === l2.id){
+                        l2.subdivisions.push(l3);
+                        l3.subdivisions = [];
+                        result.forEach((l4) => {
+                          if(l4.level === 4 && l4.idParent === l3.id){
+                            l3.subdivisions.push(l4);
+                            l4.subdivisions = [];
+                            result.forEach((l5) => {
+                              if(l5.level === 5 && l5.idParent === l4.id){
+                                l4.subdivisions.push(l5);
+                              }
+                            })
+                          }
+                        })
+                      }
+                    })
+                  }
+
+                })
+              }
+            })
+            this.localites.push(l0)
+          }
+          
+        })
+        
+      }else {
+        this.localites = res;
+      }
+      
     });
   }
   getOneEntreprise(id) {

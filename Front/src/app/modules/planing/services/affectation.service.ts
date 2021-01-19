@@ -18,13 +18,20 @@ export class AffectationService {
 
 
   private readonly _openedSource = new BehaviorSubject<boolean>(false);
+  private readonly _doneSource = new BehaviorSubject<boolean>(false);
+
 
   private readonly _editSource = new BehaviorSubject<boolean>(false);
+
+  private readonly _editingSource = new BehaviorSubject<boolean>(false);
+
 
 
   private readonly _DataToSaveSource = new BehaviorSubject<any>(null);
 
   private readonly _selectedLocalitiesSource = new BehaviorSubject<any>([]);
+
+  
 
 
 
@@ -33,6 +40,11 @@ export class AffectationService {
   readonly opened$ = this._openedSource.asObservable();
   readonly data$ = this._DataToSaveSource.asObservable();
   readonly edit$ = this._editSource.asObservable();
+  readonly editing$ = this._editingSource.asObservable();
+  readonly done$ = this._doneSource.asObservable();
+
+
+
   readonly myAffects$ = this._myAffectsSource.asObservable();
   readonly userData$ = this._userDataSource.asObservable();
   readonly selectedLocData$ = this._selectedLocalitiesSource.asObservable();
@@ -54,6 +66,14 @@ export class AffectationService {
     this._userSource.next(users);
   }
 
+  private _setEditing(state: boolean): void {
+    this._editingSource.next(state);
+  }
+
+  private _setDone(state: boolean): void {
+    this._doneSource.next(state);
+  }
+
   private _setUserData(users: User[]): void {
     this._userDataSource.next(users);
   }
@@ -63,7 +83,7 @@ export class AffectationService {
     this._selectedLocalitiesSource.next(locs);
   }
 
-
+  
 
   private _setAffect(affects: any[]): void {
     this._myAffectsSource.next(affects);
@@ -113,6 +133,18 @@ export class AffectationService {
   addAffect(affects: any[]){
     this._setAffect(affects);
   }
+
+  isEditing(state: boolean){
+    this._setEditing(state);
+  }
+
+
+
+  isDone(state: boolean){
+    this._setDone(state);
+  }
+
+
 
   setData(data: any){
     this._setData(data);
