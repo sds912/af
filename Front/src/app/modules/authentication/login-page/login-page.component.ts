@@ -67,7 +67,7 @@ export class LoginPageComponent implements OnInit {
     this.securityServ.login(this.loginForm.value)
     .then(
       ()=>{
-        this.router.navigate([this.securityServ.urlAfterConnexion])
+        this.router.navigate([this.securityServ.urlAfterConnexion]).then((value) => window.location.reload());
         this.securityServ.showLoadingIndicatior.next(false)
       },
       message=>{

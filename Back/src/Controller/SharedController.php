@@ -174,7 +174,7 @@ class SharedController extends AbstractController
     * @Route("/inventaires", methods={"POST"})
     * @Route("/inventaires/{id}", methods={"POST"})
     */
-    public function addInventaire(Request $request,$id=null){//si put tableau vide
+    public function addInventaire(Request $request, AffectationRepository $repoAffectation, $id=null){//si put tableau vide
         $data=Shared::getData($request);
         $code=201;
         $inventaire=new Inventaire();
@@ -186,6 +186,7 @@ class SharedController extends AbstractController
         $requestFile=$request->files->all();
         $uploadInstructions = [];
         $instructions=[];
+        $deleteLocalites = [];
         if(isset($data["countInstruction"])){
             $countInstruction=$data["countInstruction"];
             $instructions=$this->traitementFile($inventaire->getInstruction(),$data,$requestFile,$countInstruction,"instruction");
@@ -255,27 +256,27 @@ class SharedController extends AbstractController
         $this->manager->flush();
 
         $idLocalites=$this->toArray($data["localites"]);
-        if ($data['allLocIsChecked'] == true) {
+        if ($data['allLocIsChecked'] == 1) {
             $localites = $this->repoLoc->findBy(['entreprise' => $entreprise->getId()]);
         } else {
-            $localites = $this->getallByTabId($this->repoLoc,$idLocalites);
+            $localites = $this->getallByTabId($this->repoLoc, $idLocalites); 
+        }
+        if (isset($data['deleteLocalites'])) {
+            $deleteLocalites = $this->toArray($data["deleteLocalites"]); 
         }
 
         $inventaireLocaliteRepo = $this->manager->getRepository(InventaireLocalite::class);
 
-        if (in_array('deleteLocalites', $data) && !empty($data['deleteLocalites'])) {
-            $deleteLocalites = $data['deleteLocalites'];
-            foreach ($deleteLocalites as $idLoc) {
-                $deleteInventaireLocalite = $inventaireLocaliteRepo->findBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
-                if ($deleteInventaireLocalite) {
-                    $this->manager->remove($deleteInventaireLocalite);
-                }
-            }
-        }
-
         $batchSize = 50;
 
         foreach ($localites as $i => $localite) {
+            if (in_array($localite->getId(), $deleteLocalites)) {
+                continue;
+            }
+            $inventaireLocalite = $inventaireLocaliteRepo->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $localite->getId()]);
+            if ($inventaireLocalite) {
+                continue;
+            }
             $inventaireLocalite = new InventaireLocalite();
             $inventaireLocalite->setInventaire($inventaire)->setLocalite($localite);
             $this->manager->persist($inventaireLocalite);
@@ -286,6 +287,15 @@ class SharedController extends AbstractController
                 $this->manager->clear('App\Entity\InventaireLocalite');
             }
         }
+
+        foreach ($deleteLocalites as $idLoc) {
+            $deleteInventaireLocalite = $inventaireLocaliteRepo->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
+            $affectation = $repoAffectation->findOneBy(['inventaire' => $inventaire->getId(), 'localite' => $idLoc]);
+            if ($deleteInventaireLocalite && !$affectation) {
+                $this->manager->remove($deleteInventaireLocalite);
+            }
+        }
+
         $this->manager->flush();
         $this->manager->clear('App\Entity\InventaireLocalite');
 
@@ -722,9 +732,9 @@ class SharedController extends AbstractController
     }
 
     /**
-     * @Route("/dashbord/{id}", methods={"POST"})
+     * @Route("/dashbord", methods={"POST"})
      */
-    public function bashbordData(SerializerInterface $serializer,Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository, $id=null){
+    public function bashbordData(Request $request,AffectationRepository $repoAff, ApproveInstRepository $approveInstRepository){
         $data=Shared::getData($request);
 
         $user = $this->getUser();
@@ -737,25 +747,11 @@ class SharedController extends AbstractController
             return $this->json([], 200);
         }
 
-        //si superviseur ou sup gen tous les immos
-        $immos=$this->repoImmo->findByInventaire($inventaire);
-
         $affectations = [];
 
-        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
-            //si sup adjoint les immos de sa loc
-           $immos=$this->repoImmo->findImmoSupAdjoint($this->userCo, $inventaire->getId()); 
-        }elseif($this->droit->isGranted('ROLE_CE')){
-            //si chef equipes les immos ou il est
+        if($this->droit->isGranted('ROLE_CE')){
             $affectations=$repoAff->findBy(['user'=>$this->userCo, 'inventaire'=>$inventaire]);
-            $immos=$this->getImmoInMyLocalities($affectations,$immos);
-        }elseif($this->droit->isGranted('ROLE_MI')){
-            //mi les immos qu ils a scannees
-            $user=$this->repoUser->find($this->userCo->getId());
-            $immos=$user->getScanImmos($inventaire->getId());
         }
-
-        $immosStatus = $this->filterImmos($immos);
 
         $level = count($entreprise->getSubdivisions()) - 1;
 
@@ -780,8 +776,6 @@ class SharedController extends AbstractController
             'closed' => count($closedId)
         ];
 
-        // $locInventories=$this->filtreByAffectation($this->loopOfImmo($immos)[0],$affectations);
-
         $inventairesCloses = $this->repoInv->findBy(['entreprise' => $entreprise, 'status' => 'close']);
 
         $approv = $approveInstRepository->findBy(['inventaire' => $inventaire->getId(), 'status'=> 1]);
@@ -792,49 +786,85 @@ class SharedController extends AbstractController
 
         //me les immos qu ils a scannees
         // $d = $serializer->serialize(['zones' => $zones, 'immobilisations' => $immos], 'json', ['groups' => ['entreprise_read']]);
-        return $this->json(['zones' => $zones, 'immobilisations' => $immosStatus, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
+        return $this->json(['zones' => $zones, 'instructions' => $instructions, 'inventairesCloses' => count($inventairesCloses)], 200);
+    }
+
+    /**
+     * @Route("/dashbord/immobilisations", methods={"POST"})
+     */
+    public function bashbordDataImmo(Request $request,AffectationRepository $repoAff){
+        $data=Shared::getData($request);
+
+        $user = $this->getUser();
+
+        $inventaire = $this->repoInv->find($data['inventaire']);
+
+        $entreprise = $this->repoEse->find($data['entreprise']);
+
+        if (!$user->inEntreprise($entreprise) || $inventaire->getEntreprise()->getId() != $entreprise->getId()) {
+            return $this->json([], 200);
+        }
+
+        //si superviseur ou sup gen tous les immos
+        $immos = $this->repoImmo->findByInventaire($inventaire->getId());
+
+        if($this->droit->isGranted('ROLE_SuperViseurAdjoint')){
+            //si sup adjoint les immos de sa loc
+            $immos=$this->repoImmo->findImmoSupAdjoint($user->getId(), $inventaire->getId()); 
+        }elseif($this->droit->isGranted('ROLE_CE')){
+            //si chef equipes les immos ou il est
+            $affectations=$repoAff->findBy(['user'=>$user->getId(), 'inventaire'=>$inventaire]);
+            $immos=$this->getImmoInMyLocalities($affectations, $immos);
+        }elseif($this->droit->isGranted('ROLE_MI')){
+            //mi les immos qu ils a scannees
+            $immos=$user->getScanImmos($inventaire->getId());
+        }
+
+        $immosStatus = $this->filterImmos($immos);
+        $immosStatus['nonRetrouvees'] = $this->repoImmo->findCountByInventaireAndStatus($inventaire->getId(), ['', -1]);
+
+        return $this->json([
+            'immobilisations' => $immosStatus
+            // $immos = $this->repoImmo->findByInventaireAndStatus($inventaire->getId(), [0, 1, 2, 3])
+            // 'reconciliees' => $this->repoImmo->findCountByInventaireAndStatus($inventaire->getId(), [0, 1, 2, 3], $user->getId(), true)
+
+        ], 200);
     }
 
     public function filterImmos($immos)
     {
-        $totalImmos = count($immos) ?? 0;
         $dataImmobilisations = [
             'nonRetrouvees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
             'reconciliees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
             'nonReconciliees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
             'rajoutees' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
-            'codeBarreDefectueux' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0],
+            'codeBarreDefectueux' => ['count' => 0, 'taux' => 0, 'bon' => 0, 'mauvais' => 0]
         ];
 
         foreach ($immos as $immo) {
             switch (true) {
                 case $immo->getStatus() == null || $immo->getStatus() == -1: // Immobilisations non retrouvés
                     $dataImmobilisations['nonRetrouvees']['count'] = $dataImmobilisations['nonRetrouvees']['count'] + 1;
-                    // $dataImmobilisations['nonRetrouvees']['taux'] = floor(($dataImmobilisations['nonRetrouvees']['count'] * 100) / $totalImmos);
                     $dataImmobilisations['nonRetrouvees']['bon'] = $dataImmobilisations['nonRetrouvees']['bon'] + 1;
                     break;
 
                 case $immo->getStatus() == 1: // Immobilisations scannées réconciliées
                     $dataImmobilisations['reconciliees']['count'] = $dataImmobilisations['reconciliees']['count'] + 1;
-                    // $dataImmobilisations['reconciliees']['taux'] = floor(($dataImmobilisations['reconciliees']['count'] * 100) / $totalImmos);
                     $this->getStatusImmo($dataImmobilisations['reconciliees'], $immo->getEndEtat());
                     break;
 
                 case $immo->getStatus() == null || $immo->getStatus() == 0: // Immobilisations scannées non réconciliées
                     $dataImmobilisations['nonReconciliees']['count'] = $dataImmobilisations['nonReconciliees']['count'] + 1;
-                    // $dataImmobilisations['nonReconciliees']['taux'] = floor(($dataImmobilisations['nonReconciliees']['count'] * 100) / $totalImmos);
                     $this->getStatusImmo($dataImmobilisations['nonReconciliees'], $immo->getEndEtat());
                     break;
 
                 case $immo->getStatus() == 2: // Immobilisations rajoutées
                     $dataImmobilisations['rajoutees']['count'] = $dataImmobilisations['rajoutees']['count'] + 1;
-                    // $dataImmobilisations['rajoutees']['taux'] = floor(($dataImmobilisations['rajoutees']['count'] * 100) / $totalImmos);
                     $this->getStatusImmo($dataImmobilisations['rajoutees'], $immo->getEndEtat());
                     break;
 
                 case $immo->getStatus() == 3: // Immobilisations avec un code barre défectueux
                     $dataImmobilisations['codeBarreDefectueux']['count'] = $dataImmobilisations['codeBarreDefectueux']['count'] + 1;
-                    // $dataImmobilisations['codeBarreDefectueux']['taux'] = floor(($dataImmobilisations['codeBarreDefectueux']['count'] * 100) / $totalImmos);
                     $this->getStatusImmo($dataImmobilisations['codeBarreDefectueux'], $immo->getEndEtat()); 
                     break;
 
@@ -978,7 +1008,7 @@ class SharedController extends AbstractController
         $back=[];
         for($i=0;$i<count($oldFichiers);$i++){
             for($j=1;$j<=$count;$j++){
-                if(isset($data["{$name}{$j}"]) && $oldFichiers[$i][1]==$data["{$name}{$j}"]){//si update instruction1: 349257a8657b2f6ac73542aabb60281d.png et non objet de type file
+                if(isset($data["{$name}{$j}"]) && array_key_exists(1, $oldFichiers[$i]) && $oldFichiers[$i][1]==$data["{$name}{$j}"]){//si update instruction1: 349257a8657b2f6ac73542aabb60281d.png et non objet de type file
                     array_push($back,$oldFichiers[$i]);
                 }
             }
