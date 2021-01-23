@@ -66,6 +66,9 @@ class SharedController extends AbstractController
     /** @var ImmobilisationRepository */
     private $repoImmo;
 
+    /** @var AffectationRepository */
+    private $repoAff;
+
     /** @var MessageBusInterface */
     private $bus;
 
@@ -76,6 +79,7 @@ class SharedController extends AbstractController
                                 InventaireRepository $repoInv,
                                 UserRepository $repoUser,
                                 ImmobilisationRepository $repoImmo,
+                                AffectationRepository $repoAff,
                                 LocaliteRepository $repoLoc,
                                 MessageBusInterface $bus)
     {
@@ -88,6 +92,7 @@ class SharedController extends AbstractController
         $this->repoLoc=$repoLoc;
         $this->repoImmo=$repoImmo;
         $this->bus=$bus;
+        $this->repoAff =$repoAff;
     }
     /**
     * @Route("/update/pp", methods={"POST"})
@@ -337,6 +342,8 @@ class SharedController extends AbstractController
     * @Route("/mobile-inventaire/{id}", methods={"GET"})
     */
     public function getMobilInventaire(SerializerInterface $serializer, $id=null){
+        $affec = $this->repoAff->findBy(['user' => $this->userCo]);
+        
         $entreprise=$this->repoEse->find($id);
         $inventaire=$this->repoInv->findOneBy(['entreprise' => $entreprise,'status' => Shared::OPEN],["id" => "DESC"]);
         $data=[
